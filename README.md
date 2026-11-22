@@ -117,6 +117,7 @@ A version is published as a GitHub Release only after its build and validation p
 - Added native JavaScript alert, confirm, and prompt dialogs.
 - Fixed CI APK signature verification to call the SDK's explicit `apksigner` path.
 - Added SHA-256 checksum generation and verification; checksum files are included with CI artifacts and GitHub Releases.
+- Added early release-keystore, alias, and private-key password validation so signing configuration errors are reported before APK packaging.
 - Added ABI-specific APK outputs plus a universal fallback (CI validation pending).
 
 For every future release, add a new row under **Released versions** and summarize the user-visible changes. Keep this README in the same commit as the version bump.
@@ -200,7 +201,7 @@ This is the active development roadmap, ordered by dependency and user impact. T
 
 ## Signing
 
-Without repository signing secrets, CI uses the Android debug key. Debug keys can differ between GitHub runners, so a later APK may not install as an update over an earlier CI APK. Uninstall the previous test build if Android reports a signature conflict.
+CI is currently configured to require a permanent release keystore for non-PR builds. The latest build reached APK packaging but failed because Android Gradle could not read the configured private key from the keystore. The workflow now validates the keystore, alias, and key password before Gradle packaging so a misconfigured key fails with a clearer step-level error. Recheck the four GitHub Actions secrets below; do not paste their values into chat or commit them. Until a valid permanent key is configured and CI passes, there is no verified installable release artifact.
 
 For stable in-place updates, configure these GitHub repository secrets:
 
