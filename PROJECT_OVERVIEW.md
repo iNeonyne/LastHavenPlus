@@ -23,7 +23,7 @@ Component versions can change independently with tested updates.
 
 ## Build status
 
-An earlier release APK compiled and uploaded successfully. The current build uses Android API 37 because the selected GeckoView release declares that minimum compile SDK requirement. A successful CI build does not prove the app works correctly on a real phone.
+An earlier release APK compiled and uploaded successfully. The current build uses Android API 37 because the selected GeckoView release declares that minimum compile SDK requirement. It uses Kotlin Gradle Plugin 2.4.21 to match the Kotlin metadata version of resolved AndroidX dependencies. A successful CI build does not prove the app works correctly on a real phone.
 
 ## Development goals
 
