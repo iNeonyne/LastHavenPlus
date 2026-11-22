@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Lasthavens</string>
+    <string name="app_name">LastHavenPlus</string>
     <string name="tagline">Your realm. Your add-ons.</string>
     <string name="play">Play</string>
     <string name="play_sub">Enter Lasthavens</string>
