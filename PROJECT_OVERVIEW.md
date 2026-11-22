@@ -1,8 +1,8 @@
-# Lasthavens Android — Development Overview
+# LastHavenPlus — Development Overview
 
 ## App summary
 
-Lasthavens for Android is a native Kotlin app that embeds the Lasthavens game in Mozilla GeckoView and bundles the Lasthavens Addon Manager as a built-in WebExtension. The game and manager share one Gecko runtime/profile so managed add-ons can be used by the game.
+LastHavenPlus is a native Kotlin app that embeds the Lasthavens game in Mozilla GeckoView and bundles the Lasthavens Addon Manager as a built-in WebExtension. The game and manager share one Gecko runtime/profile so managed add-ons can be used by the game.
 
 Main screens:
 - Home: Play and Addon Manager entry points.
