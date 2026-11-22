@@ -18,13 +18,11 @@ Provide an Android app for Lasthavens using an embedded GeckoView browser engine
 - Addon Manager: 0.11.0
 - GeckoView: 160.0.20261116130455
 
-Version numbers can be updated with tested feature releases. The app and bundled extension versions are independent.
+Component versions can change independently with tested updates.
 
 ## Build status
 
-A release APK has compiled and uploaded successfully using GitHub Actions. This proves that the current CI toolchain can compile and package the earlier baseline source. The later JavaScript-dialog changes and GeckoView upgrade still need their own CI confirmation.
-
-A build passing in CI does not prove that the app works correctly on a real phone.
+An earlier release APK compiled and uploaded successfully. The current build uses Android API 37 because the selected GeckoView release declares that minimum compile SDK requirement. A successful CI build does not prove the app works correctly on a real phone.
 
 ## Development goals
 
@@ -44,7 +42,7 @@ A build passing in CI does not prove that the app works correctly on a real phon
 - [ ] Complete sign-in and confirm gameplay.
 - [ ] Return Home and reopen Play; confirm the same session is retained.
 - [ ] Open Addon Manager.
-- [ ] Install a small known-compatible add-on and reload the game.
+- [ ] Install a compatible add-on and reload the game.
 - [ ] Confirm the add-on is active and check manager diagnostics.
 - [ ] Import an add-on archive with the Android file picker.
 - [ ] Export an add-on and save a backup ZIP to Downloads.
@@ -55,6 +53,6 @@ A build passing in CI does not prove that the app works correctly on a real phon
 
 ## Important limitations
 
-- Live Game Scan observes add-on file requests; it cannot prove that add-on Lua code initialized correctly.
+- Live Game Scan observes add-on file requests; it cannot prove add-on Lua code initialized correctly.
 - Backup ZIPs contain add-on files only, not game settings or SavedVariables.
-- CI APK signing currently uses a debug key unless release signing secrets are configured.
+- CI APK signing uses a debug key unless release signing secrets are configured.

@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write   # needed to attach the APK to a GitHub Release on tags
+  contents: write
 
 jobs:
   build:
@@ -23,15 +23,12 @@ jobs:
 
       - uses: android-actions/setup-android@v3
         with:
-          # The legacy "tools" SDK package no longer exists in Google's repositories.
-          packages: platform-tools platforms;android-35 build-tools;35.0.0
+          packages: platform-tools platforms;android-37 build-tools;36.0.0
 
       - uses: gradle/actions/setup-gradle@v4
         with:
-          gradle-version: "8.11.1"
+          gradle-version: "9.3.1"
 
-      # Optional: provide these repository secrets to sign with your own key so builds can update each other.
-      #   ANDROID_KEYSTORE_BASE64, ANDROID_KEYSTORE_PASSWORD, ANDROID_KEY_ALIAS, ANDROID_KEY_PASSWORD
       - name: Prepare signing key (optional)
         env:
           KS: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}

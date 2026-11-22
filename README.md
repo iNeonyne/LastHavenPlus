@@ -26,30 +26,20 @@ Android app for playing Lasthavens (`https://alt.lasthavens.com/play`) in Mozill
 
 GitHub Actions builds the release APK on every push to `main`, uploads it as an artifact named `Lasthavens-APK`, and attaches it to a GitHub Release when a `v*` tag is pushed.
 
-The workflow uses JDK 17, Android SDK 35, Android Gradle Plugin 8.10.0, Kotlin 2.2.0, and Gradle 8.11.1.
+The workflow uses JDK 17, Android SDK 37, Android Gradle Plugin 9.1.1, built-in Kotlin support, and Gradle 9.3.1.
 
 For a local build, open this folder in Android Studio with JDK 17 and run the `assembleRelease` task.
 
 ## Signing
 
-When no signing secrets are configured, CI signs with the Android debug key so the APK can be installed for testing. Different GitHub-hosted runners may generate different debug keys, so an APK from a later run may not update an APK from an earlier run. Uninstall the previous test APK before installing a differently signed one.
+Without signing secrets, CI signs with the Android debug key. Different GitHub-hosted runners may generate different keys, so a later APK may not update an earlier test APK. Uninstall the previous test APK before installing a differently signed one.
 
-For repeatable in-place updates, configure these repository secrets with your own release keystore:
-- `ANDROID_KEYSTORE_BASE64`
-- `ANDROID_KEYSTORE_PASSWORD`
-- `ANDROID_KEY_ALIAS`
-- `ANDROID_KEY_PASSWORD`
+For repeatable updates, configure `ANDROID_KEYSTORE_BASE64`, `ANDROID_KEYSTORE_PASSWORD`, `ANDROID_KEY_ALIAS`, and `ANDROID_KEY_PASSWORD` repository secrets.
 
 ## Verification status
 
-A release APK has compiled successfully in GitHub Actions. Device behavior is not yet verified. The following still require testing on an Android phone:
-
-- Game launch, sign-in, and navigation between Home and Play.
-- Addon Manager launch and confirmation that installed add-ons reach the game.
-- Add-on ZIP import, download/export, backup, and restore.
-- JavaScript dialogs and external link handling.
-- Fullscreen, back navigation, session recovery, and process-death recovery.
+A release APK has compiled successfully in GitHub Actions. Device behavior is not yet verified. Test game launch and sign-in, shared add-ons, ZIP import and backup/restore, downloads, JavaScript dialogs, external links, fullscreen, back navigation, and recovery after process crashes on a physical phone.
 
 ## Engine updates
 
-The GeckoView dependency is pinned to an exact version for reproducible builds. Update it deliberately to a current stable GeckoView build after checking compatibility with the bundled extension's `strict_min_version`.
+The GeckoView dependency is pinned to an exact version for reproducible builds. Update it deliberately after checking compatibility with the bundled extension's `strict_min_version`.

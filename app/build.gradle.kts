@@ -1,15 +1,13 @@
 plugins {
     id("com.android.application")
-    id("org.jetbrains.kotlin.android")
 }
 
-// Increment the app version when a tested update is ready for release.
 val appVersionName = "1.0.0"
 val appVersionCode = 1
 
 android {
     namespace = "com.lasthavens.android"
-    compileSdk = 35
+    compileSdk = 37
 
     defaultConfig {
         applicationId = "com.lasthavens.android"
@@ -22,8 +20,7 @@ android {
 
     buildFeatures { buildConfig = true }
 
-    // AAPT ignores asset directories that start with "_" by default, which would drop the
-    // Addon Manager's "_locales" folder. This is the default pattern minus "<dir>_*".
+    // Preserve the extension's _locales directory in Android assets.
     androidResources {
         ignoreAssetsPattern = "!.svn:!.git:!.ds_store:!*.scc:.*:!CVS:!thumbs.db:!picasa.ini:!*~"
     }
@@ -47,8 +44,6 @@ android {
     buildTypes {
         release {
             isMinifyEnabled = false
-            // Falls back to the debug key so the APK is always installable.
-            // Use a real keystore (see README) if you want in-place updates between builds.
             signingConfig = signingConfigs.getByName(if (hasReleaseKey) "release" else "debug")
         }
     }
@@ -57,7 +52,6 @@ android {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
-    kotlinOptions { jvmTarget = "17" }
 }
 
 dependencies {
@@ -66,4 +60,3 @@ dependencies {
     implementation("androidx.core:core-ktx:1.15.0")
     implementation("androidx.activity:activity-ktx:1.9.3")
 }
-
