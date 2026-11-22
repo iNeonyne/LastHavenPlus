@@ -14,5 +14,5 @@ dependencyResolutionManagement {
         maven("https://maven.mozilla.org/maven2/")
     }
 }
-rootProject.name = "Lasthavens-Android"
+rootProject.name = "LastHavenPlus"
 include(":app")
