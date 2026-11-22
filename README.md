@@ -115,7 +115,9 @@ A version is published as a GitHub Release only after its build and validation p
 - Added validation for every bundled Addon Manager JSON and JavaScript file.
 - Added APK-content checks for the built-in extension, English locale, and GeckoView native engine.
 - Added native JavaScript alert, confirm, and prompt dialogs.
-- Added ABI-specific APK outputs plus a universal fallback (being validated by CI).
+- Fixed CI APK signature verification to call the SDK's explicit `apksigner` path.
+- Added SHA-256 checksum generation and verification; checksum files are included with CI artifacts and GitHub Releases.
+- Added ABI-specific APK outputs plus a universal fallback (CI validation pending).
 
 For every future release, add a new row under **Released versions** and summarize the user-visible changes. Keep this README in the same commit as the version bump.
 
