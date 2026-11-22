@@ -11,6 +11,7 @@ import {
   sameVersionCopy,
 } from "../app/src/main/assets/extensions/lh-addon-manager/library.js";
 import { tocMeta } from "../app/src/main/assets/extensions/lh-addon-manager/toc.js";
+import { hasAccess } from "../app/src/main/assets/extensions/lh-addon-manager/browse.js";
 
 if (!globalThis.crypto) globalThis.crypto = webcrypto;
 
@@ -110,4 +111,16 @@ test("ZIP import rejects duplicate paths that differ only by case", async () => 
     "example/example.TOC": bytes("## Interface: 30300"),
   });
   await assert.rejects(importZip(archive), (error) => error.code === "errorDuplicate");
+});
+
+test("Browse permission checks fail closed when the permissions API errors", async () => {
+  globalThis.browser = { permissions: { contains: async () => { throw new Error("API unavailable"); } } };
+  assert.equal(await hasAccess(), false);
+
+  globalThis.browser = { permissions: { contains: async () => true } };
+  assert.equal(await hasAccess(), true);
+
+  globalThis.browser = { permissions: { contains: async () => false } };
+  assert.equal(await hasAccess(), false);
+  delete globalThis.browser;
 });
