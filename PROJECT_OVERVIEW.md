@@ -17,13 +17,13 @@ Provide an Android app for Lasthavens using an embedded GeckoView browser engine
 
 - Android app: 1.0.0
 - Addon Manager: 0.11.0
-- GeckoView: 160.0.20261116130455
+- GeckoView: 159.0.20261102144711
 
 Component versions can change independently with tested updates.
 
 ## Build status
 
-An earlier release APK compiled and uploaded successfully. The current build uses Android API 37 because the selected GeckoView release declares that minimum compile SDK requirement. It uses Kotlin Gradle Plugin 2.4.21 to match the Kotlin metadata version of resolved AndroidX dependencies. A successful CI build does not prove the app works correctly on a real phone.
+An earlier release APK compiled and uploaded successfully. The current build uses Android API 37.0. The selected GeckoView release is pinned to a version compatible with the current API 37.0 toolchain. It uses Kotlin Gradle Plugin 2.4.21 to match the Kotlin metadata version of resolved AndroidX dependencies. A successful CI build does not prove the app works correctly on a real phone.
 
 ## Development goals
 
