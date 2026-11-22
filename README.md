@@ -21,7 +21,7 @@ The project is maintained in [this GitHub repository](https://github.com/iNeonyn
 ### Technical direction and working rules
 
 - Keep the product focused on reliable Lasthavens gameplay and add-on management.
-- Preserve GeckoView unless a concrete technical reason justifies an engine change. The Addon Manager is a core part of the product and may be fixed, improved, redesigned, or upgraded when justified; version `0.11.0` is not a permanent restriction.
+- Preserve GeckoView unless a concrete technical reason justifies an engine change. The Addon Manager is a core part of the product and may be fixed, improved, redesigned, or upgraded when justified; the bundled extension uses its own semantic version, starting at `1.0.0`.
 - Protect user data. Before changing Gecko profiles, extension storage, add-on formats, backup behavior, or migration logic, understand the existing behavior and provide a tested backup/migration/rollback path.
 - Prefer small, reviewable changes. Check related Kotlin code, extension code, Gradle configuration, manifests, and CI checks before editing.
 - Validate changes with the narrowest relevant tests, then run the repository's CI/release build when feasible. Do not describe a build, test, device check, or release as successful unless it actually ran and passed.
@@ -43,10 +43,10 @@ The project is maintained in [this GitHub repository](https://github.com/iNeonyn
 | Component | Version | Notes |
 |---|---:|---|
 | Android app | `1.0.0` | Current source version; not yet a device-verified release |
-| Addon Manager | `0.11.0` | Bundled WebExtension |
+| Addon Manager | `1.0.0` | Bundled WebExtension; new project version baseline |
 | GeckoView | `159.0.20261102144711` | Pinned Mozilla engine build |
 
-The app and Addon Manager versions are independent. Version numbers may change with major feature updates; they are not locked to the original 1.0.0 baseline.
+The app and Addon Manager versions are independent. The Addon Manager version is defined by `manifest.json`; start at `1.0.0` and update it for subsequent manager changes using semantic versioning. Keep this table, the manager's release notes, and any version checks synchronized with that manifest value.
 
 ## What the app does
 
@@ -121,7 +121,7 @@ For every future release, add a new row under **Released versions** and summariz
 
 ## To-do list
 
-This is the active development roadmap, ordered by dependency and user impact. The game client and Addon Manager are both core parts of the app. The Addon Manager is not frozen at 0.11.0: its code may be fixed, improved, redesigned, or upgraded when useful. Changes must be tested against real add-on workflows and must protect existing user data.
+This is the active development roadmap, ordered by dependency and user impact. The game client and Addon Manager are both core parts of the app. The Addon Manager is not frozen: its code may be fixed, improved, redesigned, or upgraded when useful. Its current version baseline is `1.0.0`. Changes must be tested against real add-on workflows and must protect existing user data.
 
 ### Priority 1 — Source-level, automated, and CI validation
 - [ ] Audit the Kotlin app, bundled extension, Gradle configuration, manifest, and CI workflow against the documented architecture.
@@ -151,7 +151,7 @@ This is the active development roadmap, ordered by dependency and user impact. T
 - [ ] Add automated tests for manager logic and validation of bundled JSON, JavaScript, manifests, and extension packaging.
 - [ ] Evaluate newer Addon Manager versions or architectural changes when they provide meaningful benefits; record compatibility and migration risks before adopting them.
 - [ ] Before any manager migration or data-format change, define and test a backup, migration, and rollback path for existing add-ons and settings.
-- [ ] Keep the bundled extension version and app release notes accurate; do not assume manager version 0.11.0 must remain permanent.
+- [ ] Keep the bundled extension version and app release notes accurate; update the manager manifest version and manager release notes whenever manager functionality changes.
 
 ### Priority 4 — Game client reliability and browser integration
 - [ ] Re-test navigation rules, popup handling, external URL routing, fullscreen, JavaScript dialogs, file prompts, and downloads.
@@ -173,7 +173,7 @@ This is the active development roadmap, ordered by dependency and user impact. T
 - [ ] Record device model, RAM, Android version, vendor OS build, results, and remaining limitations.
 
 ### Priority 6 — Maintenance and useful optional features
-- [ ] Review GeckoView stable security updates regularly; test gameplay and Addon Manager compatibility before upgrading.
+- [ ] Review GeckoView stable security updates regularly; test gameplay and Addon Manager compatibility before upgrading either component.
 - [ ] Review Android Gradle Plugin, Kotlin, AndroidX, and Gradle updates in separate, build-verified changes.
 - [ ] Evaluate R8/resource shrinking against release builds and extension/runtime regression tests.
 - [ ] Consider an in-app GitHub Releases checker and installer handoff after signing and upgrade behavior are reliable.
