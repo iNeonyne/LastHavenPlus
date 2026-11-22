@@ -16,10 +16,10 @@ Tune performance for smooth gameplay, responsive controls, stable GeckoView sess
 ## Version snapshot
 
 - Android app: 1.0.0 (CI build candidate; physical-device validation pending)
-- Addon Manager: 0.11.0
+- Addon Manager: 1.0.0 (new project version baseline; version is tracked in the extension manifest)
 - GeckoView: 159.0.20261102144711
 
-The app and extension have independent version numbers. Bump the app version for meaningful feature releases and update the README version history in the same change.
+The app and extension have independent version numbers. The extension's `manifest.json` is the source of truth for its version. Bump it with semantic versioning whenever manager functionality changes, and update both README version snapshots and the manager release notes in the same change. The `1.0.0` value is a version baseline reset; it does not mean the manager code was rewritten or that user data should be reset.
 
 ## Completed work
 
@@ -72,7 +72,7 @@ Tasks are ordered by risk and dependency. A checked item means the repository or
 - [ ] Introduce Macrobenchmark, baseline profiles, StrictMode, or leak detection only when measurements justify them.
 
 ### 5. Ongoing maintenance and deferred work
-- [ ] Review GeckoView stable security updates regularly; test gameplay and Addon Manager 0.11.0 before upgrading.
+- [ ] Review GeckoView stable security updates regularly; test gameplay and the current Addon Manager version before upgrading.
 - [ ] Review Gradle, Android Gradle Plugin, Kotlin, and AndroidX updates as separate build-verified changes.
 - [ ] Evaluate R8/resource shrinking only with release-build and extension/runtime regression tests; minification is currently disabled.
 - [ ] Consider an in-app GitHub Releases update checker/installer handoff after stable release signing is established.
@@ -82,7 +82,7 @@ Tasks are ordered by risk and dependency. A checked item means the repository or
 ### Explicitly out of scope
 - General-purpose browser features unrelated to the game or Addon Manager.
 - Replacing GeckoView with Android WebView or another engine without a demonstrated blocker.
-- Modifying or replacing bundled Addon Manager 0.11.0 without explicit approval.
+- Changing extension storage formats or migration behavior without a tested data-preservation and rollback plan.
 - Differential APK patching, analytics, push notifications, or background services without a concrete requirement.
 - Claiming device/OS support before it has been tested.
 
