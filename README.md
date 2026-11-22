@@ -89,48 +89,59 @@ For every future release, add a new row under **Released versions** and summariz
 
 ## To-do list
 
-### Build and release
-- [x] Compile a release APK in GitHub Actions.
-- [x] Validate bundled extension JSON and JavaScript.
-- [x] Verify required extension and GeckoView assets are present in the APK.
-- [x] Add ABI-specific APK packaging and a universal fallback.
-- [x] Confirm ABI APK generation and packaging in successful CI run #46; record exact sizes.
-- [ ] Install the ARM64 APK on a physical phone.
-- [ ] Configure a stable signing keystore so updates install over previous releases.
-- [ ] Publish the first device-tested GitHub Release.
-- [ ] Add an automated version/changelog consistency check.
-- [ ] Add an in-app GitHub Releases update checker and APK download/install handoff.
-- [ ] Evaluate differential APK updates; retain full signed APK downloads as the reliable fallback.
+The list is ordered by risk and dependency. Do not add optional browser features or change the bundled Addon Manager as part of routine maintenance.
 
-### Physical-device performance and compatibility testing
-- [ ] Confirm the exact phone variant (8GB or 12GB RAM) and Android/HyperOS build used for testing.
-- [ ] Install the ARM64 APK and verify first launch, permissions, and update behavior.
-- [ ] Check layout, display cutout/insets, fullscreen, keyboard, and touch targets at 2712 × 1220 with the user's display scaling.
-- [ ] Measure cold start and warm start times for Home, Play, and Addon Manager.
-- [ ] Profile GeckoView memory use and stability during a long game session and repeated Play ↔ Home ↔ Manager navigation.
-- [ ] Measure frame pacing and touch responsiveness; compare 60Hz and higher refresh settings without forcing a global refresh rate.
-- [ ] Check battery drain and device temperature during a representative 30–60 minute session; tune only from measured results.
-- [ ] Test HyperOS backgrounding, app resume, battery restrictions, and Game Turbo interaction.
-- [ ] Check network transitions, reconnect behavior, downloads, and file picker behavior on the phone.
-- [ ] Keep the app usable on other Android devices; add device-specific workarounds only when reproducible.
+### Priority 1 — First real-device validation
+- [ ] Install the `arm64-v8a` APK on a physical Android phone.
+- [ ] Verify first launch, Home → Play, sign-in, and real gameplay.
+- [ ] Verify returning Home and reopening Play preserves the same game session.
+- [ ] Open Addon Manager and confirm it loads with the existing shared Gecko profile.
+- [ ] Install one known-compatible add-on and verify that it is available in-game.
+- [ ] Test add-on archive import, export/download, backup, and restore.
+- [ ] Test JavaScript alert/confirm/prompt, Android file picker, and download saving.
+- [ ] Test external links, popup links, fullscreen, back navigation, keyboard, and screen insets.
+- [ ] Test background/foreground, network loss/reconnect, activity recreation, and Gecko content-process recovery.
+- [ ] Record the exact device model, RAM variant, Android version, and vendor OS build with the results.
 
-### App functionality
-- [ ] Test game launch, sign-in, and actual gameplay on a phone.
-- [ ] Confirm the game session survives Home → Play navigation.
-- [ ] Install a known-compatible add-on and confirm it runs in-game.
-- [ ] Test add-on ZIP import, export/download, backup, and restore.
-- [ ] Test JavaScript alert, confirm, and prompt dialogs in real game flows.
-- [ ] Test external links, popups, fullscreen, and back navigation.
-- [ ] Test background/foreground transitions, activity recreation, and Gecko content-process crashes.
-- [ ] Add automated Kotlin unit tests for URL routing, filename handling, and version parsing.
-- [ ] Add a repeatable smoke-test checklist for every release.
+### Priority 2 — Safe release and upgrade path
+- [ ] Create and securely back up the permanent release keystore; configure the four documented GitHub Actions secrets.
+- [ ] Verify that a release-signed APK installs cleanly and that the next release upgrades it without uninstalling or losing the Gecko profile.
+- [ ] Confirm the signing certificate is identical across all ABI APKs and remains unchanged between releases.
+- [ ] Publish the first device-tested GitHub Release with all four APK variants and SHA-256 checksums.
+- [ ] Add a lightweight automated check for app/extension/GeckoView version metadata and changelog consistency.
+- [ ] Keep release notes, README version history, and app version values synchronized.
 
-### Size and performance
-- [x] Measure per-ABI APK sizes and compare them with the universal APK (CI run #46).
-- [ ] Investigate safe APK size reductions without removing GeckoView or manager functionality.
-- [ ] Profile cold start, memory use, and game responsiveness on representative physical Android devices.
-- [ ] Evaluate safe R8/resource shrinking after confirming GeckoView keep rules.
-- [ ] Keep GeckoView pinned to an exact stable version and review updates for extension compatibility.
+### Priority 3 — Functional reliability
+- [ ] Repeat the complete game and Addon Manager smoke test after any GeckoView, navigation, file handling, or lifecycle change.
+- [ ] Verify the built-in Addon Manager remains installed and its settings/add-on data survive app upgrades.
+- [ ] Test malformed, cancelled, large, and duplicate file imports; verify safe download filenames and failed-download cleanup.
+- [ ] Add focused Kotlin unit tests for URL allow-listing/routing, download filename sanitization, and version parsing.
+- [ ] Add automated build-time checks for manifest permissions, required bundled extension assets, and APK ABI contents.
+- [ ] Review crash logs and fix reproducible crashes before adding optional functionality.
+
+### Priority 4 — Measured performance and compatibility
+- [ ] Establish cold/warm startup, memory, frame pacing, touch responsiveness, battery, and temperature baselines on physical hardware.
+- [ ] Test a representative short session and a 30–60 minute gameplay session; record thermal and memory behavior.
+- [ ] Compare adaptive refresh-rate behavior and display scaling; do not force a refresh rate without measured evidence.
+- [ ] Test background/resume and battery-management behavior on at least one non-POCO device as well as the primary test phone.
+- [ ] Test the lowest supported Android API (26) and a current Android release when suitable devices/emulators are available.
+- [ ] Add device-specific workarounds only for reproducible problems and retain Android-wide fallbacks.
+- [ ] Consider Macrobenchmark, baseline profiles, StrictMode, or leak detection only after repeatable baselines show a need.
+
+### Priority 5 — Maintenance and optional improvements
+- [ ] Review GeckoView stable security updates regularly; upgrade only after compatibility checks for gameplay and Addon Manager 0.11.0.
+- [ ] Review Android Gradle Plugin, Kotlin, AndroidX, and Gradle updates in separate, build-verified changes.
+- [ ] Evaluate R8/resource shrinking only with release-build and extension/runtime regression tests; currently release minification is disabled.
+- [ ] Consider an in-app GitHub Releases checker and installer handoff after the signed release process is stable.
+- [ ] Keep full signed APK downloads as the default update method; differential/patch updates are deferred unless download size becomes a demonstrated problem.
+- [ ] Consider broader OEM/cloud-device testing only when manual testing or issue reports identify coverage gaps.
+
+### Explicitly out of scope for now
+- General-purpose browser features unrelated to Lasthavens gameplay or the Addon Manager.
+- Replacing GeckoView with Android WebView or another engine without a demonstrated blocker.
+- Changing, updating, or rebuilding the bundled Addon Manager without explicit approval.
+- Differential APK patching, analytics, push notifications, or background services without a concrete requirement.
+- Claiming support for Android versions or device classes that have not been tested.
 
 ## Signing
 
