@@ -11,7 +11,7 @@ permissions:
   contents: write
 
 concurrency:
-  group: lasthavens-android-\${{ github.ref }}
+  group: lasthavens-android-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -40,7 +40,7 @@ jobs:
 
       - name: Prepare signing key (optional)
         env:
-          KS: \${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          KS: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
         run: |
           if [ -n "$KS" ]; then
             echo "$KS" | base64 -d > "$RUNNER_TEMP/release.jks"
@@ -56,7 +56,7 @@ jobs:
           props = pathlib.Path("gradle.properties").read_text()
           manifest = json.loads(pathlib.Path("app/src/main/assets/extensions/lh-addon-manager/manifest.json").read_text())
           version = re.search(r'val appVersionName = "([^"]+)"', app).group(1)
-          code = int(re.search(r'val appVersionCode = (\\d+)', app).group(1))
+          code = int(re.search(r'val appVersionCode = (\d+)', app).group(1))
           engine = re.search(r'^geckoViewVersion=(.+)$', props, re.M).group(1).strip()
           for value, label in ((version, "app"), (manifest["version"], "Addon Manager"), (engine, "GeckoView")):
               if f"| {chr(96)}{value}{chr(96)} |" not in readme:
@@ -88,9 +88,9 @@ jobs:
 
       - name: Build release APKs
         env:
-          KEYSTORE_PASSWORD: \${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
-          KEY_ALIAS: \${{ secrets.ANDROID_KEY_ALIAS }}
-          KEY_PASSWORD: \${{ secrets.ANDROID_KEY_PASSWORD }}
+          KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
         run: gradle --no-daemon :app:assembleRelease
 
       - name: Verify packaged app assets
@@ -138,13 +138,13 @@ jobs:
 
       - name: Name ABI-specific APKs
         run: |
-          VERSION=$(grep -m1 'val appVersionName' app/build.gradle.kts | sed -E 's/.*"([^"]+)".*/\\1/')
+          VERSION=$(grep -m1 'val appVersionName' app/build.gradle.kts | sed -E 's/.*"([^"]+)".*/\1/')
           mkdir -p dist
           for apk in app/build/outputs/apk/release/*.apk; do
             [ -f "$apk" ] || continue
             filename=$(basename "$apk")
-            variant="\${filename#app-}"
-            variant="\${variant%-release.apk}"
+            variant="${filename#app-}"
+            variant="${variant%-release.apk}"
             cp "$apk" "dist/Lasthavens-$VERSION-$variant.apk"
           done
           test "$(find dist -maxdepth 1 -name '*.apk' | wc -l)" -eq 4
