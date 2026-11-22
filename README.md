@@ -26,7 +26,7 @@ Android app for playing Lasthavens (`https://alt.lasthavens.com/play`) in Mozill
 
 GitHub Actions builds the release APK on every push to `main`, uploads it as an artifact named `Lasthavens-APK`, and attaches it to a GitHub Release when a `v*` tag is pushed.
 
-The workflow uses JDK 17, the Android 17 preview SDK (API 37), Android Gradle Plugin 9.1.1, Kotlin Gradle Plugin 2.4.21, and Gradle 9.6.0. CI validates the extension JavaScript and JSON files before building, then verifies the Addon Manager locale and GeckoView engine are present in the APK. The app currently targets Android 15 (API 35) while compiling against API 37.
+The workflow uses JDK 17, the Android 17 preview SDK (API 37), Android Gradle Plugin 9.1.1, Kotlin Gradle Plugin 2.4.21, and Gradle 9.3.1. CI validates the extension JavaScript and JSON files before building, then verifies the Addon Manager locale and GeckoView engine are present in the APK. The app currently targets Android 15 (API 35) while compiling against API 37.
 
 For a local build, open this folder in Android Studio with JDK 17 and run the `assembleRelease` task.
 
