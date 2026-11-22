@@ -32,7 +32,7 @@ jobs:
 
       - uses: gradle/actions/setup-gradle@v4
         with:
-          gradle-version: "9.6.0"
+          gradle-version: "9.3.1"
 
       - name: Prepare signing key (optional)
         env:
@@ -43,12 +43,48 @@ jobs:
             echo "KEYSTORE_PATH=$RUNNER_TEMP/release.jks" >> "$GITHUB_ENV"
           fi
 
+      - name: Validate bundled Addon Manager
+        run: |
+          EXT="app/src/main/assets/extensions/lh-addon-manager"
+          python3 - "$EXT" <<'PY'
+          import json, pathlib, sys
+          root = pathlib.Path(sys.argv[1])
+          files = list(root.rglob("*.json"))
+          for path in files:
+              json.loads(path.read_text(encoding="utf-8"))
+          if not (root / "manifest.json").is_file():
+              raise SystemExit("Addon Manager manifest.json is missing")
+          if not (root / "_locales" / "en" / "messages.json").is_file():
+              raise SystemExit("English extension locale is missing")
+          print(f"Validated {len(files)} JSON files")
+          PY
+          while IFS= read -r -d '' file; do
+            node --input-type=module --check < "$file"
+          done < <(find "$EXT" -type f -name '*.js' -print0)
+
       - name: Build release APK
         env:
           KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
           KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
           KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
         run: gradle --no-daemon :app:assembleRelease
+
+      - name: Verify packaged app assets
+        run: |
+          python3 - <<'PY'
+          import zipfile
+          apk = "app/build/outputs/apk/release/app-release.apk"
+          required = [
+              "assets/extensions/lh-addon-manager/manifest.json",
+              "assets/extensions/lh-addon-manager/_locales/en/messages.json",
+              "lib/arm64-v8a/libxul.so",
+          ]
+          with zipfile.ZipFile(apk) as archive:
+              missing = [item for item in required if item not in archive.namelist()]
+          if missing:
+              raise SystemExit("APK is missing required content: " + ", ".join(missing))
+          print("APK contains the Addon Manager, English locale, and GeckoView arm64 engine")
+          PY
 
       - name: Name the APK
         run: |
