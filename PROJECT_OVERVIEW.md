@@ -123,6 +123,6 @@ Push a matching `vX.Y.Z` tag to trigger GitHub Release creation and attach all g
 
 ## Known limitations
 
+- The latest CI run reached APK packaging but failed because the configured release keystore private key could not be read. The workflow now performs an earlier keystore/alias/key-password preflight; verify the four GitHub Actions signing secrets before expecting a successful release build.
 - Addon scan observes requested files; it cannot prove Lua initialization succeeded.
 - Backups contain add-on files only, not SavedVariables or game settings.
-- CI currently uses debug signing unless repository release-signing secrets are configured.
