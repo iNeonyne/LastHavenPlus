@@ -25,17 +25,9 @@ The app and Addon Manager versions are independent. Version numbers may change w
 - **Files:** Android's document picker handles add-on import and backup restore; downloads are saved to the Downloads/Lasthavens folder on supported Android versions.
 - **Web behavior:** native JavaScript alert/confirm/prompt dialogs, external-link routing, popup handling, and load progress feedback.
 
-## Primary device target: POCO X6 Pro
+## Performance and device compatibility
 
-The POCO X6 Pro is the primary performance and compatibility target for upcoming development. Its Dimensity 8300-Ultra / Mali-G615 platform, 120Hz 2712 × 1220 display, and 8GB or 12GB LPDDR5X configurations make it suitable for high-refresh gameplay, but the app must remain efficient and compatible with other Android devices.
-
-Optimization rules:
-- Prefer smooth, consistent frame pacing over chasing an unstable maximum FPS.
-- Keep display refresh behavior adaptive; do not force 120Hz globally or assume the game can render at 120 FPS.
-- Profile GeckoView startup, memory, long-session stability, battery use, and thermal behavior on the actual phone before tuning.
-- Test touch responsiveness, fullscreen/insets, keyboard behavior, downloads, file picking, and navigation at the device's native resolution.
-- Avoid POCO-only code paths unless a measured HyperOS/device issue requires one; retain sensible Android-wide fallbacks.
-- Use the ARM64 APK for the POCO X6 Pro.
+Development prioritizes smooth gameplay, responsive touch controls, stable GeckoView sessions, efficient memory use, and reasonable battery and thermal behavior across supported Android devices. Validate performance on physical devices with different hardware and display configurations. Keep refresh-rate behavior adaptive, avoid assuming a fixed FPS target, and add device-specific workarounds only for reproducible compatibility issues.
 
 ## Architecture
 
@@ -95,7 +87,7 @@ For every future release, add a new row under **Released versions** and summariz
 - [ ] Publish the first device-tested GitHub Release.
 - [ ] Add an automated version/changelog consistency check.
 
-### POCO X6 Pro device validation and optimization
+### Physical-device performance and compatibility testing
 - [ ] Confirm the exact phone variant (8GB or 12GB RAM) and Android/HyperOS build used for testing.
 - [ ] Install the ARM64 APK and verify first launch, permissions, and update behavior.
 - [ ] Check layout, display cutout/insets, fullscreen, keyboard, and touch targets at 2712 × 1220 with the user's display scaling.
@@ -120,7 +112,7 @@ For every future release, add a new row under **Released versions** and summariz
 
 ### Size and performance
 - [ ] Measure per-ABI APK sizes and compare them with the current universal APK.
-- [ ] Profile cold start, memory use, and game responsiveness on the POCO X6 Pro.
+- [ ] Profile cold start, memory use, and game responsiveness on representative physical Android devices.
 - [ ] Evaluate safe R8/resource shrinking after confirming GeckoView keep rules.
 - [ ] Keep GeckoView pinned to an exact stable version and review updates for extension compatibility.
 
