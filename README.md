@@ -43,7 +43,7 @@ The project is maintained in [this GitHub repository](https://github.com/iNeonyn
 | Component | Version | Notes |
 |---|---:|---|
 | Android app | `1.0.0` | Current source version; not yet a device-verified release |
-| Addon Manager | `1.0.0` | Bundled WebExtension; new project version baseline |
+| Addon Manager | `1.0.1` | Permission checks fail closed when the browser permissions API is unavailable |
 | GeckoView | `159.0.20261102144711` | Pinned Mozilla engine build |
 
 The app and Addon Manager versions are independent. The Addon Manager version is defined by `manifest.json`; start at `1.0.0` and update it for subsequent manager changes using semantic versioning. Keep this table, the manager's release notes, and any version checks synchronized with that manifest value.
@@ -119,6 +119,7 @@ A version is published as a GitHub Release only after its build and validation p
 - Added SHA-256 checksum generation and verification; checksum files are included with CI artifacts and GitHub Releases.
 - Added early release-keystore, alias, and private-key password validation so signing configuration errors are reported before APK packaging.
 - Added Addon Manager regression tests for metadata parsing, dependency handling, library merge behavior, archive round-trips, and malicious/duplicate ZIP paths; CI now runs them.
+- Fixed Addon Manager permission checks to fail closed when the browser permissions API errors, rather than assuming access was granted.
 - Added ABI-specific APK outputs plus a universal fallback (CI validation pending).
 
 For every future release, add a new row under **Released versions** and summarize the user-visible changes. Keep this README in the same commit as the version bump.
