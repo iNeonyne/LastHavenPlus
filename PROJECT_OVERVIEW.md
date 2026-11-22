@@ -16,7 +16,7 @@ Tune performance for smooth gameplay, responsive controls, stable GeckoView sess
 ## Version snapshot
 
 - Android app: 1.0.0 (CI build candidate; physical-device validation pending)
-- Addon Manager: 1.0.0 (new project version baseline; version is tracked in the extension manifest)
+- Addon Manager: 1.0.1 (permission API errors now fail closed; version is tracked in the extension manifest)
 - GeckoView: 159.0.20261102144711
 
 The app and extension have independent version numbers. The extension's `manifest.json` is the source of truth for its version. Bump it with semantic versioning whenever manager functionality changes, and update both README version snapshots and the manager release notes in the same change. The `1.0.0` value is a version baseline reset; it does not mean the manager code was rewritten or that user data should be reset.
@@ -37,6 +37,7 @@ Tasks are ordered by risk and dependency. A checked item means the repository or
 ### 1. Source-level, automated, and CI validation (before device testing)
 - [ ] Complete the Kotlin, extension, Gradle, manifest, and workflow audit; record concrete findings and risks.
 - [ ] Add unit tests for URL routing/allow-listing, filename sanitization, and version parsing.
+- [x] Add Addon Manager regression tests for TOC metadata, dependency ordering/cycles, library merge behavior, ZIP round-trips, malicious paths, duplicate entries, and permission failures.
 - [ ] Add CI checks for release metadata, APK signing consistency, APK contents, and SHA-256 checksums.
 - [ ] Add or expand automated tests for extension data preservation and add-on import/restore edge cases.
 - [ ] Use emulator smoke tests where practical for launch, navigation, lifecycle, and file picker behavior.
