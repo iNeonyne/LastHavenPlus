@@ -1,6 +1,6 @@
-# Lasthavens for Android
+# LastHavenPlus
 
-A native Android shell for **Lasthavens**. It runs the game in Mozilla GeckoView and bundles the Lasthavens Addon Manager, so managed add-ons can be shared with the game through one Gecko profile.
+**LastHavenPlus** is a native Android client for the Lasthavens game. It runs the game in Mozilla GeckoView and bundles the Lasthavens Addon Manager, so managed add-ons can be shared with the game through one Gecko profile.
 
 - Game: https://alt.lasthavens.com/play
 - Repository: https://github.com/iNeonyne/Lasthavens-Android
@@ -12,7 +12,7 @@ A native Android shell for **Lasthavens**. It runs the game in Mozilla GeckoView
 
 ### Project summary
 
-Lasthavens for Android is a focused Android game client for [Lasthavens](https://alt.lasthavens.com/play), not a general-purpose browser. It is written in Kotlin and uses Mozilla GeckoView to run the web game. A bundled Lasthavens Addon Manager WebExtension provides add-on management. The game and manager are intended to use the same Gecko runtime/profile so add-ons installed by the manager can be available to the game.
+LastHavenPlus is a focused Android game client for [Lasthavens](https://alt.lasthavens.com/play), not a general-purpose browser. It is written in Kotlin and uses Mozilla GeckoView to run the web game. A bundled Lasthavens Addon Manager WebExtension provides add-on management. The game and manager are intended to use the same Gecko runtime/profile so add-ons installed by the manager can be available to the game.
 
 The Android layer provides the app's home/navigation screens and bridges required browser capabilities to Android, including lifecycle handling, fullscreen, JavaScript dialogs, external links/popups, document selection, and downloads. The extension is packaged inside the APK at `app/src/main/assets/extensions/lh-addon-manager/`.
 
@@ -73,7 +73,7 @@ Development prioritizes smooth gameplay, responsive touch controls, stable Gecko
 
 GitHub Actions builds on pushes to `main`, pull requests, and manual dispatches.
 
-**Download the right APK from the latest successful run's `Lasthavens-APKs` artifact:**
+**Download the right APK from the latest successful run's `LastHavenPlus-APKs` artifact:**
 
 | File suffix | Intended device |
 |---|---|
