@@ -32,9 +32,23 @@ The app and extension have independent version numbers. The extension's `manifes
 
 ## To-do / verification plan
 
+## Top priority — Demo making
+
+**Immediate goal:** produce an installable test APK from `main` as soon as possible. This is separate from a signed public release.
+
+- [ ] Make pushes to `main` produce debug-signed demo APK artifacts without release-keystore secrets.
+- [ ] Keep release signing mandatory for version-tagged releases; never publish a debug-signed APK.
+- [ ] Download and install the first ARM64 demo APK; use universal only as a fallback.
+- [ ] Smoke-test launch, Home → Play, game loading/sign-in, session retention, Addon Manager launch, and return to Play.
+- [ ] Check touch input, orientation/fullscreen, keyboard, back navigation, network recovery, and background/resume.
+- [ ] Log and fix demo-blocking defects before optional features or broad polish.
+- [ ] Label the artifact as a demo. A debug-signed APK cannot upgrade an install signed with a different certificate; protect any existing app data before replacing an install.
+
+**Scope:** Home, GeckoView gameplay, bundled Addon Manager, shared profile, and essential Android integration. Defer release signing, public release, optional features, broad performance tuning, and non-blocking manager improvements.
+
 Tasks are ordered by risk and dependency. A checked item means the repository or CI already contains the implementation/check; it does not mean the feature has passed a physical-device test.
 
-### 1. Source-level, automated, and CI validation (before device testing)
+### 1. Demo blockers and core reliability
 - [ ] Complete the Kotlin, extension, Gradle, manifest, and workflow audit; record concrete findings and risks.
 - [ ] Add unit tests for URL routing/allow-listing, filename sanitization, and version parsing.
 - [x] Add Addon Manager regression tests for TOC metadata, dependency ordering/cycles, library merge behavior, ZIP round-trips, malicious paths, duplicate entries, and permission failures.
@@ -43,7 +57,7 @@ Tasks are ordered by risk and dependency. A checked item means the repository or
 - [ ] Use emulator smoke tests where practical for launch, navigation, lifecycle, and file picker behavior.
 - [ ] Fix reproducible blocking bugs before beginning physical-device validation.
 
-### 2. Signing, upgrades, and first release
+### 2. Signing, upgrades, and first release (after demo testing)
 - [ ] Create and securely back up the permanent release keystore; configure the documented GitHub Actions secrets.
 - [ ] Verify a signed APK installs and a later APK upgrades it without uninstalling or losing game login/session data, extension settings, or installed add-ons.
 - [ ] Verify every ABI variant uses the same signing certificate across releases.
