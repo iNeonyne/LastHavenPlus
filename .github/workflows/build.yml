@@ -110,7 +110,9 @@ jobs:
           set -euo pipefail
           expected=""
           for apk in app/build/outputs/apk/release/*.apk; do
-            output=$(apksigner verify --verbose --print-certs "$apk")
+            APKSIGNER="$ANDROID_HOME/build-tools/37.0.0/apksigner"
+            test -x "$APKSIGNER" || { echo "apksigner not found at $APKSIGNER"; exit 1; }
+            output=$("$APKSIGNER" verify --verbose --print-certs "$apk")
             echo "$output"
             cert=$(printf '%s\n' "$output" | sed -n 's/^Signer #1 certificate SHA-256 digest: //p' | head -n1)
             [ -n "$cert" ] || { echo "Could not read signer certificate from $apk"; exit 1; }
@@ -183,10 +185,16 @@ jobs:
           test "$(find dist -maxdepth 1 -name '*.apk' | wc -l)" -eq 4
           ls -lh dist/
 
+      - name: Generate and verify APK checksums
+        run: |
+          cd dist
+          sha256sum *.apk > SHA256SUMS.txt
+          sha256sum --check SHA256SUMS.txt
+
       - uses: actions/upload-artifact@v4
         with:
           name: LastHavenPlus-APKs
-          path: dist/*.apk
+          path: dist/*
 
       - uses: actions/upload-artifact@v4
         with:
@@ -198,5 +206,5 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/v')
         uses: softprops/action-gh-release@v2
         with:
-          files: dist/*.apk
+          files: dist/*
           generate_release_notes: true
