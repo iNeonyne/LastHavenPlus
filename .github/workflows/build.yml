@@ -57,82 +57,7 @@ jobs:
           manifest = json.loads(pathlib.Path("app/src/main/assets/extensions/lh-addon-manager/manifest.json").read_text())
           version = re.search(r'val appVersionName = "([^"]+)"', app).group(1)
           code = int(re.search(r'val appVersionCode = (\d+)', app).group(1))
-          engine = re.search(r'^geckoViewVersion=(.+)        run: |
-          EXT="app/src/main/assets/extensions/lh-addon-manager"
-          python3 - "$EXT" <<'PY'
-          import json, pathlib, sys
-          root = pathlib.Path(sys.argv[1])
-          files = list(root.rglob("*.json"))
-          for path in files:
-              json.loads(path.read_text(encoding="utf-8"))
-          if not (root / "manifest.json").is_file():
-              raise SystemExit("Addon Manager manifest.json is missing")
-          if not (root / "_locales" / "en" / "messages.json").is_file():
-              raise SystemExit("English extension locale is missing")
-          print(f"Validated {len(files)} JSON files")
-          PY
-          while IFS= read -r -d '' file; do
-            node --input-type=module --check < "$file"
-          done < <(find "$EXT" -type f -name '*.js' -print0)
-
-      - name: Build release APK
-        env:
-          KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
-          KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
-          KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
-        run: gradle --no-daemon :app:assembleRelease
-
-      - name: Verify packaged app assets
-        run: |
-          python3 - <<'PY'
-          import glob, os, zipfile
-          apks = sorted(glob.glob("app/build/outputs/apk/release/*.apk"))
-          if not apks:
-              raise SystemExit("No release APKs were generated")
-          common = [
-              "assets/extensions/lh-addon-manager/manifest.json",
-              "assets/extensions/lh-addon-manager/_locales/en/messages.json",
-          ]
-          for apk in apks:
-              name = os.path.basename(apk)
-              abi = name.removeprefix("app-").removesuffix("-release.apk")
-              with zipfile.ZipFile(apk) as archive:
-                  entries = set(archive.namelist())
-              missing = [path for path in common if path not in entries]
-              expected_abis = ("arm64-v8a", "armeabi-v7a", "x86_64") if abi == "universal" else (abi,)
-              missing.extend(f"lib/{item}/libxul.so" for item in expected_abis if f"lib/{item}/libxul.so" not in entries)
-              if missing:
-                  raise SystemExit(f"{name} is missing required content: {', '.join(missing)}")
-              print(f"Verified {name} ({os.path.getsize(apk):,} bytes)")
-          PY
-
-      - name: Name ABI-specific APKs
-        run: |
-          VERSION=$(grep -m1 'val appVersionName' app/build.gradle.kts | sed -E 's/.*"([^"]+)".*/\1/')
-          mkdir -p dist
-          shopt -s nullglob
-          APK_FILES=(app/build/outputs/apk/release/*.apk)
-          if [ ${#APK_FILES[@]} -eq 0 ]; then
-            echo "No release APKs were generated" >&2
-            exit 1
-          fi
-          for apk in "${APK_FILES[@]}"; do
-            ABI=$(basename "$apk" | sed -E 's/^app-(.*)-release\.apk$/\1/')
-            cp "$apk" "dist/Lasthavens-$VERSION-$ABI.apk"
-          done
-
-      - uses: actions/upload-artifact@v4
-        with:
-          name: Lasthavens-APKs
-          path: dist/*.apk
-
-      - name: Publish GitHub Release (tags only)
-        if: startsWith(github.ref, 'refs/tags/v')
-        uses: softprops/action-gh-release@v2
-        with:
-          files: dist/*.apk
-          generate_release_notes: true
-, props, re.M).group(1).strip()
+          engine = re.search(r'^geckoViewVersion=(.+)$', props, re.M).group(1).strip()
           if f"| `{version}` |" not in readme:
               raise SystemExit(f"README current-version table is missing app version {version}")
           if f"| `{manifest['version']}` |" not in readme:
@@ -164,7 +89,7 @@ jobs:
             node --input-type=module --check < "$file"
           done < <(find "$EXT" -type f -name '*.js' -print0)
 
-      - name: Build release APK
+      - name: Build release APKs
         env:
           KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
           KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
@@ -189,7 +114,11 @@ jobs:
                   entries = set(archive.namelist())
               missing = [path for path in common if path not in entries]
               expected_abis = ("arm64-v8a", "armeabi-v7a", "x86_64") if abi == "universal" else (abi,)
-              missing.extend(f"lib/{item}/libxul.so" for item in expected_abis if f"lib/{item}/libxul.so" not in entries)
+              missing.extend(
+                  f"lib/{item}/libxul.so"
+                  for item in expected_abis
+                  if f"lib/{item}/libxul.so" not in entries
+              )
               if missing:
                   raise SystemExit(f"{name} is missing required content: {', '.join(missing)}")
               print(f"Verified {name} ({os.path.getsize(apk):,} bytes)")
