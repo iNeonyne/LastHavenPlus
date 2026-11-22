@@ -2,41 +2,59 @@
 
 ## Purpose
 
-Lasthavens Android is intended to provide an Android app experience for the Lasthavens game, using GeckoView rather than a separate external browser.
+Provide an Android app for Lasthavens using an embedded GeckoView browser engine and an integrated Addon Manager.
 
-## Planned app experience
+## Intended experience
 
-- Open the game at https://alt.lasthavens.com/play.
-- Provide a home screen with **Play** and **Addon Manager** actions.
-- Keep the game and add-on manager on a shared GeckoView browser profile so installed add-ons can be used by the game.
-- Provide navigation back to the app home screen without unnecessarily discarding the game session.
-- Open external links in the device's browser.
+- Launch the game at https://alt.lasthavens.com/play.
+- Provide a home screen with Play and Addon Manager actions.
+- Keep the game and manager on a shared GeckoView profile so installed add-ons are available to the game.
+- Return to Home without unnecessarily discarding the game session.
+- Route non-game websites to the device's browser.
 
-## Version targets
+## Current component versions
 
 - Android app: 1.0.0
 - Addon Manager: 0.11.0
+- GeckoView: 160.0.20261116130455
 
-The Addon Manager version should remain at 0.11.0 unless a later version is explicitly requested.
+Version numbers can be updated with tested feature releases. The app and bundled extension versions are independent.
 
-## Build and verification status
+## Build status
 
-This repository has not yet been confirmed to produce a working APK. A successful Android build and device test are still required.
+A release APK has compiled and uploaded successfully using GitHub Actions. This proves that the current CI toolchain can compile and package the earlier baseline source. The later JavaScript-dialog changes and GeckoView upgrade still need their own CI confirmation.
 
-The first build should be run with Android Studio or GitHub Actions. Any GeckoView API or Gradle compatibility errors should be fixed based on the actual build output.
+A build passing in CI does not prove that the app works correctly on a real phone.
 
-## Important implementation checks
+## Development goals
 
-Before calling the app complete, verify:
+1. Keep the release build reproducible and successful.
+2. Confirm the game launches and authenticates.
+3. Confirm add-ons installed in the manager are injected into the game.
+4. Verify file import, backup, restore, export, and downloads.
+5. Handle browser JavaScript alert, confirm, and prompt dialogs.
+6. Verify external link routing and popup handling.
+7. Test Android lifecycle, fullscreen, back navigation, and recovery after process crashes.
+8. Validate performance and compatibility on a physical Android device.
 
-1. The app builds successfully.
-2. The game opens at the intended URL.
-3. Add-on installation through the manager is visible to the game.
-4. Back navigation and returning to the game work as intended.
-5. External links open outside the app.
-6. Downloads, file selection, and backup/restore flows work on a real device.
-7. JavaScript alert and confirmation dialogs behave correctly.
+## Device test checklist
 
-## Repository note
+- [ ] Install the CI APK.
+- [ ] Launch the app and open the game.
+- [ ] Complete sign-in and confirm gameplay.
+- [ ] Return Home and reopen Play; confirm the same session is retained.
+- [ ] Open Addon Manager.
+- [ ] Install a small known-compatible add-on and reload the game.
+- [ ] Confirm the add-on is active and check manager diagnostics.
+- [ ] Import an add-on archive with the Android file picker.
+- [ ] Export an add-on and save a backup ZIP to Downloads.
+- [ ] Restore the backup ZIP.
+- [ ] Confirm alert, confirm, and text prompts.
+- [ ] Open an external link and confirm it opens in the system browser.
+- [ ] Rotate/recreate the activity, background the app, and test recovery after a content-process crash.
 
-This document describes the intended app and outstanding verification work. It does not mean the Android source code or a working APK has already been committed.
+## Important limitations
+
+- Live Game Scan observes add-on file requests; it cannot prove that add-on Lua code initialized correctly.
+- Backup ZIPs contain add-on files only, not game settings or SavedVariables.
+- CI APK signing currently uses a debug key unless release signing secrets are configured.
