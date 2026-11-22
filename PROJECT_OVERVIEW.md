@@ -9,9 +9,9 @@ Main screens:
 - Play: fullscreen game session, session retention, native web dialogs, file picker, downloads, and external-link routing.
 - Addon Manager: bundled manager page, shared profile, add-on import/export/backup/restore.
 
-## Primary device target
+## Performance and device compatibility
 
-**POCO X6 Pro** is the primary device for performance tuning and real-device QA. Target its Dimensity 8300-Ultra / Mali-G615, 120Hz 2712 × 1220 display, and 8GB/12GB RAM variants, while preserving compatibility with other Android devices. Do not force 120Hz or assume 120 FPS; measure actual frame pacing and keep refresh behavior adaptive. Optimize from real measurements rather than device-name checks.
+Tune performance for smooth gameplay, responsive controls, stable GeckoView sessions, efficient memory use, and reasonable battery and thermal behavior across supported Android devices. Use physical-device testing across different hardware and display configurations. Keep refresh-rate behavior adaptive, do not assume a fixed FPS target, and add device-specific workarounds only for reproducible compatibility issues. The POCO X6 Pro is one of the devices used for hands-on validation, not an exclusive target.
 
 ## Version snapshot
 
@@ -48,14 +48,14 @@ The app and extension have independent version numbers. Bump the app version for
 - [ ] Test external links, popups, fullscreen, and back navigation.
 - [ ] Test background/foreground, activity recreation, and Gecko process crash recovery.
 
-### POCO X6 Pro optimization and QA
-- [ ] Record the phone's RAM variant and exact HyperOS/Android build.
-- [ ] Install and update the ARM64 APK on the phone.
+### Physical-device performance and compatibility QA
+- [ ] Record each test phone's hardware variant and exact Android/OS build.
+- [ ] Install and update the appropriate ABI APK on each test phone.
 - [ ] Verify resolution, display scaling, cutout/insets, fullscreen, keyboard, and touch targets.
 - [ ] Measure cold/warm startup for each screen.
 - [ ] Profile GeckoView memory, frame pacing, touch response, and long-session stability.
 - [ ] Compare 60Hz and adaptive high-refresh behavior; do not force a refresh rate without evidence.
-- [ ] Measure battery drain and temperature over a 30–60 minute gameplay session.
+- [ ] Measure battery drain and temperature over a 30–60 minute gameplay session on representative devices.
 - [ ] Test HyperOS background/resume behavior, battery restrictions, Game Turbo, and network changes.
 - [ ] Fix only reproducible device-specific issues and preserve Android-wide fallbacks.
 
