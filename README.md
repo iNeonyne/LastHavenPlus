@@ -6,6 +6,38 @@ A native Android shell for **Lasthavens**. It runs the game in Mozilla GeckoView
 - Repository: https://github.com/iNeonyne/Lasthavens-Android
 - Latest CI: https://github.com/iNeonyne/Lasthavens-Android/actions/workflows/build.yml
 
+## Project brief for AI agents and contributors
+
+**Read this section and the active To-do list before making any change.** Treat this README as the project's shared source of truth; check the current source and CI workflow before relying on documentation alone.
+
+### Project summary
+
+Lasthavens for Android is a focused Android game client for [Lasthavens](https://alt.lasthavens.com/play), not a general-purpose browser. It is written in Kotlin and uses Mozilla GeckoView to run the web game. A bundled Lasthavens Addon Manager WebExtension provides add-on management. The game and manager are intended to use the same Gecko runtime/profile so add-ons installed by the manager can be available to the game.
+
+The Android layer provides the app's home/navigation screens and bridges required browser capabilities to Android, including lifecycle handling, fullscreen, JavaScript dialogs, external links/popups, document selection, and downloads. The extension is packaged inside the APK at `app/src/main/assets/extensions/lh-addon-manager/`.
+
+The project is maintained in [this GitHub repository](https://github.com/iNeonyne/Lasthavens-Android). GitHub Actions is the build and validation path, and GitHub Releases are the only intended distribution channel; there is no Google Play release track.
+
+### Technical direction and working rules
+
+- Keep the product focused on reliable Lasthavens gameplay and add-on management.
+- Preserve GeckoView unless a concrete technical reason justifies an engine change. The Addon Manager is a core part of the product and may be fixed, improved, redesigned, or upgraded when justified; version `0.11.0` is not a permanent restriction.
+- Protect user data. Before changing Gecko profiles, extension storage, add-on formats, backup behavior, or migration logic, understand the existing behavior and provide a tested backup/migration/rollback path.
+- Prefer small, reviewable changes. Check related Kotlin code, extension code, Gradle configuration, manifests, and CI checks before editing.
+- Validate changes with the narrowest relevant tests, then run the repository's CI/release build when feasible. Do not describe a build, test, device check, or release as successful unless it actually ran and passed.
+- Do not assume device compatibility or performance. Measure on physical devices and record the tested model and Android version.
+- Keep permissions minimal, handle untrusted web content carefully, and do not weaken URL/navigation boundaries for convenience.
+- Keep this README, version metadata, release notes, and the actual implementation in sync. Update the To-do list when work changes project status.
+- Do not add unrelated browser features, analytics, push notifications, background services, or differential updating without a demonstrated requirement.
+
+### Before submitting work
+
+1. Read this project brief and the relevant To-do items.
+2. Inspect the current implementation and recent repository/CI state; do not assume older plans are still accurate.
+3. Identify data, compatibility, security, and upgrade risks before changing behavior.
+4. Make the smallest complete change and add or update tests/checks where practical.
+5. Report exactly what changed, what validation ran, what remains unverified, and any follow-up work.
+
 ## Current version
 
 | Component | Version | Notes |
