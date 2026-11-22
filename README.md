@@ -151,7 +151,8 @@ This is the active development roadmap, ordered by dependency and user impact. T
 - [ ] Add automated tests for manager logic and validation of bundled JSON, JavaScript, manifests, and extension packaging.
 - [ ] Evaluate newer Addon Manager versions or architectural changes when they provide meaningful benefits; record compatibility and migration risks before adopting them.
 - [ ] Before any manager migration or data-format change, define and test a backup, migration, and rollback path for existing add-ons and settings.
-- [ ] Keep the bundled extension version and app release notes accurate; update the manager manifest version and manager release notes whenever manager functionality changes.
+- [ ] Keep the bundled extension version and app release notes accurate; update `manifest.json`, `README-1.0.0.txt` (or add a version-specific release note), the root README, and `PROJECT_OVERVIEW.md` whenever manager functionality changes.
+- [ ] Add a CI consistency check that compares the manager manifest version with the documented current version and release-note version.
 
 ### Priority 4 — Game client reliability and browser integration
 - [ ] Re-test navigation rules, popup handling, external URL routing, fullscreen, JavaScript dialogs, file prompts, and downloads.
