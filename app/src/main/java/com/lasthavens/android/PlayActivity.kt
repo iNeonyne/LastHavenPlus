@@ -65,7 +65,7 @@ class PlayActivity : AppCompatActivity() {
             },
             onFullScreenChanged = { hideSystemBars() },
         )
-        session.promptDelegate = AppPromptDelegate(picker)
+        session.promptDelegate = AppPromptDelegate(this, picker)
         session.navigationDelegate = object : GeckoSession.NavigationDelegate {
             override fun onLoadRequest(
                 session: GeckoSession,
