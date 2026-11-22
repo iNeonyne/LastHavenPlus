@@ -21,7 +21,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Test Addon Manager logic and archive handling
-        run: node --experimental-default-type=module --test tests/addon-manager.test.mjs
+        run: npm run test:addon-manager
 
       - uses: actions/setup-java@v4
         with:
