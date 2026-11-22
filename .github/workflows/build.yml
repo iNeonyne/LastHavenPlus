@@ -45,10 +45,10 @@ jobs:
           ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
           KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
         run: |
-          if [[ "$GITHUB_REF" == refs/tags/v* ]]; then
+          if [[ "${GITHUB_EVENT_NAME}" != "pull_request" ]]; then
             for name in KS KS_PASSWORD ALIAS KEY_PASSWORD; do
               if [ -z "${!name}" ]; then
-                echo "Missing required GitHub Actions secret for stable release signing: $name"
+                echo "Missing required GitHub Actions signing secret: $name"
                 exit 1
               fi
             done
@@ -114,8 +114,12 @@ jobs:
             test -x "$APKSIGNER" || { echo "apksigner not found at $APKSIGNER"; exit 1; }
             output=$("$APKSIGNER" verify --verbose --print-certs "$apk")
             echo "$output"
-            cert=$(printf '%s\n' "$output" | sed -n 's/^Signer #1 certificate SHA-256 digest: //p' | head -n1)
+            cert=$(printf '%s\n' "$output" | sed -nE 's/^(V[0-9.]+ )?Signer( #[0-9]+)?: certificate SHA-256 digest: //p' | head -n1)
             [ -n "$cert" ] || { echo "Could not read signer certificate from $apk"; exit 1; }
+            if [[ "$GITHUB_EVENT_NAME" != "pull_request" ]] && printf '%s' "$output" | grep -qi 'CN=Android Debug'; then
+              echo "Refusing to accept a debug-signed APK in a trusted build"
+              exit 1
+            fi
             if [ -z "$expected" ]; then
               expected="$cert"
             elif [ "$cert" != "$expected" ]; then
