@@ -2,6 +2,9 @@
 
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
+import com.android.build.api.dsl.ApplicationExtension
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
@@ -10,7 +13,7 @@ plugins {
 val appVersionName = "1.0.0"
 val appVersionCode = 1
 
-android {
+extensions.configure<ApplicationExtension>("android") {
     namespace = "com.lasthavens.android"
     compileSdk = 37
 
@@ -56,6 +59,12 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
+    }
+}
+
+kotlin {
+    compilerOptions {
+        jvmTarget.set(JvmTarget.JVM_17)
     }
 }
 
