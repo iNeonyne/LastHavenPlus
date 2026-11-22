@@ -20,6 +20,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Test Addon Manager logic and archive handling
+        run: node --experimental-default-type=module --test tests/addon-manager.test.mjs
+
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
@@ -107,9 +110,6 @@ jobs:
           while IFS= read -r -d '' file; do
             node --input-type=module --check < "$file"
           done < <(find "$EXT" -type f -name '*.js' -print0)
-
-      - name: Test Addon Manager logic and archive handling
-        run: node --experimental-default-type=module --test tests/addon-manager.test.mjs
 
       - name: Build release APKs
         env:
