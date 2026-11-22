@@ -1,45 +1,133 @@
-# Lasthavens Android
+# Lasthavens for Android
 
-Android app for playing Lasthavens (`https://alt.lasthavens.com/play`) in Mozilla GeckoView, with the Lasthavens Addon Manager bundled into the app.
+A native Android shell for **Lasthavens**. It runs the game in Mozilla GeckoView and bundles the Lasthavens Addon Manager, so managed add-ons can be shared with the game through one Gecko profile.
 
-| Component | Version |
-|---|---:|
-| Android app | 1.0.0 |
-| Bundled Addon Manager | 0.11.0 |
-| GeckoView | 159.0.20261102144711 |
+- Game: https://alt.lasthavens.com/play
+- Repository: https://github.com/iNeonyne/Lasthavens-Android
+- Latest CI: https://github.com/iNeonyne/Lasthavens-Android/actions/workflows/build.yml
 
-## Main screens
+## Current version
 
-- **Home:** Lasthavens branding, Play and Addon Manager actions, and component versions.
-- **Play:** fullscreen landscape game session. The game session is kept when returning Home; external websites are routed to the system browser.
-- **Addon Manager:** the bundled extension's manager page, sharing the same GeckoRuntime profile as the game.
+| Component | Version | Notes |
+|---|---:|---|
+| Android app | `1.0.0` | Current source version; not yet a device-verified release |
+| Addon Manager | `0.11.0` | Bundled WebExtension |
+| GeckoView | `159.0.20261102144711` | Pinned Mozilla engine build |
+
+The app and Addon Manager versions are independent. Version numbers may change with major feature updates; they are not locked to the original 1.0.0 baseline.
+
+## What the app does
+
+- **Home screen:** opens Play or the Addon Manager.
+- **Play:** loads the Lasthavens game in GeckoView, supports fullscreen, and keeps the game session alive when returning Home.
+- **Addon Manager:** opens the bundled manager in a second session using the same Gecko runtime/profile.
+- **Add-ons:** the manager installs and stores add-ons; returning to Play requests a game reload so updates can take effect.
+- **Files:** Android's document picker handles add-on import and backup restore; downloads are saved to the Downloads/Lasthavens folder on supported Android versions.
+- **Web behavior:** native JavaScript alert/confirm/prompt dialogs, external-link routing, popup handling, and load progress feedback.
 
 ## Architecture
 
-1. **GeckoView:** embeds Firefox rather than using Android WebView, which is necessary for the manager's WebExtension APIs.
-2. **Built-in extension:** the Addon Manager files are packaged under `app/src/main/assets/extensions/lh-addon-manager/` and installed with `ensureBuiltIn`.
-3. **Shared profile:** the game and manager use one GeckoRuntime so extension storage and installed add-ons are shared.
-4. **Native bridges:** Android handles file selection, downloads, external links, extension tab creation, and JavaScript alert/confirm/prompt dialogs.
-5. **Translations:** the Android resource ignore pattern is customized so the extension's `_locales` directories are included in the APK.
+- **Kotlin + AndroidX:** native activities, app lifecycle, dialogs, file picker, and downloads.
+- **GeckoView:** embeds Mozilla's browser engine. It is deliberately used instead of Android WebView because the bundled manager relies on WebExtension APIs.
+- **Built-in WebExtension:** source files live in `app/src/main/assets/extensions/lh-addon-manager/`; GeckoView installs it from the APK assets.
+- **Shared runtime:** game and manager sessions use the same Gecko runtime/profile so installed extension data is available to the game.
+- **CI checks:** validates bundled JSON and JavaScript, compiles the release APK, and checks that the manager, locale, and GeckoView native engine are packaged.
 
-## Build
+## Build and downloads
 
-GitHub Actions builds the release APK on every push to `main`, uploads it as an artifact named `Lasthavens-APK`, and attaches it to a GitHub Release when a `v*` tag is pushed.
+GitHub Actions builds on pushes to `main`, pull requests, and manual dispatches.
 
-The workflow uses JDK 17, the Android 17 preview SDK (API 37), Android Gradle Plugin 9.1.1, Kotlin Gradle Plugin 2.4.21, and Gradle 9.3.1. CI validates the extension JavaScript and JSON files before building, then verifies the Addon Manager locale and GeckoView engine are present in the APK. The app currently targets Android 15 (API 35) while compiling against API 37.
+**Download the right APK from the latest successful run's `Lasthavens-APKs` artifact:**
 
-For a local build, open this folder in Android Studio with JDK 17 and run the `assembleRelease` task.
+| File suffix | Intended device |
+|---|---|
+| `arm64-v8a` | Most modern Android phones; choose this first |
+| `armeabi-v7a` | Older 32-bit ARM Android devices |
+| `x86_64` | Android emulators and x86-64 devices |
+| `universal` | Fallback containing all supported CPU architectures; largest download |
+
+The build produces ABI-specific APKs to avoid shipping all GeckoView native engines to every phone. The universal APK is retained as a compatibility fallback.
+
+For a local build, open the project in Android Studio with JDK 17 and run `assembleRelease`.
+
+## Releases and version history
+
+A version is published as a GitHub Release only after its build and validation pass. Each release must include the matching APKs and a concise list of user-visible changes. To publish a version, update `appVersionName` and `appVersionCode` in `app/build.gradle.kts`, update this README's version table and history, commit the changes, then push a matching tag such as `v1.1.0`. The release workflow attaches all generated APK variants to that GitHub Release.
+
+### Released versions
+
+| Version | Status | Summary |
+|---|---|---|
+| 1.0.0 | CI build candidate; device testing pending | First packaged Android app baseline with GeckoView, Home/Play/Addon Manager screens, shared runtime, and bundled Addon Manager. |
+
+### Unreleased changes on `main`
+
+- Migrated the build to a current Android Gradle Plugin/Kotlin toolchain and public Gradle DSLs.
+- Added validation for every bundled Addon Manager JSON and JavaScript file.
+- Added APK-content checks for the built-in extension, English locale, and GeckoView native engine.
+- Added native JavaScript alert, confirm, and prompt dialogs.
+- Added ABI-specific APK outputs plus a universal fallback (being validated by CI).
+
+For every future release, add a new row under **Released versions** and summarize the user-visible changes. Keep this README in the same commit as the version bump.
+
+## To-do list
+
+### Build and release
+- [x] Compile a release APK in GitHub Actions.
+- [x] Validate bundled extension JSON and JavaScript.
+- [x] Verify required extension and GeckoView assets are present in the APK.
+- [x] Add ABI-specific APK packaging and a universal fallback.
+- [ ] Confirm ABI APK generation and installation on a physical ARM64 phone.
+- [ ] Configure a stable signing keystore so updates install over previous releases.
+- [ ] Publish the first device-tested GitHub Release.
+- [ ] Add an automated version/changelog consistency check.
+
+### App functionality
+- [ ] Test game launch, sign-in, and actual gameplay on a phone.
+- [ ] Confirm the game session survives Home → Play navigation.
+- [ ] Install a known-compatible add-on and confirm it runs in-game.
+- [ ] Test add-on ZIP import, export/download, backup, and restore.
+- [ ] Test JavaScript alert, confirm, and prompt dialogs in real game flows.
+- [ ] Test external links, popups, fullscreen, and back navigation.
+- [ ] Test background/foreground transitions, activity recreation, and Gecko content-process crashes.
+- [ ] Add automated Kotlin unit tests for URL routing, filename handling, and version parsing.
+- [ ] Add a repeatable smoke-test checklist for every release.
+
+### Size and performance
+- [ ] Measure per-ABI APK sizes and compare them with the current universal APK.
+- [ ] Profile cold start, memory use, and game responsiveness on a physical device.
+- [ ] Evaluate safe R8/resource shrinking after confirming GeckoView keep rules.
+- [ ] Keep GeckoView pinned to an exact stable version and review updates for extension compatibility.
 
 ## Signing
 
-Without signing secrets, CI signs with the Android debug key. Different GitHub-hosted runners may generate different keys, so a later APK may not update an earlier test APK. Uninstall the previous test APK before installing a differently signed one.
+Without repository signing secrets, CI uses the Android debug key. Debug keys can differ between GitHub runners, so a later APK may not install as an update over an earlier CI APK. Uninstall the previous test build if Android reports a signature conflict.
 
-For repeatable updates, configure `ANDROID_KEYSTORE_BASE64`, `ANDROID_KEYSTORE_PASSWORD`, `ANDROID_KEY_ALIAS`, and `ANDROID_KEY_PASSWORD` repository secrets.
+For stable in-place updates, configure these GitHub repository secrets:
 
-## Verification status
+- `ANDROID_KEYSTORE_BASE64`
+- `ANDROID_KEYSTORE_PASSWORD`
+- `ANDROID_KEY_ALIAS`
+- `ANDROID_KEY_PASSWORD`
 
-A release APK has compiled successfully in GitHub Actions. Device behavior is not yet verified. Test game launch and sign-in, shared add-ons, ZIP import and backup/restore, downloads, JavaScript dialogs, external links, fullscreen, back navigation, and recovery after process crashes on a physical phone.
+Do not commit the keystore or passwords to the repository.
 
-## Engine updates
+## Known limitations
 
-The GeckoView dependency is pinned to an exact version for reproducible builds. Update it deliberately after checking compatibility with the bundled extension's `strict_min_version`.
+- Live Game Scan observes add-on file requests; it cannot prove that an add-on's Lua code initialized successfully.
+- Backup ZIPs contain managed add-on files only. They do not include game settings, SavedVariables, or manager enabled/disabled flags.
+- The bundled extension's Gecko minimum version is 142.0; keep GeckoView at or above that version and test extension compatibility before upgrades.
+- A successful CI build proves packaging and static validation, not real-device functionality.
+
+## Project structure
+
+```
+.github/workflows/build.yml       CI build, validation, and release upload
+app/src/main/java/...             Kotlin Android app
+app/src/main/assets/extensions/   Bundled Addon Manager WebExtension
+app/src/main/res/                 Android layouts, icons, themes, and strings
+app/build.gradle.kts              Android config and app version
+gradle.properties                 GeckoView version and Gradle settings
+PROJECT_OVERVIEW.md               Development plan and device test checklist
+README.md                         User-facing project summary, releases, and to-do list
+```
