@@ -26,6 +26,17 @@ extensions.configure<ApplicationExtension>("android") {
         ndk { abiFilters += listOf("arm64-v8a", "armeabi-v7a", "x86_64") }
     }
 
+    // Ship per-CPU APKs so phones do not download all GeckoView native engines.
+    // Keep a universal APK as a fallback for devices and manual testing.
+    splits {
+        abi {
+            isEnable = true
+            reset()
+            include("arm64-v8a", "armeabi-v7a", "x86_64")
+            isUniversalApk = true
+        }
+    }
+
     buildFeatures { buildConfig = true }
 
     // Preserve the extension's _locales directory in Android assets.
