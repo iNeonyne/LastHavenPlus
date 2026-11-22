@@ -76,6 +76,9 @@ class ManagerActivity : AppCompatActivity() {
 
             override fun onPageStop(session: GeckoSession, success: Boolean) {
                 progress.visibility = View.GONE
+                if (!success && !isFinishing) {
+                    Toast.makeText(this@ManagerActivity, R.string.manager_load_failed, Toast.LENGTH_LONG).show()
+                }
             }
         }
         s.open(app.runtime)

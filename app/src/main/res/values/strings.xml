@@ -17,6 +17,8 @@
 
     <string name="manager_unavailable">The Addon Manager could not be loaded. GeckoView may be older than 142.</string>
     <string name="game_without_addons">Add-on support is unavailable; starting the game without add-ons.</string>
+    <string name="game_load_failed">The game could not load. Check your connection and try again.</string>
+    <string name="manager_load_failed">The Addon Manager could not load. Check your connection and try again.</string>
     <string name="download_saved">Saved to Downloads/Lasthavens/%1$s</string>
     <string name="download_saved_app">Saved to %1$s</string>
     <string name="download_failed">Download failed</string>

@@ -20,12 +20,8 @@ import java.lang.reflect.Proxy
 /**
  * Owns the single GeckoRuntime, the bundled Addon Manager extension and the long-lived game session.
  *
- * Architecture notes
- *  - One GeckoRuntime => one Firefox profile. The game page and the Addon Manager page therefore
- *    share the extension's storage (IndexedDB), which is how installed add-ons reach the game.
- *  - The Addon Manager XPI is bundled UNCHANGED in assets and installed as a *built-in* extension,
- *    so Mozilla signing is not required.
- *  - The game session lives here (not in an Activity) so leaving to the home screen keeps it loaded.
+ * One GeckoRuntime creates one shared Firefox profile, so manager storage and game add-on injection
+ * use the same profile. The game session lives here so Home/Play navigation does not discard it.
  */
 class App : Application() {
 
@@ -42,15 +38,13 @@ class App : Application() {
             private set
     }
 
+    private val mainHandler = Handler(Looper.getMainLooper())
+
     lateinit var runtime: GeckoRuntime
         private set
 
-    /** Set once the game page has been loaded into [gameSession]. */
     var gameLoaded = false
-
-    /** Set when the Addon Manager was used, so the next Play reloads the game with the new add-ons. */
     var reloadGameOnNextPlay = false
-
     var managerRef: WeakReference<ManagerActivity>? = null
 
     private var gameSessionInternal: GeckoSession? = null
@@ -63,7 +57,7 @@ class App : Application() {
     override fun onCreate() {
         super.onCreate()
         instance = this
-        // GeckoView spawns child processes that also instantiate Application; only the main one may start Gecko.
+        // GeckoView child processes also instantiate Application; only the package's main process starts Gecko.
         if (!isMainProcess()) return
 
         runtime = GeckoRuntime.create(
@@ -98,6 +92,10 @@ class App : Application() {
 
     /** Runs [callback] on the main thread once the extension is installed (or failed to install). */
     fun onExtensionReady(callback: (WebExtension?) -> Unit) {
+        if (Looper.myLooper() != Looper.getMainLooper()) {
+            mainHandler.post { onExtensionReady(callback) }
+            return
+        }
         when (extensionState) {
             ExtensionState.PENDING -> extensionCallbacks += callback
             ExtensionState.READY -> callback(extension)
@@ -108,49 +106,67 @@ class App : Application() {
     private fun installBuiltInExtension() {
         runtime.webExtensionController.ensureBuiltIn(EXTENSION_URI, EXTENSION_ID).then<Void>(
             GeckoResult.OnValueListener<WebExtension, Void> { ext ->
-                extension = ext
-                if (ext != null) ext.setTabDelegate(tabDelegate())
-                finishExtension(if (ext != null) ExtensionState.READY else ExtensionState.FAILED)
+                mainHandler.post {
+                    extension = ext
+                    if (ext != null) ext.setTabDelegate(tabDelegate())
+                    finishExtension(if (ext != null) ExtensionState.READY else ExtensionState.FAILED)
+                }
                 null
             },
             GeckoResult.OnExceptionListener<Void> { error ->
-                Log.e(TAG, "Addon Manager extension failed to install", error)
-                finishExtension(ExtensionState.FAILED)
+                mainHandler.post {
+                    Log.e(TAG, "Addon Manager extension failed to install", error)
+                    finishExtension(ExtensionState.FAILED)
+                }
                 null
             },
         )
     }
 
     private fun finishExtension(state: ExtensionState) {
+        if (Looper.myLooper() != Looper.getMainLooper()) {
+            mainHandler.post { finishExtension(state) }
+            return
+        }
         extensionState = state
         val callbacks = extensionCallbacks.toList()
         extensionCallbacks.clear()
-        callbacks.forEach { it(extension) }
+        callbacks.forEach { callback -> runCatching { callback(extension) }
+            .onFailure { Log.e(TAG, "Extension-ready callback failed", it) } }
     }
 
-    /** The manager asks for GitHub/GitLab access at runtime; approve only the origins it declares. */
+    /** Approve only the optional host origins declared by this bundled extension; reject other permission types. */
     private fun installOptionalPermissionPrompt() {
-        // A dynamic proxy keeps this independent of small signature changes between GeckoView releases.
         val delegate = proxy(WebExtensionController.PromptDelegate::class.java) { name, args ->
             if (name == "onOptionalPrompt") {
-                val origins = args.flatMap { (it as? Array<*>)?.map { s -> s.toString() } ?: emptyList() }
-                    .filter { it.contains("://") }
-                val ok = origins.all { o -> OPTIONAL_HOSTS.any { h -> o.startsWith("https://$h/") } }
-                GeckoResult.fromValue(if (ok) AllowOrDeny.ALLOW else AllowOrDeny.DENY)
+                fun strings(index: Int) =
+                    (args.getOrNull(index) as? Array<*>)?.mapNotNull { it as? String }.orEmpty()
+                val permissions = strings(1)
+                val origins = strings(2)
+                val dataPermissions = strings(3)
+                val allowed = permissions.isEmpty() &&
+                    dataPermissions.isEmpty() &&
+                    origins.isNotEmpty() &&
+                    origins.all { origin ->
+                        OPTIONAL_HOSTS.any { host ->
+                            origin == "https://$host/*" || origin.startsWith("https://$host/")
+                        }
+                    }
+                GeckoResult.fromValue(if (allowed) AllowOrDeny.ALLOW else AllowOrDeny.DENY)
             } else null
         }
         runtime.webExtensionController.promptDelegate = delegate
     }
 
-    /** `browser.tabs.create` from the extension: game URLs open the game, anything else the system browser. */
+    /** Routes browser.tabs.create from the extension to the game activity or the system browser. */
     private fun tabDelegate(): WebExtension.TabDelegate =
         proxy(WebExtension.TabDelegate::class.java) { name, args ->
             if (name == "onNewTab") {
                 val details = args.getOrNull(1)
                 val url = runCatching { details?.javaClass?.getField("url")?.get(details) as? String }.getOrNull()
-                Handler(Looper.getMainLooper()).post { openFromExtension(url) }
+                mainHandler.post { openFromExtension(url) }
             }
-            null // decline: the extension gets no tab object, the app handles the URL itself
+            null
         }
 
     private fun openFromExtension(url: String?) {

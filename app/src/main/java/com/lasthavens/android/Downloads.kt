@@ -23,10 +23,12 @@ object Downloads {
         }
         val headers = response.headers
         fun header(name: String) = headers.entries.firstOrNull { it.key.equals(name, true) }?.value
-        val mime = header("content-type")?.substringBefore(';')?.trim()?.ifEmpty { null } ?: "application/octet-stream"
+        val mime = header("content-type")?.substringBefore(';')?.trim()?.ifEmpty { null }
+            ?: "application/octet-stream"
         val name = fileName(response.uri, header("content-disposition"), mime)
 
-        Thread {
+        Thread({
+            var pendingUri: Uri? = null
             try {
                 body.use { input ->
                     if (Build.VERSION.SDK_INT >= 29) {
@@ -34,51 +36,72 @@ object Downloads {
                         val values = ContentValues().apply {
                             put(MediaStore.MediaColumns.DISPLAY_NAME, name)
                             put(MediaStore.MediaColumns.MIME_TYPE, mime)
-                            put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_DOWNLOADS + "/Lasthavens")
+                            put(
+                                MediaStore.MediaColumns.RELATIVE_PATH,
+                                Environment.DIRECTORY_DOWNLOADS + "/Lasthavens",
+                            )
                             put(MediaStore.MediaColumns.IS_PENDING, 1)
                         }
                         val target = resolver.insert(MediaStore.Downloads.EXTERNAL_CONTENT_URI, values)
                             ?: error("Could not create download entry")
-                        resolver.openOutputStream(target)!!.use { out -> input.copyTo(out) }
-                        values.clear()
-                        values.put(MediaStore.MediaColumns.IS_PENDING, 0)
-                        resolver.update(target, values, null, null)
-                        toast(app, app.getString(R.string.download_saved, name))
+                        pendingUri = target
+                        val output = resolver.openOutputStream(target, "w")
+                            ?: error("Could not open download destination")
+                        output.use { input.copyTo(it) }
+
+                        val complete = ContentValues().apply {
+                            put(MediaStore.MediaColumns.IS_PENDING, 0)
+                        }
+                        check(resolver.update(target, complete, null, null) > 0) {
+                            "Could not finish download entry"
+                        }
+                        pendingUri = null
                     } else {
                         val dir = app.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS) ?: app.filesDir
                         val file = File(dir, name)
                         file.outputStream().use { out -> input.copyTo(out) }
-                        toast(app, app.getString(R.string.download_saved_app, file.absolutePath))
                     }
                 }
-            } catch (e: Exception) {
+                toast(app, app.getString(R.string.download_saved, name))
+            } catch (error: Exception) {
+                pendingUri?.let { runCatching { app.contentResolver.delete(it, null, null) } }
                 toast(app, app.getString(R.string.download_failed))
             }
-        }.start()
+        }, "LasthavensDownload").start()
     }
 
     private fun fileName(uri: String, disposition: String?, mime: String): String {
         var name: String? = null
         if (disposition != null) {
-            val m = Regex("filename\\*?=(?:UTF-8'')?\"?([^\";]+)\"?", RegexOption.IGNORE_CASE).find(disposition)
-            name = m?.groupValues?.get(1)?.let { runCatching { Uri.decode(it) }.getOrDefault(it) }
+            val match = Regex(
+                "filename\\*?=(?:UTF-8'')?\"?([^\";]+)\"?",
+                RegexOption.IGNORE_CASE,
+            ).find(disposition)
+            name = match?.groupValues?.get(1)?.let { runCatching { Uri.decode(it) }.getOrDefault(it) }
         }
         if (name.isNullOrBlank() && !uri.startsWith("blob:")) {
             name = Uri.parse(uri).lastPathSegment
         }
         if (name.isNullOrBlank()) {
-            val ext = when {
+            val extension = when {
                 mime.contains("zip") -> "zip"
                 mime.contains("json") -> "json"
                 mime.contains("7z") -> "7z"
                 else -> "bin"
             }
-            name = "lasthavens-${System.currentTimeMillis()}.$ext"
+            name = "lasthavens-${System.currentTimeMillis()}.$extension"
         }
-        return name.replace(Regex("[\\\\/:*?\"<>|]"), "_")
+        val safe = name
+            .replace(Regex("[\\\\/:*?\"<>|\\p{Cntrl}]"), "_")
+            .trim()
+            .trimStart('.')
+            .take(120)
+        return safe.ifBlank { "lasthavens-${System.currentTimeMillis()}.bin" }
     }
 
     private fun toast(context: Context, text: String) {
-        Handler(Looper.getMainLooper()).post { Toast.makeText(context, text, Toast.LENGTH_LONG).show() }
+        Handler(Looper.getMainLooper()).post {
+            Toast.makeText(context, text, Toast.LENGTH_LONG).show()
+        }
     }
 }

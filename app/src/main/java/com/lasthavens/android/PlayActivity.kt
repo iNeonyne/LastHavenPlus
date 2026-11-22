@@ -72,19 +72,18 @@ class PlayActivity : AppCompatActivity() {
                 request: GeckoSession.NavigationDelegate.LoadRequest,
             ): GeckoResult<AllowOrDeny>? {
                 val uri = Uri.parse(request.uri)
+                if (request.target == GeckoSession.NavigationDelegate.TARGET_WINDOW_NEW) {
+                    // Intercept target=_blank before Gecko asks for a second session. Keep game links in this view.
+                    if (GameUrls.isGameHost(uri)) session.loadUri(request.uri)
+                    else GameUrls.openExternal(this@PlayActivity, uri)
+                    return GeckoResult.fromValue(AllowOrDeny.DENY)
+                }
                 return if (GameUrls.isInApp(uri)) {
                     GeckoResult.fromValue(AllowOrDeny.ALLOW)
                 } else {
                     GameUrls.openExternal(this@PlayActivity, uri)
                     GeckoResult.fromValue(AllowOrDeny.DENY)
                 }
-            }
-
-            // window.open / target=_blank: keep game URLs in the game view, send the rest to the browser.
-            override fun onNewSession(session: GeckoSession, uri: String): GeckoResult<GeckoSession>? {
-                val parsed = Uri.parse(uri)
-                if (GameUrls.isGameHost(parsed)) session.loadUri(uri) else GameUrls.openExternal(this@PlayActivity, parsed)
-                return null
             }
         }
         session.progressDelegate = object : GeckoSession.ProgressDelegate {
@@ -99,6 +98,9 @@ class PlayActivity : AppCompatActivity() {
 
             override fun onPageStop(session: GeckoSession, success: Boolean) {
                 progress.visibility = android.view.View.GONE
+                if (!success && !isFinishing) {
+                    Toast.makeText(this@PlayActivity, R.string.game_load_failed, Toast.LENGTH_LONG).show()
+                }
             }
         }
         geckoView.setSession(session)
