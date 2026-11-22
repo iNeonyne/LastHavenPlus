@@ -126,9 +126,24 @@ For every future release, add a new row under **Released versions** and summariz
 
 ## To-do list
 
-This is the active development roadmap, ordered by dependency and user impact. The game client and Addon Manager are both core parts of the app. The Addon Manager is not frozen: its code may be fixed, improved, redesigned, or upgraded when useful. Its current version baseline is `1.0.0`. Changes must be tested against real add-on workflows and must protect existing user data.
+### Top priority — Demo making (get a test APK ASAP)
 
-### Priority 1 — Source-level, automated, and CI validation
+**Goal:** produce an installable demo APK from `main` so the app can be tested on an Android phone before signing and release work are finished. This is a test build, not a public/stable release.
+
+- [ ] Make normal pushes to `main` build and upload debug-signed demo APKs without requiring release-keystore secrets.
+- [ ] Keep permanent release signing mandatory for version-tagged GitHub Releases; never publish a debug-signed APK as a release.
+- [ ] Get the first successful CI demo artifact and download the `arm64-v8a` APK (use universal only if the ABI-specific build cannot be installed).
+- [ ] Install and smoke-test: first launch, Home screen, Play, game loading/sign-in, return Home and resume Play, open Addon Manager, and return to the game.
+- [ ] Check basic touch input, orientation/fullscreen, keyboard, network failure/retry, back navigation, and app background/resume.
+- [ ] Record crashes, broken screens, loading failures, and device/Android version; fix demo-blocking issues before adding optional features.
+- [ ] Verify the demo APK can be installed cleanly. Debug-signed demos cannot upgrade an APK signed with a different certificate; do not uninstall an existing app if its data needs preserving.
+- [ ] Keep the demo clearly labelled as a test build and do not call it a validated release.
+
+**Demo scope:** Home, GeckoView game session, bundled Addon Manager, shared profile, and essential Android integration. Defer optional features, performance tuning, full manager redesign, release signing, and public release until the basic demo has been tested.
+
+This is the active development roadmap, ordered by immediate demo delivery first, then reliability and release readiness. The game client and Addon Manager are both core parts of the app. The Addon Manager is not frozen: its code may be fixed, improved, redesigned, or upgraded when useful. Its current version is `1.0.1`. Changes must be tested against real add-on workflows and must protect existing user data.
+
+### Priority 1 — Demo blockers and core reliability (after the first demo artifact)
 - [ ] Audit the Kotlin app, bundled extension, Gradle configuration, manifest, and CI workflow against the documented architecture.
 - [ ] Build a test matrix for game navigation, shared Gecko profile behavior, add-on workflows, file handling, lifecycle, and error recovery.
 - [ ] Add or expand automated tests for URL routing/allow-listing, version parsing, download filename sanitization, and other testable Kotlin logic.
@@ -138,8 +153,8 @@ This is the active development roadmap, ordered by dependency and user impact. T
 - [ ] Review data-storage behavior and document exactly what is preserved, backed up, or excluded before changing profile or extension storage.
 - [ ] Keep a record of unresolved issues and risks; do not treat passing CI as proof that the app is bug-free.
 
-### Priority 2 — Reliable signed releases and upgrades
-- [ ] Create and securely back up the permanent release keystore; configure the four documented GitHub Actions secrets.
+### Priority 2 — Reliable signed releases and upgrades (not required for the first demo)
+- [ ] Create and securely back up the permanent release keystore; configure the four documented GitHub Actions secrets. Required for tagged releases, not branch demo APKs.
 - [ ] Verify a release-signed APK installs cleanly and a subsequent release upgrades it without uninstalling the app.
 - [ ] Verify the signing certificate is identical across ABI APKs and remains unchanged between releases.
 - [ ] Verify app upgrades preserve the Gecko profile, login/session data, manager settings, and installed add-ons.
@@ -147,7 +162,7 @@ This is the active development roadmap, ordered by dependency and user impact. T
 - [ ] Keep version metadata, release notes, README history, and generated APK names synchronized.
 - [ ] Add CI checks for version consistency, manifest permissions, bundled extension files, and APK ABI contents.
 
-### Priority 3 — Addon Manager quality and evolution
+### Priority 3 — Addon Manager quality and evolution (demo-critical fixes first)
 - [ ] Audit the current bundled Addon Manager source, architecture, permissions, and GeckoView API usage; document its current capabilities and known limitations.
 - [ ] Create a manager-specific test checklist covering install, update, enable/disable, remove, import/export, backup/restore, and game integration.
 - [ ] Fix reproducible manager bugs and improve error messages, loading states, and recovery from failed operations.
@@ -203,7 +218,7 @@ This is the active development roadmap, ordered by dependency and user impact. T
 
 ## Signing
 
-CI is currently configured to require a permanent release keystore for non-PR builds. The latest build reached APK packaging but failed because Android Gradle could not read the configured private key from the keystore. The workflow now validates the keystore, alias, and key password before Gradle packaging so a misconfigured key fails with a clearer step-level error. Recheck the four GitHub Actions secrets below; do not paste their values into chat or commit them. Until a valid permanent key is configured and CI passes, there is no verified installable release artifact.
+CI is currently configured to require a permanent release keystore for non-PR builds. The latest build reached APK packaging but failed because Android Gradle could not read the configured private key from the keystore. The workflow now validates the keystore, alias, and key password before Gradle packaging so a misconfigured key fails with a clearer step-level error. Recheck the four GitHub Actions secrets below; do not paste their values into chat or commit them. Normal `main` builds are intended to produce debug-signed demo APKs without those secrets. A successful demo build can be installed for testing before release signing is configured.
 
 For stable in-place updates, configure these GitHub repository secrets:
 
