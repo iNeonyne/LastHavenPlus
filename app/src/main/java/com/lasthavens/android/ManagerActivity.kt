@@ -59,7 +59,7 @@ class ManagerActivity : AppCompatActivity() {
     private fun openManager(url: String) {
         val s = GeckoSession()
         s.contentDelegate = AppContentDelegate(context = this, onClose = { finish() }, onProcessGone = { recreate() })
-        s.promptDelegate = AppPromptDelegate(picker)
+        s.promptDelegate = AppPromptDelegate(this, picker)
         s.navigationDelegate = object : GeckoSession.NavigationDelegate {
             override fun onCanGoBack(session: GeckoSession, canGoBack: Boolean) {
                 this@ManagerActivity.canGoBack = canGoBack
