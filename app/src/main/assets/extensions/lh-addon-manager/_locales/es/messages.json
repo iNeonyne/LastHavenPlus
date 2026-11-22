@@ -1,0 +1,218 @@
+{
+  "title": {
+    "message": "Gestor de addons"
+  },
+  "description": {
+    "message": "Addons ZIP locales para Lasthavens 3.3.5a."
+  },
+  "importZip": {
+    "message": "Importar ZIP"
+  },
+  "play": {
+    "message": "Abrir juego"
+  },
+  "hint": {
+    "message": "Los cambios se aplican al recargar la página del juego."
+  },
+  "waiting": {
+    "message": "Esperando el juego"
+  },
+  "storageTitle": {
+    "message": "Almacenamiento"
+  },
+  "storageInfo": {
+    "message": "Los archivos se guardan en este perfil de Chrome. Al eliminar un addon se conservan sus ajustes del juego. Los addons integrados se gestionan en la biblioteca del juego."
+  },
+  "limits": {
+    "message": "Límites: ZIP 128 MB; archivo descomprimido 256 MB; fichero 64 MB; biblioteca 384 MB."
+  },
+  "reloadInfo": {
+    "message": "Recarga el juego cuando puedas interrumpir la sesión."
+  },
+  "empty": {
+    "message": "No hay addons locales. Importa un ZIP."
+  },
+  "enabled": {
+    "message": "Activado"
+  },
+  "disabled": {
+    "message": "Desactivado"
+  },
+  "exportZip": {
+    "message": "Exportar ZIP"
+  },
+  "remove": {
+    "message": "Eliminar"
+  },
+  "saved": {
+    "message": "Guardado. Recarga el juego para aplicar los cambios."
+  },
+  "imported": {
+    "message": "Importación terminada. Los addons nuevos están desactivados."
+  },
+  "noVersion": {
+    "message": "Sin versión"
+  },
+  "files": {
+    "message": "archivos"
+  },
+  "addons": {
+    "message": "addons"
+  },
+  "active": {
+    "message": "activados"
+  },
+  "dependencies": {
+    "message": "Comprueba las dependencias: {names}. Pueden estar en la biblioteca del juego."
+  },
+  "changed": {
+    "message": "Hay cambios pendientes. Recarga el juego."
+  },
+  "ready": {
+    "message": "Addons locales preparados: {count}"
+  },
+  "loadError": {
+    "message": "Error del cargador. El juego puede iniciarse sin addons locales."
+  },
+  "importError": {
+    "message": "No se pudo importar el archivo. Detalles técnicos:"
+  },
+  "libraryLimit": {
+    "message": "La biblioteca supera los 384 MB."
+  },
+  "interfaceWarning": {
+    "message": "El TOC no declara Interface 30300. Compatibilidad sin verificar."
+  },
+  "errorPath": {
+    "message": "Ruta no permitida en el archivo: {detail}"
+  },
+  "errorArchiveSize": {
+    "message": "El ZIP supera los 128 MB."
+  },
+  "errorExpanded": {
+    "message": "Se supera el límite de 64 MB por fichero o 256 MB descomprimidos."
+  },
+  "errorIntegrity": {
+    "message": "Error de integridad del fichero: {detail}"
+  },
+  "errorFolder": {
+    "message": "Carpeta de addon inválida o duplicada: {detail}"
+  },
+  "errorToc": {
+    "message": "Falta el archivo principal Folder/Folder.toc."
+  },
+  "errorUnsupported": {
+    "message": "ZIP no compatible: cifrado, ZIP64, varios volúmenes, enlaces o método de compresión."
+  },
+  "errorDuplicate": {
+    "message": "Ruta duplicada en el archivo: {detail}"
+  },
+  "errorZip": {
+    "message": "El archivo ZIP no es válido o está dañado."
+  },
+  "errorUnexpected": {
+    "message": "La operación falló. Comprueba el espacio del navegador e inténtalo de nuevo."
+  },
+  "badgeLabel": {
+    "message": "Mostrar la insignia de estado en la página del juego"
+  },
+  "badgeHint": {
+    "message": "Pequeña etiqueta en la esquina de la página del juego. Tócala para ver el registro. Se aplica al recargar el juego."
+  },
+  "permNeeded": {
+    "message": "La extensión aún no tiene acceso a los sitios de lasthavens.com, por lo que no puede funcionar en la página del juego."
+  },
+  "permGrant": {
+    "message": "Permitir acceso"
+  },
+  "seenOn": {
+    "message": "Visto en: {pages}"
+  },
+  "neverSeen": {
+    "message": "Aún no se ha visto en ninguna página del juego. Abre el juego y vuelve aquí."
+  },
+  "tabMine": {
+    "message": "Mis addons"
+  },
+  "tabBrowse": {
+    "message": "Explorar"
+  },
+  "browsePerm": {
+    "message": "Para explorar y descargar addons, permite el acceso a GitHub (y a GitLab para algunos). La extensión solo descarga archivos públicos y no envía nada sobre ti."
+  },
+  "browseGrant": {
+    "message": "Permitir acceso"
+  },
+  "searchPlaceholder": {
+    "message": "Buscar addons"
+  },
+  "allCategories": {
+    "message": "Todas las categorías"
+  },
+  "refresh": {
+    "message": "Actualizar lista"
+  },
+  "catalogLoading": {
+    "message": "Cargando la lista de addons…"
+  },
+  "catalogInfo": {
+    "message": "{count} addons · lista actualizada {time}"
+  },
+  "catalogOffline": {
+    "message": "No se pudo acceder a la lista. Se muestra la copia guardada de {time}. {count} addons."
+  },
+  "catalogError": {
+    "message": "No se pudo cargar la lista de addons. Revisa tu conexión y toca «Actualizar lista»."
+  },
+  "noResults": {
+    "message": "Ningún addon coincide."
+  },
+  "install": {
+    "message": "Instalar"
+  },
+  "reinstall": {
+    "message": "Reinstalar"
+  },
+  "installing": {
+    "message": "Instalando…"
+  },
+  "installedBadge": {
+    "message": "Instalado"
+  },
+  "installedFrom": {
+    "message": "{name} instalado. Está desactivado por defecto: actívalo en Mis addons y recarga el juego."
+  },
+  "openPage": {
+    "message": "Abrir página"
+  },
+  "sourceLink": {
+    "message": "Fuente"
+  },
+  "requiresNote": {
+    "message": "Requiere: {names}. Instálalo también."
+  },
+  "downloadFailed": {
+    "message": "Error de descarga ({detail}). Inténtalo de nuevo."
+  },
+  "noZipRelease": {
+    "message": "Esta versión no tiene archivo ZIP. Usa el botón «Fuente» para obtenerla a mano."
+  },
+  "loadedInGame": {
+    "message": "Cargado en el juego."
+  },
+  "loadFailed": {
+    "message": "Error al cargar: {message}"
+  },
+  "loadOnDemand": {
+    "message": "Addon de carga bajo demanda: el juego solo lo carga cuando otro addon lo solicita."
+  },
+  "optionalMissing": {
+    "message": "Dependencias opcionales no activadas localmente: {names}."
+  },
+  "dependencyCycle": {
+    "message": "Dependencia circular detectada. El orden de carga puede no ser fiable."
+  },
+  "someFailed": {
+    "message": "Addons locales preparados: {count}. Con errores: {failed}"
+  }
+}

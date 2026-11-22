@@ -1,0 +1,353 @@
+{
+  "title": {
+    "message": "Addon manager"
+  },
+  "description": {
+    "message": "Local ZIP addons for Lasthavens 3.3.5a."
+  },
+  "importZip": {
+    "message": "Import ZIP"
+  },
+  "play": {
+    "message": "Open game"
+  },
+  "hint": {
+    "message": "Changes apply after reloading the game page."
+  },
+  "waiting": {
+    "message": "Waiting for the game"
+  },
+  "storageTitle": {
+    "message": "Storage"
+  },
+  "storageInfo": {
+    "message": "Addon files stay in this browser profile. Removing an addon preserves its game settings. Built-in addons are managed in the game library."
+  },
+  "limits": {
+    "message": "Limits: ZIP 128 MB; unpacked archive 256 MB; file 64 MB; library 384 MB."
+  },
+  "reloadInfo": {
+    "message": "Reload the game page when you are ready to interrupt the session."
+  },
+  "empty": {
+    "message": "No local addons. Import a ZIP."
+  },
+  "enabled": {
+    "message": "Enabled"
+  },
+  "disabled": {
+    "message": "Disabled"
+  },
+  "exportZip": {
+    "message": "Export ZIP"
+  },
+  "remove": {
+    "message": "Remove"
+  },
+  "saved": {
+    "message": "Saved. Reload the game to apply changes."
+  },
+  "imported": {
+    "message": "Imported. New addons are disabled by default."
+  },
+  "noVersion": {
+    "message": "No version"
+  },
+  "files": {
+    "message": "files"
+  },
+  "addons": {
+    "message": "addons"
+  },
+  "active": {
+    "message": "enabled"
+  },
+  "dependencies": {
+    "message": "Check required dependencies: {names}. They may be installed in the game library."
+  },
+  "changed": {
+    "message": "Changes pending. Reload the game."
+  },
+  "ready": {
+    "message": "Addon files requested by the game: {count}"
+  },
+  "loadError": {
+    "message": "Loader error. The game may start without local addons."
+  },
+  "importError": {
+    "message": "Could not import the archive. Technical details:"
+  },
+  "libraryLimit": {
+    "message": "Library exceeds 384 MB."
+  },
+  "interfaceWarning": {
+    "message": "The TOC does not declare Interface 30300. Compatibility is unverified."
+  },
+  "errorPath": {
+    "message": "Unsafe archive path: {detail}"
+  },
+  "errorArchiveSize": {
+    "message": "ZIP exceeds 128 MB."
+  },
+  "errorExpanded": {
+    "message": "Unpacked data exceeds the 64 MB per-file or 256 MB archive limit."
+  },
+  "errorIntegrity": {
+    "message": "File integrity check failed: {detail}"
+  },
+  "errorFolder": {
+    "message": "Invalid or duplicate addon folder: {detail}"
+  },
+  "errorToc": {
+    "message": "Main Folder/Folder.toc is missing."
+  },
+  "errorUnsupported": {
+    "message": "Unsupported ZIP format: encryption, ZIP64, multiple volumes, symbolic links or compression method."
+  },
+  "errorDuplicate": {
+    "message": "Duplicate archive path: {detail}"
+  },
+  "errorZip": {
+    "message": "The ZIP archive is invalid or damaged."
+  },
+  "errorUnexpected": {
+    "message": "The operation failed. Check browser storage space and try again."
+  },
+  "badgeLabel": {
+    "message": "Show the status badge on the game page"
+  },
+  "badgeHint": {
+    "message": "Small pill in the corner of the game page. Tap it to see the log. Applies after reloading the game."
+  },
+  "permNeeded": {
+    "message": "The extension does not have access to lasthavens.com sites yet, so it cannot run on the game page."
+  },
+  "permGrant": {
+    "message": "Allow access"
+  },
+  "seenOn": {
+    "message": "Seen on: {pages}"
+  },
+  "neverSeen": {
+    "message": "Not seen on any game page yet. Open the game, then come back here."
+  },
+  "tabMine": {
+    "message": "My addons"
+  },
+  "tabBrowse": {
+    "message": "Browse"
+  },
+  "browsePerm": {
+    "message": "To browse and download addons, allow access to GitHub (and GitLab for a few). The extension only downloads public files and sends nothing about you."
+  },
+  "browseGrant": {
+    "message": "Allow access"
+  },
+  "searchPlaceholder": {
+    "message": "Search addons"
+  },
+  "allCategories": {
+    "message": "All categories"
+  },
+  "refresh": {
+    "message": "Refresh list"
+  },
+  "catalogLoading": {
+    "message": "Loading the addon list…"
+  },
+  "catalogInfo": {
+    "message": "{count} addons · list updated {time}"
+  },
+  "catalogOffline": {
+    "message": "Could not reach the list. Showing the saved copy from {time}. {count} addons."
+  },
+  "catalogError": {
+    "message": "Could not load the addon list. Check your connection and tap Refresh list."
+  },
+  "noResults": {
+    "message": "No addons match."
+  },
+  "install": {
+    "message": "Install"
+  },
+  "reinstall": {
+    "message": "Reinstall"
+  },
+  "installing": {
+    "message": "Installing…"
+  },
+  "installedBadge": {
+    "message": "Installed"
+  },
+  "installedFrom": {
+    "message": "Installed {name}. It is off by default: turn it on in My addons, then reload the game."
+  },
+  "openPage": {
+    "message": "Open page"
+  },
+  "sourceLink": {
+    "message": "Source"
+  },
+  "requiresNote": {
+    "message": "Requires: {names}. Install it too."
+  },
+  "downloadFailed": {
+    "message": "Download failed ({detail}). Try again."
+  },
+  "noZipRelease": {
+    "message": "This release has no ZIP file to install. Use the Source button to get it by hand."
+  },
+  "loadedInGame": {
+    "message": "The game requested files for this addon (injection verified)."
+  },
+  "loadFailed": {
+    "message": "Failed to load: {message}"
+  },
+  "loadOnDemand": {
+    "message": "Load-on-demand addon: the game loads it only when another addon requests it."
+  },
+  "optionalMissing": {
+    "message": "Optional dependencies not enabled locally: {names}."
+  },
+  "dependencyCycle": {
+    "message": "Circular dependency detected. Load order may be unreliable."
+  },
+  "someFailed": {
+    "message": "Prepared local addons: {count}. Failed: {failed}"
+  },
+  "sameVersionAlready": {
+    "message": "Already have this addon at the same or a newer version, or its version cannot be verified: {names}. Kept the existing copy."
+  },
+  "importedSomeSkipped": {
+    "message": "Imported {count} add-on(s). Skipped same-version copies: {names}."
+  },
+  "installedSomeSkipped": {
+    "message": "Installed {name}. Skipped same-version copies already in your library: {names}."
+  },
+  "scanAddons": {
+    "message": "Scan live game"
+  },
+  "updateAll": {
+    "message": "Update all"
+  },
+  "backup": {
+    "message": "Back up all"
+  },
+  "restore": {
+    "message": "Restore backup"
+  },
+  "managementHint": {
+    "message": "Live Game Scan checks addon files requested by the running game. Prepared addons are not counted as loaded until the game actually requests their files. Backups include addon files, not SavedVariables or game settings."
+  },
+  "scanFound": {
+    "message": "Scan complete. Imported {count} addon(s); skipped {skipped} already present."
+  },
+  "scanEmpty": {
+    "message": "No valid 3.3.5a addon folders were found. Select the Interface/AddOns folder, not the Interface folder."
+  },
+  "backupDone": {
+    "message": "Backup created."
+  },
+  "restoreDone": {
+    "message": "Backup restored. Imported {count} addon(s)."
+  },
+  "updateNone": {
+    "message": "All installed addons are current, or no newer compatible releases were found."
+  },
+  "updateDone": {
+    "message": "Updated {count} addon(s)."
+  },
+  "updateProgress": {
+    "message": "Checking installed addons for updates…"
+  },
+  "sourceOptions": {
+    "message": "Available sources: {sources}"
+  },
+  "chooseSource": {
+    "message": "Choose source"
+  },
+  "updateAvailable": {
+    "message": "Update available"
+  },
+  "sourcePriority": {
+    "message": "Newest compatible version is preferred. You can select another source."
+  },
+  "installedStat": {
+    "message": "Installed"
+  },
+  "updatesStat": {
+    "message": "Updates available"
+  },
+  "availableStat": {
+    "message": "Not installed"
+  },
+  "errorLog": {
+    "message": "Operation error log"
+  },
+  "copyErrors": {
+    "message": "Copy error log"
+  },
+  "filterAll": {
+    "message": "All addons"
+  },
+  "filterInstalled": {
+    "message": "Installed"
+  },
+  "filterAvailable": {
+    "message": "Not installed"
+  },
+  "filterUpdates": {
+    "message": "Update available"
+  },
+  "installProgress": {
+    "message": "Downloading and checking addon…"
+  },
+  "scanProgress": {
+    "message": "Scanning selected AddOns folder…"
+  },
+  "backupProgress": {
+    "message": "Creating backup…"
+  },
+  "restoreProgress": {
+    "message": "Restoring backup…"
+  },
+  "notLoaded": {
+    "message": "Browse catalog to calculate"
+  },
+  "errorsCopied": {
+    "message": "Error log copied to clipboard."
+  },
+  "copyErrorsFailed": {
+    "message": "Could not copy the error log. Select and copy the text manually."
+  },
+  "updateDoneWithFailures": {
+    "message": "Updated {count} addon(s), but {failed} update(s) failed. See the error log."
+  },
+  "scanWaiting": {
+    "message": "No live game scan data yet. Open or reload Lasthavens and wait for the game to request addon files."
+  },
+  "liveScanDone": {
+    "message": "Live scan: {loaded} addon(s) requested by the game, {prepared} prepared, {failed} failed."
+  },
+  "preparedForGame": {
+    "message": "Prepared for injection; the game has not requested its files yet."
+  },
+  "removeAddonEyebrow": {
+    "message": "ADDON MANAGEMENT"
+  },
+  "removeAddonTitle": {
+    "message": "Remove addon?"
+  },
+  "removeAddonPrompt": {
+    "message": "Remove {name} from this browser’s addon library?"
+  },
+  "backupBeforeRemove": {
+    "message": "Download a ZIP backup before removing"
+  },
+  "settingsPreservedNote": {
+    "message": "The addon files will be removed. Game-side addon settings are not touched and may be available again if you reinstall the addon."
+  },
+  "cancel": {
+    "message": "Cancel"
+  }
+}

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Lasthavens</string>
+    <string name="tagline">Your realm. Your add-ons.</string>
+    <string name="play">Play</string>
+    <string name="play_sub">Enter Lasthavens</string>
+    <string name="addon_manager">Addon Manager</string>
+    <string name="addon_manager_sub">Install &amp; manage add-ons</string>
+    <string name="version_app">App %1$s</string>
+    <string name="version_addons">Addon Manager %1$s</string>
+
+    <string name="leave_title">Leave the game?</string>
+    <string name="leave_message">Your session stays loaded in the background. Reloading will restart the game page.</string>
+    <string name="leave_home">Home</string>
+    <string name="leave_reload">Reload</string>
+    <string name="leave_stay">Keep playing</string>
+
+    <string name="manager_unavailable">The Addon Manager could not be loaded. GeckoView may be older than 142.</string>
+    <string name="game_without_addons">Add-on support is unavailable; starting the game without add-ons.</string>
+    <string name="download_saved">Saved to Downloads/Lasthavens/%1$s</string>
+    <string name="download_saved_app">Saved to %1$s</string>
+    <string name="download_failed">Download failed</string>
+</resources>
