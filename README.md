@@ -6,7 +6,7 @@ Android app for playing Lasthavens (`https://alt.lasthavens.com/play`) in Mozill
 |---|---:|
 | Android app | 1.0.0 |
 | Bundled Addon Manager | 0.11.0 |
-| GeckoView | 160.0.20261116130455 |
+| GeckoView | 159.0.20261102144711 |
 
 ## Main screens
 
