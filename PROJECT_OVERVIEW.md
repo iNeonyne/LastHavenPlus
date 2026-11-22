@@ -34,7 +34,24 @@ The app and extension have independent version numbers. The extension's `manifes
 
 Tasks are ordered by risk and dependency. A checked item means the repository or CI already contains the implementation/check; it does not mean the feature has passed a physical-device test.
 
-### 1. First physical-device validation
+### 1. Source-level, automated, and CI validation (before device testing)
+- [ ] Complete the Kotlin, extension, Gradle, manifest, and workflow audit; record concrete findings and risks.
+- [ ] Add unit tests for URL routing/allow-listing, filename sanitization, and version parsing.
+- [ ] Add CI checks for release metadata, APK signing consistency, APK contents, and SHA-256 checksums.
+- [ ] Add or expand automated tests for extension data preservation and add-on import/restore edge cases.
+- [ ] Use emulator smoke tests where practical for launch, navigation, lifecycle, and file picker behavior.
+- [ ] Fix reproducible blocking bugs before beginning physical-device validation.
+
+### 2. Signing, upgrades, and first release
+- [ ] Create and securely back up the permanent release keystore; configure the documented GitHub Actions secrets.
+- [ ] Verify a signed APK installs and a later APK upgrades it without uninstalling or losing game login/session data, extension settings, or installed add-ons.
+- [ ] Verify every ABI variant uses the same signing certificate across releases.
+- [ ] Publish the first device-tested GitHub Release with all APK variants and SHA-256 checksums.
+- [ ] Add automated app/extension/GeckoView version and changelog consistency checks.
+- [ ] Keep release notes, README history, and version metadata synchronized.
+
+### 3. First physical-device validation (deferred)
+- [ ] Start only after at least a couple of substantial feature/update cycles and after known blocking issues and data risks are addressed.
 - [ ] Install the ARM64 APK on a physical Android phone.
 - [ ] Verify launch, Home → Play, sign-in, and actual gameplay.
 - [ ] Verify Home → Play returns to the existing game session without an unnecessary reload.
@@ -46,15 +63,7 @@ Tasks are ordered by risk and dependency. A checked item means the repository or
 - [ ] Test background/foreground, network transitions, activity recreation, and Gecko process recovery.
 - [ ] Record exact phone model/RAM variant and Android/vendor OS build.
 
-### 2. Signing, upgrades, and first release
-- [ ] Create and securely back up the permanent release keystore; configure the documented GitHub Actions secrets.
-- [ ] Verify a signed APK installs and a later APK upgrades it without uninstalling or losing game login/session data, extension settings, or installed add-ons.
-- [ ] Verify every ABI variant uses the same signing certificate across releases.
-- [ ] Publish the first device-tested GitHub Release with all APK variants and SHA-256 checksums.
-- [ ] Add automated app/extension/GeckoView version and changelog consistency checks.
-- [ ] Keep release notes, README history, and version metadata synchronized.
-
-### 3. Functional reliability and regression tests
+### 4. Functional reliability and regression tests
 - [ ] Re-run the full game/manager smoke test after changes to GeckoView, navigation, files, or lifecycle.
 - [ ] Verify `ensureBuiltIn` does not overwrite existing extension data on normal startup or app upgrade.
 - [ ] Test cancelled, malformed, large, and duplicate imports; verify safe download filenames and cleanup after failed downloads.
@@ -62,7 +71,7 @@ Tasks are ordered by risk and dependency. A checked item means the repository or
 - [ ] Add build checks for manifest permissions, extension assets, and ABI-specific APK contents.
 - [ ] Review crash logs and fix reproducible crashes before optional features.
 
-### 4. Performance and device compatibility — measure first
+### 5. Performance and device compatibility — measure first
 - [ ] Establish cold/warm startup, memory, frame pacing, touch response, battery, and temperature baselines on physical devices.
 - [ ] Test a representative short session and a 30–60 minute gameplay session.
 - [ ] Compare adaptive refresh-rate behavior and display scaling without forcing a fixed refresh rate.
@@ -71,7 +80,7 @@ Tasks are ordered by risk and dependency. A checked item means the repository or
 - [ ] Add device-specific workarounds only for reproducible issues; keep general Android behavior as the fallback.
 - [ ] Introduce Macrobenchmark, baseline profiles, StrictMode, or leak detection only when measurements justify them.
 
-### 5. Ongoing maintenance and deferred work
+### 6. Ongoing maintenance and deferred work
 - [ ] Review GeckoView stable security updates regularly; test gameplay and the current Addon Manager version before upgrading.
 - [ ] Review Gradle, Android Gradle Plugin, Kotlin, and AndroidX updates as separate build-verified changes.
 - [ ] Evaluate R8/resource shrinking only with release-build and extension/runtime regression tests; minification is currently disabled.
