@@ -41,7 +41,7 @@ Development prioritizes smooth gameplay, responsive touch controls, stable Gecko
 
 GitHub Actions builds on pushes to `main`, pull requests, and manual dispatches.
 
-**Download the right APK from the latest successful run's `Lasthavens-APK` artifact:**
+**Download the right APK from the latest successful run's `Lasthavens-APKs` artifact:**
 
 | File suffix | Intended device |
 |---|---|
@@ -51,6 +51,19 @@ GitHub Actions builds on pushes to `main`, pull requests, and manual dispatches.
 | `universal` | Fallback containing all supported CPU architectures; largest download |
 
 The build produces three ABI-specific APKs to avoid shipping all GeckoView native engines to every phone. The universal APK is retained as a compatibility fallback. Choose `arm64-v8a` for most modern Android phones.
+
+### Verified APK sizes
+
+The successful GitHub Actions run [#46](https://github.com/iNeonyne/Lasthavens-Android/actions/runs/45077047753) built and verified all four APKs. Sizes below are exact file sizes from that run:
+
+| APK | Size | Bytes |
+|---|---:|---:|
+| `arm64-v8a` | 92.53 MiB | 97,023,158 |
+| `armeabi-v7a` | 89.91 MiB | 94,275,656 |
+| `x86_64` | 97.27 MiB | 102,021,015 |
+| `universal` | 238.6 MiB | 250,186,943 |
+
+These are CI artifact sizes, not download-speed estimates. Future builds may differ.
 
 For a local build, open the project in Android Studio with JDK 17 and run `assembleRelease`.
 
@@ -81,11 +94,13 @@ For every future release, add a new row under **Released versions** and summariz
 - [x] Validate bundled extension JSON and JavaScript.
 - [x] Verify required extension and GeckoView assets are present in the APK.
 - [x] Add ABI-specific APK packaging and a universal fallback.
-- [ ] Confirm ABI APK generation and packaging in a completed, uncancelled CI run.
+- [x] Confirm ABI APK generation and packaging in successful CI run #46; record exact sizes.
 - [ ] Install the ARM64 APK on a physical phone.
 - [ ] Configure a stable signing keystore so updates install over previous releases.
 - [ ] Publish the first device-tested GitHub Release.
 - [ ] Add an automated version/changelog consistency check.
+- [ ] Add an in-app GitHub Releases update checker and APK download/install handoff.
+- [ ] Evaluate differential APK updates; retain full signed APK downloads as the reliable fallback.
 
 ### Physical-device performance and compatibility testing
 - [ ] Confirm the exact phone variant (8GB or 12GB RAM) and Android/HyperOS build used for testing.
@@ -111,7 +126,8 @@ For every future release, add a new row under **Released versions** and summariz
 - [ ] Add a repeatable smoke-test checklist for every release.
 
 ### Size and performance
-- [ ] Measure per-ABI APK sizes and compare them with the current universal APK.
+- [x] Measure per-ABI APK sizes and compare them with the universal APK (CI run #46).
+- [ ] Investigate safe APK size reductions without removing GeckoView or manager functionality.
 - [ ] Profile cold start, memory use, and game responsiveness on representative physical Android devices.
 - [ ] Evaluate safe R8/resource shrinking after confirming GeckoView keep rules.
 - [ ] Keep GeckoView pinned to an exact stable version and review updates for extension compatibility.
