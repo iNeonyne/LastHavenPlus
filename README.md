@@ -89,7 +89,7 @@ For every future release, add a new row under **Released versions** and summariz
 - [x] Validate bundled extension JSON and JavaScript.
 - [x] Verify required extension and GeckoView assets are present in the APK.
 - [x] Add ABI-specific APK packaging and a universal fallback.
-- [x] Confirm ABI APK generation and packaging in CI.
+- [ ] Confirm ABI APK generation and packaging in a completed, uncancelled CI run.
 - [ ] Install the ARM64 APK on a physical phone.
 - [ ] Configure a stable signing keystore so updates install over previous releases.
 - [ ] Publish the first device-tested GitHub Release.
