@@ -42,7 +42,7 @@ The project is maintained in [this GitHub repository](https://github.com/iNeonyn
 
 | Component | Version | Notes |
 |---|---:|---|
-| Android app | `1.0.0` | Current source version; not yet a device-verified release |
+| Android app | `2.0.0` | Current major development version; not yet a released or device-verified build |
 | Addon Manager | `1.0.1` | Permission checks fail closed when the browser permissions API is unavailable |
 | GeckoView | `159.0.20261102144711` | Pinned Mozilla engine build |
 
@@ -101,13 +101,14 @@ For a local build, open the project in Android Studio with JDK 17 and run `assem
 
 ## Releases and version history
 
-A version is published as a GitHub Release only after its build and validation pass. Each release must include the matching APKs and a concise list of user-visible changes. To publish a version, update `appVersionName` and `appVersionCode` in `app/build.gradle.kts`, update this README's version table and history, commit the changes, then push a matching tag such as `v1.1.0`. The release workflow attaches all generated APK variants to that GitHub Release.
+A version is published as a GitHub Release only after its build and validation pass. Each release must include the matching APKs and a concise list of user-visible changes. To publish a version, update `appVersionName` and `appVersionCode` in `app/build.gradle.kts`, update this README's version table and history, commit the changes, then push a matching tag such as `v2.0.0`. The release workflow attaches all generated APK variants to that GitHub Release.
 
 ### Released versions
 
 | Version | Status | Summary |
 |---|---|---|
-| 1.0.0 | CI build candidate; physical-device validation deferred | First packaged Android app baseline with GeckoView, Home/Play/Addon Manager screens, shared runtime, and bundled Addon Manager. |
+| 1.0.0 | Baseline; CI build candidate, physical-device validation deferred | First packaged Android app baseline with GeckoView, Home/Play/Addon Manager screens, shared runtime, and bundled Addon Manager. |
+| 2.0.0 | Major version in development; not released | Removes the in-game top loading-progress line while retaining the configurable LH diagnostics badge and diagnostic logging. |
 
 ### Unreleased changes on `main`
 
@@ -115,6 +116,7 @@ A version is published as a GitHub Release only after its build and validation p
 - Added validation for every bundled Addon Manager JSON and JavaScript file.
 - Added APK-content checks for the built-in extension, English locale, and GeckoView native engine.
 - Added native JavaScript alert, confirm, and prompt dialogs.
+- Removed the thin top-edge loading-progress line from the game view; retained the LH diagnostics badge and its logging.
 - Fixed CI APK signature verification to call the SDK's explicit `apksigner` path.
 - Added SHA-256 checksum generation and verification; checksum files are included with CI artifacts and GitHub Releases.
 - Added early release-keystore, alias, and private-key password validation so signing configuration errors are reported before APK packaging.
