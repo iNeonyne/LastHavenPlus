@@ -1,4 +1,4 @@
-name: Build APK
+name: Build LastHavenPlus APK
 
 on:
   push:
@@ -11,7 +11,7 @@ permissions:
   contents: write
 
 concurrency:
-  group: lasthavens-android-${{ github.ref }}
+  group: lasthavenplus-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -178,20 +178,20 @@ jobs:
             filename=$(basename "$apk")
             variant="${filename#app-}"
             variant="${variant%-release.apk}"
-            cp "$apk" "dist/Lasthavens-$VERSION-$variant.apk"
+            cp "$apk" "dist/LastHavenPlus-$VERSION-$variant.apk"
           done
           test "$(find dist -maxdepth 1 -name '*.apk' | wc -l)" -eq 4
           ls -lh dist/
 
       - uses: actions/upload-artifact@v4
         with:
-          name: Lasthavens-APKs
+          name: LastHavenPlus-APKs
           path: dist/*.apk
 
       - uses: actions/upload-artifact@v4
         with:
-          name: Lasthavens-ARM64
-          path: dist/Lasthavens-*-arm64-v8a.apk
+          name: LastHavenPlus-ARM64
+          path: dist/LastHavenPlus-*-arm64-v8a.apk
           if-no-files-found: error
 
       - name: Publish GitHub Release (tags only)
