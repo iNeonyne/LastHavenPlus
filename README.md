@@ -11,7 +11,7 @@ Android app for playing Lasthavens (`https://alt.lasthavens.com/play`) in Mozill
 ## Main screens
 
 - **Home:** Lasthavens branding, Play and Addon Manager actions, and component versions.
-- **Play:** fullscreen game session. The game session is kept when returning Home; external websites are routed to the system browser.
+- **Play:** fullscreen landscape game session. The game session is kept when returning Home; external websites are routed to the system browser.
 - **Addon Manager:** the bundled extension's manager page, sharing the same GeckoRuntime profile as the game.
 
 ## Architecture
@@ -26,7 +26,7 @@ Android app for playing Lasthavens (`https://alt.lasthavens.com/play`) in Mozill
 
 GitHub Actions builds the release APK on every push to `main`, uploads it as an artifact named `Lasthavens-APK`, and attaches it to a GitHub Release when a `v*` tag is pushed.
 
-The workflow uses JDK 17, Android SDK 37, Android Gradle Plugin 9.1.1, built-in Kotlin support, and Gradle 9.3.1.
+The workflow uses JDK 17, the Android 17 preview SDK (API 37), Android Gradle Plugin 9.1.1, built-in Kotlin support, and Gradle 9.3.1. The app currently targets Android 15 (API 35) while compiling against API 37.
 
 For a local build, open this folder in Android Studio with JDK 17 and run the `assembleRelease` task.
 

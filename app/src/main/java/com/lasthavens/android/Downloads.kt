@@ -30,7 +30,7 @@ object Downloads {
         Thread({
             var pendingUri: Uri? = null
             try {
-                body.use { input ->
+                val savedMessage = body.use { input ->
                     if (Build.VERSION.SDK_INT >= 29) {
                         val resolver = app.contentResolver
                         val values = ContentValues().apply {
@@ -56,13 +56,15 @@ object Downloads {
                             "Could not finish download entry"
                         }
                         pendingUri = null
+                        app.getString(R.string.download_saved, name)
                     } else {
                         val dir = app.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS) ?: app.filesDir
                         val file = File(dir, name)
                         file.outputStream().use { out -> input.copyTo(out) }
+                        app.getString(R.string.download_saved_app, file.absolutePath)
                     }
                 }
-                toast(app, app.getString(R.string.download_saved, name))
+                toast(app, savedMessage)
             } catch (error: Exception) {
                 pendingUri?.let { runCatching { app.contentResolver.delete(it, null, null) } }
                 toast(app, app.getString(R.string.download_failed))

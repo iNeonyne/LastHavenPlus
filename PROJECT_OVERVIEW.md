@@ -8,6 +8,7 @@ Provide an Android app for Lasthavens using an embedded GeckoView browser engine
 
 - Launch the game at https://alt.lasthavens.com/play.
 - Provide a home screen with Play and Addon Manager actions.
+- Lock the game screen to landscape, matching Lasthavens' Android play guidance.
 - Keep the game and manager on a shared GeckoView profile so installed add-ons are available to the game.
 - Return to Home without unnecessarily discarding the game session.
 - Route non-game websites to the device's browser.

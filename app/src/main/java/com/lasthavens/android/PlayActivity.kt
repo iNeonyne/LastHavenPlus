@@ -2,6 +2,8 @@ package com.lasthavens.android
 
 import android.net.Uri
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.view.WindowManager
 import android.widget.ProgressBar
 import android.widget.Toast
@@ -74,8 +76,14 @@ class PlayActivity : AppCompatActivity() {
                 val uri = Uri.parse(request.uri)
                 if (request.target == GeckoSession.NavigationDelegate.TARGET_WINDOW_NEW) {
                     // Intercept target=_blank before Gecko asks for a second session. Keep game links in this view.
-                    if (GameUrls.isGameHost(uri)) session.loadUri(request.uri)
-                    else GameUrls.openExternal(this@PlayActivity, uri)
+                    if (GameUrls.isGameHost(uri)) {
+                        // Defer the current-session navigation until this callback has returned.
+                        Handler(Looper.getMainLooper()).post {
+                            if (!isFinishing && !isDestroyed && session.isOpen) session.loadUri(request.uri)
+                        }
+                    } else {
+                        GameUrls.openExternal(this@PlayActivity, uri)
+                    }
                     return GeckoResult.fromValue(AllowOrDeny.DENY)
                 }
                 return if (GameUrls.isInApp(uri)) {
