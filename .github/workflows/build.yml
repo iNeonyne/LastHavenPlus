@@ -98,7 +98,11 @@ jobs:
               raise SystemExit("Addon Manager manifest.json is missing")
           if not (root / "_locales" / "en" / "messages.json").is_file():
               raise SystemExit("English extension locale is missing")
-          print(f"Validated {len(files)} JSON files")
+          manifest = json.loads((root / "manifest.json").read_text(encoding="utf-8"))
+          notes = root / f"README-{manifest['version']}.txt"
+          if not notes.is_file():
+              raise SystemExit(f"Version-specific Addon Manager release notes are missing: {notes.name}")
+          print(f"Validated {len(files)} JSON files and {notes.name}")
           PY
           while IFS= read -r -d '' file; do
             node --input-type=module --check < "$file"
