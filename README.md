@@ -37,7 +37,7 @@ The app and Addon Manager versions are independent. Version numbers may change w
 
 GitHub Actions builds on pushes to `main`, pull requests, and manual dispatches.
 
-**Download the right APK from the latest successful run's `Lasthavens-APKs` artifact:**
+**Download the right APK from the latest successful run's `Lasthavens-APK` artifact:**
 
 | File suffix | Intended device |
 |---|---|
@@ -46,7 +46,7 @@ GitHub Actions builds on pushes to `main`, pull requests, and manual dispatches.
 | `x86_64` | Android emulators and x86-64 devices |
 | `universal` | Fallback containing all supported CPU architectures; largest download |
 
-The build produces ABI-specific APKs to avoid shipping all GeckoView native engines to every phone. The universal APK is retained as a compatibility fallback.
+The build produces three ABI-specific APKs to avoid shipping all GeckoView native engines to every phone. The universal APK is retained as a compatibility fallback. Choose `arm64-v8a` for most modern Android phones.
 
 For a local build, open the project in Android Studio with JDK 17 and run `assembleRelease`.
 
@@ -77,7 +77,8 @@ For every future release, add a new row under **Released versions** and summariz
 - [x] Validate bundled extension JSON and JavaScript.
 - [x] Verify required extension and GeckoView assets are present in the APK.
 - [x] Add ABI-specific APK packaging and a universal fallback.
-- [ ] Confirm ABI APK generation and installation on a physical ARM64 phone.
+- [x] Confirm ABI APK generation and packaging in CI.
+- [ ] Install the ARM64 APK on a physical phone.
 - [ ] Configure a stable signing keystore so updates install over previous releases.
 - [ ] Publish the first device-tested GitHub Release.
 - [ ] Add an automated version/changelog consistency check.
