@@ -25,7 +25,7 @@ The project is maintained in [this GitHub repository](https://github.com/iNeonyn
 - Protect user data. Before changing Gecko profiles, extension storage, add-on formats, backup behavior, or migration logic, understand the existing behavior and provide a tested backup/migration/rollback path.
 - Prefer small, reviewable changes. Check related Kotlin code, extension code, Gradle configuration, manifests, and CI checks before editing.
 - Validate changes with the narrowest relevant tests, then run the repository's CI/release build when feasible. Do not describe a build, test, device check, or release as successful unless it actually ran and passed.
-- Do not assume device compatibility or performance. Measure on physical devices and record the tested model and Android version.
+- Defer physical-device testing until the app has completed at least a couple of substantial feature/update cycles and source-level, automated, and CI checks show no known blocking issues. Physical testing is a later validation gate, not the first development task; never claim device compatibility or performance before it is measured.
 - Keep permissions minimal, handle untrusted web content carefully, and do not weaken URL/navigation boundaries for convenience.
 - Keep this README, version metadata, release notes, and the actual implementation in sync. Update the To-do list when work changes project status.
 - Do not add unrelated browser features, analytics, push notifications, background services, or differential updating without a demonstrated requirement.
@@ -59,7 +59,7 @@ The app and Addon Manager versions are independent. Version numbers may change w
 
 ## Performance and device compatibility
 
-Development prioritizes smooth gameplay, responsive touch controls, stable GeckoView sessions, efficient memory use, and reasonable battery and thermal behavior across supported Android devices. Validate performance on physical devices with different hardware and display configurations. Keep refresh-rate behavior adaptive, avoid assuming a fixed FPS target, and add device-specific workarounds only for reproducible compatibility issues.
+Development prioritizes smooth gameplay, responsive touch controls, stable GeckoView sessions, efficient memory use, and reasonable battery and thermal behavior. During early development, use code review, automated tests, emulator checks where useful, and CI to catch issues without making physical-device testing an immediate blocker. Schedule comprehensive physical-device testing after at least a couple of substantial feature/update cycles, once known bugs and data-handling risks have been addressed. At that stage, test different hardware and display configurations, record device models and Android versions, and add device-specific workarounds only for reproducible compatibility issues. Do not claim real-device compatibility or measured performance before those tests are completed.
 
 ## Architecture
 
@@ -107,7 +107,7 @@ A version is published as a GitHub Release only after its build and validation p
 
 | Version | Status | Summary |
 |---|---|---|
-| 1.0.0 | CI build candidate; device testing pending | First packaged Android app baseline with GeckoView, Home/Play/Addon Manager screens, shared runtime, and bundled Addon Manager. |
+| 1.0.0 | CI build candidate; physical-device validation deferred | First packaged Android app baseline with GeckoView, Home/Play/Addon Manager screens, shared runtime, and bundled Addon Manager. |
 
 ### Unreleased changes on `main`
 
@@ -123,24 +123,22 @@ For every future release, add a new row under **Released versions** and summariz
 
 This is the active development roadmap, ordered by dependency and user impact. The game client and Addon Manager are both core parts of the app. The Addon Manager is not frozen at 0.11.0: its code may be fixed, improved, redesigned, or upgraded when useful. Changes must be tested against real add-on workflows and must protect existing user data.
 
-### Priority 1 — Verify the current app on a real device
-- [ ] Install the `arm64-v8a` APK on a physical Android phone.
-- [ ] Verify first launch, Home → Play, sign-in, and actual gameplay.
-- [ ] Verify returning Home and reopening Play preserves the game session where intended.
-- [ ] Open Addon Manager and verify it loads from the bundled extension in the shared Gecko profile.
-- [ ] Install a known-compatible add-on and verify it is available to the game.
-- [ ] Test add-on import, export/download, enable/disable, removal, backup, and restore.
-- [ ] Test JavaScript alert/confirm/prompt, Android file picker, and download saving.
-- [ ] Test external links, popup links, fullscreen, back navigation, keyboard, and screen insets.
-- [ ] Test background/foreground, network loss/reconnect, activity recreation, and Gecko content-process recovery.
-- [ ] Record device model, RAM, Android version, and vendor OS build; distinguish tested behavior from assumptions.
+### Priority 1 — Source-level, automated, and CI validation
+- [ ] Audit the Kotlin app, bundled extension, Gradle configuration, manifest, and CI workflow against the documented architecture.
+- [ ] Build a test matrix for game navigation, shared Gecko profile behavior, add-on workflows, file handling, lifecycle, and error recovery.
+- [ ] Add or expand automated tests for URL routing/allow-listing, version parsing, download filename sanitization, and other testable Kotlin logic.
+- [ ] Validate bundled extension JSON, JavaScript, manifests, locale files, and APK contents on every relevant CI run.
+- [ ] Use emulator tests where practical for launch, navigation, lifecycle, file-picker integration, and basic UI behavior.
+- [ ] Reproduce and fix known bugs before advancing major feature/update milestones.
+- [ ] Review data-storage behavior and document exactly what is preserved, backed up, or excluded before changing profile or extension storage.
+- [ ] Keep a record of unresolved issues and risks; do not treat passing CI as proof that the app is bug-free.
 
 ### Priority 2 — Reliable signed releases and upgrades
 - [ ] Create and securely back up the permanent release keystore; configure the four documented GitHub Actions secrets.
 - [ ] Verify a release-signed APK installs cleanly and a subsequent release upgrades it without uninstalling the app.
 - [ ] Verify the signing certificate is identical across ABI APKs and remains unchanged between releases.
 - [ ] Verify app upgrades preserve the Gecko profile, login/session data, manager settings, and installed add-ons.
-- [ ] Publish a device-tested GitHub Release with all supported APK variants and SHA-256 checksums.
+- [ ] Once the later physical-device validation gate has passed, publish a tested GitHub Release with all supported APK variants and SHA-256 checksums.
 - [ ] Keep version metadata, release notes, README history, and generated APK names synchronized.
 - [ ] Add CI checks for version consistency, manifest permissions, bundled extension files, and APK ABI contents.
 
@@ -163,14 +161,16 @@ This is the active development roadmap, ordered by dependency and user impact. T
 - [ ] Add focused Kotlin unit tests for URL routing/allow-listing, download filename sanitization, and version parsing.
 - [ ] Keep Android permissions to the minimum required and document any permission changes with their purpose.
 
-### Priority 5 — Measured performance and compatibility
-- [ ] Establish cold/warm startup, memory, frame pacing, touch responsiveness, battery, and temperature baselines on physical hardware.
-- [ ] Test a short session and a 30–60 minute gameplay session; record memory and thermal behavior.
-- [ ] Check WebGL/game rendering, touch input, display scaling, and adaptive refresh-rate behavior.
-- [ ] Test background/resume and battery-management behavior on the primary phone and at least one other Android device.
-- [ ] Test the lowest supported Android API (26) and a current Android release where devices or emulators are available.
-- [ ] Investigate reproducible OEM-specific problems and add targeted workarounds only when necessary.
-- [ ] Introduce Macrobenchmark, baseline profiles, StrictMode, or leak detection when measurements justify them; compare before and after.
+### Priority 5 — Physical-device validation (deferred milestone)
+- [ ] Begin this phase after at least a couple of substantial feature/update cycles and after known blocking bugs and data risks have been addressed.
+- [ ] Install the current `arm64-v8a` APK on a physical Android phone and verify installation, first launch, Home → Play, sign-in, and gameplay.
+- [ ] Verify the game and Addon Manager use the intended shared Gecko runtime/profile.
+- [ ] Test add-on install, update, enable/disable, removal, import/export, backup/restore, and game integration.
+- [ ] Test JavaScript dialogs, file picker, downloads, external links, popups, fullscreen, back navigation, keyboard, and screen insets.
+- [ ] Test background/foreground, network loss/reconnect, activity recreation, and Gecko content-process recovery.
+- [ ] Establish startup, memory, frame pacing, touch responsiveness, battery, and thermal baselines, including a 30–60 minute gameplay session.
+- [ ] Test at least one additional Android device or hardware configuration when practical.
+- [ ] Record device model, RAM, Android version, vendor OS build, results, and remaining limitations.
 
 ### Priority 6 — Maintenance and useful optional features
 - [ ] Review GeckoView stable security updates regularly; test gameplay and Addon Manager compatibility before upgrading.
@@ -182,8 +182,8 @@ This is the active development roadmap, ordered by dependency and user impact. T
 
 ### Release checklist
 - [ ] Run CI validation, unit tests, and a release build.
-- [ ] Install and test the candidate APK on a physical device.
-- [ ] Test game launch and the complete Addon Manager critical workflow.
+- [ ] Complete physical-device validation at the deferred milestone before declaring device compatibility or publishing a fully validated stable release.
+- [ ] Test game launch and the complete Addon Manager critical workflow on the physical device during that validation phase.
 - [ ] Verify app upgrade behavior and data/profile preservation from the previous release.
 - [ ] Confirm package name, version, signing certificate, ABI, and requested permissions.
 - [ ] Generate and verify SHA-256 checksums for every release APK.
@@ -213,7 +213,7 @@ Do not commit the keystore or passwords to the repository.
 - Live Game Scan observes add-on file requests; it cannot prove that an add-on's Lua code initialized successfully.
 - Backup ZIPs contain managed add-on files only. They do not include game settings, SavedVariables, or manager enabled/disabled flags.
 - The bundled extension's Gecko minimum version is 142.0; keep GeckoView at or above that version and test extension compatibility before upgrades.
-- A successful CI build proves packaging and static validation, not real-device functionality.
+- A successful CI build proves packaging and the checks actually run; it does not prove the app is bug-free or establish real-device functionality. Physical-device validation is intentionally scheduled after at least a couple of substantial feature/update cycles.
 
 ## Project structure
 
