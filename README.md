@@ -118,6 +118,7 @@ A version is published as a GitHub Release only after its build and validation p
 - Fixed CI APK signature verification to call the SDK's explicit `apksigner` path.
 - Added SHA-256 checksum generation and verification; checksum files are included with CI artifacts and GitHub Releases.
 - Added early release-keystore, alias, and private-key password validation so signing configuration errors are reported before APK packaging.
+- Added Addon Manager regression tests for metadata parsing, dependency handling, library merge behavior, archive round-trips, and malicious/duplicate ZIP paths; CI now runs them.
 - Added ABI-specific APK outputs plus a universal fallback (CI validation pending).
 
 For every future release, add a new row under **Released versions** and summarize the user-visible changes. Keep this README in the same commit as the version bump.
@@ -151,7 +152,7 @@ This is the active development roadmap, ordered by dependency and user impact. T
 - [ ] Fix reproducible manager bugs and improve error messages, loading states, and recovery from failed operations.
 - [ ] Review the manager UI for usability on phone-sized screens, touch targets, accessibility, and large add-on lists.
 - [ ] Improve add-on metadata, compatibility reporting, and update handling where the upstream/game ecosystem provides reliable information.
-- [ ] Add automated tests for manager logic and validation of bundled JSON, JavaScript, manifests, and extension packaging.
+- [x] Add Node-based regression tests for TOC parsing, dependency order/cycles, merge and enabled-state preservation, duplicate detection, and ZIP import/export path validation; run them in CI. Existing JSON, JavaScript, manifest, locale, and APK packaging checks remain in place.
 - [ ] Evaluate newer Addon Manager versions or architectural changes when they provide meaningful benefits; record compatibility and migration risks before adopting them.
 - [ ] Before any manager migration or data-format change, define and test a backup, migration, and rollback path for existing add-ons and settings.
 - [ ] Keep the bundled extension version and app release notes accurate; update `manifest.json`, `README-1.0.0.txt` (or add a version-specific release note), the root README, and `PROJECT_OVERVIEW.md` whenever manager functionality changes.
