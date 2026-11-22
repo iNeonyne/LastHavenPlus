@@ -314,10 +314,12 @@ function render() {
 }
 const ORIGINS = ["https://*.lasthavens.com/*"];
 async function access() {
-  let granted = true;
+  let granted = false;
   try {
     granted = await browser.permissions.contains({ origins: ORIGINS });
-  } catch (e) {}
+  } catch (error) {
+    console.warn("Could not check game-site permissions", error);
+  }
   $("#perm").hidden = granted;
 }
 $("#grant").onclick = async () => {
