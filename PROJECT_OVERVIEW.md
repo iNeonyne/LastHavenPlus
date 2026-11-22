@@ -15,7 +15,7 @@ Tune performance for smooth gameplay, responsive controls, stable GeckoView sess
 
 ## Version snapshot
 
-- Android app: 1.0.0 (CI build candidate; physical-device validation pending)
+- Android app: 2.0.0 (major development version; not released; physical-device validation pending)
 - Addon Manager: 1.0.1 (permission API errors now fail closed; version is tracked in the extension manifest)
 - GeckoView: 159.0.20261102144711
 
@@ -28,6 +28,7 @@ The app and extension have independent version numbers. The extension's `manifes
 - [x] JSON and JavaScript syntax validation for the bundled extension.
 - [x] APK asset verification for the extension manifest, English locale, and GeckoView ARM64 engine.
 - [x] Native JavaScript alert/confirm/prompt dialog delegate.
+- [x] Removed the thin top-edge game loading-progress line while retaining the configurable LH diagnostics badge and logging.
 - [x] ABI-specific APK packaging and universal fallback (CI validation pending).
 
 ## To-do / verification plan
