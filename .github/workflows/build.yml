@@ -38,12 +38,24 @@ jobs:
         with:
           gradle-version: "9.3.1"
 
-      - name: Prepare signing key (optional)
+      - name: Prepare signing key
         env:
           KS: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          KS_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
         run: |
+          if [[ "$GITHUB_REF" == refs/tags/v* ]]; then
+            for name in KS KS_PASSWORD ALIAS KEY_PASSWORD; do
+              if [ -z "${!name}" ]; then
+                echo "Missing required GitHub Actions secret for stable release signing: $name"
+                exit 1
+              fi
+            done
+          fi
           if [ -n "$KS" ]; then
             echo "$KS" | base64 -d > "$RUNNER_TEMP/release.jks"
+            test -s "$RUNNER_TEMP/release.jks"
             echo "KEYSTORE_PATH=$RUNNER_TEMP/release.jks" >> "$GITHUB_ENV"
           fi
 
@@ -92,6 +104,27 @@ jobs:
           KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
           KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
         run: gradle --no-daemon :app:assembleRelease
+
+      - name: Verify APK signatures
+        run: |
+          set -euo pipefail
+          expected=""
+          for apk in app/build/outputs/apk/release/*.apk; do
+            output=$(apksigner verify --verbose --print-certs "$apk")
+            echo "$output"
+            cert=$(printf '%s\n' "$output" | sed -n 's/^Signer #1 certificate SHA-256 digest: //p' | head -n1)
+            [ -n "$cert" ] || { echo "Could not read signer certificate from $apk"; exit 1; }
+            if [ -z "$expected" ]; then
+              expected="$cert"
+            elif [ "$cert" != "$expected" ]; then
+              echo "APK variants were signed with different certificates"
+              exit 1
+            fi
+            if [[ "$GITHUB_REF" == refs/tags/v* ]] && printf '%s' "$output" | grep -qi 'CN=Android Debug'; then
+              echo "Refusing to publish a debug-signed APK"
+              exit 1
+            fi
+          done
 
       - name: Verify packaged app assets
         run: |
