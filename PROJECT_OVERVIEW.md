@@ -33,11 +33,13 @@ The app and extension have independent version numbers. Bump the app version for
 ## To-do / verification plan
 
 ### Release engineering
-- [ ] Confirm split APK filenames and sizes from a completed CI artifact.
+- [x] Confirm split APK filenames and sizes from successful CI run #46.
 - [ ] Install the ARM64 APK on a physical Android phone.
 - [ ] Configure a stable release signing key.
 - [ ] Publish a device-tested GitHub Release with all ABI variants.
 - [ ] Add a changelog/version consistency check.
+- [ ] Add an in-app GitHub Releases update checker and APK download/install handoff.
+- [ ] Evaluate differential APK updates; retain full signed APK downloads as fallback.
 
 ### Functional testing
 - [ ] Launch the game, sign in, and verify actual gameplay.
@@ -62,6 +64,7 @@ The app and extension have independent version numbers. Bump the app version for
 ### Quality
 - [ ] Add Kotlin unit tests for URL routing, download filenames, and version parsing.
 - [ ] Measure startup, memory, and responsiveness on physical hardware.
+- [x] Record verified ABI APK sizes from CI run #46.
 - [ ] Reduce package size safely without breaking GeckoView or bundled extension assets.
 - [ ] Review GeckoView stable updates and extension compatibility regularly.
 
