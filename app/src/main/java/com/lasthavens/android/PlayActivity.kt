@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.view.WindowManager
-import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AlertDialog
@@ -31,7 +30,6 @@ class PlayActivity : AppCompatActivity() {
     private val app get() = App.instance
     private val picker = FilePicker(this)
     private lateinit var geckoView: GeckoView
-    private lateinit var progress: ProgressBar
     private lateinit var session: GeckoSession
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -40,7 +38,6 @@ class PlayActivity : AppCompatActivity() {
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         setContentView(R.layout.activity_gecko)
         geckoView = findViewById(R.id.gecko)
-        progress = findViewById(R.id.progress)
 
         // Back never navigates inside the game; it asks first so a stray swipe can't lose the session.
         onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
@@ -95,17 +92,7 @@ class PlayActivity : AppCompatActivity() {
             }
         }
         session.progressDelegate = object : GeckoSession.ProgressDelegate {
-            override fun onPageStart(session: GeckoSession, url: String) {
-                progress.progress = 0
-                progress.visibility = android.view.View.VISIBLE
-            }
-
-            override fun onProgressChange(session: GeckoSession, value: Int) {
-                progress.progress = value
-            }
-
             override fun onPageStop(session: GeckoSession, success: Boolean) {
-                progress.visibility = android.view.View.GONE
                 if (!success && !isFinishing) {
                     Toast.makeText(this@PlayActivity, R.string.game_load_failed, Toast.LENGTH_LONG).show()
                 }
@@ -153,7 +140,6 @@ class PlayActivity : AppCompatActivity() {
             session.contentDelegate = null
             session.promptDelegate = null
             session.navigationDelegate = null
-            session.progressDelegate = null
         }
         geckoView.releaseSession()
         super.onDestroy()
