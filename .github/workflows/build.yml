@@ -25,10 +25,10 @@ jobs:
         with:
           packages: platform-tools
 
-      - name: Install Android 17 preview SDK
+      - name: Install Android 17 SDK
         run: |
           yes | sdkmanager --licenses
-          sdkmanager --channel=3 "platforms;android-37" "build-tools;37.0.0"
+          sdkmanager --install "platforms;android-37" "build-tools;36.0.0"
 
       - uses: gradle/actions/setup-gradle@v4
         with:
