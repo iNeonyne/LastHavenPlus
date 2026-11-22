@@ -1,37 +1,55 @@
 # Lasthavens Android
 
-Android app for playing Lasthavens (`https://alt.lasthavens.com/play`) in a built-in
-Firefox engine (Mozilla GeckoView) with an integrated **Addon Manager**.
+Android app for playing Lasthavens (`https://alt.lasthavens.com/play`) in Mozilla GeckoView, with the Lasthavens Addon Manager bundled into the app.
 
-| | Version |
-|---|---|
-| App | **1.0.0** |
-| Addon Manager | **0.11.0** (kept fixed until the project owner approves a change) |
+| Component | Version |
+|---|---:|
+| Android app | 1.0.0 |
+| Bundled Addon Manager | 0.11.0 |
+| GeckoView | 160.0.20261116130455 |
 
-## Screens
-- **Home** – dark gaming style, Lasthavens branding, **Play** and **Addon Manager** buttons, both versions shown.
-- **Play** – full-screen game. Back asks before leaving (Keep playing / Reload / Home). Non-Lasthavens links open in the system browser. The session stays loaded when you return to Home.
-- **Addon Manager** – the bundled extension's own `manager.html`, shown in its own GeckoView session.
+## Main screens
 
-## Architecture (decisions)
-1. **GeckoView, not WebView/TWA.** The Addon Manager is a Firefox MV3 WebExtension (content scripts in the `MAIN` world, `browser.storage`, IndexedDB). GeckoView is the only embeddable engine that can run it. (The previous `lasthavens.apk` was a Trusted Web Activity with no add-on support.)
-2. **Add-on Manager is bundled unchanged** in `app/src/main/assets/extensions/lh-addon-manager/` and installed as a *built-in* extension (`ensureBuiltIn`), so Mozilla signing is not needed. The game is only loaded after the extension is ready so its `document_start` scripts apply.
-3. **One GeckoRuntime = one profile**, so the manager page and the game share extension storage; installed add-ons reach the game. After using the manager, the next Play reloads the game.
-4. **Host-side glue GeckoView does not provide:** file picker (`<input type=file>` for ZIP restore), downloads (add-on export / backup ZIP → `Downloads/Lasthavens`), approval of the manager's optional GitHub/GitLab host permissions (only its declared origins), and `tabs.create` routing.
-5. `_locales` caveat: AAPT drops asset folders starting with `_`; `build.gradle.kts` overrides the ignore pattern so the extension's translations are packaged.
-6. **Version guard:** the build fails if the bundled manager is not 0.11.0.
+- **Home:** Lasthavens branding, Play and Addon Manager actions, and component versions.
+- **Play:** fullscreen game session. The game session is kept when returning Home; external websites are routed to the system browser.
+- **Addon Manager:** the bundled extension's manager page, sharing the same GeckoRuntime profile as the game.
+
+## Architecture
+
+1. **GeckoView:** embeds Firefox rather than using Android WebView, which is necessary for the manager's WebExtension APIs.
+2. **Built-in extension:** the Addon Manager files are packaged under `app/src/main/assets/extensions/lh-addon-manager/` and installed with `ensureBuiltIn`.
+3. **Shared profile:** the game and manager use one GeckoRuntime so extension storage and installed add-ons are shared.
+4. **Native bridges:** Android handles file selection, downloads, external links, extension tab creation, and JavaScript alert/confirm/prompt dialogs.
+5. **Translations:** the Android resource ignore pattern is customized so the extension's `_locales` directories are included in the APK.
 
 ## Build
-GitHub Actions (`.github/workflows/build.yml`) builds `Lasthavens-1.0.0.apk` on every push, uploads it as a workflow artifact, and attaches it to a GitHub Release when you push a tag like `v1.0.0`.
 
-Locally: Android Studio (JDK 17) → open this folder → Run. Or `gradle :app:assembleRelease` (Gradle 8.10+).
+GitHub Actions builds the release APK on every push to `main`, uploads it as an artifact named `Lasthavens-APK`, and attaches it to a GitHub Release when a `v*` tag is pushed.
 
-**Signing:** without secrets the APK is signed with the debug key (installable, but builds from different runners can't update each other). To use your own key, add the repo secrets `ANDROID_KEYSTORE_BASE64`, `ANDROID_KEYSTORE_PASSWORD`, `ANDROID_KEY_ALIAS`, `ANDROID_KEY_PASSWORD`.
+The workflow uses JDK 17, Android SDK 35, Android Gradle Plugin 8.10.0, Kotlin 2.2.0, and Gradle 8.11.1.
 
-**GeckoView version:** `gradle.properties` → `geckoViewVersion=142.+` (the manager needs Gecko ≥ 142). Pin an exact version for reproducible builds.
+For a local build, open this folder in Android Studio with JDK 17 and run the `assembleRelease` task.
 
-## Not yet verified (first compile/run happens in CI or Android Studio)
-- GeckoView API usage was written without a compiler or device available. If a signature differs in your resolved GeckoView version, the CI log will point at the line.
-- Blob downloads (backup ZIP) and the file picker need a device test.
-- Browser-style JS dialogs (`alert`/`confirm`) are not implemented.
-- If the game's login uses another domain, add it in `GameUrls.isInApp`.
+## Signing
+
+When no signing secrets are configured, CI signs with the Android debug key so the APK can be installed for testing. Different GitHub-hosted runners may generate different debug keys, so an APK from a later run may not update an APK from an earlier run. Uninstall the previous test APK before installing a differently signed one.
+
+For repeatable in-place updates, configure these repository secrets with your own release keystore:
+- `ANDROID_KEYSTORE_BASE64`
+- `ANDROID_KEYSTORE_PASSWORD`
+- `ANDROID_KEY_ALIAS`
+- `ANDROID_KEY_PASSWORD`
+
+## Verification status
+
+A release APK has compiled successfully in GitHub Actions. Device behavior is not yet verified. The following still require testing on an Android phone:
+
+- Game launch, sign-in, and navigation between Home and Play.
+- Addon Manager launch and confirmation that installed add-ons reach the game.
+- Add-on ZIP import, download/export, backup, and restore.
+- JavaScript dialogs and external link handling.
+- Fullscreen, back navigation, session recovery, and process-death recovery.
+
+## Engine updates
+
+The GeckoView dependency is pinned to an exact version for reproducible builds. Update it deliberately to a current stable GeckoView build after checking compatibility with the bundled extension's `strict_min_version`.
