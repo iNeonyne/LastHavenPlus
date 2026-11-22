@@ -19,7 +19,7 @@
   let state = { kind: "wait", text: "waiting" },
     wrapped = 0,
     gameSeen = false, // set once the game creates its first worker; the badge never shows before
-    badgeOn = false, // on-screen diagnostics badge is intentionally disabled
+    badgeOn = null, // null = setting not known yet; nothing is drawn until it is
     hiddenNow = false,
     paintTimer = 0;
   const ui = {};
@@ -217,7 +217,7 @@
       received = true;
       clearInterval(helloTimer);
       const p = d.payload || {};
-      badgeOn = false; // keep diagnostics in the console/manager, not over the game
+      badgeOn = p.badge !== false;
       log("data received from extension: " + (p.addons || []).length + " enabled add-on(s)");
       gotPayload(p);
     } else if (d.kind === "changed" && gameSeen) {
