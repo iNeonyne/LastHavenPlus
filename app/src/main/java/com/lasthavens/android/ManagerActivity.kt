@@ -1,12 +1,18 @@
 package com.lasthavens.android
 
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.view.View
 import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowCompat
+import org.mozilla.geckoview.AllowOrDeny
+import org.mozilla.geckoview.GeckoResult
 import org.mozilla.geckoview.GeckoSession
 import org.mozilla.geckoview.GeckoView
 import java.lang.ref.WeakReference
@@ -63,6 +69,36 @@ class ManagerActivity : AppCompatActivity() {
         s.navigationDelegate = object : GeckoSession.NavigationDelegate {
             override fun onCanGoBack(session: GeckoSession, canGoBack: Boolean) {
                 this@ManagerActivity.canGoBack = canGoBack
+            }
+
+            override fun onLoadRequest(
+                session: GeckoSession,
+                request: GeckoSession.NavigationDelegate.LoadRequest,
+            ): GeckoResult<AllowOrDeny>? {
+                val uri = Uri.parse(request.uri)
+                if (request.target == GeckoSession.NavigationDelegate.TARGET_WINDOW_NEW) {
+                    if (GameUrls.isGameHost(uri)) {
+                        // Open game links from the manager in the game screen after this callback returns.
+                        Handler(Looper.getMainLooper()).post {
+                            if (!isFinishing && !isDestroyed) {
+                                startActivity(
+                                    Intent(this@ManagerActivity, PlayActivity::class.java)
+                                        .putExtra(PlayActivity.EXTRA_RELOAD, true),
+                                )
+                                finish()
+                            }
+                        }
+                    } else {
+                        GameUrls.openExternal(this@ManagerActivity, uri)
+                    }
+                    return GeckoResult.fromValue(AllowOrDeny.DENY)
+                }
+                return if (GameUrls.isInApp(uri)) {
+                    GeckoResult.fromValue(AllowOrDeny.ALLOW)
+                } else {
+                    GameUrls.openExternal(this@ManagerActivity, uri)
+                    GeckoResult.fromValue(AllowOrDeny.DENY)
+                }
             }
         }
         s.progressDelegate = object : GeckoSession.ProgressDelegate {
