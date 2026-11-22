@@ -25,6 +25,18 @@ The app and Addon Manager versions are independent. Version numbers may change w
 - **Files:** Android's document picker handles add-on import and backup restore; downloads are saved to the Downloads/Lasthavens folder on supported Android versions.
 - **Web behavior:** native JavaScript alert/confirm/prompt dialogs, external-link routing, popup handling, and load progress feedback.
 
+## Primary device target: POCO X6 Pro
+
+The POCO X6 Pro is the primary performance and compatibility target for upcoming development. Its Dimensity 8300-Ultra / Mali-G615 platform, 120Hz 2712 × 1220 display, and 8GB or 12GB LPDDR5X configurations make it suitable for high-refresh gameplay, but the app must remain efficient and compatible with other Android devices.
+
+Optimization rules:
+- Prefer smooth, consistent frame pacing over chasing an unstable maximum FPS.
+- Keep display refresh behavior adaptive; do not force 120Hz globally or assume the game can render at 120 FPS.
+- Profile GeckoView startup, memory, long-session stability, battery use, and thermal behavior on the actual phone before tuning.
+- Test touch responsiveness, fullscreen/insets, keyboard behavior, downloads, file picking, and navigation at the device's native resolution.
+- Avoid POCO-only code paths unless a measured HyperOS/device issue requires one; retain sensible Android-wide fallbacks.
+- Use the ARM64 APK for the POCO X6 Pro.
+
 ## Architecture
 
 - **Kotlin + AndroidX:** native activities, app lifecycle, dialogs, file picker, and downloads.
@@ -83,6 +95,18 @@ For every future release, add a new row under **Released versions** and summariz
 - [ ] Publish the first device-tested GitHub Release.
 - [ ] Add an automated version/changelog consistency check.
 
+### POCO X6 Pro device validation and optimization
+- [ ] Confirm the exact phone variant (8GB or 12GB RAM) and Android/HyperOS build used for testing.
+- [ ] Install the ARM64 APK and verify first launch, permissions, and update behavior.
+- [ ] Check layout, display cutout/insets, fullscreen, keyboard, and touch targets at 2712 × 1220 with the user's display scaling.
+- [ ] Measure cold start and warm start times for Home, Play, and Addon Manager.
+- [ ] Profile GeckoView memory use and stability during a long game session and repeated Play ↔ Home ↔ Manager navigation.
+- [ ] Measure frame pacing and touch responsiveness; compare 60Hz and higher refresh settings without forcing a global refresh rate.
+- [ ] Check battery drain and device temperature during a representative 30–60 minute session; tune only from measured results.
+- [ ] Test HyperOS backgrounding, app resume, battery restrictions, and Game Turbo interaction.
+- [ ] Check network transitions, reconnect behavior, downloads, and file picker behavior on the phone.
+- [ ] Keep the app usable on other Android devices; add device-specific workarounds only when reproducible.
+
 ### App functionality
 - [ ] Test game launch, sign-in, and actual gameplay on a phone.
 - [ ] Confirm the game session survives Home → Play navigation.
@@ -96,7 +120,7 @@ For every future release, add a new row under **Released versions** and summariz
 
 ### Size and performance
 - [ ] Measure per-ABI APK sizes and compare them with the current universal APK.
-- [ ] Profile cold start, memory use, and game responsiveness on a physical device.
+- [ ] Profile cold start, memory use, and game responsiveness on the POCO X6 Pro.
 - [ ] Evaluate safe R8/resource shrinking after confirming GeckoView keep rules.
 - [ ] Keep GeckoView pinned to an exact stable version and review updates for extension compatibility.
 
