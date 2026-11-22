@@ -13,7 +13,8 @@ export async function hasAccess() {
   try {
     return await browser.permissions.contains({ origins: ORIGINS });
   } catch {
-    return true;
+    // Do not assume optional network permissions were granted if the API fails.
+    return false;
   }
 }
 // Must be called straight from a tap handler.
