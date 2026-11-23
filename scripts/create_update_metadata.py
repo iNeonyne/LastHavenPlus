@@ -12,7 +12,7 @@ from typing import Mapping
 APP_PACKAGE_ID = "com.lasthavens.android"
 WORKFLOW_ID = 427170801
 ABI_VARIANTS = ("arm64-v8a", "armeabi-v7a", "x86_64", "universal")
-MAX_APK_BYTES = 200 * 1024 * 1024
+MAX_APK_BYTES = 400 * 1024 * 1024
 VERSION_PATTERN = re.compile(r"^[0-9]+\.[0-9]+\.[0-9]+$")
 COMMIT_PATTERN = re.compile(r"^[0-9a-fA-F]{40}$")
 
