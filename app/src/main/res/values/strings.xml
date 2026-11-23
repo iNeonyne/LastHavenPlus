@@ -42,10 +42,8 @@
     <string name="leave_reload">Reload</string>
     <string name="leave_stay">Keep playing</string>
 
-    <string name="manager_unavailable">The Addon Manager could not be loaded. GeckoView may be older than 142.</string>
     <string name="game_without_addons">Add-on support is unavailable; starting the game without add-ons.</string>
     <string name="game_load_failed">The game could not load. Check your connection and try again.</string>
-    <string name="manager_load_failed">The Addon Manager could not load. Check your connection and try again.</string>
     <string name="download_saved">Saved to Downloads/Lasthavens/%1$s</string>
     <string name="download_saved_app">Saved to %1$s</string>
     <string name="download_failed">Download failed</string>
@@ -71,11 +69,11 @@
     <string name="storage">Storage</string>
     <string name="storage_back">‹ Home</string>
     <string name="storage_title">Storage usage</string>
-    <string name="storage_intro">A read-only estimate of app-private storage. During migration this includes both the legacy Gecko profile and the new WebView data; it is not a game-only measurement.</string>
+    <string name="storage_intro">A read-only estimate of app-private storage. It includes app files, Android System WebView site data and any retained data from earlier app versions; it is not a game-only measurement.</string>
     <string name="storage_persistent_label">Persistent app and browser data</string>
-    <string name="storage_persistent_detail">Includes app files, legacy Gecko profile data, and Android System WebView site data. The two browser profiles are separate and are counted together here.</string>
+    <string name="storage_persistent_detail">Includes app files, Android System WebView site data and any retained legacy files. Browser site data remains separate from native add-on storage.</string>
     <string name="storage_cache_label">Browser and app cache</string>
-    <string name="storage_cache_detail">Temporary cached files are shown separately. Android, GeckoView or WebView may clear or rebuild them.</string>
+    <string name="storage_cache_detail">Temporary cached files are shown separately. Android or WebView may clear or rebuild them.</string>
     <string name="storage_available_label">Available device storage</string>
     <string name="storage_scanning">Measuring app-private storage…</string>
     <string name="storage_scan_complete">Measurement complete. These are current stored bytes, not lifetime network downloads.</string>
