@@ -99,4 +99,37 @@ class UpdatePolicyTest {
         ))
     }
 
+    @Test fun comparesStableVersionsNumerically() {
+        assertTrue(UpdatePolicy.compareStableVersions("1.10.0", "1.9.9")!! > 0)
+        assertTrue(UpdatePolicy.compareStableVersions("2.0.0", "1.99.99")!! > 0)
+        assertTrue(UpdatePolicy.compareStableVersions("1.2.3", "1.2.3") == 0)
+        assertTrue(UpdatePolicy.compareStableVersions("1.0.0", "1.0.1")!! < 0)
+        assertTrue(UpdatePolicy.compareStableVersions("1.0.0-rc.1", "1.0.0") == null)
+    }
+
+    @Test fun filtersAndSortsOnlyNewerStableReleaseCandidates() {
+        fun release(version: String) = ReleaseVersion(
+            version, "v$version", 1000,
+            UpdateAsset("LastHavenPlus-$version-arm64-v8a.apk", "uploaded", 1000,
+                "https://github.com/iNeonyne/Lasthavens-Android/releases/download/v$version/app.apk"),
+            UpdateAsset("SHA256SUMS.txt", "uploaded", 100,
+                "https://github.com/iNeonyne/Lasthavens-Android/releases/download/v$version/SHA256SUMS.txt"),
+        )
+        val selected = UpdatePolicy.newerStableReleases(
+            "1.0.1",
+            listOf(release("1.0.0"), release("1.0.2"), release("1.10.0"), release("2.0.0"))
+        )
+        assertTrue(selected.map { it.versionName } == listOf("2.0.0", "1.10.0", "1.0.2"))
+        assertTrue(UpdatePolicy.newerStableReleases("1.0.1", listOf(release("1.0.2").copy(apkAsset = null))).isEmpty())
+    }
+
+    @Test fun validatesExactOfficialReleasePage() {
+        assertTrue(UpdatePolicy.isTrustedReleasePage(
+            "https://github.com/iNeonyne/Lasthavens-Android/releases/tag/v1.0.1", "v1.0.1"))
+        assertFalse(UpdatePolicy.isTrustedReleasePage(
+            "https://github.com/other/repo/releases/tag/v1.0.1", "v1.0.1"))
+        assertFalse(UpdatePolicy.isTrustedReleasePage(
+            "https://github.com/iNeonyne/Lasthavens-Android/releases/tag/v1.0.2", "v1.0.1"))
+    }
+
 }
