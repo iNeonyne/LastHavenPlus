@@ -4,7 +4,7 @@
 
 LastHavenPlus is a focused native Android client for the Lasthavens game. It uses Kotlin and Mozilla GeckoView to run the game and bundles the Lasthavens Addon Manager as a WebExtension. It is not intended to become a general-purpose browser.
 
-- Game: https://alt.lasthavens.com/play
+- Game: https://lasthavens.com/play
 - Repository: https://github.com/iNeonyne/Lasthavens-Android
 - Distribution target: GitHub Releases only; no Google Play track.
 - Automatic updater: being switched to published stable GitHub Releases; it verifies the release APK checksum, ABI, package/version, and signing compatibility before Android installer handoff.
@@ -21,10 +21,10 @@ LastHavenPlus is a focused native Android client for the Lasthavens game. It use
 
 ## Version snapshot
 
-- Android app: 1.0.0 — first release candidate, not published or device-validated.
+- Android app: 1.0.1 — next patch release being prepared; v1.0.0 is released.
 - Android versionCode: `GITHUB_RUN_NUMBER` on CI builds; local builds use a development-only fallback. The number is global to the existing workflow and never resets between branches/tags.
 - Version policy: `main` is the sole active branch and uses clean stable SemVer versions. There is no beta prerelease stream. The numeric CI versionCode sequence never resets.
-- Addon Manager: 1.0.2 — staged storage generations protect existing add-on files during replacement; read the bundled `manifest.json` for the authoritative version.
+- Addon Manager: 1.0.3 — read the bundled `manifest.json` for the authoritative version.
 - GeckoView: 159.0.20261102144711 — pinned dependency.
 
 The app and extension have independent versions. Necessary Addon Manager maintenance is owner-authorized only with strict preservation of existing add-on files, enabled state, metadata, settings, and shared Gecko profile state.
@@ -42,7 +42,7 @@ The app and extension have independent versions. Necessary Addon Manager mainten
 
 The landscape Home screen has a user-triggered **Check for updates** action. The updater checks the latest published stable GitHub Release, ignores drafts and prereleases, requires one ARM64 APK and one checksum asset, validates HTTPS release asset URLs and declared sizes, verifies SHA-256, then checks Android package ID, versionName/versionCode, device ABI and exact signing-certificate equality. Installation is handed to Android's package installer and requires user confirmation. The updater does not clear app data, GeckoView profile, cookies, login/session state or add-ons.
 
-The updater now targets permanent assets attached to published GitHub Releases rather than expiring Actions artifacts. The first same-certificate in-place update and data-preservation test remains to be completed on a physical device.
+The updater targets permanent assets attached to published GitHub Releases rather than expiring Actions artifacts. Same-certificate in-place update and data-preservation testing remains outstanding.
 
 
 ## UI/UX improvement scope
