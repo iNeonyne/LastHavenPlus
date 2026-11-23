@@ -142,7 +142,7 @@ class MigrationArchiveReaderTest {
 
     @Test
     fun rejectsUnexpectedEntriesAndArchiveSizeOverLimit() {
-        val fixture = fixture(extraEntry = "unexpected.txt" to "bad".toByteArray())
+        val fixture = fixture(extraEntry = "files/unexpected.txt" to "bad".toByteArray())
         val root = Files.createTempDirectory("lh-migration-extra").toFile()
         try {
             try {
