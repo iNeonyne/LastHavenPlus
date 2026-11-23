@@ -15,6 +15,16 @@ class UpdatePolicyTest {
         sha: String = "0123456789abcdef0123456789abcdef01234567",
     ) = UpdateRun(12, 12, workflowId, branch, event, status, conclusion, workflowPath, repository, sha)
 
+    @Test fun acceptsOnlyPublishedStableReleaseTags() {
+        assertTrue(UpdatePolicy.isPublishedStableRelease("v1.0.0", draft = false, prerelease = false))
+        assertFalse(UpdatePolicy.isPublishedStableRelease("v1.0.0", draft = true, prerelease = false))
+        assertFalse(UpdatePolicy.isPublishedStableRelease("v1.0.0", draft = false, prerelease = true))
+        assertFalse(UpdatePolicy.isPublishedStableRelease("1.0.0", draft = false, prerelease = false))
+        assertFalse(UpdatePolicy.isPublishedStableRelease("v1.0.0-rc.1", draft = false, prerelease = false))
+        assertFalse(UpdatePolicy.isExpectedReleaseApkName("1.0.0", "LastHavenPlus-1.0.0-x86_64.apk"))
+        assertTrue(UpdatePolicy.isExpectedReleaseApkName("1.0.0", "LastHavenPlus-1.0.0-arm64-v8a.apk"))
+    }
+
     @Test fun acceptsOnlySuccessfulCompletedMainPushesFromExpectedWorkflow() {
         assertTrue(UpdatePolicy.isEligibleRun(run()))
         assertFalse(UpdatePolicy.isEligibleRun(run(branch = "beta")))
