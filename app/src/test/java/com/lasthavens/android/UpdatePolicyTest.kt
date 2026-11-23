@@ -12,6 +12,7 @@ class UpdatePolicyTest {
         assertFalse(UpdatePolicy.isPublishedStableRelease("1.0.0", draft = false, prerelease = false))
         assertFalse(UpdatePolicy.isPublishedStableRelease("v1.0.0-rc.1", draft = false, prerelease = false))
         assertFalse(UpdatePolicy.isPublishedStableRelease("v1.0.0-beta", draft = false, prerelease = false))
+        assertFalse(UpdatePolicy.isPublishedStableRelease("v01.0.0", draft = false, prerelease = false))
     }
 
     @Test fun permitsOnlyArm64DevicesAndReleaseAssetNames() {
@@ -49,9 +50,9 @@ class UpdatePolicyTest {
         val name = "LastHavenPlus-1.0.0-arm64-v8a.apk"
         assertTrue(UpdatePolicy.isValidSha256(digest))
         assertFalse(UpdatePolicy.isValidSha256("abc"))
-        assertTrue(UpdatePolicy.checksumFileMatches("$digest  $name\\n", name, digest))
-        assertTrue(UpdatePolicy.checksumFileMatches("$digest *$name\\n", name, digest))
-        assertFalse(UpdatePolicy.checksumFileMatches("$digest  other.apk\\n", name, digest))
-        assertFalse(UpdatePolicy.checksumFileMatches("$digest  $name\\n", name, "bad"))
+        assertTrue(UpdatePolicy.checksumFileMatches("$digest  $name", name, digest))
+        assertTrue(UpdatePolicy.checksumFileMatches("$digest *$name", name, digest))
+        assertFalse(UpdatePolicy.checksumFileMatches("$digest  other.apk", name, digest))
+        assertFalse(UpdatePolicy.checksumFileMatches("$digest  $name", name, "bad"))
     }
 }
