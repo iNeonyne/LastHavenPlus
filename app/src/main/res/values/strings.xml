@@ -16,7 +16,7 @@
     <string name="update_available_message">LastHavenPlus %1$s (main build #%2$d) is ready. Verified APK size: %3$s. Commit: %4$s. Continue to Android’s installer?</string>
     <string name="update_install">Install</string>
     <string name="update_installing">Preparing update</string>
-    <string name="update_installing_message">Copying the verified APK to Android's installer…</string>
+    <string name="update_installing_message">Copying the verified APK to Android\'s installer…</string>
     <string name="update_install_handoff">Opening Android installer…</string>
     <string name="update_install_title">Could not start installation</string>
     <string name="update_install_failed">Android could not start the update installation.</string>
