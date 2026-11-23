@@ -8,12 +8,12 @@ This file records notable user-visible changes. It is not the development task l
 - Read-only storage dashboard for shared GeckoView/app persistent data, browser/app cache, and available device storage; distinguishes current storage from lifetime downloads.
 - Native JavaScript alert, confirm, and prompt dialogs.
 - Landscape-specific Home screen layout.
-- ABI-specific APK outputs and a universal fallback.
+- ABI-specific APK outputs and a universal fallback.\n- A user-triggered updater on beta that considers successful main-branch builds only, verifies artifact provenance, metadata, SHA-256, package/version and signing-certificate compatibility, then hands installation to Android.
 
 ### Changed
 - Home screen now uses sensor landscape orientation.
 - Removed the thin top-edge game loading-progress line while retaining the LH diagnostics badge and diagnostic logging.
-- GitHub Actions produces debug-signed demo APK artifacts for pushes to `beta`.
+- GitHub Actions produces debug-signed demo APK artifacts for pushes to `beta`. The dedicated permanent-key-signed main update artifact and metadata generator are configured on beta, pending approved promotion.
 
 ### Security
 - Restricted in-app navigation to HTTPS Lasthavens hosts and required Gecko internal schemes; reject insecure HTTP, executable/data/file/intent schemes, untrusted blob origins, and lookalike hosts. Added JVM regression tests to CI.

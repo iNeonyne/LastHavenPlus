@@ -7,7 +7,7 @@ LastHavenPlus is a focused native Android client for the Lasthavens game. It use
 - Game: https://alt.lasthavens.com/play
 - Repository: https://github.com/iNeonyne/Lasthavens-Android
 - Distribution target: GitHub Releases only; no Google Play track.
-- Automatic updater: not implemented; intended update source is successful CI artifacts from `main` only. The current workflow does not yet build on `main`.
+- Automatic updater: implemented on `beta`; only successful completed main-branch push artifacts are eligible. The dedicated signed main artifact is configured but will not be available until owner-approved promotion.
 - Android application ID: `com.lasthavens.android`
 
 ## Architecture
@@ -22,7 +22,7 @@ LastHavenPlus is a focused native Android client for the Lasthavens game. It use
 ## Version snapshot
 
 - Android app: 2.0.0 — development version, not released or device-validated.
-- Android versionCode: 2 — current static Gradle value; replace with the stable workflow run-number sequence before enabling main-based automatic updates.
+- Android versionCode: `GITHUB_RUN_NUMBER` on CI builds; local builds use a development-only fallback. The number is global to the existing workflow and never resets between branches/tags.
 - Version promotion policy: main receives clean stable SemVer versions; after each approved promotion, beta restarts from that main version and uses the next SemVer prerelease candidate. The numeric CI versionCode sequence never resets.
 - Addon Manager: 1.0.2 — staged storage generations protect existing add-on files during replacement; read the bundled `manifest.json` for the authoritative version.
 - GeckoView: 159.0.20261102144711 — pinned dependency.
@@ -33,10 +33,16 @@ The app and extension have independent versions. Necessary Addon Manager mainten
 
 - Landscape Home layout and orientation are committed on `beta`.
 - The read-only storage dashboard is implemented and included in the current beta build. It reports shared app/profile persistent storage, cache, and available device space; it does not claim game-only storage or lifetime downloaded bytes.
-- GitHub Actions beta run [#162](https://github.com/iNeonyne/Lasthavens-Android/actions/runs/45175473400), for commit `cc06c96`, completed successfully. The Addon Manager regression suite, Android navigation policy JVM tests, APK compilation, signature verification, packaged asset checks, ABI naming, SHA-256 checksum generation, and both artifact uploads passed.
+- GitHub Actions beta run [#171](https://github.com/iNeonyne/Lasthavens-Android/actions/runs/45179723310), for commit `b07ce3d`, completed successfully. The Addon Manager regression suite, updater-policy tests, APK compilation, signer-consistency check, packaged asset checks, ABI naming, SHA-256 checksum generation, and both demo artifact uploads passed. Later CI changes add standalone metadata-generator and APK-internal package/version checks.
 - In-app navigation now permits HTTPS Lasthavens hosts and the required Gecko internal schemes; insecure HTTP, executable/data/file/intent schemes, untrusted blob origins, and lookalike hosts are rejected by the tested policy.
-- The build produces debug-signed demo APKs. It is not a public release build.
+- The beta build produces debug-signed demo APKs. The workflow is configured to require the permanent signing certificate for main/tag builds and to create a dedicated main update artifact. This path has not been exercised on `main`, which remains unchanged.
 - Physical-device installation and smoke testing remain outstanding. CI success does not establish device compatibility, performance, or gameplay stability.
+
+## Automatic updater
+
+The landscape Home screen has a user-triggered **Check for updates** action. The updater filters the existing GitHub Actions workflow for successful completed `push` runs from `main`, checks artifact provenance and expiry, downloads a full APK for the device ABI (universal fallback), verifies metadata and SHA-256, then checks Android package ID, version code and exact signing-certificate equality. Installation is handed to Android's package installer and requires user confirmation. The updater does not clear app data, GeckoView profile, cookies, login/session state or add-ons.
+
+The main-only artifact creation path is configured on `beta`, but `main` has not been promoted and does not yet publish that artifact. End-to-end same-certificate upgrade and data-preservation checks remain pending on a physical device.
 
 ## Immediate validation sequence
 

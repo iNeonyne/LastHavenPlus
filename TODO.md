@@ -9,10 +9,10 @@ All development work stays on `beta`. Never promote, merge, or push work to `mai
 - Development branch: `beta`.
 - Android app: `2.0.0` development version.
 - Bundled Addon Manager: `1.0.2`.
-- Latest recorded successful CI validation: beta run #162 tested commit `cc06c96`; Addon Manager tests, Android navigation policy tests, APK build, signature checks, packaged assets, checksums, and both artifact uploads passed.
+- Latest completed successful CI validation: beta run #171 tested commit `b07ce3d`; Addon Manager tests, updater policy tests, APK build, signer consistency, packaged assets, checksums, and both beta artifact uploads passed. The separate metadata-generator tests and APK-internal metadata check are now added and are being validated in the latest CI run.
 - Physical-device validation and owner-only release actions are tracked separately in [MANUAL_CHECKLIST.md](MANUAL_CHECKLIST.md).
 - Permanent release signing is paused. It is not required for debug demo development.
-- Automatic updates are back on the roadmap, but are not implemented. They must use successful `main` CI artifacts only, preserve the installed app's data, and require the permanent signing certificate for in-place upgrades.
+- A manual, main-only updater is implemented on `beta`. It selects only successful completed `main` push runs, downloads full ABI-matched APKs, verifies run/artifact provenance, metadata, checksums, package/version and signing-certificate compatibility, then invokes Android's user-confirmed package installer. `main` is unchanged, so the live signed update feed is not active until owner-approved promotion. Physical same-certificate upgrade testing remains outstanding.
 - Version flow: approved main promotions use clean stable SemVer; beta restarts from that main version using the next prerelease candidate. See `AGENTS.md`.
 
 ## P0 — Data safety and demo-blocking code
@@ -59,21 +59,21 @@ The owner has authorized necessary manager maintenance only with preservation of
 
 ## P3 — Release engineering code and CI
 
-- [ ] Add CI safeguards ensuring debug-signed demo artifacts cannot be published as public release assets.
-- [ ] Add automated release validation for package ID, version metadata, ABI coverage, signing certificate consistency, and SHA-256 checksums.
-- [ ] Keep release workflows compatible with the versioning and promotion policy in `AGENTS.md`.
-- [ ] Add a dedicated successful-build APK artifact for pushes to `main`; keep beta/demo artifacts separate and never use them as update sources.
-- [ ] Ensure main update APKs are signed with the permanent release key; verify the certificate fingerprint against the expected certificate and fail closed if signing is unavailable or mismatched.
-- [ ] Replace the static Android `versionCode` with an automated, strictly increasing build number that remains compatible with the project's SemVer and main-to-beta version flow.
-- [ ] Implement an update checker that queries GitHub Actions for the latest successful workflow run on `main` only; reject beta runs, failed/in-progress runs, unexpected artifacts, and incompatible app versions.
-- [ ] Implement full-APK download for the device's supported ABI, with a universal APK fallback; do not implement differential/patch updates.
-- [ ] Verify the downloaded APK against the SHA-256 checksum published by the same main workflow before making installation available; reject missing or mismatched checksums and incomplete downloads.
-- [ ] Hand installation to Android's package installer with clear version, size, and source information; never attempt silent installation or uninstall/reinstall.
-- [ ] Add automated tests for main-only update selection, workflow/artifact failures, ABI selection, version-code ordering, checksum mismatch, interrupted downloads, and signing/version compatibility.
-- [ ] Document that an in-place update is supported only when the installed app and downloaded APK share the same signing certificate; do not offer an update that could require uninstalling the app.
-- [ ] Validate through code and tests that the update path does not clear app data, cookies, login/session state, GeckoView profile, or installed add-ons; add physical-device upgrade verification to `MANUAL_CHECKLIST.md`.
+- [x] Add CI safeguards ensuring debug-signed beta/demo artifacts are not accepted as main or tagged release assets; main/tag builds fail closed unless the permanent certificate matches.
+- [x] Add CI validation for package ID, APK-embedded versionName/versionCode, ABI coverage, signer consistency, and SHA-256 checksums.
+- [x] Keep release workflows compatible with the versioning and promotion policy in `AGENTS.md`.
+- [x] Configure a dedicated `LastHavenPlus-Main-Update` artifact for main builds; beta/demo artifacts remain separate and are rejected by the updater. Main will start publishing it only after approved promotion.
+- [x] Require the permanent release key and exact expected certificate on main/tag builds; missing secrets or fingerprint mismatch fail closed. A main-signed build remains to be verified after promotion.
+- [x] Replace static Android `versionCode` with the existing workflow's global `GITHUB_RUN_NUMBER`; local builds use a development-only fallback and are never update candidates.
+- [x] Implement the `main`-only update checker; reject beta, tag, PR, manual, failed, cancelled, in-progress, expired, mismatched and incompatible build artifacts.
+- [x] Implement full-APK download for the device's first supported ABI, with universal fallback; no differential updates.
+- [x] Verify APK size and SHA-256 against metadata and the checksum file from the same main build; reject missing/mismatched checksums and incomplete downloads.
+- [x] Hand the verified APK to Android's package installer with build/version, size and commit information; Android requires user confirmation and the app never silently installs or uninstalls.
+- [x] Add JVM policy tests for main-only runs/artifacts, provenance, expiry, ABI fallback, version ordering, interrupted/incomplete/checksum failures and signer mismatch; add Python tests for metadata generation and validation.
+- [x] Document and enforce exact signing-certificate, package ID and version compatibility; incompatible candidates are blocked instead of prompting an uninstall.
+- [x] Keep the updater to an Android package replacement only; it does not clear app data, cookies, login/session, GeckoView profile or add-ons. Physical verification remains in `MANUAL_CHECKLIST.md`.
 
-## Not active work
+## Updater verification boundary\n\nThe beta implementation and automated policy/build checks are complete. A live end-to-end update cannot be verified while `main` is intentionally unchanged and does not publish the dedicated signed artifact. After owner-approved promotion, verify the first main workflow run and complete the same-certificate physical-device upgrade checks in `MANUAL_CHECKLIST.md`.\n\n## Not active work
 
 The following are not implementation tasks unless the owner explicitly reopens them:
 
