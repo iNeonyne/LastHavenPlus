@@ -10,8 +10,6 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
-        // Mozilla GeckoView releases
-        maven("https://maven.mozilla.org/maven2/")
     }
 }
 rootProject.name = "LastHavenPlus"
