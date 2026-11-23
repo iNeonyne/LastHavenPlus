@@ -49,6 +49,22 @@ class GameAddonPayloadTest {
         }
     }
 
+    @Test
+    fun placesEnabledDependenciesBeforeTheirDependents() {
+        val dependent = addon("Dependent", true, 2, 1).put("dependencies", JSONArray().put("Base"))
+        val manifest = manifest(
+            addons = JSONArray()
+                .put(dependent)
+                .put(addon("Base", true, 1, 1)),
+            files = JSONArray()
+                .put(file("Dependent", "Dependent.toc", 2))
+                .put(file("Base", "Base.toc", 1)),
+        )
+        val ordered = GameAddonPayload.build(manifest).payload.getJSONArray("addons")
+        assertEquals("Base", ordered.getJSONObject(0).getString("folder"))
+        assertEquals("Dependent", ordered.getJSONObject(1).getString("folder"))
+    }
+
     @Test(expected = IllegalArgumentException::class)
     fun rejectsEnabledLibraryLargerThanBridgeLimit() {
         val manifest = manifest(
