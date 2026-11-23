@@ -126,13 +126,17 @@
                 android:textAllCaps="false"
                 android:textColor="@color/text_primary"
                 android:textSize="17sp" />
+
             <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/btnStorage"
                 android:layout_width="match_parent"
                 android:layout_height="52dp"
                 android:layout_marginTop="10dp"
                 android:background="@drawable/btn_manager"
+                android:drawableStart="@drawable/ic_storage"
+                android:drawablePadding="12dp"
                 android:fontFamily="sans-serif-medium"
+                android:paddingHorizontal="24dp"
                 android:text="@string/storage"
                 android:textAllCaps="false"
                 android:textColor="@color/text_primary"
@@ -144,7 +148,10 @@
                 android:layout_height="48dp"
                 android:layout_marginTop="8dp"
                 android:background="@drawable/btn_manager"
+                android:drawableStart="@drawable/ic_update"
+                android:drawablePadding="12dp"
                 android:fontFamily="sans-serif-medium"
+                android:paddingHorizontal="24dp"
                 android:text="@string/update_check"
                 android:textAllCaps="false"
                 android:textColor="@color/text_primary"
