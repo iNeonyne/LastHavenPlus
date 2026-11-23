@@ -10,6 +10,7 @@ This is the authoritative active task list. Priorities are ordered by what gets 
 - CI: beta run #138 succeeded and uploaded both demo APK artifacts; physical-device validation is still unconfirmed.
 - Physical-device validation: not yet confirmed complete.
 - Permanent release signing: paused; required before public releases, not for debug demo testing.
+- Automatic updates: not implemented. The planned source is `main` CI artifacts only; follow the version-code and stable-signing requirements in `AGENTS.md` if this is reintroduced.
 
 ## P0 — Demo making
 
