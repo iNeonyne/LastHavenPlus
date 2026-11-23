@@ -7,13 +7,13 @@ All development work stays on `main`, the sole active branch. The former `beta` 
 ## Current status
 
 - Active development branch: `main`.
-- Android app: `2.0.0` development version.
+- Android app: `1.0.0` first release candidate; not yet published.
 - Bundled Addon Manager: `1.0.2`.
 - Latest main CI run #196 (commit `ed0c5bb`) passed all automated tests, permanent-key verification, four release APK builds, APK signature and package/version checks, checksum generation, metadata creation, and all five main update artifact uploads. The direct DER certificate hash matched the expected permanent release fingerprint.
 - Main workflow-dispatch run #198 completed successfully and uploaded artifacts, but it is intentionally ignored by the updater; the latest eligible main push run remains #196.
 - Physical-device validation and owner-only release actions are tracked separately in [MANUAL_CHECKLIST.md](MANUAL_CHECKLIST.md).
 - Main run #196 confirmed the configured GitHub Actions keystore and passwords/alias work and the certificate fingerprint matches the expected permanent release key. No secret replacement is needed.
-- A manual, main-only updater is implemented on `main`. Run #196 published four ABI-specific signed APK artifacts in the previous configuration; the ARM64-only workflow is awaiting verification; the updater verifies their shared run provenance, metadata, checksum, package/version and signing-certificate compatibility before invoking Android's user-confirmed installer. Physical same-certificate upgrade and data-preservation testing remains outstanding.
+- The updater is being migrated from expiring Actions artifacts to published stable GitHub Releases. It now fetches the latest published release, requires the exact ARM64 APK and checksum assets, and verifies APK integrity, package/version, ABI, and installed signing-certificate compatibility before Android installer handoff. CI and physical-device validation are pending.
 - Version flow: main-only SemVer releases with a monotonic workflow-run `versionCode`; see `AGENTS.md`.
 
 ## P0 — Data safety and demo-blocking code
@@ -76,7 +76,7 @@ The owner has authorized necessary manager maintenance only with preservation of
 
 ## Updater verification boundary
 
-The updater implementation and automated policy/build checks previously passed with multi-ABI artifacts. ARM64-only packaging and updater selection are now being changed; rerun CI and update verification before relying on the new configuration. Complete the same-certificate physical-device upgrade and data-preservation checks in `MANUAL_CHECKLIST.md`.
+The release-based updater implementation is in progress. Validate it against a published stable release, including asset discovery, checksum failure, malformed/draft/prerelease release rejection, package/version mismatch, unsupported ABI, and signer mismatch. Complete the same-certificate physical-device upgrade and data-preservation checks in `MANUAL_CHECKLIST.md`.
 
 ## Not active work
 
