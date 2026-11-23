@@ -77,7 +77,7 @@ The owner has authorized necessary manager maintenance only with preservation of
 - [ ] Test orientation changes, recreation, fullscreen, keyboard visibility, dialogs, back navigation, background/resume, and navigation between activities; preserve state and avoid layout regressions.
 - [ ] Capture and review screenshots for key screens in portrait and landscape, then fix visual regressions before marking the UI/UX work complete.
 
-- [ ] Redesign the updater UI to match the app's dark, frost-blue and gold theme; improve visual hierarchy, spacing, typography, icons, progress/status presentation, update-available/current/error states, and install/cancel actions.
+- [x] Redesign the updater's checking, download-progress, verification, update-ready, and installer-handoff UI to match the dark, frost-blue and gold theme; improve hierarchy, spacing, typography, icon use, and primary/cancel actions. Error and up-to-date dialogs retain the shared dark/gold AppCompat dialog theme.
 - [ ] Make updater dialogs and screens responsive in portrait and landscape, accessible, and consistent with Home and Addon Manager; clearly show version, download size/progress, checksum/verification status, and Android installer handoff without exposing technical clutter.
 - [ ] Test updater UI states (checking, up to date, update available, downloading, verifying, failed/offline, incompatible build/signature, and installer handoff) with screenshots in both orientations.
 
