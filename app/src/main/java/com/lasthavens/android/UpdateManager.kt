@@ -23,7 +23,7 @@ import java.util.concurrent.Executors
 
 internal data class AvailableUpdate(
     val versionName: String, val versionCode: Long, val sizeBytes: Long,
-    val commitSha: String, val runNumber: Long, val apkFile: File,
+    val releaseTag: String, val apkFile: File,
 )
 
 internal class UpdateManager(context: Context) {
