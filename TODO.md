@@ -49,11 +49,10 @@ The owner has authorized necessary manager changes on the condition that install
 - [x] Preserve the existing storage-key format for already-installed add-ons; legacy entries without a storage pointer continue to read from their original folder key.
 - [x] Clean up unreferenced storage generations after successful commits and at startup.
 - [x] Correct numeric ordering of numbered TOC dependencies.
-- [ ] Run the Addon Manager regression suite and full CI build.
+- [ ] Run the Addon Manager regression suite (including streaming-limit tests) and full CI build.
 - [ ] Verify install, update, remove, backup/restore, and game loading on a physical device with pre-existing add-ons.
 - [ ] Add a failure-injection test for metadata commit failure and confirm the prior generation remains readable.
 - [x] Enforce archive/download byte limits against actual streamed bytes, including imported/restored archives and remote ZIPs.
-- [ ] Run the new streaming-limit regression tests and full CI build.
 
 ## P2 — Addon Manager verification
 
