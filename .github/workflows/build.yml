@@ -2,7 +2,7 @@ name: Build LastHavenPlus APK
 
 on:
   push:
-    branches: [beta]
+    branches: [beta, main]
     tags: ["v*"]
   pull_request:
   workflow_dispatch:
@@ -41,11 +41,11 @@ jobs:
         with:
           gradle-version: "9.3.1"
 
-      - name: Test Android navigation policy
+      - name: Test Android navigation and updater policy
         run: gradle --no-daemon :app:testDebugUnitTest
 
-      - name: Prepare signing key (tagged releases only)
-        if: startsWith(github.ref, 'refs/tags/v')
+      - name: Prepare signing key (main builds and tagged releases only)
+        if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v')
         env:
           KS: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
           KS_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
@@ -71,11 +71,13 @@ jobs:
           rm -f "$RUNNER_TEMP/signing-key-check.csr"
           echo "KEYSTORE_PATH=$RUNNER_TEMP/release.jks" >> "$GITHUB_ENV"
 
-      - name: Explain demo signing mode
-        if: ${{ !startsWith(github.ref, 'refs/tags/v') }}
+      - name: Explain beta/demo signing mode
+        if: github.ref != 'refs/heads/main' && !startsWith(github.ref, 'refs/tags/v')
         run: echo "Building a debug-signed demo APK; release signing is only required for version tags."
 
       - name: Validate release metadata
+        env:
+          GITHUB_RUN_NUMBER: ${{ github.run_number }}
         run: |
           python3 - <<'PY'
           import json, os, pathlib, re
@@ -83,18 +85,208 @@ jobs:
           readme = pathlib.Path("README.md").read_text()
           props = pathlib.Path("gradle.properties").read_text()
           manifest = json.loads(pathlib.Path("app/src/main/assets/extensions/lh-addon-manager/manifest.json").read_text())
+          match = re.search(r'val appVersionName = "([^"]+)"', app)
+          if not match:
+              raise SystemExit("Could not read authoritative app versionName")
+          version = match.group(1)
+          code = int(os.environ["GITHUB_RUN_NUMBER"])
+          if code <= 2:
+              raise SystemExit(f"CI versionCode {code} must exceed legacy code 2")
+          engine = re.search(r'^geckoViewVersion=(.+)
+        run: |
+          EXT="app/src/main/assets/extensions/lh-addon-manager"
+          python3 - "$EXT" <<'PY'
+          import json, pathlib, sys
+          root = pathlib.Path(sys.argv[1])
+          files = list(root.rglob("*.json"))
+          for path in files:
+              json.loads(path.read_text(encoding="utf-8"))
+          if not (root / "manifest.json").is_file():
+              raise SystemExit("Addon Manager manifest.json is missing")
+          if not (root / "_locales" / "en" / "messages.json").is_file():
+              raise SystemExit("English extension locale is missing")
+          manifest = json.loads((root / "manifest.json").read_text(encoding="utf-8"))
+          notes = root / f"README-{manifest['version']}.txt"
+          if not notes.is_file():
+              raise SystemExit(f"Version-specific Addon Manager release notes are missing: {notes.name}")
+          print(f"Validated {len(files)} JSON files and {notes.name}")
+          PY
+          while IFS= read -r -d '' file; do
+            node --input-type=module --check < "$file"
+          done < <(find "$EXT" -type f -name '*.js' -print0)
+
+      - name: Build release APKs
+        env:
+          GITHUB_RUN_NUMBER: ${{ github.run_number }}
+          KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: gradle --no-daemon :app:assembleRelease
+
+      - name: Verify APK signatures
+        run: |
+          set -euo pipefail
+          expected=""
+          for apk in app/build/outputs/apk/release/*.apk; do
+            APKSIGNER="$ANDROID_HOME/build-tools/37.0.0/apksigner"
+            test -x "$APKSIGNER" || { echo "apksigner not found at $APKSIGNER"; exit 1; }
+            output=$("$APKSIGNER" verify --verbose --print-certs "$apk")
+            echo "$output"
+            cert=$(printf '%s\n' "$output" | sed -nE 's/^(V[0-9.]+ )?Signer( #[0-9]+)?: certificate SHA-256 digest: //p' | head -n1)
+            [ -n "$cert" ] || { echo "Could not read signer certificate from $apk"; exit 1; }
+            if [ "$GITHUB_REF" = "refs/heads/main" ] || [[ "$GITHUB_REF" == refs/tags/v* ]]; then
+              normalized_cert=$(printf '%s' "$cert" | tr -d ':' | tr '[:lower:]' '[:upper:]')
+              if [ "$normalized_cert" != "B3BBF7520E77DFC384A60B1EEE6C5F205B978F9B453849E2BE523F642018D263" ]; then
+                echo "APK signer fingerprint does not match the expected Lasthavens release key."
+                exit 1
+              fi
+              if printf '%s' "$output" | grep -qi 'CN=Android Debug'; then
+                echo "Refusing to accept a debug-signed APK in a trusted build"
+                exit 1
+              fi
+            fi
+            if [ -z "$expected" ]; then
+              expected="$cert"
+            elif [ "$cert" != "$expected" ]; then
+              echo "APK variants were signed with different certificates"
+              exit 1
+            fi
+          done
+
+      - name: Verify packaged app assets
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import zipfile
+
+          output_dir = Path("app/build/outputs/apk/release")
+          apks = sorted(output_dir.glob("*.apk"))
+          expected = {"arm64-v8a", "armeabi-v7a", "x86_64", "universal"}
+          if not apks:
+              raise SystemExit("Gradle produced no release APKs")
+
+          found = set()
+          for apk in apks:
+              name = apk.name.lower()
+              variant = next((abi for abi in expected if name == f"app-{abi}-release.apk"), None)
+              if variant is None:
+                  raise SystemExit(f"Unexpected APK output name: {apk.name}")
+              found.add(variant)
+              with zipfile.ZipFile(apk) as archive:
+                  contents = set(archive.namelist())
+              required = {
+                  "assets/extensions/lh-addon-manager/manifest.json",
+                  "assets/extensions/lh-addon-manager/_locales/en/messages.json",
+              }
+              if variant == "universal":
+                  required.update({
+                      "lib/arm64-v8a/libxul.so",
+                      "lib/armeabi-v7a/libxul.so",
+                      "lib/x86_64/libxul.so",
+                  })
+              else:
+                  required.add(f"lib/{variant}/libxul.so")
+              missing = sorted(required - contents)
+              if missing:
+                  raise SystemExit(f"{apk.name} is missing: " + ", ".join(missing))
+              print(f"Verified {apk.name} ({apk.stat().st_size:,} bytes)")
+
+          missing_variants = sorted(expected - found)
+          if missing_variants:
+              raise SystemExit("Missing ABI APK variants: " + ", ".join(missing_variants))
+          PY
+
+      - name: Name ABI-specific APKs
+        run: |
+          VERSION=$(grep -m1 'val appVersionName' app/build.gradle.kts | sed -E 's/.*"([^"]+)".*/\1/')
+          mkdir -p dist
+          for apk in app/build/outputs/apk/release/*.apk; do
+            [ -f "$apk" ] || continue
+            filename=$(basename "$apk")
+            variant="${filename#app-}"
+            variant="${variant%-release.apk}"
+            cp "$apk" "dist/LastHavenPlus-$VERSION-$variant.apk"
+          done
+          test "$(find dist -maxdepth 1 -name '*.apk' | wc -l)" -eq 4
+          ls -lh dist/
+
+      - name: Generate and verify APK checksums
+        run: |
+          cd dist
+          sha256sum *.apk > SHA256SUMS.txt
+          sha256sum --check SHA256SUMS.txt
+
+      - name: Create main update metadata
+        if: github.ref == 'refs/heads/main'
+        env:
+          GITHUB_RUN_ID: ${{ github.run_id }}
+          GITHUB_RUN_NUMBER: ${{ github.run_number }}
+          GITHUB_SHA: ${{ github.sha }}
+          GITHUB_REF: ${{ github.ref }}
+          WORKFLOW_ID: 427170801
+        run: |
+          python3 - <<'PY'
+          import hashlib, json, os, pathlib, re
+          dist = pathlib.Path("dist")
+          app = pathlib.Path("app/build.gradle.kts").read_text()
           version = re.search(r'val appVersionName = "([^"]+)"', app).group(1)
-          code = int(re.search(r'val appVersionCode = (\d+)', app).group(1))
-          engine = re.search(r'^geckoViewVersion=(.+)$', props, re.M).group(1).strip()
+          if not re.fullmatch(r"[0-9]+\\.[0-9]+\\.[0-9]+", version):
+              raise SystemExit("Main update artifacts require stable SemVer")
+          apks = []
+          for abi in ("arm64-v8a", "armeabi-v7a", "x86_64", "universal"):
+              path = dist / f"LastHavenPlus-{version}-{abi}.apk"
+              if not path.is_file():
+                  raise SystemExit(f"Missing APK variant: {path.name}")
+              digest = hashlib.sha256(path.read_bytes()).hexdigest()
+              apks.append({"abi": abi, "file": path.name, "sha256": digest, "sizeBytes": path.stat().st_size})
+          metadata = {
+              "schemaVersion": 1,
+              "packageName": "com.lasthavens.android",
+              "versionName": version,
+              "versionCode": int(os.environ["GITHUB_RUN_NUMBER"]),
+              "branch": "main",
+              "ref": os.environ["GITHUB_REF"],
+              "commitSha": os.environ["GITHUB_SHA"],
+              "workflowRunId": int(os.environ["GITHUB_RUN_ID"]),
+              "workflowRunNumber": int(os.environ["GITHUB_RUN_NUMBER"]),
+              "workflowId": int(os.environ["WORKFLOW_ID"]),
+              "apks": apks,
+          }
+          (dist / "update.json").write_text(json.dumps(metadata, indent=2) + "\\n", encoding="utf-8")
+          print(json.dumps(metadata, indent=2))
+          PY
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ${{ github.ref == 'refs/heads/main' && 'LastHavenPlus-Main-Update' || (startsWith(github.ref, 'refs/tags/v') && 'LastHavenPlus-APKs' || 'LastHavenPlus-Demo-APKs') }}
+          path: dist/*
+          retention-days: 90
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ${{ github.ref == 'refs/heads/main' && 'LastHavenPlus-Main-ARM64' || (startsWith(github.ref, 'refs/tags/v') && 'LastHavenPlus-ARM64' || 'LastHavenPlus-Demo-ARM64') }}
+          path: dist/LastHavenPlus-*-arm64-v8a.apk
+          if-no-files-found: error
+          retention-days: 90
+
+      - name: Publish GitHub Release (tags only)
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist/*
+          name: LastHavenPlus ${{ github.ref_name }}
+          prerelease: ${{ contains(github.ref_name, '-') }}
+          generate_release_notes: true
+, props, re.M).group(1).strip()
           for value, label in ((version, "app"), (manifest["version"], "Addon Manager"), (engine, "GeckoView")):
-              if f"| {chr(96)}{value}{chr(96)} |" not in readme:
+              if f"| `{value}` |" not in readme:
                   raise SystemExit(f"README current-version table is missing {label} version {value}")
           ref = os.environ.get("GITHUB_REF", "")
           if ref.startswith("refs/tags/v"):
               tag_version = ref.removeprefix("refs/tags/v").split("-", 1)[0]
               if tag_version != version:
                   raise SystemExit(f"Release tag {ref} does not match appVersionName {version}")
-          print(f"Release metadata OK: app {version} (code {code}), manager {manifest['version']}, GeckoView {engine}")
+          print(f"Build metadata OK: app {version} (versionCode {code}), manager {manifest['version']}, GeckoView {engine}")
           PY
 
       - name: Validate bundled Addon Manager
