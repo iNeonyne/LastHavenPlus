@@ -7,13 +7,13 @@ import java.io.File
 import java.util.ArrayDeque
 
 data class StorageSnapshot(
-    val persistentProfileAndAppBytes: Long,
+    val persistentAppAndWebViewBytes: Long,
     val cacheBytes: Long,
     val availableDeviceBytes: Long,
     val scanComplete: Boolean,
 )
 
-/** Read-only filesystem accounting. Play and Addon Manager share the GeckoView profile. */
+/** Read-only filesystem accounting for app-private files and Android System WebView data. */
 object StorageUsage {
     fun measure(context: Context): StorageSnapshot {
         val cacheRoots = (listOf(context.cacheDir, context.codeCacheDir) +
