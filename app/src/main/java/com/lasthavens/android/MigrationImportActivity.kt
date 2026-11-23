@@ -14,10 +14,8 @@ import androidx.core.view.WindowCompat
 import java.util.concurrent.Executors
 
 /**
- * Safely verifies and stages a Gecko Addon Manager migration archive.
- *
- * This screen deliberately does not activate the staged library. The legacy Gecko profile
- * remains the source of truth until the native repository and rollback path are complete.
+ * Verifies a Gecko Addon Manager migration archive and activates it in the separate native
+ * repository only after the user explicitly confirms. The legacy Gecko profile is untouched.
  */
 class MigrationImportActivity : AppCompatActivity() {
     private val executor = Executors.newSingleThreadExecutor()
