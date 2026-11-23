@@ -98,7 +98,7 @@ internal class UpdateManager(context: Context) {
     }
 
     private fun checkAndDownloadBlocking(): AvailableUpdate? {
-        check("arm64-v8a" in Build.SUPPORTED_ABIS) {
+        check(UpdatePolicy.supportsDevice(Build.SUPPORTED_ABIS.toList())) {
             "LastHavenPlus updates are available for ARM64 (arm64-v8a) devices only."
         }
         val installed = installedPackageInfo()
@@ -144,7 +144,7 @@ internal class UpdateManager(context: Context) {
                 "Not enough free storage to download and verify this update. Free up space and try again."
             }
             downloadReleaseAsset(apkAsset, apkPart, MAX_APK_BYTES)
-            check(apkPart.length() == apkSize && sha256(apkPart).equals(checksum[0], ignoreCase = true)) {
+            check(UpdatePolicy.isCompleteAsset(apkSize, apkPart.length(), MAX_APK_BYTES) && sha256(apkPart).equals(checksum[0], ignoreCase = true)) {
                 "The release APK is incomplete or failed SHA-256 verification. Installation was blocked."
             }
 
@@ -219,7 +219,7 @@ internal class UpdateManager(context: Context) {
                     output.fd.sync()
                 }
             }
-            check(UpdatePolicy.isCompleteArtifact(expectedSize, destination.length(), maxBytes)) {
+            check(UpdatePolicy.isCompleteAsset(expectedSize, destination.length(), maxBytes)) {
                 "The GitHub Release asset download was incomplete."
             }
         } finally {
