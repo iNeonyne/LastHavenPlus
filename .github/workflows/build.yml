@@ -23,6 +23,9 @@ jobs:
       - name: Test Addon Manager logic and archive handling
         run: npm run test:addon-manager
 
+      - name: Test main update metadata generation
+        run: python3 tests/test_update_metadata.py
+
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
@@ -205,6 +208,38 @@ jobs:
               raise SystemExit("Missing ABI APK variants: " + ", ".join(missing_variants))
           PY
 
+      - name: Verify APK package and version metadata
+        env:
+          GITHUB_RUN_NUMBER: ${{ github.run_number }}
+        run: |
+          python3 - <<'PY'
+          import os, pathlib, re, subprocess
+          root = pathlib.Path("app/build/outputs/apk/release")
+          apks = sorted(root.glob("*.apk"))
+          if len(apks) != 4:
+              raise SystemExit(f"Expected four APK variants, found {len(apks)}")
+          app = pathlib.Path("app/build.gradle.kts").read_text()
+          expected_name = re.search(r'val appVersionName = "([^"]+)"', app).group(1)
+          expected_code = int(os.environ["GITHUB_RUN_NUMBER"])
+          aapt = pathlib.Path(os.environ["ANDROID_HOME"]) / "build-tools" / "37.0.0" / "aapt"
+          if not aapt.is_file():
+              raise SystemExit(f"Android aapt not found: {aapt}")
+          pattern = re.compile(r"^package: name='([^']+)' versionCode='([^']+)' versionName='([^']*)'", re.M)
+          for apk in apks:
+              output = subprocess.check_output([str(aapt), "dump", "badging", str(apk)], text=True)
+              match = pattern.search(output)
+              if not match:
+                  raise SystemExit(f"Could not read package metadata from {apk.name}")
+              package_id, version_code, version_name = match.groups()
+              if package_id != "com.lasthavens.android":
+                  raise SystemExit(f"{apk.name} has unexpected package ID {package_id}")
+              if int(version_code) != expected_code:
+                  raise SystemExit(f"{apk.name} has versionCode {version_code}, expected {expected_code}")
+              if version_name != expected_name:
+                  raise SystemExit(f"{apk.name} has versionName {version_name}, expected {expected_name}")
+              print(f"Verified {apk.name}: {package_id} {version_name} ({version_code})")
+          PY
+
       - name: Name ABI-specific APKs
         run: |
           VERSION=$(grep -m1 'val appVersionName' app/build.gradle.kts | sed -E 's/.*"([^"]+)".*/\1/')
@@ -233,47 +268,14 @@ jobs:
           GITHUB_SHA: ${{ github.sha }}
           GITHUB_REF: ${{ github.ref }}
           WORKFLOW_ID: 427170801
-        run: |
-          python3 - <<'PY'
-          import hashlib, json, os, pathlib, re
-          dist = pathlib.Path("dist")
-          app = pathlib.Path("app/build.gradle.kts").read_text()
-          version = re.search(r'val appVersionName = "([^"]+)"', app).group(1)
-          if not re.fullmatch(r"[0-9]+\.[0-9]+\.[0-9]+", version):
-              raise SystemExit("Main update artifacts require stable SemVer")
-          apks = []
-          for abi in ("arm64-v8a", "armeabi-v7a", "x86_64", "universal"):
-              path = dist / f"LastHavenPlus-{version}-{abi}.apk"
-              if not path.is_file():
-                  raise SystemExit(f"Missing APK variant: {path.name}")
-              apks.append({
-                  "abi": abi,
-                  "file": path.name,
-                  "sha256": hashlib.sha256(path.read_bytes()).hexdigest(),
-                  "sizeBytes": path.stat().st_size,
-              })
-          metadata = {
-              "schemaVersion": 1,
-              "packageName": "com.lasthavens.android",
-              "versionName": version,
-              "versionCode": int(os.environ["GITHUB_RUN_NUMBER"]),
-              "branch": "main",
-              "ref": os.environ["GITHUB_REF"],
-              "commitSha": os.environ["GITHUB_SHA"],
-              "workflowRunId": int(os.environ["GITHUB_RUN_ID"]),
-              "workflowRunNumber": int(os.environ["GITHUB_RUN_NUMBER"]),
-              "workflowId": int(os.environ["WORKFLOW_ID"]),
-              "apks": apks,
-          }
-          (dist / "update.json").write_text(json.dumps(metadata, indent=2) + "\n", encoding="utf-8")
-          print(json.dumps(metadata, indent=2))
-          PY
+        run: python3 scripts/create_update_metadata.py
 
       - uses: actions/upload-artifact@v4
         with:
           name: ${{ github.ref == 'refs/heads/main' && 'LastHavenPlus-Main-Update' || (startsWith(github.ref, 'refs/tags/v') && 'LastHavenPlus-APKs' || 'LastHavenPlus-Demo-APKs') }}
           path: dist/*
           retention-days: 90
+          overwrite: true
 
       - uses: actions/upload-artifact@v4
         with:
@@ -281,6 +283,7 @@ jobs:
           path: dist/LastHavenPlus-*-arm64-v8a.apk
           if-no-files-found: error
           retention-days: 90
+          overwrite: true
 
       - name: Publish GitHub Release (tags only)
         if: startsWith(github.ref, 'refs/tags/v')
