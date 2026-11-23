@@ -51,9 +51,9 @@ GitHub Actions runs the repository's automated checks and produces demo APK arti
 
 | Component | Current version | Status |
 |---|---:|---|
-| Android app | 2.0.0 | Development; not released or device-validated |
-| Bundled Addon Manager | 1.0.2 | Crash-safe add-on replacement; preserves existing library data |
-| GeckoView | 159.0.20261102144711 | Pinned dependency |
+| Android app | `2.0.0` | Development; not released or device-validated |
+| Bundled Addon Manager | `1.0.2` | Crash-safe add-on replacement; preserves existing library data |
+| GeckoView | `159.0.20261102144711` | Pinned dependency |
 
 The extension version is independent of the Android app version. Check the bundled extension's `manifest.json` for its authoritative version. Existing add-on files remain in their current storage locations until that add-on is updated; new replacements use staged storage generations so an interrupted update does not replace the last committed files.
 
