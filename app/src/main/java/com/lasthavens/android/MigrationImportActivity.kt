@@ -177,7 +177,9 @@ class MigrationImportActivity : AppCompatActivity() {
         progress.visibility = android.view.View.VISIBLE
         status.setText(R.string.migration_activating)
         executor.execute {
-            val result = runCatching { AddonRepository(filesDir).activate(stage) }
+            val result = runCatching {
+                AddonRepository(filesDir).activate(stage).also { stage.directory.deleteRecursively() }
+            }
             runOnUiThread {
                 if (isFinishing || isDestroyed) return@runOnUiThread
                 choose.isEnabled = true
