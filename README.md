@@ -2,7 +2,7 @@
 
 A native Android client for [Lasthavens](https://alt.lasthavens.com/play), built with Kotlin and Mozilla GeckoView. It includes a bundled Addon Manager WebExtension so the game and manager can share browser state and installed add-ons.
 
-> **Project status:** main-branch development. Main CI run #196 verified the permanent release certificate and built four ABI variants. The project is now switching to one ARM64-only release APK; the new pipeline is awaiting CI verification. Automated checks pass; same-certificate in-place update and data-preservation testing on a physical device remain outstanding. No permanent public download link is published yet. This is an unofficial, independent client; it is not endorsed by Lasthavens or Blizzard Entertainment.
+> **Project status:** main-branch development. Main CI run #231 passed the ARM64-only build, signing, APK metadata, and checksum checks. The updater is being changed to use published stable GitHub Releases; same-certificate in-place update and data-preservation testing on a physical device remain outstanding. No permanent public download link is published yet. This is an unofficial, independent client; it is not endorsed by Lasthavens or Blizzard Entertainment.
 
 ## At a glance
 
@@ -42,7 +42,7 @@ Open the repository in Android Studio with JDK 17 and the Android SDK required b
 ./gradlew assembleRelease
 ```
 
-GitHub Actions runs automated checks on `main`, pull requests, and manual dispatches. Successful `main` builds publish a metadata/checksum artifact and one permanent-key-signed ARM64 APK artifact; pull-request and manual builds are not update candidates. Main run #196 verified the permanent release certificate for the previous multi-ABI build; the ARM64-only workflow must pass CI again.
+GitHub Actions runs automated checks on `main`, pull requests, and manual dispatches. Main builds are validation builds and publish temporary artifacts; the in-app updater does not use them. Tagged builds create draft GitHub Releases with the permanent-key-signed ARM64 APK and checksums. The updater reads only published stable releases.
 
 ## Versions
 
