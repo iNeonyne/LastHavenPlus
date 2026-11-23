@@ -258,6 +258,40 @@ export function buildZip(entries) {
   return zipSync(Object.fromEntries(entries), { level: 6 });
 }
 
+
+// Read a response/File stream with hard byte limits; never trust Content-Length alone.
+export async function readStreamLimited(stream, limit, errorCode = "errorArchiveSize", budget = null) {
+  if (!stream || typeof stream.getReader !== "function")
+    throw new AddonError("downloadFailed", { detail: "Streaming response unavailable" });
+  const reader = stream.getReader();
+  const chunks = [];
+  let size = 0;
+  try {
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      const nextSize = size + value.byteLength;
+      if (nextSize > limit || (budget && budget.used + value.byteLength > budget.limit))
+        throw new AddonError(errorCode);
+      size = nextSize;
+      if (budget) budget.used += value.byteLength;
+      chunks.push(value);
+    }
+  } catch (error) {
+    try { await reader.cancel(); } catch {}
+    throw error;
+  } finally {
+    reader.releaseLock();
+  }
+  const bytes = new Uint8Array(size);
+  let offset = 0;
+  for (const chunk of chunks) {
+    bytes.set(chunk, offset);
+    offset += chunk.byteLength;
+  }
+  return bytes;
+}
+
 export function exportZip({ folder, files }) {
   return zipSync(
     Object.fromEntries(
