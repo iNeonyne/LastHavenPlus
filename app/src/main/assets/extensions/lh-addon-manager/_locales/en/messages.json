@@ -17,6 +17,18 @@
   "waiting": {
     "message": "Waiting for the game"
   },
+  "gameStorageTitle": {
+    "message": "Game site data"
+  },
+  "gameStorageWaiting": {
+    "message": "Open or reload the game to measure its website storage. This estimate covers the game origin's browser data, not downloaded network traffic or the entire shared browser profile."
+  },
+  "gameStorageMeasured": {
+    "message": "Measured {time} · origin {origin}{quota}"
+  },
+  "gameStorageQuota": {
+    "message": " · {used} of {quota} quota"
+  },
   "storageTitle": {
     "message": "Storage"
   },
