@@ -68,6 +68,12 @@ internal object UpdatePolicy {
     fun isStableVersionName(value: String): Boolean =
         value.matches(Regex("[0-9]+\\.[0-9]+\\.[0-9]+"))
 
+    fun isPublishedStableRelease(tag: String, draft: Boolean, prerelease: Boolean): Boolean =
+        !draft && !prerelease && tag.startsWith("v") && isStableVersionName(tag.removePrefix("v"))
+
+    fun isExpectedReleaseApkName(versionName: String, fileName: String): Boolean =
+        isStableVersionName(versionName) && fileName == "LastHavenPlus-$versionName-arm64-v8a.apk"
+
     fun isValidSha256(value: String): Boolean =
         value.matches(Regex("[0-9a-fA-F]{64}"))
 
