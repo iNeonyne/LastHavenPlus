@@ -237,7 +237,10 @@
     "message": "Restore backup"
   },
   "managementHint": {
-    "message": "Live Game Scan checks addon files requested by the running game. Prepared addons are not counted as loaded until the game actually requests their files. Backups include addon files, not SavedVariables or game settings."
+    "message": "Live Game Scan checks addon files requested by the running game. Prepared addons are not counted as loaded until the game actually requests their files."
+  },
+  "backupScope": {
+    "message": "ZIP backups contain managed addon files only. They exclude enabled/disabled flags, manager settings, game SavedVariables, login/session data, and the shared Gecko profile. Restored addons are disabled by default unless the same addon is already installed; an existing addon's enabled state is preserved."
   },
   "scanFound": {
     "message": "Scan complete. Imported {count} addon(s); skipped {skipped} already present."
