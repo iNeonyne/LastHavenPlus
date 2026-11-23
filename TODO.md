@@ -23,7 +23,7 @@ All development work stays on `main`, the sole active branch. The former `beta` 
 - [x] Trace and document the Gecko profile/runtime sharing behavior between Play and Addon Manager in [docs/GECKOVIEW_PROFILE.md](docs/GECKOVIEW_PROFILE.md); same single App-owned runtime, separate Play/Manager sessions.
 - [ ] Review navigation, redirects, popup handling, external links, HTTPS behavior, and custom URL schemes; fix confirmed defects.
 - [x] Add focused Kotlin/JVM tests for URL routing and host allow-listing; CI runs them before packaging.
-- [ ] Audit native bridge exposure and add automated protections proving untrusted pages cannot invoke privileged Android functionality.
+- [x] Audit native bridge exposure: no direct JavaScript-to-native interface is registered. Added JVM-independent tests and a CI source guard that reject `addJavascriptInterface` and `@JavascriptInterface` in app source. File prompts remain user-mediated through Android's Storage Access Framework.
 - [x] Extract download filename sanitization into a pure JVM policy and add regression tests for path separators, reserved/control characters, length limits, empty names, and Unicode filenames. Other native file-handling boundaries remain to be audited.
 - [ ] Add storage-failure and interrupted-write tests without changing persistence behavior unless a safe migration and rollback path are demonstrated.
 - [ ] Add a failure-injection test for Addon Manager metadata commit failure and confirm the prior storage generation remains readable.
