@@ -27,6 +27,7 @@ This file records notable user-visible changes. It is not the development task l
 - Added SHA-256 checksum generation and verification for CI artifacts and GitHub Releases.
 - Addon Manager permission checks fail closed when the browser permissions API reports an error.
 - Addon Manager archive imports, restores, and downloads now enforce byte limits while streaming actual data.
+- Clarified the Addon Manager ZIP backup scope in the UI: backups contain managed add-on files only, not manager settings, enabled state, game SavedVariables, login/session data, or the shared Gecko profile.
 
 ### Build and maintenance
 - Updated the Android Gradle Plugin/Kotlin toolchain and Gradle configuration.
