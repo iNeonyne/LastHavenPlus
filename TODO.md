@@ -15,15 +15,15 @@ The tasks below are ordered by dependency. Do not remove the Gecko migration sou
 - [ ] Record the baseline signed ARM64 APK size from a trusted main build; retain the artifact/run reference for final comparison.
 - [ ] Inventory every manager persistence key, library field, IndexedDB file record, setting, catalogue mapping and diagnostic field used by manager 1.0.5.
 - [ ] Inventory all current manager screens and operations; use the existing 1.0.5 behavior as the feature baseline, not the uploaded 0.5.1 archive.
-- [ ] Specify and version the migration-package schema: metadata, settings, folder IDs, versions, enabled state, dependency fields, relative file paths, bytes and SHA-256 checksums.
+- [x] Specify and version the migration-package schema: metadata, settings, folder IDs, versions, enabled state, dependency fields, relative file paths, bytes and SHA-256 checksums.
 - [ ] Specify the local-manager bridge and game bridge message schemas, allowed origins, payload limits, error responses and timeout behavior.
 - [ ] Define the native repository layout and staged-write/atomic-activation rules before implementing storage.
 - [ ] Document the login/session boundary: Gecko cookies and WebView cookies are separate; do not claim automatic session migration.
 
 ## P0 — 2. One-time legacy data export/import
 
-- [ ] Add a Gecko-side exporter to the existing manager that reads the real 1.0.5 library, settings and IndexedDB bytes without modifying the source records.
-- [ ] Export all required manager state into a versioned migration package with file paths, byte sizes, checksums and a complete metadata manifest.
+- [x] Add a Gecko-side exporter to the existing manager (now manager 1.0.6) that reads the library, settings and IndexedDB bytes without modifying source records.
+- [x] Export manager state into a versioned migration package with file paths, byte sizes, per-file SHA-256 checksums and a metadata manifest.
 - [ ] Implement a native importer with archive/path validation, strict byte/file/count limits, checksum verification and clear user-readable errors.
 - [ ] Stage imported files separately, commit the metadata pointer only after verification, and roll back only the new generation on failure.
 - [ ] Make migration idempotent: repeated starts/import attempts must not duplicate add-ons, downgrade versions, overwrite newer native data or mark incomplete work complete.
