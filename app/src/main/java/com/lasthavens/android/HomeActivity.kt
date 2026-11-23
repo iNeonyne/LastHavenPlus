@@ -70,13 +70,6 @@ class HomeActivity : AppCompatActivity() {
                 .setPositiveButton(android.R.string.ok, null).show()
             return
         }
-        if (newer.isEmpty()) {
-            AlertDialog.Builder(this).setTitle(R.string.update_title)
-                .setMessage(R.string.update_none)
-                .setPositiveButton(android.R.string.ok, null).show()
-            return
-        }
-
         val choices = versions.map { version ->
             if (version.isInstalled) {
                 "LastHavenPlus ${version.versionName} · Installed"
@@ -85,7 +78,7 @@ class HomeActivity : AppCompatActivity() {
                 "LastHavenPlus ${version.versionName} · $size"
             }
         }.toTypedArray()
-        var selectedIndex = 1
+        var selectedIndex = if (newer.isEmpty()) 0 else 1
         val dialog = AlertDialog.Builder(this)
             .setTitle(R.string.update_title)
             .setSingleChoiceItems(choices, selectedIndex) { _, which -> selectedIndex = which }
@@ -93,7 +86,9 @@ class HomeActivity : AppCompatActivity() {
             .setPositiveButton(R.string.update_download, null)
             .create()
         dialog.setOnShowListener {
-            dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener {
+            val downloadButton = dialog.getButton(AlertDialog.BUTTON_POSITIVE)
+            downloadButton.isEnabled = newer.isNotEmpty()
+            downloadButton.setOnClickListener {
                 if (selectedIndex == 0) {
                     Toast.makeText(this, R.string.update_current_selected, Toast.LENGTH_SHORT).show()
                     return@setOnClickListener
