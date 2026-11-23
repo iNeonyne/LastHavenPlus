@@ -19,6 +19,34 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Validate release tag and main ancestry
+        if: startsWith(github.ref, 'refs/tags/v')
+        env:
+          RELEASE_TAG: ${{ github.ref_name }}
+          RELEASE_SHA: ${{ github.sha }}
+        run: |
+          python3 - <<'PY'
+          import os, pathlib, re
+          tag = os.environ["RELEASE_TAG"]
+          app = pathlib.Path("app/build.gradle.kts").read_text()
+          match = re.search(r'val appVersionName = "([^"]+)"', app)
+          if not match:
+              raise SystemExit("Could not read appVersionName from app/build.gradle.kts")
+          version = match.group(1)
+          if not re.fullmatch(r"v(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)", tag):
+              raise SystemExit(f"Release tag must be stable vMAJOR.MINOR.PATCH (got {tag})")
+          if tag != f"v{version}":
+              raise SystemExit(f"Release tag {tag} does not match appVersionName {version}")
+          print(f"Validated stable release tag {tag}")
+          PY
+          git fetch --no-tags origin +refs/heads/main:refs/remotes/origin/main
+          git merge-base --is-ancestor "$RELEASE_SHA" origin/main || {
+            echo "Release tag must point to a commit already reachable from main."
+            exit 1
+          }
 
       - name: Test Addon Manager logic and archive handling
         run: npm run test:addon-manager
@@ -100,9 +128,9 @@ jobs:
                   raise SystemExit(f"README current-version table is missing {label} version {value}")
           ref = os.environ.get("GITHUB_REF", "")
           if ref.startswith("refs/tags/v"):
-              tag_version = ref.removeprefix("refs/tags/v").split("-", 1)[0]
-              if tag_version != version:
-                  raise SystemExit(f"Release tag {ref} does not match appVersionName {version}")
+              tag_version = ref.removeprefix("refs/tags/")
+              if tag_version != f"v{version}" or not re.fullmatch(r"v(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)", tag_version):
+                  raise SystemExit(f"Release tag {ref} must be stable v{version} and match appVersionName")
           print(f"Build metadata OK: app {version} (versionCode {code}), manager {manifest['version']}, GeckoView {engine}")
           PY
 
@@ -313,5 +341,6 @@ jobs:
         with:
           files: dist/*
           name: LastHavenPlus ${{ github.ref_name }}
-          prerelease: ${{ contains(github.ref_name, '-') }}
+          draft: true
+          prerelease: false
           generate_release_notes: true
