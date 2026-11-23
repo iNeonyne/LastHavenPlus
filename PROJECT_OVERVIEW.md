@@ -28,9 +28,9 @@ The app and extension have independent versions. Necessary Addon Manager mainten
 ## Current build status
 
 - Landscape Home layout and orientation are committed on `beta`.
-- GitHub Actions run [#107](https://github.com/iNeonyne/Lasthavens-Android/actions/runs/45089891036) passed, including Addon Manager regression tests, APK compilation, signature verification, packaged asset checks, ABI naming, and SHA-256 checksum generation.
-- Run #107 uploaded `LastHavenPlus-Demo-ARM64` and `LastHavenPlus-Demo-APKs` artifacts.
-- CI success confirms only the checks that ran. The APK has not yet been installed and smoke-tested on a physical phone.
+- Earlier GitHub Actions run [#107](https://github.com/iNeonyne/Lasthavens-Android/actions/runs/45089891036) passed the Addon Manager regression suite, APK compilation, signature verification, packaged asset checks, ABI naming, and SHA-256 checksum generation; it uploaded demo APK artifacts.
+- Subsequent beta work added staged add-on storage and bounded streaming reads for archive imports, restores, and remote downloads. Regression tests cover the streaming byte limits.
+- The streaming-limit changes still require a successful current CI run. CI success alone does not establish physical-device compatibility; the APK has not yet been installed and smoke-tested on a physical phone.
 
 ## Immediate validation sequence
 
