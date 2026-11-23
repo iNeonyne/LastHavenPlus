@@ -10,20 +10,10 @@ object GameUrls {
     const val ADDON_MANAGER_PAGE = "manager.html"
 
     /** True for lasthavens.com and any of its subdomains. */
-    fun isGameHost(uri: Uri): Boolean {
-        val host = uri.host?.lowercase() ?: return false
-        return host == "lasthavens.com" || host.endsWith(".lasthavens.com")
-    }
+    fun isGameHost(uri: Uri): Boolean = NavigationPolicy.isGameHost(uri.toString())
 
-    /**
-     * Navigation that is allowed to stay inside the app. Everything else (other websites)
-     * is handed to the system browser so the game view cannot be navigated away by accident.
-     */
-    fun isInApp(uri: Uri): Boolean = when (uri.scheme?.lowercase()) {
-        "about", "blob", "data", "moz-extension", "resource", "javascript" -> true
-        "http", "https" -> isGameHost(uri)
-        else -> false
-    }
+    /** Keep only approved game and Gecko-internal navigations inside the app. */
+    fun isInApp(uri: Uri): Boolean = NavigationPolicy.isInApp(uri.toString())
 
     fun openExternal(context: Context, uri: Uri) {
         val scheme = uri.scheme?.lowercase()

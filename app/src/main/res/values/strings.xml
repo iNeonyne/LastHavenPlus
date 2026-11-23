@@ -9,6 +9,20 @@
     <string name="version_app">App %1$s</string>
     <string name="version_addons">Addon Manager %1$s</string>
 
+    <string name="update_check">Check for updates</string>
+    <string name="update_title">App updates</string>
+    <string name="update_none">No newer compatible update is available from the latest successful main build.</string>
+    <string name="update_available">Update available</string>
+    <string name="update_available_message">LastHavenPlus %1$s (main build #%2$d) is ready. Verified APK size: %3$s. Commit: %4$s. Continue to Android’s installer?</string>
+    <string name="update_install">Install</string>
+    <string name="update_installing">Preparing update</string>
+    <string name="update_installing_message">Copying the verified APK to Android's installer…</string>
+    <string name="update_install_handoff">Opening Android installer…</string>
+    <string name="update_install_title">Could not start installation</string>
+    <string name="update_install_failed">Android could not start the update installation.</string>
+    <string name="update_failed_title">Update unavailable</string>
+    <string name="update_failed">The update could not be checked or verified. No app files or user data were changed.</string>
+
     <string name="leave_title">Leave the game?</string>
     <string name="leave_message">Your session stays loaded in the background. Reloading will restart the game page.</string>
     <string name="leave_home">Home</string>
@@ -22,4 +36,20 @@
     <string name="download_saved">Saved to Downloads/Lasthavens/%1$s</string>
     <string name="download_saved_app">Saved to %1$s</string>
     <string name="download_failed">Download failed</string>
+
+    <string name="storage">Storage</string>
+    <string name="storage_back">‹ Home</string>
+    <string name="storage_title">Storage usage</string>
+    <string name="storage_intro">A read-only estimate of space used by LastHavenPlus and its embedded browser.</string>
+    <string name="storage_persistent_label">Persistent app + browser profile</string>
+    <string name="storage_persistent_detail">Includes the shared GeckoView profile, game and Addon Manager site data, add-on data, and app files. It is not a game-only figure.</string>
+    <string name="storage_cache_label">Browser and app cache</string>
+    <string name="storage_cache_detail">Temporary cached files are shown separately. Android or GeckoView may clear or rebuild them.</string>
+    <string name="storage_available_label">Available device storage</string>
+    <string name="storage_scanning">Measuring app-private storage…</string>
+    <string name="storage_scan_complete">Measurement complete. These are current stored bytes, not lifetime network downloads.</string>
+    <string name="storage_scan_partial">Some files could not be measured. Values may be lower than actual usage.</string>
+    <string name="storage_scan_failed">Could not measure storage. Try again.</string>
+    <string name="storage_refresh">Refresh measurements</string>
+    <string name="storage_bytes">%1$d bytes</string>
 </resources>

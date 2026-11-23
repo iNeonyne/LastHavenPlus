@@ -1,4 +1,4 @@
-import { importZip, exportZip, buildZip, LIMITS } from "./archive.js";
+import { importZip, exportZip, buildZip, LIMITS, readStreamLimited } from "./archive.js";
 import { AddonError } from "./errors.js";
 import {
   mergeAddons,
@@ -47,7 +47,7 @@ try {
   // Drop stored files that no library entry points to (e.g. after a crash).
   await withLock("lh-library", async () => {
     library = await readLibrary();
-    await gc(library.addons.map((a) => a.folder));
+    await gc(library.addons.map((a) => a.storageFolder || a.folder));
   });
 } catch (error) {
   console.warn("Storage cleanup skipped", error);
@@ -69,7 +69,7 @@ function showMessage(key, extra = "") {
     : "";
 }
 async function download(addon) {
-  const files = await getAllFiles(addon.folder);
+  const files = await getAllFiles(addon.storageFolder || addon.folder);
   const url = URL.createObjectURL(
     new Blob([exportZip({ folder: addon.folder, files })], {
       type: "application/zip",
@@ -165,12 +165,28 @@ async function addArchive(bytes) {
     folders.push(part.folder);
   }
   if (accepted.length) {
+    const staged = accepted.map((part) => ({
+      ...part,
+      // A fresh storage key keeps the currently installed files intact until commit.
+      storageFolder: "lh_" + crypto.randomUUID().replaceAll("-", ""),
+    }));
     const next = mergeAddons(
       library,
-      accepted.map(({ files, ...meta }) => meta),
+      staged.map(({ files: _files, ...meta }) => meta),
     );
-    await putAddons(accepted.map((part) => ({ folder: part.folder, files: part.files })));
-    await commit(next);
+    await putAddons(
+      staged.map(({ storageFolder, files }) => ({ folder: storageFolder, files })),
+    );
+    try {
+      await commit(next);
+    } catch (error) {
+      await Promise.allSettled(staged.map((part) => deleteAddon(part.storageFolder)));
+      throw error;
+    }
+    // If cleanup is interrupted, startup GC removes the unreferenced generation.
+    await gc(next.addons.map((addon) => addon.storageFolder || addon.folder)).catch((error) =>
+      console.warn("Old add-on generation cleanup skipped", error),
+    );
   }
   return { folders, duplicates, imported: accepted.length };
 }
@@ -207,7 +223,7 @@ $("#remove-dialog").addEventListener("close", () => {
   action(async () => {
     if (makeBackup) await download(addon);
     await commit(removeAddon(library, addon.folder));
-    await deleteAddon(addon.folder);
+    await deleteAddon(addon.storageFolder || addon.folder);
   });
 });
 function render() {
@@ -347,11 +363,16 @@ function status() {
 }
 $("#import").onchange = (e) => {
   const files = [...e.target.files];
+  if (files.some((file) => file.size > LIMITS.archive)) {
+    showMessage("errorArchiveSize");
+    e.target.value = "";
+    return;
+  }
   action(async () => {
     let imported = 0;
     const duplicates = [];
     for (const file of files) {
-      const result = await addArchive(new Uint8Array(await file.arrayBuffer()));
+      const result = await addArchive(await readStreamLimited(file.stream(), LIMITS.archive, "errorArchiveSize"));
       imported += result.imported;
       duplicates.push(...result.duplicates);
     }
@@ -387,7 +408,7 @@ $("#backup").onclick = () => action(async () => {
   if (!library.addons.length) { showMessage("empty"); return; }
   const entries = [];
   for (const addon of library.addons) {
-    const files = await getAllFiles(addon.folder);
+    const files = await getAllFiles(addon.storageFolder || addon.folder);
     for (const [path, bytes] of Object.entries(files)) entries.push([`${addon.folder}/${path}`, bytes]);
   }
   const expandedSize = entries.reduce((total, [, bytes]) => total + bytes.length, 0);
@@ -405,9 +426,14 @@ $("#backup").onclick = () => action(async () => {
 $("#restore").onchange = (e) => {
   const file = e.target.files?.[0];
   if (!file) return;
+  if (file.size > LIMITS.archive) {
+    showMessage("errorArchiveSize");
+    e.target.value = "";
+    return;
+  }
   action(async () => {
     setProgress(t("restoreProgress"));
-    const result = await addArchive(new Uint8Array(await file.arrayBuffer()));
+    const result = await addArchive(await readStreamLimited(file.stream(), LIMITS.archive, "errorArchiveSize"));
     showMessage("restoreDone", { count: result.imported });
   }).finally(() => { e.target.value = ""; });
 };

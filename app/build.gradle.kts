@@ -7,7 +7,8 @@ plugins {
 }
 
 val appVersionName = "2.0.0"
-val appVersionCode = 2
+// GitHub Actions owns the never-resetting code sequence across beta, main, and tags.
+val appVersionCode = System.getenv("GITHUB_RUN_NUMBER")?.toIntOrNull() ?: 3
 
 val keystorePath = System.getenv("KEYSTORE_PATH")
 val keystoreFile = keystorePath?.let { file(it) }
@@ -82,4 +83,5 @@ dependencies {
     implementation("androidx.appcompat:appcompat:1.7.0")
     implementation("androidx.core:core-ktx:1.15.0")
     implementation("androidx.activity:activity-ktx:1.9.3")
+    testImplementation("junit:junit:4.13.2")
 }
