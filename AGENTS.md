@@ -1,109 +1,110 @@
 # Instructions for AI agents and contributors
 
-These are mandatory project rules. Read this file and `TODO.md` before doing work. Read `README.md`, `CHANGELOG.md`, `PROJECT_OVERVIEW.md`, relevant source files, and current CI results as needed. The checked-in implementation and current CI configuration take precedence over stale notes.
+Read this file and TODO.md before changing the repository. Use ROADMAP.md for the approved target architecture and delivery gates. The checked-in source and current CI configuration take precedence over stale historical notes.
 
-## 1. Branch and promotion policy — mandatory
+## 1. Branch policy
 
-- `main` is the sole active development, integration, CI, and release branch. All source code, tests, workflows, documentation, version changes, and fixes belong on `main`.
-- The former `beta` branch has been consolidated into `main` and is retired. Do not recreate it or target it unless the owner explicitly changes this policy.
-- Requests to continue, fix, review, tidy, or improve the project authorize work on `main`.
-- Before editing or committing, verify the target branch is `main`; before pushing, verify the destination is still `main`.
-- Do not create long-lived development branches unless a task genuinely requires isolation; if one is needed, use a short-lived branch and merge it back to `main` after checks pass.
+- main is the only active development, integration, CI and release branch.
+- Do not recreate or target the retired beta branch.
+- Requests to continue, fix, review, tidy or improve the project authorize work on main.
+- Verify the target branch is main before editing and before every push. Do not create long-lived development branches.
 
-## 2. Product scope
+## 2. Product direction
 
-LastHavenPlus is a focused Android client for the Lasthavens game, built with Kotlin and Mozilla GeckoView. It is not a general-purpose browser. Keep work focused on reliable gameplay, add-on management, Android integration, security, and data preservation.
+LastHavenPlus is a focused Android client for the Lasthavens game, not a general-purpose browser.
 
-## 3. Addon Manager changes and data preservation
+The approved final architecture is:
+- Kotlin native Android application shell.
+- Android System WebView (Chromium) for gameplay; the engine is provided by the device and is not bundled in the APK.
+- A native-backed Addon Manager hosted from local app assets.
+- Native Android updater, storage dashboard, file selection, downloads and navigation.
+- AndroidX WebKit document-start scripts and origin-restricted WebMessageListener bridges.
 
-- The project owner has authorized necessary Addon Manager maintenance, provided installed add-ons carry over.
-- Preserve add-on files, folder IDs, versions, enabled/disabled state, library metadata, manager settings, and the shared Gecko profile.
-- Never reset, wipe, or silently discard existing add-on data.
-- Before changing storage or backup formats, inspect existing records and maintain backward-compatible reads or provide a tested migration and rollback path.
-- Prefer staged writes and pointer swaps so a failed or interrupted update leaves the last committed add-on files intact.
-- Clean up orphaned data only after confirming it is not referenced by the active library.
-- Never silently change the manager version or stored data format.
+Do not use TWA, bundle Chromium, retain GeckoView as a gameplay fallback, or add unrelated browser functionality. GeckoView may exist only temporarily as a one-time migration exporter for the existing manager profile. Remove that temporary path after native migration is verified.
 
-## 4. Architecture and user data
+## 3. User data and manager migration
 
-- Keep GeckoView unless a concrete technical reason and migration plan justify changing engines.
-- The game and Addon Manager are intended to share the Gecko runtime/profile. Preserve this relationship.
-- Protect login/session state, cookies, profile data, installed add-ons, manager settings, and other user data.
-- Before changing profile, storage, backup/restore, add-on format, or migration behavior: inspect the current implementation; document what is preserved and excluded; and define a tested backup, migration, and rollback path. The owner has authorized necessary manager maintenance only when existing add-ons carry over.
-- Never recommend uninstalling an existing differently signed app without clearly warning that local data may be lost.
-- Do not claim backups preserve settings or enabled state unless the implementation demonstrably includes them.
+The owner has authorized the major engine and Addon Manager overhaul, including migration from the existing manager.
 
-## 5. Security and privacy
+Preserve:
+- Add-on file bytes and relative paths.
+- Add-on folder IDs, versions, enabled/disabled state and load order/dependency metadata.
+- Library revision and relevant manager settings/preferences.
+- Existing native app data and updater compatibility.
 
-- Treat all remote game pages, downloaded files, add-ons, URLs, and imported archives as untrusted.
-- Keep URL/navigation allow-lists strict. Do not broaden trusted origins or allow dangerous schemes for convenience.
-- Privileged Android functionality must not be exposed to untrusted web content.
-- Keep permissions minimal and fail closed when permission checks fail or are unavailable.
-- Validate archive paths, file sizes, content, and checksums. Consider decompression bombs, path traversal, oversized downloads, malformed metadata, and partial writes.
-- Do not add analytics, telemetry, tracking, or unnecessary data collection.
-- Do not put passwords, keystore files, signing material, tokens, or private user data in source control, logs, issues, or chat.
+Rules:
+- Never clear app data, reset the manager, or silently discard installed add-ons.
+- Export existing Gecko-backed manager records before removing the only code capable of reading them.
+- Use a versioned migration package, strict validation, file checksums, staged writes, atomic metadata activation, idempotent import and rollback.
+- Keep the legacy Gecko profile untouched during source cleanup. Do not delete profile files or unrelated app data as part of removing source code.
+- Gecko and WebView cookie/profile stores are separate. Do not promise cookie/login transfer; tell users that sign-in may be required again.
+- Existing ZIP backups contain add-on files only; do not treat them as complete manager-state backups.
+- Do not mark migration complete until native data is re-read and reconciled against exported metadata and file hashes.
 
-## 6. Build and release
+## 4. WebView security
 
-- GitHub Actions is the build and validation path. GitHub Releases are the intended public distribution channel; there is no Google Play release track.
-- Main-branch CI builds are validation builds, not update candidates. The updater reads only the latest published stable GitHub Release from this repository.
-- Never publish a debug-signed APK as a public release or main update candidate.
-- Public releases require the permanent release key, verified certificate consistency, secure offline key backups, and a tested same-certificate in-place upgrade.
-- Termux-free release requests use `.github/release-request.json` and `.github/workflows/request-release.yml`. Only a commit to that request file on `main` triggers the request workflow. Require exactly `version` and `dry_run`; validate stable SemVer, exact Gradle `versionName`, and strictly increasing tags. `dry_run: true` validates without creating a tag. For an approved release request, set `dry_run: false`; the workflow creates an annotated tag and explicitly dispatches the existing build workflow on that tag because pushes made with `GITHUB_TOKEN` do not automatically trigger another workflow. The build creates a draft only. Never auto-publish; retain manual checklist, asset review, and owner sign-off.
-- Do not experiment with, rotate, or replace the release key casually. A certificate mismatch can prevent upgrades and put user data at risk.
-- Do not claim a build, test, artifact, device check, or release succeeded unless its actual result was checked.
-- CI success proves only the checks that ran. It does not prove physical-device compatibility, performance, thermals, or gameplay stability.
+- Treat the remote game, add-ons, downloaded files, catalogue responses and imported archives as untrusted.
+- Use the minimum WebView settings and Android permissions required by the game.
+- Restrict document-start scripts and WebMessageListener to explicit approved HTTPS origins. Validate source origin, main-frame status, message schema, size and operation on every message.
+- The remote game bridge is read-only for add-on payload retrieval and accepts only sanitized diagnostics. It must not expose arbitrary native commands, filesystem access or manager mutation.
+- Restrict the manager's privileged bridge to the local app-assets origin. Do not reuse it in the remote game WebView.
+- Never expose addJavascriptInterface or @JavascriptInterface to remote game content.
+- Keep navigation allow-lists strict; reject insecure HTTP and dangerous/untrusted schemes. Open approved external links through Android.
+- Validate ZIP paths, file counts, compressed/expanded sizes, checksums, redirects and streamed byte limits. Fail closed.
 
-## 7. Versioning and automatic-update compatibility
+## 5. Updater and app identity
 
-- Use Semantic Versioning for the Android app's user-facing `versionName`: `MAJOR.MINOR.PATCH`.
-  - **MAJOR:** incompatible user-facing change or breaking app/data contract. Any data-format migration still requires documented, tested backup, migration, and rollback.
-  - **MINOR:** backward-compatible user-facing feature or substantial capability.
-  - **PATCH:** backward-compatible bug fixes, security fixes, and maintenance.
-- Keep `versionName` stable across ordinary commits and CI runs. Do not encode build numbers, dates, commit hashes, or branch names in it. Do not add a leading `v`; Git release tags use `v<versionName>`.
-- `app/build.gradle.kts` is the authoritative source for Android `versionName`; build validation, UI, release metadata, and updater metadata must derive from it.
-- **Release-number decision:** the first public Android app release must be `1.0.0` (tag `v1.0.0`). Keep it stable until that release is approved and published. After `1.0.0`, use `1.0.1` for the next patch-level release, `1.1.0` for the next backward-compatible feature release, or `2.0.0` only for a genuinely breaking release. Do not bump merely because CI ran.
-- Android `versionCode` is a separate positive integer used for install/update ordering. The existing `.github/workflows/build.yml` workflow's `GITHUB_RUN_NUMBER` is the monotonic source. It must remain strictly increasing across main pushes and release tags. Keep the workflow identity stable; if it is ever recreated or numbering changes, migrate the counter and prove the next code exceeds every distributed code before publishing.
-- A rerun of an existing workflow run retains its run number and is not a newer build. The updater must compare numeric `versionCode`, never version-name strings, filenames, dates, or commit hashes.
-- Local builds use a development-only fallback code and must never be advertised as update candidates. The first CI-generated code must exceed every previously installable/distributed code.
-- The updater uses the latest published stable GitHub Release from this repository. Require a stable `vMAJOR.MINOR.PATCH` tag, exactly one uploaded `LastHavenPlus-<version>-arm64-v8a.apk`, and exactly one `SHA256SUMS.txt` asset. Download only HTTPS GitHub release-asset URLs, enforce declared size limits, verify the APK SHA-256 against the checksum asset, and validate package ID, APK versionName/versionCode, ARM64 device ABI, and exact installed signing-certificate equality before Android installer handoff. Ignore main CI artifacts, workflow-dispatch builds, PR builds, drafts, prereleases, malformed releases, and unsupported ABIs.
-- Release distribution is ARM64-only (`arm64-v8a`); do not build, publish, or offer armeabi-v7a, x86_64, or universal APKs. Tagged release builds attach one ARM64 APK and `SHA256SUMS.txt` to a draft GitHub Release. The updater offers the APK only to ARM64 devices, verifies release asset sizes and checksums, validates package/version and exact installed signing-certificate compatibility, then invokes Android's user-confirmed installer. Other architectures must receive a clear unsupported-device result, never a universal fallback.
-- Every main APK offered to an installed app must use the same permanent release certificate as that installed app. Main and tagged builds fail closed if the permanent key is missing or its fingerprint differs from the expected SHA-256 certificate. Main run #196 verified that the permanent release keystore matches the expected SHA-256 fingerprint using DER certificate hashing (`keytool -exportcert` piped to `sha256sum`). Keep this direct-byte check; never change the expected fingerprint to accommodate a different key. Verify signer fingerprint and complete a same-certificate in-place upgrade test before declaring updates production-ready.
-- Never work around package ID, signing-certificate, or version mismatch by uninstalling the existing app or clearing data. Preserve application ID `com.lasthavens.android`.
-- Addon Manager version (from bundled `manifest.json`) and GeckoView dependency version are independent. Do not bump either just because the Android app version changes, and do not change Addon Manager without owner authorization and required data-preservation checks.
+The updater is a native Kotlin feature and must remain independent of WebView and the Addon Manager.
 
-## 8. Development workflow
+Preserve:
+- Application ID com.lasthavens.android.
+- The existing permanent signing certificate and signing configuration.
+- ARM64-only release distribution.
+- Monotonic CI versionCode from GITHUB_RUN_NUMBER.
+- Metadata-only discovery of the installed version and newer published stable releases.
+- Explicit user selection before APK download.
+- Full APK download, SHA-256, declared-size, package/version/versionCode, ABI and exact signing-certificate validation.
+- Android user-confirmed package installer handoff and accurate success/failure reporting.
 
-1. Verify branch `main`, inspect the latest commits, workflow runs, and relevant source.
-2. Read the related items in `TODO.md`; reconcile stale tasks with the actual implementation.
-3. Identify data, security, compatibility, and upgrade risks before changing behavior.
-4. Make the smallest complete and reviewable change.
-5. Add or update focused tests for behavior changes where practical.
-6. Run the narrowest relevant tests, then the full CI build when feasible.
-7. Inspect the final diff and confirm no protected files or unrelated changes were included.
-8. Update `TODO.md`, `CHANGELOG.md`, `README.md`, or `PROJECT_OVERVIEW.md` only when their information actually changes.
-9. Report the branch, commit, changed files, tests and build results, known risks, and work still unverified.
+The updater must never clear app data, uninstall the app or silently install an APK. Do not bypass package, version, ABI or signer checks. Main CI artifacts, pull-request builds, drafts and prereleases are not updater sources.
 
-## 9. Tools, plugins, and agent autonomy
+## 6. Build and release policy
 
-- Agents have the owner's authorization to use any available ChatGPT plugins, connectors, integrations, and tools that materially help complete project work. Choose the appropriate tool without asking for separate permission each time.
-- Respect each tool's permissions, security boundaries, rate limits, and data-handling rules. Never expose repository secrets, signing material, credentials, or private user data to a plugin or external service unless the owner has explicitly authorized that exact transfer and it is necessary.
-- Installing or connecting a plugin may still require an explicit user action in ChatGPT. If a required plugin is unavailable or not connected, use another available tool where practical and explain any remaining limitation.
+- GitHub Actions is the build and validation path. GitHub Releases are the distribution channel; there is no Google Play release track.
+- Main builds are validation artifacts, not update candidates.
+- Tagged builds must use the permanent signing key and create a draft release only. Never publish a release without explicit owner approval.
+- The expected signing certificate SHA-256 is B3BBF7520E77DFC384A60B1EEE6C5F205B978F9B453849E2BE523F642018D263. Keep CI's direct exported-certificate-byte fingerprint check; never change the expected fingerprint to accommodate a different key.
+- Release tags use stable vMAJOR.MINOR.PATCH and must match app/build.gradle.kts versionName and point to a commit reachable from main.
+- Keep versionName stable across ordinary commits. Do not bump it merely because CI ran. versionCode must remain globally monotonic across main and tags; local fallback codes are never update candidates.
+- Do not claim a build, test, artifact, migration or release succeeded unless its actual result was checked.
+- No physical-device testing tasks should be assigned to the owner. Prefer deterministic unit, integration, screenshot and emulator-based automation. Clearly state what automated tests cannot prove.
 
-## 10. Documentation responsibilities
+## 7. Development workflow
 
-- `README.md` is for human readers. Keep it concise and avoid duplicating the roadmap or agent rules.
-- `AGENTS.md` is the authoritative instruction file for agents and contributors.
-- `TODO.md` is the authoritative AI-actionable development roadmap. Keep it limited to implementation, automated tests, CI, code review, technical investigation, and documentation an agent can perform.
-- `MANUAL_CHECKLIST.md` tracks physical-device verification, owner-only actions, private-key handling, legal/permission decisions, and release sign-off. Do not mark these complete without direct evidence from the owner or an actual device/test result.
-- `CHANGELOG.md` records actual user-visible changes by version. Do not use it as a task list or claim unreleased work is shipped.
-- `PROJECT_OVERVIEW.md` contains the technical architecture and current verified project state.
-- Do not let documents contradict source code, version metadata, CI configuration, or one another.
+1. Verify main, inspect the latest commits and current workflow status.
+2. Read the relevant TODO items and the matching ROADMAP phase.
+3. Inspect existing code and data formats before replacing them.
+4. Identify user-data, security, upgrade and rollback risks before editing.
+5. Make a complete, reviewable change; add focused regression tests.
+6. Run targeted tests and then the full CI/build checks where feasible.
+7. Review the final diff, packaged APK contents and generated artifacts. Confirm obsolete engine code/assets are actually absent only after replacement is complete.
+8. Update TODO and technical documentation when task status or architecture changes. CHANGELOG contains only actual user-visible changes.
+9. Report branch, commit, changed files, test/build results and remaining uncertainty.
 
-## 11. Service terms and project identity
+Do not use or recommend Termux for project workflows.
 
-The Lasthavens Terms of Use restrict modified clients except for add-ons in the in-game AddOn Library. Compatibility of this independent GeckoView client and bundled manager is unconfirmed. Obtain explicit guidance from the Lasthavens team before public distribution. Clearly identify the app as unofficial and not affiliated with or endorsed by Lasthavens or Blizzard Entertainment.
+## 8. Documentation ownership
 
-## 12. Scope control
+- ROADMAP.md defines the approved final architecture, phases and acceptance gates.
+- TODO.md is the only actionable implementation queue. Keep tasks ordered by dependency and remove completed, superseded or duplicate tasks.
+- AGENTS.md contains contributor/agent rules, not a second roadmap.
+- PROJECT_OVERVIEW.md describes current verified source state and clearly separates it from the target architecture.
+- README.md is concise human-facing product/build information and must not claim planned features are shipped.
+- MANUAL_CHECKLIST.md contains only owner-only legal, key-custody and release-approval actions; do not put physical-device testing requests there.
+- CHANGELOG.md records user-visible changes that actually shipped. Do not put plans or unreleased work in release entries.
 
-Do not add unrelated browser features, analytics, push notifications, background services, or differential APK updates without a demonstrated requirement and project-owner approval where appropriate. Prefer reliability and safe data handling over feature count.
+## 9. Scope and distribution
+
+Do not add analytics, tracking, push notifications, background services, differential APK updates, bundled browser engines or unrelated frameworks without a demonstrated requirement and explicit approval where appropriate.
+
+The Lasthavens Terms of Use restrict modified clients except for add-ons in the in-game AddOn Library. Obtain written guidance from the Lasthavens team before public distribution. Identify this as an unofficial independent client; do not imply endorsement by Lasthavens or Blizzard Entertainment.
