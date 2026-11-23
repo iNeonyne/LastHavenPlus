@@ -16,6 +16,7 @@ LastHavenPlus is a focused native Android client for the Lasthavens game. It use
 - **Play:** GeckoView game session, fullscreen, lifecycle/session retention, native JavaScript dialogs, file picker, downloads, external-link routing, and popup handling.
 - **Addon Manager:** bundled WebExtension at `app/src/main/assets/extensions/lh-addon-manager/`.
 - **Shared browser state:** Play and Addon Manager are intended to use the same Gecko runtime/profile so installed add-ons can be used by the game.
+- **Storage dashboard:** read-only measurement of persistent app/shared profile data, cache, and available device space; persistent usage is not isolated to the game.
 - **Build:** GitHub Actions validates the bundled extension and packages ABI-specific APKs plus a universal fallback. Normal branch builds create debug-signed demo artifacts; tagged public releases require permanent release signing.
 
 ## Version snapshot
@@ -31,9 +32,10 @@ The app and extension have independent versions. Necessary Addon Manager mainten
 ## Current build status
 
 - Landscape Home layout and orientation are committed on `beta`.
-- Earlier GitHub Actions run [#107](https://github.com/iNeonyne/Lasthavens-Android/actions/runs/45089891036) passed the Addon Manager regression suite, APK compilation, signature verification, packaged asset checks, ABI naming, and SHA-256 checksum generation; it uploaded demo APK artifacts.
-- Subsequent beta work added staged add-on storage and bounded streaming reads for archive imports, restores, and remote downloads. Regression tests cover the streaming byte limits.
-- The streaming-limit changes still require a successful current CI run. CI success alone does not establish physical-device compatibility; the APK has not yet been installed and smoke-tested on a physical phone.
+- The read-only storage dashboard is implemented and included in the current beta build. It reports shared app/profile persistent storage, cache, and available device space; it does not claim game-only storage or lifetime downloaded bytes.
+- GitHub Actions beta run [#159](https://github.com/iNeonyne/Lasthavens-Android/actions/runs/45174441220), for commit `aca57e4`, completed successfully. The Addon Manager regression suite, APK compilation, signature verification, packaged asset checks, ABI naming, SHA-256 checksum generation, and both artifact uploads passed.
+- The build produces debug-signed demo APKs. It is not a public release build.
+- Physical-device installation and smoke testing remain outstanding. CI success does not establish device compatibility, performance, or gameplay stability.
 
 ## Immediate validation sequence
 

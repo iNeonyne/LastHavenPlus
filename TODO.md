@@ -7,7 +7,7 @@ This is the authoritative active task list. Priorities are ordered by what gets 
 - Development branch: `beta`.
 - Android app: `2.0.0` development version.
 - Bundled Addon Manager: `1.0.2`, owner-authorized maintenance in progress with add-on data preservation required.
-- CI: beta run #138 succeeded and uploaded both demo APK artifacts; physical-device validation is still unconfirmed.
+- CI: beta run #159 succeeded for the current `beta` head and uploaded both demo APK artifact sets; physical-device validation is still unconfirmed.
 - Physical-device validation: not yet confirmed complete.
 - Permanent release signing: paused; required before public releases, not for debug demo testing.
 - Automatic updates: not implemented. The planned source is `main` CI artifacts only; follow the version-code and stable-signing requirements in `AGENTS.md` if this is reintroduced.
@@ -20,7 +20,7 @@ This is the authoritative active task list. Priorities are ordered by what gets 
 - [x] Configure normal pushes to `beta` to build and upload debug-signed demo APKs.
 - [x] Set the Home screen to sensor landscape and add a landscape layout.
 - [x] Add CI checks for APK packaging, extension assets, signatures, and checksums.
-- [ ] Confirm the latest beta GitHub Actions run completed successfully, including APK build and artifact upload.
+- [x] Confirm the latest beta GitHub Actions run completed successfully, including APK build and artifact upload (run #159).
 - [ ] Download the ARM64 demo APK from that successful run.
 - [ ] Install it on a physical phone. Do not uninstall a differently signed existing app if its data must be preserved.
 - [ ] Test first launch, landscape Home, Play, game loading, sign-in, and gameplay.
@@ -52,7 +52,7 @@ The owner has authorized necessary manager changes on the condition that install
 - [x] Clean up unreferenced storage generations after successful commits and at startup.
 - [x] Correct numeric ordering of numbered TOC dependencies.
 - [x] Enforce archive/download byte limits against actual streamed bytes, including imported/restored archives and remote ZIPs.
-- [ ] Run the Addon Manager regression suite (including streaming-limit tests) and full CI build.
+- [x] Run the Addon Manager regression suite (including streaming-limit tests) and full CI build (beta run #159).
 - [ ] Add a failure-injection test for metadata commit failure and confirm the prior generation remains readable.
 - [ ] Verify install, update, remove, backup/restore, and game loading on a physical device with pre-existing add-ons.
 - [ ] Document precisely which profile, login/session, add-on, and setting data survives app updates.
