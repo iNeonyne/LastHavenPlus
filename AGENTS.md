@@ -15,6 +15,11 @@ LastHavenPlus is a focused Android client for the Lasthavens game, built with Ko
 - Keep permissions minimal. Treat all web content as untrusted; privileged Android bridges must only be reachable through explicitly validated, trusted app flows.
 - Validate URL/navigation boundaries, ZIP paths, imported data, and checksums. Fail closed when permissions or security checks fail.
 
+## Service terms and project identity
+
+- The Lasthavens Terms of Use currently prohibit modified clients except for add-ons in the in-game AddOn Library. Compatibility of this independent GeckoView client and bundled Addon Manager is unconfirmed. Obtain explicit guidance from the Lasthavens team before public distribution; do not imply endorsement or approval.
+- Clearly label the app as unofficial and state that it is not affiliated with or endorsed by Lasthavens or Blizzard Entertainment.
+
 ## Build and release rules
 
 - GitHub Actions is the build and validation path. GitHub Releases are the intended public distribution channel; there is no Google Play track.
