@@ -1,8 +1,8 @@
 # LastHavenPlus
 
-A native Android client for [Lasthavens](https://alt.lasthavens.com/play), built with Kotlin and Mozilla GeckoView. It includes a bundled Addon Manager WebExtension so the game and manager can share browser state and installed add-ons.
+A native Android client for [Lasthavens](https://lasthavens.com/play), built with Kotlin and Mozilla GeckoView. It includes a bundled Addon Manager WebExtension so the game and manager can share browser state and installed add-ons.
 
-> **Project status:** main-branch development. Main CI run #231 passed the ARM64-only build, signing, APK metadata, and checksum checks. The updater is being changed to use published stable GitHub Releases; same-certificate in-place update and data-preservation testing on a physical device remain outstanding. No permanent public download link is published yet. This is an unofficial, independent client; it is not endorsed by Lasthavens or Blizzard Entertainment.
+> **Project status:** v1.0.0 has been released. v1.0.1 is being prepared with the primary game URL and release-metadata corrections. This is an unofficial, independent client; it is not endorsed by Lasthavens or Blizzard Entertainment. This is an unofficial, independent client; it is not endorsed by Lasthavens or Blizzard Entertainment.
 
 ## At a glance
 
@@ -13,7 +13,7 @@ A native Android client for [Lasthavens](https://alt.lasthavens.com/play), built
 - **Development branch:** `main`
 - **Distribution target:** GitHub Releases; no Google Play track is planned
 
-Useful links: [Game](https://alt.lasthavens.com/play) · [Repository](https://github.com/iNeonyne/Lasthavens-Android) · [Builds](https://github.com/iNeonyne/Lasthavens-Android/actions) · [Releases](https://github.com/iNeonyne/Lasthavens-Android/releases)
+Useful links: [Game](https://lasthavens.com/play) · [Repository](https://github.com/iNeonyne/Lasthavens-Android) · [Builds](https://github.com/iNeonyne/Lasthavens-Android/actions) · [Releases](https://github.com/iNeonyne/Lasthavens-Android/releases)
 
 ## Features
 
@@ -48,8 +48,8 @@ GitHub Actions runs automated checks on `main`, pull requests, and manual dispat
 
 | Component | Current version | Status |
 |---|---:|---|
-| Android app | `1.0.0` | First release candidate; not yet published or device-validated |
-| Bundled Addon Manager | `1.0.2` | Crash-safe add-on replacement; preserves existing library data |
+| Android app | `1.0.1` | Next patch release being prepared |
+| Bundled Addon Manager | `1.0.3` | Crash-safe add-on replacement; preserves existing library data |
 | GeckoView | `159.0.20261102144711` | Pinned dependency |
 
 The extension version is independent of the Android app version. Check the bundled extension's `manifest.json` for its authoritative version. Existing add-on files remain in their current storage locations until that add-on is updated; new replacements use staged storage generations so an interrupted update does not replace the last committed files.
@@ -59,9 +59,9 @@ The extension version is independent of the Android app version. Check the bundl
 
 The Android app's `versionName` follows `MAJOR.MINOR.PATCH` (Semantic Versioning). Android's numeric `versionCode` is separate and determines whether an APK can replace an installed version. The Android app, bundled Addon Manager, and GeckoView each have independent versions.
 
-The first public Android app release is planned as `1.0.0` (tag `v1.0.0`). Keep this stable across ordinary commits. After `1.0.0`, use `1.0.1` for the next patch release, `1.1.0` for the next backward-compatible feature release, or `2.0.0` only for a breaking release. Android `versionCode` is taken from the existing workflow's monotonically increasing `GITHUB_RUN_NUMBER`; local builds use a development-only fallback and are never update candidates. `main` is the sole development and release branch; do not create a permanent beta branch or prerelease version stream.
+The first public Android app release is `1.0.0` (tag `v1.0.0`). The next patch release is `1.0.1`, `1.1.0` for the next backward-compatible feature release, or `2.0.0` only for a breaking release. Android `versionCode` is taken from the existing workflow's monotonically increasing `GITHUB_RUN_NUMBER`; local builds use a development-only fallback and are never update candidates. `main` is the sole development and release branch; do not create a permanent beta branch or prerelease version stream.
 
-The user-triggered updater checks the latest published stable GitHub Release, ignores drafts and prereleases, downloads the exact ARM64 APK and `SHA256SUMS.txt` assets, and verifies declared size, SHA-256, package ID, versionName/versionCode, device ABI, and exact installed signing-certificate equality before handing the APK to Android's user-confirmed installer. It never silently installs, uninstalls, or clears app data. Main CI, pull-request, manual-dispatch, and draft-release builds are not update sources. A debug-signed test installation cannot be upgraded in place to the permanent release key; do not uninstall a data-bearing installation to switch signing identities. Use a separate test device for release-signing validation. The new release-based updater is undergoing CI validation; same-certificate physical-device upgrade and data-preservation tests remain outstanding. See [AGENTS.md](AGENTS.md) for the rules agents must follow.
+The user-triggered updater checks the latest published stable GitHub Release, ignores drafts and prereleases, downloads the exact ARM64 APK and `SHA256SUMS.txt` assets, and verifies declared size, SHA-256, package ID, versionName/versionCode, device ABI, and exact installed signing-certificate equality before handing the APK to Android's user-confirmed installer. It never silently installs, uninstalls, or clears app data. Main CI, pull-request, manual-dispatch, and draft-release builds are not update sources. A debug-signed test installation cannot be upgraded in place to the permanent release key; do not uninstall a data-bearing installation to switch signing identities. Use a separate test device for release-signing validation. The release-based updater still requires same-certificate physical-device upgrade and data-preservation testing. See [AGENTS.md](AGENTS.md) for the rules agents must follow.
 
 ## Create a GitHub Release
 
