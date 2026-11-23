@@ -1,35 +1,24 @@
 package com.lasthavens.android
 
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
+import android.view.Gravity
 import android.view.View
-import android.widget.ProgressBar
+import android.widget.Button
+import android.widget.LinearLayout
+import android.widget.ScrollView
+import android.widget.TextView
 import android.widget.Toast
-import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.SwitchCompat
 import androidx.core.view.WindowCompat
-import org.mozilla.geckoview.AllowOrDeny
-import org.mozilla.geckoview.GeckoResult
-import org.mozilla.geckoview.GeckoSession
-import org.mozilla.geckoview.GeckoView
-import java.lang.ref.WeakReference
 
-/**
- * Hosts the bundled Addon Manager's own page (manager.html) in a separate GeckoSession.
- * It shares the runtime/profile with the game, so add-ons stored here are served to the game.
- */
+/** Native add-on library UI. All changes are committed as atomic repository generations. */
 class ManagerActivity : AppCompatActivity() {
-
-    private val app get() = App.instance
-    private val picker = FilePicker(this)
-    private lateinit var geckoView: GeckoView
-    private lateinit var progress: ProgressBar
-    private var session: GeckoSession? = null
-    private var canGoBack = false
-    private var processRecoveryScheduled = false
+    private val repository by lazy { AddonRepository(filesDir) }
+    private lateinit var list: LinearLayout
+    private lateinit var status: TextView
+    private lateinit var importButton: Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,114 +27,106 @@ class ManagerActivity : AppCompatActivity() {
             isAppearanceLightStatusBars = false
             isAppearanceLightNavigationBars = false
         }
-        setContentView(R.layout.activity_gecko)
-        applySystemBarPadding(findViewById<View>(R.id.root))
-        geckoView = findViewById(R.id.gecko)
-        progress = findViewById(R.id.progress)
-        app.managerRef = WeakReference(this)
 
-        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
-            override fun handleOnBackPressed() {
-                val s = session
-                if (canGoBack && s != null) s.goBack() else finish()
-            }
-        })
-
-        app.onExtensionReady { ext ->
-            if (isDestroyed) return@onExtensionReady
-            val base = ext?.metaData?.baseUrl
-            if (base == null) {
-                Toast.makeText(this, R.string.manager_unavailable, Toast.LENGTH_LONG).show()
-                finish()
-                return@onExtensionReady
-            }
-            openManager(base + GameUrls.ADDON_MANAGER_PAGE)
+        val density = resources.displayMetrics.density
+        fun px(value: Int) = (value * density).toInt()
+        val root = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            setPadding(px(20), px(12), px(20), px(20))
+            setBackgroundColor(getColor(R.color.bg))
         }
+        setContentView(root)
+        applySystemBarPadding(root, top = true, bottom = true)
+
+        root.addView(TextView(this).apply {
+            text = "‹ Home"
+            textSize = 16f
+            gravity = Gravity.CENTER_VERTICAL
+            setTextColor(getColor(R.color.gold_light))
+            setOnClickListener { finish() }
+        }, LinearLayout.LayoutParams(-1, px(44)))
+
+        root.addView(TextView(this).apply {
+            text = getString(R.string.addon_manager)
+            textSize = 27f
+            setTypeface(typeface, android.graphics.Typeface.BOLD)
+            setTextColor(getColor(R.color.gold_light))
+        }, LinearLayout.LayoutParams(-1, -2))
+
+        root.addView(TextView(this).apply {
+            text = "Installed add-ons are stored in app-private native storage. Changes are committed atomically."
+            textSize = 13f
+            setTextColor(getColor(R.color.text_secondary))
+            setPadding(0, px(8), 0, px(14))
+        }, LinearLayout.LayoutParams(-1, -2))
+
+        importButton = Button(this).apply {
+            text = getString(R.string.migration_choose)
+            setOnClickListener { startActivity(Intent(this@ManagerActivity, MigrationImportActivity::class.java)) }
+        }
+        root.addView(importButton, LinearLayout.LayoutParams(-1, px(50)))
+
+        status = TextView(this).apply {
+            textSize = 13f
+            setTextColor(getColor(R.color.text_secondary))
+            setPadding(0, px(14), 0, px(8))
+        }
+        root.addView(status, LinearLayout.LayoutParams(-1, -2))
+
+        val scroll = ScrollView(this)
+        list = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL }
+        scroll.addView(list)
+        root.addView(scroll, LinearLayout.LayoutParams(-1, 0, 1f))
     }
 
-    private fun openManager(url: String) {
-        val s = GeckoSession()
-        s.contentDelegate = AppContentDelegate(
-            context = this,
-            onClose = { finish() },
-            onProcessGone = {
-                if (!processRecoveryScheduled && !isFinishing && !isDestroyed) {
-                    processRecoveryScheduled = true
-                    recreate()
-                }
-            },
-        )
-        s.promptDelegate = AppPromptDelegate(this, picker)
-        s.navigationDelegate = object : GeckoSession.NavigationDelegate {
-            override fun onCanGoBack(session: GeckoSession, canGoBack: Boolean) {
-                this@ManagerActivity.canGoBack = canGoBack
-            }
+    override fun onResume() {
+        super.onResume()
+        refreshLibrary()
+    }
 
-            override fun onLoadRequest(
-                session: GeckoSession,
-                request: GeckoSession.NavigationDelegate.LoadRequest,
-            ): GeckoResult<AllowOrDeny>? {
-                val uri = Uri.parse(request.uri)
-                if (request.target == GeckoSession.NavigationDelegate.TARGET_WINDOW_NEW) {
-                    if (GameUrls.isGameHost(uri)) {
-                        // Open game links from the manager in the game screen after this callback returns.
-                        Handler(Looper.getMainLooper()).post {
-                            if (!isFinishing && !isDestroyed) {
-                                startActivity(
-                                    Intent(this@ManagerActivity, PlayActivity::class.java)
-                                        .putExtra(PlayActivity.EXTRA_RELOAD, true),
-                                )
-                                finish()
-                            }
+    private fun refreshLibrary() {
+        list.removeAllViews()
+        val active = runCatching { repository.active() }.getOrElse {
+            status.text = "Native library could not be read: ${it.message ?: "unknown error"}"
+            return
+        }
+        if (active == null) {
+            status.text = "No add-ons imported yet. Import a migration ZIP exported by Addon Manager 1.0.6."
+            return
+        }
+        val addons = active.manifest.getJSONObject("library").getJSONArray("addons")
+        val enabled = (0 until addons.length()).count { addons.getJSONObject(it).optBoolean("enabled", false) }
+        status.text = "$enabled of ${addons.length()} add-ons enabled · Native storage"
+
+        for (index in 0 until addons.length()) {
+            val addon = addons.getJSONObject(index)
+            val folder = addon.getString("folder")
+            val version = addon.optString("version", "Unknown version")
+            val switch = SwitchCompat(this).apply {
+                text = "$folder  ·  $version"
+                textSize = 15f
+                setTextColor(getColor(R.color.text_primary))
+                isChecked = addon.optBoolean("enabled", false)
+                setPadding(px(14), px(10), px(14), px(10))
+                setBackgroundColor(getColor(R.color.surface))
+                setOnCheckedChangeListener { _, checked ->
+                    isEnabled = false
+                    Thread {
+                        val result = runCatching { repository.setEnabled(folder, checked) }
+                        runOnUiThread {
+                            if (isFinishing || isDestroyed) return@runOnUiThread
+                            result.onSuccess { refreshLibrary() }
+                                .onFailure {
+                                    Toast.makeText(this@ManagerActivity, it.message ?: "Could not update add-on", Toast.LENGTH_LONG).show()
+                                    refreshLibrary()
+                                }
                         }
-                    } else {
-                        GameUrls.openExternal(this@ManagerActivity, uri)
-                    }
-                    return GeckoResult.fromValue(AllowOrDeny.DENY)
-                }
-                return if (GameUrls.isInApp(uri)) {
-                    GeckoResult.fromValue(AllowOrDeny.ALLOW)
-                } else {
-                    GameUrls.openExternal(this@ManagerActivity, uri)
-                    GeckoResult.fromValue(AllowOrDeny.DENY)
+                    }.start()
                 }
             }
+            list.addView(switch, LinearLayout.LayoutParams(-1, -2).apply { bottomMargin = px(8) })
         }
-        s.progressDelegate = object : GeckoSession.ProgressDelegate {
-            override fun onPageStart(session: GeckoSession, url: String) {
-                progress.visibility = View.VISIBLE
-            }
-
-            override fun onProgressChange(session: GeckoSession, value: Int) {
-                progress.progress = value
-            }
-
-            override fun onPageStop(session: GeckoSession, success: Boolean) {
-                progress.visibility = View.GONE
-                if (!success && !isFinishing) {
-                    Toast.makeText(this@ManagerActivity, R.string.manager_load_failed, Toast.LENGTH_LONG).show()
-                }
-            }
-        }
-        s.open(app.runtime)
-        geckoView.setSession(s)
-        s.loadUri(url)
-        session = s
     }
 
-    override fun onDestroy() {
-        // Add-ons may have changed; make the next Play reload the game so they take effect.
-        if (app.gameLoaded) app.reloadGameOnNextPlay = true
-        if (app.managerRef?.get() === this) app.managerRef = null
-        geckoView.releaseSession()
-        session?.let { activeSession ->
-            activeSession.contentDelegate = null
-            activeSession.promptDelegate = null
-            activeSession.navigationDelegate = null
-            activeSession.progressDelegate = null
-            activeSession.close()
-        }
-        session = null
-        super.onDestroy()
-    }
+    private fun px(value: Int): Int = (value * resources.displayMetrics.density).toInt()
 }
