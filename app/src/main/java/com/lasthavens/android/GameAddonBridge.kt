@@ -8,6 +8,8 @@ import androidx.webkit.WebMessageCompat
 import androidx.webkit.WebViewCompat
 import androidx.webkit.WebViewFeature
 import java.io.File
+import java.util.concurrent.Executors
+import java.util.concurrent.atomic.AtomicInteger
 import org.json.JSONObject
 
 /**
@@ -27,6 +29,8 @@ class GameAddonBridge private constructor(
 
     @Volatile
     private var activePayload: ActivePayload? = null
+    private val chunkExecutor = Executors.newSingleThreadExecutor()
+    private val inFlightChunks = AtomicInteger(0)
 
     private val listener = object : WebViewCompat.WebMessageListener {
         override fun onPostMessage(
@@ -51,7 +55,7 @@ class GameAddonBridge private constructor(
                 val request = JSONObject(raw)
                 when (request.optString("kind")) {
                     "payload" -> sendPayload(replyProxy)
-                    "chunk" -> sendChunk(request, replyProxy)
+                    "chunk" -> queueChunk(request, replyProxy)
                     "status", "gameStorage" -> Log.d(TAG, "Game reported ${request.optString("kind")}")
                     else -> replyError(replyProxy, "Unsupported native bridge request")
                 }
@@ -79,19 +83,38 @@ class GameAddonBridge private constructor(
         replyProxy.postMessage(JSONObject().put("kind", "payload").put("payload", built.payload).toString())
     }
 
-    private fun sendChunk(request: JSONObject, replyProxy: JavaScriptReplyProxy) {
-        val active = activePayload ?: error("Request the add-on payload before requesting files")
-        val current = repository.active() ?: error("Native add-on library is no longer active")
-        require(current.generation == active.generation) { "Native add-on library changed; reload the game" }
-        val storage = request.getString("storageFolder")
-        val path = request.getString("path")
-        require(storage.matches(Regex("[A-Za-z0-9_-]{1,120}"))) { "Invalid add-on storage identity" }
-        val file = active.result.files["${storage.lowercase()}/${path.lowercase()}"]
-            ?: error("Requested add-on file is not in the enabled library")
-        val offset = request.getLong("offset")
-        val length = request.getInt("length")
-        val bytes = GameAddonPayload.readChunk(active.directory, file, offset, length)
-        replyProxy.postMessage(bytes)
+    private fun queueChunk(request: JSONObject, replyProxy: JavaScriptReplyProxy) {
+        if (inFlightChunks.incrementAndGet() > MAX_IN_FLIGHT_CHUNKS) {
+            inFlightChunks.decrementAndGet()
+            replyError(replyProxy, "Too many concurrent add-on file requests")
+            return
+        }
+        try {
+            chunkExecutor.execute {
+                try {
+                    val active = activePayload ?: error("Request the add-on payload before requesting files")
+                    val current = repository.active() ?: error("Native add-on library is no longer active")
+                    require(current.generation == active.generation) { "Native add-on library changed; reload the game" }
+                    val storage = request.getString("storageFolder")
+                    val path = request.getString("path")
+                    require(storage.matches(Regex("[A-Za-z0-9_-]{1,120}"))) { "Invalid add-on storage identity" }
+                    val file = active.result.files["${storage.lowercase()}/${path.lowercase()}"]
+                        ?: error("Requested add-on file is not in the enabled library")
+                    val offset = request.getLong("offset")
+                    val length = request.getInt("length")
+                    val bytes = GameAddonPayload.readChunk(active.directory, file, offset, length)
+                    replyProxy.postMessage(bytes)
+                } catch (error: Exception) {
+                    Log.w(TAG, "Rejected add-on file chunk", error)
+                    replyError(replyProxy, error.message ?: "Could not read add-on file")
+                } finally {
+                    inFlightChunks.decrementAndGet()
+                }
+            }
+        } catch (error: Exception) {
+            inFlightChunks.decrementAndGet()
+            replyError(replyProxy, "Native add-on reader is shutting down")
+        }
     }
 
     private fun replyError(replyProxy: JavaScriptReplyProxy, message: String) {
@@ -106,12 +129,14 @@ class GameAddonBridge private constructor(
         runCatching { WebViewCompat.removeWebMessageListener(webView, JS_OBJECT_NAME) }
         scriptHandlers.forEach { runCatching { it.remove() } }
         activePayload = null
+        chunkExecutor.shutdownNow()
     }
 
     companion object {
         private const val TAG = "LastHavenGameBridge"
         private const val JS_OBJECT_NAME = "LastHavenNative"
         private const val MAX_REQUEST_CHARS = 4096
+        private const val MAX_IN_FLIGHT_CHUNKS = 2
         private val ALLOWED_ORIGINS = setOf(
             "https://lasthavens.com",
             "https://*.lasthavens.com",
