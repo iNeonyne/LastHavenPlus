@@ -142,6 +142,25 @@
   }
   log("script started in " + location.origin + location.pathname + " (v0.9.0)");
 
+  // Report the game's own origin storage estimate; this excludes manager-origin data.
+  async function reportGameStorage() {
+    try {
+      if (!navigator.storage || typeof navigator.storage.estimate !== "function") return;
+      const estimate = await navigator.storage.estimate();
+      const usage = Number(estimate.usage), quota = Number(estimate.quota);
+      if (!Number.isFinite(usage) || usage < 0) return;
+      window.postMessage({
+        channel: CH, kind: "gameStorage", usage: Math.floor(usage),
+        quota: Number.isFinite(quota) && quota >= usage ? Math.floor(quota) : null,
+        at: Date.now()
+      }, location.origin);
+    } catch (error) {
+      log("game storage estimate unavailable: " + String(error));
+    }
+  }
+  reportGameStorage();
+  setInterval(reportGameStorage, 5 * 60 * 1000);
+
   // ---------- talking to the extension bridge ----------
   let received = false,
     gotPayload,
