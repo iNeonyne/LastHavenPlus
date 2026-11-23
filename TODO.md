@@ -11,6 +11,7 @@ This is the authoritative active task list. Priorities are ordered by what gets 
 - Physical-device validation: not yet confirmed complete.
 - Permanent release signing: paused; required before public releases, not for debug demo testing.
 - Automatic updates: not implemented. The planned source is `main` CI artifacts only; follow the version-code and stable-signing requirements in `AGENTS.md` if this is reintroduced.
+- Version flow: on approved beta-to-main promotion, assign a clean stable SemVer version; reset the beta development baseline to that exact main version and continue with the next prerelease candidate. See `AGENTS.md`.
 
 ## P0 — Demo making
 
