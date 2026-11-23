@@ -387,7 +387,7 @@ test("WebView game bridge rejects foreign origins and streams native add-on file
     },
   };
   window.LastHavenNative = native;
-  const context = vm.createContext({ window, console, setTimeout, clearTimeout });
+  const context = vm.createContext({ window, location: window.location, console, setTimeout, clearTimeout });
   vm.runInContext(source, context);
 
   const dispatch = (messageOrigin, data) => {
