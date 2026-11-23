@@ -11,7 +11,7 @@ import {
   sameVersionCopy,
 } from "../app/src/main/assets/extensions/lh-addon-manager/library.js";
 import { tocMeta } from "../app/src/main/assets/extensions/lh-addon-manager/toc.js";
-import { hasAccess } from "../app/src/main/assets/extensions/lh-addon-manager/browse.js";
+import { hasAccess, requestAccess, DOWNLOAD_ORIGINS } from "../app/src/main/assets/extensions/lh-addon-manager/browse.js";
 import { commitStagedGeneration } from "../app/src/main/assets/extensions/lh-addon-manager/staged-storage.js";
 
 if (!globalThis.crypto) globalThis.crypto = webcrypto;
@@ -168,14 +168,27 @@ test("ZIP import rejects duplicate paths that differ only by case", async () => 
 });
 
 test("Browse permission checks fail closed when the permissions API errors", async () => {
-  globalThis.browser = { permissions: { contains: async () => { throw new Error("API unavailable"); } } };
+  let requested;
+  globalThis.browser = {
+    permissions: {
+      contains: async () => { throw new Error("API unavailable"); },
+      request: async (value) => { requested = value; return true; },
+    },
+  };
   assert.equal(await hasAccess(), false);
 
-  globalThis.browser = { permissions: { contains: async () => true } };
+  globalThis.browser.permissions.contains = async (value) => {
+    assert.deepEqual(value.origins, DOWNLOAD_ORIGINS);
+    return true;
+  };
   assert.equal(await hasAccess(), true);
 
-  globalThis.browser = { permissions: { contains: async () => false } };
+  globalThis.browser.permissions.contains = async () => false;
   assert.equal(await hasAccess(), false);
+  assert.equal(await requestAccess(), true);
+  assert.deepEqual(requested.origins, DOWNLOAD_ORIGINS);
+  assert.ok(DOWNLOAD_ORIGINS.includes("https://api.github.com/*"));
+  assert.ok(DOWNLOAD_ORIGINS.includes("https://raw.githubusercontent.com/*"));
   delete globalThis.browser;
 });
 
