@@ -60,6 +60,11 @@ class App : Application() {
         // GeckoView child processes also instantiate Application; only the package's main process starts Gecko.
         if (!isMainProcess()) return
 
+    }
+
+    /** Start Gecko only when the legacy Addon Manager is opened; gameplay uses System WebView. */
+    private fun ensureGeckoRuntime() {
+        if (::runtime.isInitialized || !isMainProcess()) return
         runtime = GeckoRuntime.create(
             this,
             GeckoRuntimeSettings.Builder()
@@ -73,6 +78,7 @@ class App : Application() {
     // ---- Game session ------------------------------------------------------------------------
 
     fun gameSession(): GeckoSession {
+        ensureGeckoRuntime()
         val existing = gameSessionInternal
         if (existing != null && existing.isOpen) return existing
         return GeckoSession().also {
@@ -96,6 +102,7 @@ class App : Application() {
             mainHandler.post { onExtensionReady(callback) }
             return
         }
+        ensureGeckoRuntime()
         when (extensionState) {
             ExtensionState.PENDING -> extensionCallbacks += callback
             ExtensionState.READY -> callback(extension)
