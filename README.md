@@ -10,7 +10,7 @@ A native Android client for [Lasthavens](https://alt.lasthavens.com/play), built
 - **Engine:** Mozilla GeckoView
 - **Language:** Kotlin
 - **Application ID:** `com.lasthavens.android`
-- **Development branch:** `beta`
+- **Development branch:** `main`
 - **Distribution target:** GitHub Releases; no Google Play track is planned
 
 Useful links: [Game](https://alt.lasthavens.com/play) · [Repository](https://github.com/iNeonyne/Lasthavens-Android) · [Builds](https://github.com/iNeonyne/Lasthavens-Android/actions) · [Releases](https://github.com/iNeonyne/Lasthavens-Android/releases)
@@ -26,11 +26,11 @@ Useful links: [Game](https://alt.lasthavens.com/play) · [Repository](https://gi
 - Android integration for fullscreen, JavaScript dialogs, file selection, downloads, popups, and external links.
 - User-triggered, main-only APK updater with artifact provenance, SHA-256 and signing-certificate checks, and Android installer handoff.
 
-## Get a demo build
+## Get a build
 
 1. Open [GitHub Actions](https://github.com/iNeonyne/Lasthavens-Android/actions).
-2. Select the latest successful build running from the `beta` branch.
-3. Download the `LastHavenPlus-Demo-APKs` artifact (or the ARM64-only artifact, if provided).
+2. Select the latest successful build running from the `main` branch.
+3. Download the main update APK artifact matching your device ABI (or the universal fallback).
 4. Choose the APK matching your device:
    - `arm64-v8a`: most modern Android phones.
    - `armeabi-v7a`: older 32-bit ARM devices.
@@ -38,7 +38,7 @@ Useful links: [Game](https://alt.lasthavens.com/play) · [Repository](https://gi
    - `universal`: fallback with all supported CPU architectures; largest file.
 5. Install and test it as a development build.
 
-**Important:** CI demo APKs are debug-signed. Do not uninstall an existing installation signed with a different certificate if its app data matters; uninstalling can erase the local app profile. A successful CI build is not proof of device compatibility.
+**Important:** Pull-request and manual test APKs may be debug-signed. Do not uninstall an existing installation signed with a different certificate if its app data matters; uninstalling can erase the local app profile. A successful CI build is not proof of device compatibility.
 
 ## Build locally
 
@@ -48,7 +48,7 @@ Open the repository in Android Studio with JDK 17 and the Android SDK required b
 ./gradlew assembleRelease
 ```
 
-GitHub Actions runs automated checks and produces debug-signed demo APK artifacts on pushes to `beta`, pull requests, and manual dispatches. A main-only metadata artifact and four permanent-key-signed, ABI-specific APK artifacts are configured but will not be published until the workflow is promoted to `main`.
+GitHub Actions runs automated checks on `main`, pull requests, and manual dispatches. Successful `main` builds publish a metadata/checksum artifact and four permanent-key-signed, ABI-specific update APK artifacts; pull-request and manual builds are not update candidates.
 
 ## Versions
 
@@ -65,9 +65,9 @@ The extension version is independent of the Android app version. Check the bundl
 
 The Android app's `versionName` follows `MAJOR.MINOR.PATCH` (Semantic Versioning). Android's numeric `versionCode` is separate and determines whether an APK can replace an installed version. The Android app, bundled Addon Manager, and GeckoView each have independent versions.
 
-The current beta app uses `versionName = 2.0.0`. Android `versionCode` is now taken from the existing workflow's monotonically increasing `GITHUB_RUN_NUMBER`; local builds use a development-only fallback and are never update candidates. Main promotions must use a clean stable SemVer number; after promotion, `beta` restarts from that exact main version and advances as a prerelease candidate.
+The current app line uses `versionName = 2.0.0`. Keep this stable across ordinary commits. Use `2.0.1` for the next patch release, `2.1.0` for the next backward-compatible feature release, or `3.0.0` only for a breaking release. Android `versionCode` is taken from the existing workflow's monotonically increasing `GITHUB_RUN_NUMBER`; local builds use a development-only fallback and are never update candidates. `main` is the sole development and release branch; do not create a permanent beta branch or prerelease version stream.
 
-The beta branch contains a user-triggered updater. It queries only successful completed `push` runs from `main`, downloads the metadata/checksum artifact and only the complete APK artifact matching the device ABI (universal fallback), checks artifact/run/commit provenance and metadata, verifies the APK SHA-256, and checks package ID, version code and installed signing certificate before offering Android's user-confirmed package installer. It never silently installs, uninstalls, or clears app data. Debug-signed beta APKs are not accepted as update sources. A debug-signed beta installation cannot be upgraded in place to a permanent-key-signed main build; do not uninstall a data-bearing installation to switch signing identities. Use a separate test device for release-signing validation. The `main` branch has not been changed, so its metadata and signed per-ABI update artifacts are not yet live. No public download link is published until an approved release exists. See [AGENTS.md](AGENTS.md) for the rules agents must follow.
+The main branch contains a user-triggered updater. It queries only successful completed `push` runs from `main`, downloads the metadata/checksum artifact and only the complete APK artifact matching the device ABI (universal fallback), checks artifact/run/commit provenance and metadata, verifies the APK SHA-256, and checks package ID, version code and installed signing certificate before offering Android's user-confirmed package installer. It never silently installs, uninstalls, or clears app data. Debug-signed beta APKs are not accepted as update sources. A debug-signed beta installation cannot be upgraded in place to a permanent-key-signed main build; do not uninstall a data-bearing installation to switch signing identities. Use a separate test device for release-signing validation. The first post-merge main workflow must pass its permanent-key signing and artifact-publication checks before the live update feed is considered validated. No public download link is published until an approved release exists. See [AGENTS.md](AGENTS.md) for the rules agents must follow.
 
 ## Project documents
 
