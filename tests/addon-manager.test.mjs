@@ -278,7 +278,7 @@ test("migration export includes library state, manager preferences, and checksum
   assert.equal(manifest.files.find((file) => file.path === "Example.toc").size, sourceFiles["Example.toc"].length);
   assert.deepEqual(sourceLibrary.addons[0], {
     folder: "Example", storageFolder: "lh_generation_1", version: "2.3.4",
-    enabled: true, dependencies: ["Core"], optionalDeps: ["Extras"], size: 26, fileCount: 2,
+    enabled: true, dependencies: ["Core"], optionalDeps: ["Extras"], size: 38, fileCount: 2,
   });
 });
 
@@ -289,7 +289,7 @@ test("migration export rejects unsafe paths, missing TOCs, and mismatched metada
       library: { revision: "x", addons: [addon] },
       getFiles: async () => ({ "../escape.lua": bytes("bad"), "Example.toc": bytes("x") }),
     }),
-    /Unsafe file path/,
+    /Unsafe or duplicate file path/,
   );
   await assert.rejects(
     createMigrationArchive({
