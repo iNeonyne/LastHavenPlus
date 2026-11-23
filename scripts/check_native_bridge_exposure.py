@@ -6,8 +6,8 @@ import re
 import sys
 
 PATTERNS = (
-    (re.compile(r"\\.addJavascriptInterface\\s*\\("), "addJavascriptInterface registration"),
-    (re.compile(r"@JavascriptInterface\\b"), "@JavascriptInterface method"),
+    (re.compile(r"\.addJavascriptInterface\s*\("), "addJavascriptInterface registration"),
+    (re.compile(r"@JavascriptInterface\b"), "@JavascriptInterface method"),
 )
 
 
@@ -29,7 +29,7 @@ def main() -> int:
     findings = find_unsafe_bridges(root)
     if findings:
         print("Unreviewed JavaScript-to-native bridge detected:", file=sys.stderr)
-        print("\\n".join(findings), file=sys.stderr)
+        print("\n".join(findings), file=sys.stderr)
         return 1
     print("No direct JavaScript-to-native interfaces found in Android app source.")
     return 0
