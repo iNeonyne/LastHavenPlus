@@ -60,6 +60,7 @@ The owner has authorized necessary manager changes on the condition that install
 - [ ] Verify error states and recovery for failed imports, failed downloads, unavailable permissions, and interrupted operations.
 - [ ] Verify usability on phone-sized screens, touch targets, accessibility, and large add-on lists.
 - [ ] Document manager capabilities and limitations based on the current bundled source.
+- [ ] Add `.7z` archive support to Addon Manager import/export, with safe extraction, path validation, archive/expanded-size limits, and backward compatibility for existing ZIP backups.
 - [ ] Review compatibility with GeckoView upgrades without modifying the manager.
 - [ ] Review every future manager change for backward compatibility and data preservation before editing.
 
@@ -84,6 +85,7 @@ Paused during demo development. Do this before any public release.
 - [ ] Upgrade GeckoView and Android dependencies in isolated, build-verified changes.
 - [ ] Evaluate R8/resource shrinking against release builds and extension/runtime regression checks.
 - [ ] Expand device/OEM testing when evidence or user reports justify it.
+- [ ] Add a way to view the game's on-device storage/download footprint. Investigate GeckoView cache and site storage APIs; show cache and persistent site data separately where possible, label estimates clearly, and never clear/reset data automatically.
 
 ## Release gate
 
