@@ -13,7 +13,7 @@ APP_PACKAGE_ID = "com.lasthavens.android"
 WORKFLOW_ID = 427170801
 ABI_VARIANTS = ("arm64-v8a", "armeabi-v7a", "x86_64", "universal")
 MAX_APK_BYTES = 200 * 1024 * 1024
-VERSION_PATTERN = re.compile(r"^[0-9]+\\.[0-9]+\\.[0-9]+$")
+VERSION_PATTERN = re.compile(r"^[0-9]+\.[0-9]+\.[0-9]+$")
 COMMIT_PATTERN = re.compile(r"^[0-9a-fA-F]{40}$")
 
 
@@ -95,7 +95,7 @@ def create_update_metadata(
         "apks": apk_records,
     }
     output = dist_dir / "update.json"
-    output.write_text(json.dumps(metadata, indent=2) + "\\n", encoding="utf-8")
+    output.write_text(json.dumps(metadata, indent=2) + "\n", encoding="utf-8")
     return metadata
 
 

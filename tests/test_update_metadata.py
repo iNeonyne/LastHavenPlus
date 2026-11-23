@@ -22,7 +22,7 @@ class CreateUpdateMetadataTests(unittest.TestCase):
         self.dist = self.root / "dist"
         self.dist.mkdir()
         self.gradle_file = self.root / "app.build.gradle.kts"
-        self.gradle_file.write_text('val appVersionName = "2.1.0"\\n', encoding="utf-8")
+        self.gradle_file.write_text('val appVersionName = "2.1.0"\n', encoding="utf-8")
         self.environment = {
             "GITHUB_REF": "refs/heads/main",
             "GITHUB_RUN_ID": "123456",
@@ -49,7 +49,7 @@ class CreateUpdateMetadataTests(unittest.TestCase):
         self.assertEqual(metadata["workflowId"], WORKFLOW_ID)
         self.assertEqual({entry["abi"] for entry in metadata["apks"]}, set(ABI_VARIANTS))
         raw = (self.dist / "update.json").read_text(encoding="utf-8")
-        self.assertTrue(raw.endswith("\\n"))
+        self.assertTrue(raw.endswith("\n"))
         self.assertEqual(json.loads(raw), metadata)
         for entry in metadata["apks"]:
             apk = self.dist / entry["file"]
@@ -63,7 +63,7 @@ class CreateUpdateMetadataTests(unittest.TestCase):
                     create_update_metadata(self.dist, self.gradle_file, dict(self.environment, GITHUB_REF=ref))
 
     def test_rejects_prerelease_version_names(self):
-        self.gradle_file.write_text('val appVersionName = "2.1.0-beta.1"\\n', encoding="utf-8")
+        self.gradle_file.write_text('val appVersionName = "2.1.0-beta.1"\n', encoding="utf-8")
         with self.assertRaises(ValueError):
             create_update_metadata(self.dist, self.gradle_file, self.environment)
 
