@@ -21,7 +21,7 @@ import java.net.URL
 import java.security.MessageDigest
 import java.util.concurrent.Executors
 
-internal enum class UpdateStage { CHECKING, DOWNLOADING, VERIFYING }
+internal enum class UpdateStage { CHECKING, FETCHING_CHECKSUM, DOWNLOADING, VERIFYING }
 
 internal data class UpdateProgress(
     val stage: UpdateStage,
@@ -146,7 +146,8 @@ internal class UpdateManager(context: Context) {
         val apkPart = File(appContext.cacheDir, "release-update.apk.part")
         val readyApk = File(appContext.cacheDir, "release-update.apk")
         try {
-            downloadReleaseAsset(checksumAsset, checksumFile, MAX_CHECKSUM_BYTES.toLong())
+            report(UpdateProgress(UpdateStage.FETCHING_CHECKSUM))
+            downloadReleaseAsset(checksumAsset, checksumFile, MAX_CHECKSUM_BYTES.toLong(), timeoutMs = CHECKSUM_TIMEOUT_MS)
             val checksums = checksumFile.readText(Charsets.UTF_8)
             val checksumLines = checksums.lineSequence().filter { it.isNotBlank() }.toList()
             check(checksumLines.size == 1) { "The release checksum file must contain exactly one APK checksum." }
@@ -204,6 +205,7 @@ internal class UpdateManager(context: Context) {
         asset: UpdateAsset,
         destination: File,
         maxBytes: Long,
+        timeoutMs: Int = DOWNLOAD_TIMEOUT_MS,
         onProgress: (downloadedBytes: Long, totalBytes: Long) -> Unit = { _, _ -> },
     ) {
         val expectedSize = asset.sizeBytes
@@ -217,7 +219,7 @@ internal class UpdateManager(context: Context) {
         val connection = (URL(url).openConnection() as HttpURLConnection).apply {
             requestMethod = "GET"
             connectTimeout = CONNECT_TIMEOUT_MS
-            readTimeout = DOWNLOAD_TIMEOUT_MS
+            readTimeout = timeoutMs
             instanceFollowRedirects = true
             setRequestProperty("User-Agent", USER_AGENT)
             setRequestProperty("Accept", "application/octet-stream")
@@ -360,8 +362,9 @@ internal class UpdateManager(context: Context) {
 
     companion object {
         private const val USER_AGENT = "LastHavenPlus-Android-Updater"
-        private const val CONNECT_TIMEOUT_MS = 15_000
-        private const val READ_TIMEOUT_MS = 30_000
+        private const val CONNECT_TIMEOUT_MS = 10_000
+        private const val READ_TIMEOUT_MS = 15_000
+        private const val CHECKSUM_TIMEOUT_MS = 15_000
         private const val DOWNLOAD_TIMEOUT_MS = 120_000
         private const val MAX_JSON_BYTES = 2 * 1024 * 1024
         private const val MAX_CHECKSUM_BYTES = 64 * 1024
