@@ -2,7 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { webcrypto } from "node:crypto";
 import { zipSync } from "../app/src/main/assets/extensions/lh-addon-manager/vendor/fflate.js";
-import { importZip, exportZip } from "../app/src/main/assets/extensions/lh-addon-manager/archive.js";
+import { importZip, exportZip, readStreamLimited } from "../app/src/main/assets/extensions/lh-addon-manager/archive.js";
 import {
   emptyLibrary,
   loadOrder,
@@ -93,6 +93,45 @@ test("same-version detection is case-insensitive and dependencies use enabled st
     missingDependencies({ dependencies: ["Example", "Core", "Missing"] }, library),
     ["Core", "Missing"],
   );
+});
+
+
+test("stream reader accepts data within the configured byte limit", async () => {
+  const stream = new ReadableStream({
+    start(controller) {
+      controller.enqueue(bytes("abc"));
+      controller.enqueue(bytes("de"));
+      controller.close();
+    },
+  });
+  assert.deepEqual([...await readStreamLimited(stream, 5)], [...bytes("abcde")]);
+});
+
+test("stream reader rejects actual bytes beyond archive and shared expanded limits", async () => {
+  const oversizedArchive = new ReadableStream({
+    start(controller) {
+      controller.enqueue(bytes("1234"));
+      controller.enqueue(bytes("56"));
+      controller.close();
+    },
+  });
+  await assert.rejects(
+    readStreamLimited(oversizedArchive, 5, "errorArchiveSize"),
+    (error) => error.code === "errorArchiveSize",
+  );
+
+  const budget = { used: 3, limit: 5 };
+  const oversizedTotal = new ReadableStream({
+    start(controller) {
+      controller.enqueue(bytes("abc"));
+      controller.close();
+    },
+  });
+  await assert.rejects(
+    readStreamLimited(oversizedTotal, 10, "errorExpanded", budget),
+    (error) => error.code === "errorExpanded",
+  );
+  assert.equal(budget.used, 3);
 });
 
 test("ZIP export and import round-trip preserves addon file bytes and metadata", async () => {
