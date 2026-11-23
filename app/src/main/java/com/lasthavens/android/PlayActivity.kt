@@ -23,7 +23,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
-import org.json.JSONObject
 
 /**
  * Production game screen backed by Android System WebView.
@@ -81,7 +80,7 @@ class PlayActivity : AppCompatActivity() {
             javaScriptCanOpenWindowsAutomatically = false
             setSupportMultipleWindows(false)
             allowFileAccess = false
-            allowContentAccess = true
+            allowContentAccess = false
             allowFileAccessFromFileURLs = false
             allowUniversalAccessFromFileURLs = false
             mixedContentMode = android.webkit.WebSettings.MIXED_CONTENT_NEVER_ALLOW
@@ -181,12 +180,13 @@ class PlayActivity : AppCompatActivity() {
             runCatching {
                 val uri = Uri.parse(url)
                 require(uri.scheme == "https" && GameUrls.isGameHost(uri)) { "Blocked download from untrusted host" }
-                val fileName = contentDisposition
+                val candidateName = contentDisposition
                     ?.substringAfter("filename=", "")
                     ?.trim('"', ' ', ';')
                     ?.takeIf { it.isNotBlank() }
                     ?: uri.lastPathSegment?.takeIf { it.isNotBlank() }
                     ?: "lasthavens-download.bin"
+                val fileName = DownloadFileNamePolicy.sanitize(candidateName, "lasthavens-download.bin")
                 val request = DownloadManager.Request(uri)
                     .setTitle(fileName)
                     .setMimeType(mimeType ?: "application/octet-stream")
