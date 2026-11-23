@@ -24,17 +24,13 @@ Useful links: [Game](https://alt.lasthavens.com/play) · [Repository](https://gi
 - Read-only storage dashboard for shared app/profile data, cache, and available device space.
 - HTTPS-only in-app navigation for Lasthavens pages; external sites open in the system browser.
 - Android integration for fullscreen, JavaScript dialogs, file selection, downloads, popups, and external links.
-- User-triggered, main-only APK updater with artifact provenance, SHA-256 and signing-certificate checks, and Android installer handoff.
+- User-triggered updater that checks published stable GitHub Releases, verifies SHA-256 and signing-certificate compatibility, and hands installation to Android.
 
 ## Get a build
 
-The previous main run #196 published four signed APK variants. New builds will publish one ARM64 APK plus the metadata/checksum artifact. These are temporary CI artifacts, not permanent release downloads:
-1. Open [GitHub Actions](https://github.com/iNeonyne/Lasthavens-Android/actions).
-2. Select the latest successful `push` run from `main`. Manual-dispatch, pull-request, and tag runs are not updater candidates.
-3. Download `LastHavenPlus-Main-Update-arm64-v8a`. Only ARM64 devices are supported by release builds.
-4. Use a spare test device for same-certificate update testing; do not uninstall a data-bearing debug-signed installation.
+Stable downloads are distributed through [GitHub Releases](https://github.com/iNeonyne/Lasthavens-Android/releases). The in-app updater checks only the latest published stable release, downloads its ARM64 APK and checksum asset, and verifies the APK before handing it to Android. Draft releases and prereleases are ignored. Main CI artifacts are for validation and are not update sources.
 
-The CI artifacts expire after 90 days. A permanent public download link will be added only after physical-device update and data-preservation checks and release approval.
+Use a spare test device for same-certificate update testing. Do not uninstall a data-bearing installation signed with a different key.
 
 **Important:** Pull-request and manual test APKs may be debug-signed. Do not uninstall an existing installation signed with a different certificate if its app data matters; uninstalling can erase the local app profile. A successful CI build is not proof of device compatibility.
 
@@ -65,7 +61,7 @@ The Android app's `versionName` follows `MAJOR.MINOR.PATCH` (Semantic Versioning
 
 The first public Android app release is planned as `1.0.0` (tag `v1.0.0`). Keep this stable across ordinary commits. After `1.0.0`, use `1.0.1` for the next patch release, `1.1.0` for the next backward-compatible feature release, or `2.0.0` only for a breaking release. Android `versionCode` is taken from the existing workflow's monotonically increasing `GITHUB_RUN_NUMBER`; local builds use a development-only fallback and are never update candidates. `main` is the sole development and release branch; do not create a permanent beta branch or prerelease version stream.
 
-The main branch contains a user-triggered updater. It queries only successful completed `push` runs from `main`, downloads the metadata/checksum artifact and the complete ARM64 APK artifact, and offers it only when the device supports ARM64, checks artifact/run/commit provenance and metadata, verifies the APK SHA-256, and checks package ID, version code and installed signing certificate before offering Android's user-confirmed package installer. It never silently installs, uninstalls, or clears app data. Debug-signed pull-request/test APKs are not accepted as update sources. A debug-signed test installation cannot be upgraded in place to a permanent-key-signed main build; do not uninstall a data-bearing installation to switch signing identities. Use a separate test device for release-signing validation. Main run #196 passed permanent-key signing and artifact publication; the live update feed still requires same-certificate physical-device validation. No public download link is published until an approved release exists. See [AGENTS.md](AGENTS.md) for the rules agents must follow.
+The user-triggered updater checks the latest published stable GitHub Release, ignores drafts and prereleases, downloads the exact ARM64 APK and `SHA256SUMS.txt` assets, and verifies declared size, SHA-256, package ID, versionName/versionCode, device ABI, and exact installed signing-certificate equality before handing the APK to Android's user-confirmed installer. It never silently installs, uninstalls, or clears app data. Main CI, pull-request, manual-dispatch, and draft-release builds are not update sources. A debug-signed test installation cannot be upgraded in place to the permanent release key; do not uninstall a data-bearing installation to switch signing identities. Use a separate test device for release-signing validation. The new release-based updater is undergoing CI validation; same-certificate physical-device upgrade and data-preservation tests remain outstanding. See [AGENTS.md](AGENTS.md) for the rules agents must follow.
 
 ## Create a GitHub Release
 
