@@ -7,7 +7,8 @@ const encoder = new TextEncoder();
 const folderPattern = /^[A-Za-z0-9_-]{1,120}$/;
 const safeRelativePath = (value) => {
   if (typeof value !== "string" || !value || value.length > 1024) return false;
-  const normalized = value.replaceAll("\\", "/");
+  if (value.includes("\\")) return false;
+  const normalized = value;
   return !normalized.startsWith("/") &&
     !/[\x00-\x1f:]/.test(normalized) &&
     normalized.split("/").every((part) => part && part !== "." && part !== "..");
@@ -40,6 +41,7 @@ export async function createMigrationArchive({
     throw new Error("The migration file reader is unavailable");
 
   const seenFolders = new Set();
+  const seenStorageFolders = new Set();
   const files = [];
   const entries = [];
   let expandedBytes = 0;
@@ -53,8 +55,9 @@ export async function createMigrationArchive({
     seenFolders.add(folderKey);
 
     const storageFolder = addon.storageFolder || addon.folder;
-    if (!folderPattern.test(storageFolder))
-      throw new Error("The library contains an invalid storage folder");
+    if (!folderPattern.test(storageFolder) || seenStorageFolders.has(storageFolder.toLowerCase()))
+      throw new Error("The library contains an invalid or duplicate storage folder");
+    seenStorageFolders.add(storageFolder.toLowerCase());
 
     const storedFiles = await getFiles(storageFolder);
     const paths = Object.keys(storedFiles || {});
@@ -65,9 +68,11 @@ export async function createMigrationArchive({
 
     let addonBytes = 0;
     let hasToc = false;
+    const seenPaths = new Set();
     for (const path of paths.sort()) {
-      if (!safeRelativePath(path))
-        throw new Error(`Unsafe file path in ${addon.folder}`);
+      if (!safeRelativePath(path) || seenPaths.has(path.toLowerCase()))
+        throw new Error(`Unsafe or duplicate file path in ${addon.folder}`);
+      seenPaths.add(path.toLowerCase());
       const bytes = asBytes(storedFiles[path]);
       if (bytes.byteLength > LIMITS.file)
         throw new Error(`A file in ${addon.folder} exceeds the file-size limit`);
