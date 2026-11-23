@@ -27,16 +27,16 @@ class UpdatePolicyTest {
         assertFalse(UpdatePolicy.isEligibleRun(run(sha = "not-a-commit")))
     }
 
-    @Test fun choosesDeviceAbiAndUniversalFallback() {
+    @Test fun selectsOnlyArm64AndRejectsOtherDeviceArchitectures() {
         val arm = UpdateApk("arm64-v8a", "arm.apk", "a".repeat(64), 100)
         val x64 = UpdateApk("x86_64", "x64.apk", "b".repeat(64), 100)
         val universal = UpdateApk("universal", "all.apk", "c".repeat(64), 100)
         assertEquals(arm, UpdatePolicy.selectApk(listOf("arm64-v8a", "x86_64"), listOf(arm, x64, universal)))
-        assertEquals(x64, UpdatePolicy.selectApk(listOf("x86_64"), listOf(arm, x64, universal)))
-        assertEquals(universal, UpdatePolicy.selectApk(listOf("riscv64"), listOf(arm, universal)))
-        assertNull(UpdatePolicy.selectApk(listOf("riscv64"), listOf(arm, x64)))
+        assertNull(UpdatePolicy.selectApk(listOf("x86_64"), listOf(arm, x64, universal)))
+        assertNull(UpdatePolicy.selectApk(listOf("armeabi-v7a"), listOf(arm, universal)))
+        assertNull(UpdatePolicy.selectApk(listOf("riscv64"), listOf(arm, universal)))
+        assertNull(UpdatePolicy.selectApk(listOf("arm64-v8a"), listOf(x64, universal)))
     }
-
     @Test fun rejectsUnexpectedExpiredOrMismatchedArtifacts() {
         val expected = run()
         assertTrue(UpdatePolicy.isEligibleArtifact(
