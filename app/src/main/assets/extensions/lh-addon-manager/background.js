@@ -32,7 +32,17 @@ function files(m) {
 browser.runtime.onMessage.addListener((m, sender) => {
   if (!m || sender.id !== browser.runtime.id || !GAME.test(sender.url || ""))
     return;
-  if (m.kind === "diagnostic")
+  if (m.kind === "gameStorage") {
+    const usage = Number(m.usage), quota = m.quota == null ? null : Number(m.quota);
+    const at = Number(m.at);
+    if (Number.isSafeInteger(usage) && usage >= 0 &&
+        (quota === null || (Number.isSafeInteger(quota) && quota >= usage)) &&
+        Number.isSafeInteger(at) && Math.abs(Date.now() - at) < 10 * 60 * 1000) {
+      browser.storage.session.set({
+        gameStorage: { usage, quota, at, origin: new URL(sender.url).origin }
+      });
+    }
+  } else if (m.kind === "diagnostic")
     browser.storage.session.set({ lastStatus: m.status });
   else if (m.kind === "seen") {
     const entry = String(m.url).slice(0, 200) + (m.top ? " (page)" : " (frame)");
