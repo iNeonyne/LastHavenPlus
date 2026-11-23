@@ -32,6 +32,11 @@
         </activity>
 
         <activity
+            android:name=".MigrationImportActivity"
+            android:exported="false"
+            android:screenOrientation="unspecified" />
+
+        <activity
             android:name=".StorageActivity"
             android:exported="false"
             android:screenOrientation="unspecified" />
