@@ -24,6 +24,7 @@
     <string name="update_stage_verifying">Verifying update</string>
     <string name="update_stage_verifying_detail">Checking file integrity and app compatibility…</string>
     <string name="update_progress_percent">%1$d%%</string>
+    <string name="update_progress_accessibility">Update download progress</string>
     <string name="update_installing">Preparing installation</string>
     <string name="update_installing_message">Handing the verified update to Android’s installer…</string>
     <string name="update_install_handoff">Android installer opened. Confirm the update there.</string>
