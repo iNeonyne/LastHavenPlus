@@ -12,6 +12,7 @@ import {
 import { readLibrary, writeLibrary, withLock } from "./repository.js";
 import { putAddons, deleteAddon, getAllFiles, gc } from "./db.js";
 import { commitStagedGeneration } from "./staged-storage.js";
+import { createMigrationArchive } from "./migration-export.js";
 import { languages, setLocale, t, formatSize, formatDate } from "./i18n.js";
 import {
   hasAccess,
@@ -239,7 +240,7 @@ function render() {
   $("#error-panel").hidden = !errorLog.length;
   renderGameStorage();
   $("#error-text").textContent = errorLog.join("\n\n--------------------\n\n");
-  for (const id of ["#scan", "#update-all", "#backup", "#restore"]) $(id).disabled = busy;
+  for (const id of ["#scan", "#update-all", "#backup", "#migration-export", "#restore"]) $(id).disabled = busy;
   const current =
     session.lastStatus && session.lastStatus.revision === library.revision
       ? session.lastStatus
@@ -452,6 +453,25 @@ $("#backup").onclick = () => action(async () => {
   link.click();
   setTimeout(() => URL.revokeObjectURL(url), 60000);
   showMessage("backupDone");
+});
+$("#migration-export").onclick = () => action(async () => {
+  setProgress(t("migrationExportProgress"));
+  const stored = await browser.storage.local.get(["settings", "language", "browseInstalled"]);
+  const { archive, manifest } = await createMigrationArchive({
+    library,
+    preferences: stored,
+    getFiles: getAllFiles,
+  });
+  const url = URL.createObjectURL(new Blob([archive], { type: "application/zip" }));
+  const link = el("a");
+  link.href = url;
+  link.download = `lasthavens-manager-migration-${new Date().toISOString().slice(0, 10)}.zip`;
+  link.click();
+  setTimeout(() => URL.revokeObjectURL(url), 60000);
+  showMessage("migrationExportDone", {
+    addons: manifest.totals.addons,
+    files: manifest.totals.files,
+  });
 });
 $("#restore").onchange = (e) => {
   const file = e.target.files?.[0];
