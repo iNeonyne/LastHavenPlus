@@ -44,6 +44,18 @@ The landscape Home screen has a user-triggered **Check for updates** action. The
 
 The updater now targets permanent assets attached to published GitHub Releases rather than expiring Actions artifacts. The first same-certificate in-place update and data-preservation test remains to be completed on a physical device.
 
+
+## UI/UX improvement scope
+
+The following work is tracked in [TODO.md](TODO.md) under **P2 — UI/UX consistency and responsive layouts**; it is planned, not yet complete:
+
+- Make Home and Addon Manager responsive in both portrait and landscape. Home is currently configured for sensor landscape; Manager currently has no forced orientation. Do not remove the Home restriction until both orientation layouts are implemented and tested.
+- Keep Play landscape-locked for gameplay.
+- Apply one coherent dark, frost-blue and gold theme to backgrounds, surfaces, cards, dialogs, buttons, and status/feedback states.
+- Standardize icon style, dimensions, alignment, tint, and accessibility descriptions.
+- Audit responsive layout, navigation, accessibility, touch targets, keyboard/focus behavior, system insets, and lifecycle/state preservation across all screens.
+- Verify the result with portrait and landscape screenshots and device testing.
+
 ## Immediate validation sequence
 
 1. Install the permanent-key-signed ARM64 APK from main run #196 on a spare test device. Do not uninstall an existing differently signed app if its data must be preserved.
