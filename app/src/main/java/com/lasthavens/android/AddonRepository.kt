@@ -84,6 +84,44 @@ class AddonRepository(private val filesDir: File) {
         }
     }
 
+    /** Change one installed add-on flag through the same atomic generation pointer. */
+    @Synchronized
+    fun setEnabled(folder: String, enabled: Boolean): ActiveLibrary {
+        require(folder.matches(Regex("[A-Za-z0-9_-]{1,120}"))) { "Invalid add-on folder" }
+        val current = active() ?: error("No native add-on library has been imported")
+        val manifest = JSONObject(current.manifest.toString())
+        val addons = manifest.getJSONObject("library").getJSONArray("addons")
+        var found = false
+        for (index in 0 until addons.length()) {
+            val addon = addons.getJSONObject(index)
+            if (addon.getString("folder").equals(folder, ignoreCase = true)) {
+                addon.put("enabled", enabled)
+                found = true
+                break
+            }
+        }
+        require(found) { "Add-on was not found in the native library" }
+
+        val stageDir = File(root, "toggle-" + UUID.randomUUID())
+        require(stageDir.mkdir()) { "Could not create add-on update staging directory" }
+        try {
+            copyTree(current.directory, stageDir)
+            val updatedManifest = File(stageDir, "manifest.json")
+            FileOutputStream(updatedManifest).use { output ->
+                output.write(manifest.toString().toByteArray(Charsets.UTF_8))
+                output.flush()
+                output.fd.sync()
+            }
+            val totals = manifest.getJSONObject("totals")
+            val stage = MigrationArchiveReader.Stage(
+                stageDir, manifest, totals.optInt("files", 0), totals.optLong("expandedBytes", 0L),
+            )
+            return activate(stage)
+        } finally {
+            stageDir.deleteRecursively()
+        }
+    }
+
     private fun copyTree(source: File, destination: File) {
         val base = source.canonicalFile
         source.walkTopDown().forEach { file ->
