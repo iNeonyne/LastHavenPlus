@@ -29,6 +29,7 @@ class ManagerActivity : AppCompatActivity() {
     private lateinit var progress: ProgressBar
     private var session: GeckoSession? = null
     private var canGoBack = false
+    private var processRecoveryScheduled = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -64,7 +65,16 @@ class ManagerActivity : AppCompatActivity() {
 
     private fun openManager(url: String) {
         val s = GeckoSession()
-        s.contentDelegate = AppContentDelegate(context = this, onClose = { finish() }, onProcessGone = { recreate() })
+        s.contentDelegate = AppContentDelegate(
+            context = this,
+            onClose = { finish() },
+            onProcessGone = {
+                if (!processRecoveryScheduled && !isFinishing && !isDestroyed) {
+                    processRecoveryScheduled = true
+                    recreate()
+                }
+            },
+        )
         s.promptDelegate = AppPromptDelegate(this, picker)
         s.navigationDelegate = object : GeckoSession.NavigationDelegate {
             override fun onCanGoBack(session: GeckoSession, canGoBack: Boolean) {
@@ -128,7 +138,13 @@ class ManagerActivity : AppCompatActivity() {
         if (app.gameLoaded) app.reloadGameOnNextPlay = true
         if (app.managerRef?.get() === this) app.managerRef = null
         geckoView.releaseSession()
-        session?.close()
+        session?.let { activeSession ->
+            activeSession.contentDelegate = null
+            activeSession.promptDelegate = null
+            activeSession.navigationDelegate = null
+            activeSession.progressDelegate = null
+            activeSession.close()
+        }
         session = null
         super.onDestroy()
     }
