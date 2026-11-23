@@ -207,7 +207,8 @@ async function action(fn) {
     else if (error.message === "libraryLimit") showMessage("libraryLimit");
     else {
       console.error("Addon manager operation failed", error);
-      showMessage("errorUnexpected");
+      const detail = String(error?.message || error || "Unknown error").slice(0, 240);
+      showMessage("importError", { detail });
     }
   } finally {
     busy = false;
@@ -383,17 +384,25 @@ function status() {
           : t("ready", { count: s.loaded?.length ?? 0 });
 }
 $("#import").onchange = (e) => {
-  const files = [...e.target.files];
+  const files = [...(e.target.files || [])];
+  if (!files.length) {
+    showMessage("importCancelled");
+    return;
+  }
   if (files.some((file) => file.size > LIMITS.archive)) {
     showMessage("errorArchiveSize");
     e.target.value = "";
     return;
   }
+  showMessage("importReading", { count: files.length });
   action(async () => {
     let imported = 0;
     const duplicates = [];
     for (const file of files) {
-      const result = await addArchive(await readStreamLimited(file.stream(), LIMITS.archive, "errorArchiveSize"));
+      if (typeof file.stream !== "function")
+        throw new AddonError("importFileUnsupported");
+      const bytes = await readStreamLimited(file.stream(), LIMITS.archive, "errorArchiveSize");
+      const result = await addArchive(bytes);
       imported += result.imported;
       duplicates.push(...result.duplicates);
     }
