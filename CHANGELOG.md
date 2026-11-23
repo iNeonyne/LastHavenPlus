@@ -9,12 +9,12 @@ This file records notable user-visible changes. It is not the development task l
 - Native JavaScript alert, confirm, and prompt dialogs.
 - Landscape-specific Home screen layout.
 - ARM64-only release APK output and updater support.
-- A user-triggered updater on main that considers successful main-branch builds only, verifies artifact provenance, metadata, SHA-256, package/version and signing-certificate compatibility, then hands installation to Android.
+- A user-triggered updater that checks published stable GitHub Releases, verifies release asset size and SHA-256, ARM64 compatibility, package/version and signing-certificate continuity, then hands installation to Android.
 
 ### Changed
 - Home screen now uses sensor landscape orientation.
 - Removed the thin top-edge game loading-progress line while retaining the LH diagnostics badge and diagnostic logging.
-- GitHub Actions produces the permanent-key-signed ARM64 update artifact and metadata on `main`; pull-request and manual test builds are not updater candidates.
+- GitHub Actions creates draft GitHub Releases from stable version tags with the permanent-key-signed ARM64 APK and checksums. The updater ignores drafts and prereleases and uses only published stable releases.
 
 ### Security
 - Restricted in-app navigation to HTTPS Lasthavens hosts and required Gecko internal schemes; reject insecure HTTP, executable/data/file/intent schemes, untrusted blob origins, and lookalike hosts. Added JVM regression tests to CI.
