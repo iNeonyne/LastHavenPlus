@@ -9,7 +9,7 @@ class DownloadFileNamePolicyTest {
     fun replacesPathSeparatorsAndReservedCharacters() {
         val result = DownloadFileNamePolicy.sanitize("../../folder\\\\evil:?.apk", "fallback.bin")
         assertFalse(result.contains('/'))
-        assertFalse(result.contains('\\\\'))
+        assertFalse(result.contains(92.toChar()))
         assertFalse(result.contains(':'))
         assertFalse(result.contains('?'))
         assertFalse(result.startsWith('.'))
