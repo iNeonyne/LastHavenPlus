@@ -6,6 +6,13 @@
 - Repository: https://github.com/iNeonyne/Lasthavens-Android
 - Latest CI: https://github.com/iNeonyne/Lasthavens-Android/actions/workflows/build.yml
 
+## Branching and promotion rule
+
+- All development work must be committed and pushed to the `beta` branch. This includes app code, fixes, tests, build workflows, and documentation.
+- Keep `main` unchanged during normal development. Do not commit, push, merge, cherry-pick, or otherwise promote changes to `main` unless the project owner explicitly says to do so.
+- Treat `beta` as the active working and demo branch. Validate changes and build demo APKs from `beta`.
+- A request to continue working, fix something, or update project files is authorization to work on `beta` only; it is not authorization to update `main`.
+
 ## Project overview
 
 Contributor and AI-agent rules are maintained in [AGENTS.md](AGENTS.md). User-visible changes are tracked in [CHANGELOG.md](CHANGELOG.md). Read those files and the active roadmap before making changes; always verify the current source and CI workflow rather than relying on documentation alone.
