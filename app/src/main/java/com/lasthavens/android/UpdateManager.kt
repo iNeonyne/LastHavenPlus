@@ -112,6 +112,7 @@ internal class UpdateManager(context: Context) {
 
         val assets = release.optJSONArray("assets") ?: throw IOException("The GitHub Release has no assets.")
         val apkName = "LastHavenPlus-$versionName-arm64-v8a.apk"
+        check(UpdatePolicy.isExpectedReleaseApkName(versionName, apkName)) { "The release APK filename is invalid." }
         val apkAssets = (0 until assets.length()).mapNotNull { assets.optJSONObject(it) }
             .filter { it.optString("name") == apkName && it.optString("state") == "uploaded" }
         val checksumAssets = (0 until assets.length()).mapNotNull { assets.optJSONObject(it) }
@@ -162,7 +163,7 @@ internal class UpdateManager(context: Context) {
             check(apkPart.renameTo(readyApk)) { "Could not finalize the verified release APK." }
             return AvailableUpdate(
                 versionName, releaseMetadata.getLong("versionCode"), apkSize,
-                release.getString("tag_name"), releaseMetadata.getLong("versionCode"), readyApk,
+                release.getString("tag_name"), readyApk,
             )
         } finally {
             checksumFile.delete()
