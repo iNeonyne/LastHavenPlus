@@ -1,7 +1,44 @@
 package com.lasthavens.android
 
+internal data class UpdateAsset(
+    val name: String,
+    val state: String,
+    val sizeBytes: Long,
+    val downloadUrl: String,
+)
+
+internal data class SelectedReleaseAssets(
+    val apk: UpdateAsset,
+    val checksum: UpdateAsset,
+)
+
 internal object UpdatePolicy {
     const val REPOSITORY = "iNeonyne/Lasthavens-Android"
+
+    fun selectReleaseAssets(versionName: String, assets: List<UpdateAsset>): SelectedReleaseAssets? {
+        if (!isStableVersionName(versionName)) return null
+        val apkName = "LastHavenPlus-$versionName-arm64-v8a.apk"
+        val apks = assets.filter { it.name == apkName && it.state == "uploaded" }
+        val checksums = assets.filter { it.name == "SHA256SUMS.txt" && it.state == "uploaded" }
+        if (apks.size != 1 || checksums.size != 1) return null
+        return SelectedReleaseAssets(apks.single(), checksums.single())
+    }
+
+    fun isTrustedReleaseAssetUrl(value: String): Boolean {
+        val uri = runCatching { java.net.URI(value) }.getOrNull() ?: return false
+        return uri.scheme.equals("https", ignoreCase = true) &&
+            uri.host.equals("github.com", ignoreCase = true) &&
+            uri.userInfo == null && (uri.port == -1 || uri.port == 443) &&
+            uri.path?.startsWith("/$REPOSITORY/releases/download/") == true
+    }
+
+    fun isTrustedReleaseAssetRedirect(value: String): Boolean {
+        val uri = runCatching { java.net.URI(value) }.getOrNull() ?: return false
+        val host = uri.host?.lowercase() ?: return false
+        val trustedHost = host == "github.com" || host.endsWith(".githubusercontent.com")
+        return uri.scheme.equals("https", ignoreCase = true) && trustedHost &&
+            uri.userInfo == null && (uri.port == -1 || uri.port == 443)
+    }
 
     fun supportsDevice(deviceAbis: List<String>): Boolean = "arm64-v8a" in deviceAbis
 
