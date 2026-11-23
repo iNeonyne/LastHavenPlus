@@ -41,14 +41,87 @@ class HomeActivity : AppCompatActivity() {
             .setCancelable(false)
             .create()
         progressDialog.show()
+        progressView.findViewById<TextView>(R.id.updateProgressStage).setText(R.string.update_stage_checking)
+        progressView.findViewById<TextView>(R.id.updateProgressDetail).setText(R.string.update_stage_checking_detail)
+        progressView.findViewById<ProgressBar>(R.id.updateProgressBar).isIndeterminate = true
+        progressView.findViewById<TextView>(R.id.updateProgressPercent).visibility = View.GONE
+
+        updateManager.checkAvailableVersions { result ->
+            if (isFinishing || isDestroyed) return@checkAvailableVersions
+            if (progressDialog.isShowing) progressDialog.dismiss()
+            updateButton.isEnabled = true
+            result.fold(
+                onSuccess = { versions -> showAvailableVersions(versions) },
+                onFailure = { error ->
+                    AlertDialog.Builder(this).setTitle(R.string.update_failed_title)
+                        .setMessage(error.message ?: getString(R.string.update_failed))
+                        .setPositiveButton(android.R.string.ok, null).show()
+                },
+            )
+        }
+    }
+
+    private fun showAvailableVersions(versions: List<ReleaseVersion>) {
+        val installed = versions.firstOrNull { it.isInstalled }
+        val newer = versions.filterNot { it.isInstalled }
+        if (installed == null) {
+            AlertDialog.Builder(this).setTitle(R.string.update_failed_title)
+                .setMessage(R.string.update_failed)
+                .setPositiveButton(android.R.string.ok, null).show()
+            return
+        }
+        if (newer.isEmpty()) {
+            AlertDialog.Builder(this).setTitle(R.string.update_title)
+                .setMessage(R.string.update_none)
+                .setPositiveButton(android.R.string.ok, null).show()
+            return
+        }
+
+        val choices = versions.map { version ->
+            if (version.isInstalled) {
+                "LastHavenPlus ${version.versionName} · Installed"
+            } else {
+                val size = android.text.format.Formatter.formatShortFileSize(this, version.sizeBytes)
+                "LastHavenPlus ${version.versionName} · $size"
+            }
+        }.toTypedArray()
+        var selectedIndex = 1
+        val dialog = AlertDialog.Builder(this)
+            .setTitle(R.string.update_title)
+            .setSingleChoiceItems(choices, selectedIndex) { _, which -> selectedIndex = which }
+            .setNegativeButton(android.R.string.cancel, null)
+            .setPositiveButton(R.string.update_download, null)
+            .create()
+        dialog.setOnShowListener {
+            dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener {
+                if (selectedIndex == 0) {
+                    Toast.makeText(this, R.string.update_current_selected, Toast.LENGTH_SHORT).show()
+                    return@setOnClickListener
+                }
+                val selected = versions.getOrNull(selectedIndex) ?: return@setOnClickListener
+                dialog.dismiss()
+                downloadSelectedUpdate(selected)
+            }
+        }
+        dialog.show()
+    }
+
+    private fun downloadSelectedUpdate(release: ReleaseVersion) {
+        updateButton.isEnabled = false
+        val progressView = LayoutInflater.from(this).inflate(R.layout.dialog_update_progress, null)
+        val progressDialog = AlertDialog.Builder(this)
+            .setView(progressView)
+            .setCancelable(false)
+            .create()
+        progressDialog.show()
 
         val stageView = progressView.findViewById<TextView>(R.id.updateProgressStage)
         val detailView = progressView.findViewById<TextView>(R.id.updateProgressDetail)
         val progressBar = progressView.findViewById<ProgressBar>(R.id.updateProgressBar)
         val percentView = progressView.findViewById<TextView>(R.id.updateProgressPercent)
 
-        fun showStage(stage: UpdateStage, downloaded: Long = 0, total: Long = 0) {
-            when (stage) {
+        fun showStage(progress: UpdateProgress) {
+            when (progress.stage) {
                 UpdateStage.CHECKING -> {
                     stageView.setText(R.string.update_stage_checking)
                     detailView.setText(R.string.update_stage_checking_detail)
@@ -65,14 +138,16 @@ class HomeActivity : AppCompatActivity() {
                     stageView.setText(R.string.update_stage_downloading)
                     detailView.text = getString(
                         R.string.update_stage_downloading_detail,
-                        android.text.format.Formatter.formatShortFileSize(this, total),
+                        android.text.format.Formatter.formatShortFileSize(this, progress.totalBytes),
                     )
                     progressBar.isIndeterminate = false
                     progressBar.max = 1000
-                    val percent = if (total > 0) ((downloaded * 1000) / total).toInt().coerceIn(0, 1000) else 0
-                    progressBar.progress = percent
+                    val value = if (progress.totalBytes > 0) {
+                        ((progress.downloadedBytes * 1000) / progress.totalBytes).toInt().coerceIn(0, 1000)
+                    } else 0
+                    progressBar.progress = value
                     percentView.visibility = View.VISIBLE
-                    percentView.text = getString(R.string.update_progress_percent, percent / 10)
+                    percentView.text = getString(R.string.update_progress_percent, value / 10)
                 }
                 UpdateStage.VERIFYING -> {
                     stageView.setText(R.string.update_stage_verifying)
@@ -83,33 +158,12 @@ class HomeActivity : AppCompatActivity() {
             }
         }
 
-        updateManager.checkAndDownload({ progress ->
-            if (!isFinishing && !isDestroyed && progressDialog.isShowing) {
-                showStage(progress.stage, progress.downloadedBytes, progress.totalBytes)
-            }
-        }) { result ->
-            if (isFinishing || isDestroyed) return@checkAndDownload
+        updateManager.downloadUpdate(release, ::showStage) { result ->
+            if (isFinishing || isDestroyed) return@downloadUpdate
             if (progressDialog.isShowing) progressDialog.dismiss()
             updateButton.isEnabled = true
             result.fold(
-                onSuccess = { update ->
-                    if (update == null) {
-                        AlertDialog.Builder(this).setTitle(R.string.update_title)
-                            .setMessage(R.string.update_none)
-                            .setPositiveButton(android.R.string.ok, null).show()
-                    } else {
-                        val availableView = LayoutInflater.from(this).inflate(R.layout.dialog_update_available, null)
-                        availableView.findViewById<TextView>(R.id.updateAvailableVersion).text =
-                            getString(R.string.update_available_version, update.versionName)
-                        availableView.findViewById<TextView>(R.id.updateAvailableSize).text =
-                            getString(R.string.update_available_size, android.text.format.Formatter.formatShortFileSize(this, update.sizeBytes))
-                        AlertDialog.Builder(this)
-                            .setView(availableView)
-                            .setNegativeButton(android.R.string.cancel, null)
-                            .setPositiveButton(R.string.update_install) { _, _ -> installUpdate(update) }
-                            .show()
-                    }
-                },
+                onSuccess = { update -> showVerifiedUpdate(update) },
                 onFailure = { error ->
                     AlertDialog.Builder(this).setTitle(R.string.update_failed_title)
                         .setMessage(error.message ?: getString(R.string.update_failed))
@@ -117,6 +171,19 @@ class HomeActivity : AppCompatActivity() {
                 },
             )
         }
+    }
+
+    private fun showVerifiedUpdate(update: AvailableUpdate) {
+        val availableView = LayoutInflater.from(this).inflate(R.layout.dialog_update_available, null)
+        availableView.findViewById<TextView>(R.id.updateAvailableVersion).text =
+            getString(R.string.update_available_version, update.versionName)
+        availableView.findViewById<TextView>(R.id.updateAvailableSize).text =
+            getString(R.string.update_available_size, android.text.format.Formatter.formatShortFileSize(this, update.sizeBytes))
+        AlertDialog.Builder(this)
+            .setView(availableView)
+            .setNegativeButton(android.R.string.cancel, null)
+            .setPositiveButton(R.string.update_install) { _, _ -> installUpdate(update) }
+            .show()
     }
 
     private fun installUpdate(update: AvailableUpdate) {
