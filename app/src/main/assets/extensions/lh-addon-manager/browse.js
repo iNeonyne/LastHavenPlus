@@ -1,6 +1,6 @@
 // Browse tab: combines curated lists with automatic scanning of 3.3.5a GitHub repos.
 import { SOURCES, REPOSITORIES, ORIGINS, releaseRepo } from "./catalog.js";
-import { LIMITS, buildZip } from "./archive.js";
+import { LIMITS, buildZip, readStreamLimited } from "./archive.js";
 import { tocMeta } from "./toc.js";
 import { AddonError } from "./errors.js";
 export { ORIGINS };
@@ -266,10 +266,11 @@ async function fetchGithubAddonZip(download) {
   if (estimated > LIMITS.expanded || files.some((file) => Number(file.size) > LIMITS.file))
     throw new AddonError("errorExpanded");
 
+  const budget = { used: 0, limit: LIMITS.expanded };
   const entries = await mapLimit(files, 6, async (file) => {
     const response = await fetch(rawUrl(download.owner, download.repo, download.branch, file.path));
     if (!response.ok) throw new AddonError("downloadFailed", { detail: `${file.path}: HTTP ${response.status}` });
-    const bytes = new Uint8Array(await response.arrayBuffer());
+    const bytes = await readStreamLimited(response.body, LIMITS.file, "errorExpanded", budget);
     if (bytes.length !== Number(file.size))
       throw new AddonError("downloadFailed", { detail: `${file.path}: file changed during download` });
     return [`${download.folder}/${file.path.slice(prefix.length)}`, bytes];
@@ -291,7 +292,7 @@ export async function fetchAddonZip(download) {
   if (!res.ok) throw new AddonError("downloadFailed", { detail: "HTTP " + res.status });
   if (Number(res.headers.get("content-length")) > LIMITS.archive)
     throw new AddonError("errorArchiveSize");
-  return new Uint8Array(await res.arrayBuffer());
+  return readStreamLimited(res.body, LIMITS.archive, "errorArchiveSize");
 }
 
 // Remember which folders each catalog entry installed, to show "Installed".
