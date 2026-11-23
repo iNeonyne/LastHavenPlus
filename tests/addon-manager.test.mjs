@@ -236,7 +236,7 @@ test("migration export includes library state, manager preferences, and checksum
       enabled: true,
       dependencies: ["Core"],
       optionalDeps: ["Extras"],
-      size: 26,
+      size: 38,
       fileCount: 2,
     }],
   };
@@ -268,14 +268,14 @@ test("migration export includes library state, manager preferences, and checksum
   assert.equal(manifest.preferences.language, "fr");
   assert.deepEqual(manifest.preferences.browseInstalled, { "catalog-entry": ["Example"] });
   assert.equal(manifest.totals.files, 2);
-  assert.equal(manifest.totals.expandedBytes, 26);
+  assert.equal(manifest.totals.expandedBytes, 38);
 
   const unpacked = unzipSync(archive);
   const exportedManifest = JSON.parse(new TextDecoder().decode(unpacked["manifest.json"]));
   assert.deepEqual(exportedManifest, manifest);
   assert.deepEqual([...unpacked["files/lh_generation_1/Example.lua"]], [...sourceFiles["Example.lua"]]);
   assert.match(manifest.files[0].sha256, /^[a-f0-9]{64}$/);
-  assert.equal(manifest.files[0].size, sourceFiles["Example.toc"].length);
+  assert.equal(manifest.files.find((file) => file.path === "Example.toc").size, sourceFiles["Example.toc"].length);
   assert.deepEqual(sourceLibrary.addons[0], {
     folder: "Example", storageFolder: "lh_generation_1", version: "2.3.4",
     enabled: true, dependencies: ["Core"], optionalDeps: ["Extras"], size: 26, fileCount: 2,
