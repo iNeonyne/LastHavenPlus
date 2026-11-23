@@ -17,7 +17,7 @@ import org.json.JSONObject
 class GameAddonBridge private constructor(
     private val webView: WebView,
     private val repository: AddonRepository,
-    private val scriptHandlers: List<androidx.webkit.ScriptHandler>,
+    private var scriptHandlers: List<androidx.webkit.ScriptHandler> = emptyList(),
 ) {
     private data class ActivePayload(
         val generation: String,
@@ -128,7 +128,7 @@ class GameAddonBridge private constructor(
             val bridge = context.assets.open("webview-game-bridge.js")
                 .bufferedReader(Charsets.UTF_8).use { it.readText() }
 
-            val instance = GameAddonBridge(webView, repository, emptyList())
+            val instance = GameAddonBridge(webView, repository)
             WebViewCompat.addWebMessageListener(webView, JS_OBJECT_NAME, ALLOWED_ORIGINS, instance.listener)
             val handlers = try {
                 listOf(
@@ -143,7 +143,8 @@ class GameAddonBridge private constructor(
                 WebViewCompat.removeWebMessageListener(webView, JS_OBJECT_NAME)
                 throw error
             }
-            return GameAddonBridge(webView, repository, handlers)
+            instance.scriptHandlers = handlers
+            return instance
         }
 
         private fun isAllowedOrigin(origin: Uri): Boolean =
