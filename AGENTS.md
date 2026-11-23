@@ -20,7 +20,7 @@ The approved final architecture is:
 - Native Android updater, storage dashboard, file selection, downloads and navigation.
 - AndroidX WebKit document-start scripts and origin-restricted WebMessageListener bridges.
 
-Do not use TWA, bundle Chromium, retain GeckoView as a gameplay fallback, or add unrelated browser functionality. GeckoView may exist only temporarily as a one-time migration exporter for the existing manager profile. Remove that temporary path after native migration is verified.
+Do not use TWA, bundle Chromium, reintroduce GeckoView or add unrelated browser functionality. The current source must remain Gecko-free. The previous app's 1.0.6 migration exporter is retained only as historical/test fixture source outside packaged app assets.
 
 ## 3. User data and manager migration
 
@@ -34,10 +34,10 @@ Preserve:
 
 Rules:
 - Never clear app data, reset the manager, or silently discard installed add-ons.
-- Export existing Gecko-backed manager records before removing the only code capable of reading them.
-- Use a versioned migration package, strict validation, file checksums, staged writes, atomic metadata activation, idempotent import and rollback.
-- Keep the legacy Gecko profile untouched during source cleanup. Do not delete profile files or unrelated app data as part of removing source code.
-- Gecko and WebView cookie/profile stores are separate. Do not promise cookie/login transfer; tell users that sign-in may be required again.
+- Users upgrading from the previous Gecko-based app must export a versioned migration ZIP using its Addon Manager 1.0.6 before installing the Gecko-free build.
+- The new app imports that package with strict validation, file checksums, staged writes, atomic metadata activation, idempotency and rollback.
+- Do not delete or clear the old Gecko profile files or unrelated app data during source cleanup or app update. The new app cannot read the old profile; describe it as retained but inaccessible through the new app.
+- Browser cookies/login state are not migrated; tell users that sign-in may be required again.
 - Existing ZIP backups contain add-on files only; do not treat them as complete manager-state backups.
 - Do not mark migration complete until native data is re-read and reconciled against exported metadata and file hashes.
 
@@ -45,7 +45,7 @@ Rules:
 
 - Treat the remote game, add-ons, downloaded files, catalogue responses and imported archives as untrusted.
 - Use the minimum WebView settings and Android permissions required by the game.
-- Restrict document-start scripts and WebMessageListener to explicit approved HTTPS origins. Validate source origin, main-frame status, message schema, size and operation on every message.
+- Restrict document-start scripts and WebMessageListener to explicit approved HTTPS Lasthavens origins. Validate source origin, message schema, size and operation on every message. Same-origin game frames may request payload chunks because the game may initialize workers in a frame; never accept an untrusted origin.
 - The remote game bridge is read-only for add-on payload retrieval and accepts only sanitized diagnostics. It must not expose arbitrary native commands, filesystem access or manager mutation.
 - Restrict the manager's privileged bridge to the local app-assets origin. Do not reuse it in the remote game WebView.
 - Never expose addJavascriptInterface or @JavascriptInterface to remote game content.
