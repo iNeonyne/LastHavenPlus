@@ -102,20 +102,20 @@ class UpdatePolicyTest {
     }
 
     @Test fun requiresStableSemverAndSafeApkNames() {
-        assertTrue(UpdatePolicy.isStableVersionName("2.0.0"))
+        assertTrue(UpdatePolicy.isStableVersionName("1.0.0"))
         assertFalse(UpdatePolicy.isStableVersionName("2.1.0-beta.1"))
-        assertFalse(UpdatePolicy.isStableVersionName("../2.0.0"))
-        assertTrue(UpdatePolicy.isExpectedApkName("2.0.0", "arm64-v8a", "LastHavenPlus-2.0.0-arm64-v8a.apk"))
-        assertFalse(UpdatePolicy.isExpectedApkName("2.0.0", "arm64-v8a", "../LastHavenPlus-2.0.0-arm64-v8a.apk"))
-        assertFalse(UpdatePolicy.isExpectedApkName("2.0.0", "arm64-v8a", "LastHavenPlus-2.0.0-universal.apk"))
+        assertFalse(UpdatePolicy.isStableVersionName("../1.0.0"))
+        assertTrue(UpdatePolicy.isExpectedApkName("1.0.0", "arm64-v8a", "LastHavenPlus-1.0.0-arm64-v8a.apk"))
+        assertFalse(UpdatePolicy.isExpectedApkName("1.0.0", "arm64-v8a", "../LastHavenPlus-1.0.0-arm64-v8a.apk"))
+        assertFalse(UpdatePolicy.isExpectedApkName("1.0.0", "arm64-v8a", "LastHavenPlus-1.0.0-universal.apk"))
     }
 
     @Test fun validatesChecksumFormatAndFilename() {
         val digest = "ab".repeat(32)
         assertTrue(UpdatePolicy.isValidSha256(digest))
         assertFalse(UpdatePolicy.isValidSha256("abc"))
-        assertTrue(UpdatePolicy.checksumFileMatches("$digest  LastHavenPlus-2.0.0-arm64-v8a.apk\n", "LastHavenPlus-2.0.0-arm64-v8a.apk", digest))
-        assertFalse(UpdatePolicy.checksumFileMatches("$digest  wrong.apk\n", "LastHavenPlus-2.0.0-arm64-v8a.apk", digest))
-        assertFalse(UpdatePolicy.checksumFileMatches("$digest  LastHavenPlus-2.0.0-arm64-v8a.apk\n", "LastHavenPlus-2.0.0-arm64-v8a.apk", "bad"))
+        assertTrue(UpdatePolicy.checksumFileMatches("$digest  LastHavenPlus-1.0.0-arm64-v8a.apk\n", "LastHavenPlus-1.0.0-arm64-v8a.apk", digest))
+        assertFalse(UpdatePolicy.checksumFileMatches("$digest  wrong.apk\n", "LastHavenPlus-1.0.0-arm64-v8a.apk", digest))
+        assertFalse(UpdatePolicy.checksumFileMatches("$digest  LastHavenPlus-1.0.0-arm64-v8a.apk\n", "LastHavenPlus-1.0.0-arm64-v8a.apk", "bad"))
     }
 }
