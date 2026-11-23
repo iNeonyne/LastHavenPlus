@@ -51,7 +51,7 @@ class HomeActivity : AppCompatActivity() {
                     } else {
                         val size = android.text.format.Formatter.formatShortFileSize(this, update.sizeBytes)
                         AlertDialog.Builder(this).setTitle(R.string.update_available)
-                            .setMessage(getString(R.string.update_available_message, update.versionName, update.runNumber, size, update.commitSha.take(8)))
+                            .setMessage(getString(R.string.update_available_message, update.versionName, update.runNumber, size, update.commitSha))
                             .setNegativeButton(android.R.string.cancel, null)
                             .setPositiveButton(R.string.update_install) { _, _ ->
                                 updateButton.isEnabled = false
