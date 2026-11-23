@@ -2,18 +2,7 @@ name: Build LastHavenPlus APK
 
 on:
   push:
-    branches: [main]
     tags: ["v*"]
-    paths:
-      - "app/**"
-      - "scripts/**"
-      - "tests/**"
-      - "gradle/**"
-      - ".github/workflows/**"
-      - "build.gradle.kts"
-      - "settings.gradle.kts"
-      - "gradle.properties"
-      - "package.json"
   workflow_run:
     workflows: ["Validate LastHavenPlus"]
     types: [completed]
