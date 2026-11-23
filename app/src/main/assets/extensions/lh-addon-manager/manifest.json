@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Lasthavens Addon Manager",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "__MSG_description__",
   "icons": {
     "48": "icon-48.png",
