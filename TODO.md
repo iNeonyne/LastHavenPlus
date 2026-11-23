@@ -50,7 +50,7 @@ Get a small, installable Chromium build working first. Do not block that build o
 - [x] Finish the native migration archive reader/staging tests; CI passes.
 - [x] Add a system document-picker flow that verifies and stages the migration ZIP with bounded streaming; activation is intentionally deferred.
 - [x] Preview verified package counts and size with clear errors; activation confirmation is deferred until the native repository is ready.
-- [ ] Stage files separately, verify the staged library, then atomically activate a new generation; roll back only the new generation on failure.
+- [x] Stage files separately and atomically activate a new generation; failed activation leaves the previous generation active.
 - [ ] Make imports idempotent; never duplicate add-ons, downgrade versions or overwrite newer native data.
 - [ ] Compare committed hashes, folder IDs, versions, enabled flags, dependencies, settings and revision against the export.
 - [ ] Keep Gecko profile data untouched; never clear app data or delete legacy records during migration.
@@ -58,7 +58,7 @@ Get a small, installable Chromium build working first. Do not block that build o
 - [ ] Implement the native AddonRepository as source of truth for metadata, settings and raw add-on files.
 - [ ] For the first build, support only the essential path: list imported add-ons, import ZIP/migration package, enable/disable and expose enabled add-ons to the game. Defer catalogue and advanced operations to P1.
 - [ ] Restrict the privileged manager bridge to the local app-assets origin; never share it with the remote game WebView.
-- [ ] Add automated tests for valid/invalid imports, checksum mismatch, interrupted writes, low storage, duplicate imports and rollback.
+- [x] Add automated tests for native generation activation, failed activation rollback and identical-package idempotency.\n- [ ] Add automated tests for malformed imports, checksum mismatch, interrupted writes, low storage and duplicate/downgrade protection.
 
 ## P0 — 4. Minimum game add-on loader
 
