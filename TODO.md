@@ -3,7 +3,7 @@
 This is the single actionable work queue. Architecture and phase rationale live in [ROADMAP.md](ROADMAP.md). Keep work on `main`; do not create parallel checklists.
 
 **Branch:** main only  
-**Current source baseline:** GeckoView app with a debug-only Chromium WebView probe  
+**Current transition:** production game screen uses Android System WebView; Gecko remains packaged for the legacy manager and profile  
 **Target:** Android System WebView + native-backed Addon Manager  
 **Legacy exporter:** Addon Manager 1.0.6  
 **App identity:** preserve `com.lasthavens.android`, permanent signing certificate, ARM64-only distribution and monotonic `GITHUB_RUN_NUMBER` versionCode.
@@ -20,7 +20,7 @@ Get a small, installable Chromium build working first. Do not block that build o
 
 ## P0 — 2. Get the game running in Android System WebView
 
-- [ ] Replace the debug-only ChromiumProbeActivity with the production PlayActivity backed by Android System WebView.
+- [x] Replace the debug-only ChromiumProbeActivity with the production PlayActivity backed by Android System WebView.
 - [ ] Configure hardware acceleration, JavaScript, DOM storage, media, safe browsing, file access and mixed-content behavior with least privilege.
 - [ ] Register document-start loader scripts before loading the game; require the supported AndroidX WebKit features and fail clearly if unavailable.
 - [ ] Restrict WebMessageListener and injected scripts to the exact approved HTTPS Lasthavens origins; validate main-frame/source-origin on every message.
@@ -38,7 +38,7 @@ Get a small, installable Chromium build working first. Do not block that build o
 
 - [x] Add a Gecko-side exporter to the existing manager (now manager 1.0.6) that reads the library, settings and IndexedDB bytes without modifying source records.
 - [x] Export manager state into a versioned migration package with file paths, byte sizes, per-file SHA-256 checksums and a metadata manifest.
-- [ ] Implement a native importer with archive/path validation, strict byte/file/count limits, checksum verification and clear user-readable errors.
+- [x] Implement a native archive validator/stager with path validation, strict byte/file/count limits and SHA-256 verification; native activation remains pending.
 - [ ] Stage imported files separately, commit the metadata pointer only after verification, and roll back only the new generation on failure.
 - [ ] Make migration idempotent: repeated starts/import attempts must not duplicate add-ons, downgrade versions, overwrite newer native data or mark incomplete work complete.
 - [ ] Re-read the committed native library and compare file hashes, folder IDs, versions, enabled flags, dependencies, settings and library revision against the export.
@@ -47,9 +47,9 @@ Get a small, installable Chromium build working first. Do not block that build o
 
 ## P0 — 3A. Minimum native Addon Manager for the first build
 
-- [ ] Finish and verify the native migration archive reader/staging tests already added; fix CI failures before proceeding.
-- [ ] Implement native import using the system document picker and bounded streaming; validate paths, limits, metadata and SHA-256 checksums.
-- [ ] Preview package contents before import; show clear errors and require explicit confirmation.
+- [x] Finish the native migration archive reader/staging tests; CI passes.
+- [x] Add a system document-picker flow that verifies and stages the migration ZIP with bounded streaming; activation is intentionally deferred.
+- [x] Preview verified package counts and size with clear errors; activation confirmation is deferred until the native repository is ready.
 - [ ] Stage files separately, verify the staged library, then atomically activate a new generation; roll back only the new generation on failure.
 - [ ] Make imports idempotent; never duplicate add-ons, downgrade versions or overwrite newer native data.
 - [ ] Compare committed hashes, folder IDs, versions, enabled flags, dependencies, settings and revision against the export.
