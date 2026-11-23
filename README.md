@@ -112,6 +112,7 @@ A version is published as a GitHub Release only after its build and validation p
 
 ### Unreleased changes on `main`
 
+- Added a landscape-specific Home screen layout and set the launcher screen to sensor landscape; Play and Addon Manager behavior is unchanged.
 - Migrated the build to a current Android Gradle Plugin/Kotlin toolchain and public Gradle DSLs.
 - Added validation for every bundled Addon Manager JSON and JavaScript file.
 - Added APK-content checks for the built-in extension, English locale, and GeckoView native engine.
