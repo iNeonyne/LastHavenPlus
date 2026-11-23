@@ -194,9 +194,9 @@ test("metadata commit failure keeps the previous addon generation and rolls back
       commit: async () => {
         throw new Error("simulated metadata storage failure");
       },
-      rollback: async () => {
-        stagedFiles.delete("lh_staged/Example.lua");
-      },
+      rollback: () => [
+        Promise.resolve().then(() => stagedFiles.delete("lh_staged/Example.lua")),
+      ],
       cleanup: async () => {
         throw new Error("cleanup must not run after failed commit");
       },
