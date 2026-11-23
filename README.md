@@ -2,7 +2,7 @@
 
 A native Android client for [Lasthavens](https://alt.lasthavens.com/play), built with Kotlin and Mozilla GeckoView. It includes a bundled Addon Manager WebExtension so the game and manager can share browser state and installed add-ons.
 
-> **Project status:** main-branch development. Main CI run #196 verified the permanent release certificate, built and signed all four APK variants, and published the metadata/checksum plus per-ABI update artifacts. Automated checks pass; same-certificate in-place update and data-preservation testing on a physical device remain outstanding. No permanent public download link is published yet. This is an unofficial, independent client; it is not endorsed by Lasthavens or Blizzard Entertainment.
+> **Project status:** main-branch development. Main CI run #196 verified the permanent release certificate and built four ABI variants. The project is now switching to one ARM64-only release APK; the new pipeline is awaiting CI verification. Automated checks pass; same-certificate in-place update and data-preservation testing on a physical device remain outstanding. No permanent public download link is published yet. This is an unofficial, independent client; it is not endorsed by Lasthavens or Blizzard Entertainment.
 
 ## At a glance
 
@@ -28,10 +28,10 @@ Useful links: [Game](https://alt.lasthavens.com/play) · [Repository](https://gi
 
 ## Get a build
 
-For testing, main run #196 publishes one metadata/checksum artifact and four signed APK artifacts. These are temporary CI artifacts, not permanent release downloads:
+The previous main run #196 published four signed APK variants. New builds will publish one ARM64 APK plus the metadata/checksum artifact. These are temporary CI artifacts, not permanent release downloads:
 1. Open [GitHub Actions](https://github.com/iNeonyne/Lasthavens-Android/actions).
 2. Select the latest successful `push` run from `main`. Manual-dispatch, pull-request, and tag runs are not updater candidates.
-3. Download `LastHavenPlus-Main-Update-<ABI>` for the device ABI, or `LastHavenPlus-Main-Update-universal` as fallback.
+3. Download `LastHavenPlus-Main-Update-arm64-v8a`. Only ARM64 devices are supported by release builds.
 4. Use a spare test device for same-certificate update testing; do not uninstall a data-bearing debug-signed installation.
 
 The CI artifacts expire after 90 days. A permanent public download link will be added only after physical-device update and data-preservation checks and release approval.
@@ -46,7 +46,7 @@ Open the repository in Android Studio with JDK 17 and the Android SDK required b
 ./gradlew assembleRelease
 ```
 
-GitHub Actions runs automated checks on `main`, pull requests, and manual dispatches. Successful `main` builds publish a metadata/checksum artifact and four permanent-key-signed, ABI-specific update APK artifacts; pull-request and manual builds are not update candidates. Main run #196 confirmed the direct DER certificate hash matches the expected release certificate and verified all four ABI APK signatures.
+GitHub Actions runs automated checks on `main`, pull requests, and manual dispatches. Successful `main` builds publish a metadata/checksum artifact and one permanent-key-signed ARM64 APK artifact; pull-request and manual builds are not update candidates. Main run #196 verified the permanent release certificate for the previous multi-ABI build; the ARM64-only workflow must pass CI again.
 
 ## Versions
 
@@ -65,7 +65,7 @@ The Android app's `versionName` follows `MAJOR.MINOR.PATCH` (Semantic Versioning
 
 The current app line uses `versionName = 2.0.0`. Keep this stable across ordinary commits. Use `2.0.1` for the next patch release, `2.1.0` for the next backward-compatible feature release, or `3.0.0` only for a breaking release. Android `versionCode` is taken from the existing workflow's monotonically increasing `GITHUB_RUN_NUMBER`; local builds use a development-only fallback and are never update candidates. `main` is the sole development and release branch; do not create a permanent beta branch or prerelease version stream.
 
-The main branch contains a user-triggered updater. It queries only successful completed `push` runs from `main`, downloads the metadata/checksum artifact and only the complete APK artifact matching the device ABI (universal fallback), checks artifact/run/commit provenance and metadata, verifies the APK SHA-256, and checks package ID, version code and installed signing certificate before offering Android's user-confirmed package installer. It never silently installs, uninstalls, or clears app data. Debug-signed pull-request/test APKs are not accepted as update sources. A debug-signed test installation cannot be upgraded in place to a permanent-key-signed main build; do not uninstall a data-bearing installation to switch signing identities. Use a separate test device for release-signing validation. Main run #196 passed permanent-key signing and artifact publication; the live update feed still requires same-certificate physical-device validation. No public download link is published until an approved release exists. See [AGENTS.md](AGENTS.md) for the rules agents must follow.
+The main branch contains a user-triggered updater. It queries only successful completed `push` runs from `main`, downloads the metadata/checksum artifact and the complete ARM64 APK artifact, and offers it only when the device supports ARM64, checks artifact/run/commit provenance and metadata, verifies the APK SHA-256, and checks package ID, version code and installed signing certificate before offering Android's user-confirmed package installer. It never silently installs, uninstalls, or clears app data. Debug-signed pull-request/test APKs are not accepted as update sources. A debug-signed test installation cannot be upgraded in place to a permanent-key-signed main build; do not uninstall a data-bearing installation to switch signing identities. Use a separate test device for release-signing validation. Main run #196 passed permanent-key signing and artifact publication; the live update feed still requires same-certificate physical-device validation. No public download link is published until an approved release exists. See [AGENTS.md](AGENTS.md) for the rules agents must follow.
 
 ## Project documents
 
