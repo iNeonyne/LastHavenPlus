@@ -7,7 +7,7 @@ LastHavenPlus is a focused native Android client for the Lasthavens game. It use
 - Game: https://alt.lasthavens.com/play
 - Repository: https://github.com/iNeonyne/Lasthavens-Android
 - Distribution target: GitHub Releases only; no Google Play track.
-- Automatic updater: implemented on `main`; it accepts only successful main push artifacts and verifies provenance, ABI, checksum, package/version, and signing compatibility before Android installer handoff.
+- Automatic updater: being switched to published stable GitHub Releases; it verifies the release APK checksum, ABI, package/version, and signing compatibility before Android installer handoff.
 - Android application ID: `com.lasthavens.android`
 
 ## Architecture
@@ -40,9 +40,9 @@ The app and extension have independent versions. Necessary Addon Manager mainten
 
 ## Automatic updater
 
-The landscape Home screen has a user-triggered **Check for updates** action. The updater filters the existing GitHub Actions workflow for successful completed `push` runs from `main`, checks artifact provenance and expiry, downloads the metadata/checksum artifact and only the ARM64 APK artifact, and only when the device supports `arm64-v8a`, verifies metadata and SHA-256, then checks Android package ID, version code and exact signing-certificate equality. Installation is handed to Android's package installer and requires user confirmation. The updater does not clear app data, GeckoView profile, cookies, login/session state or add-ons.
+The landscape Home screen has a user-triggered **Check for updates** action. The updater checks the latest published stable GitHub Release, ignores drafts and prereleases, requires one ARM64 APK and one checksum asset, validates HTTPS release asset URLs and declared sizes, verifies SHA-256, then checks Android package ID, versionName/versionCode, device ABI and exact signing-certificate equality. Installation is handed to Android's package installer and requires user confirmation. The updater does not clear app data, GeckoView profile, cookies, login/session state or add-ons.
 
-Main run #196 published the metadata/checksum and per-ABI artifacts in the previous multi-ABI configuration. New ARM64-only runs will publish only the ARM64 APK. The first same-certificate in-place update and data-preservation test remains to be completed on a physical device. End-to-end same-certificate upgrade and data-preservation checks remain pending on a physical device.
+The updater now targets permanent assets attached to published GitHub Releases rather than expiring Actions artifacts. The first same-certificate in-place update and data-preservation test remains to be completed on a physical device.
 
 ## Immediate validation sequence
 
