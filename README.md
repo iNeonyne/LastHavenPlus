@@ -1,93 +1,63 @@
 # LastHavenPlus
 
-A native Android client for [Lasthavens](https://lasthavens.com/play), built with Kotlin and Mozilla GeckoView. It includes a bundled Addon Manager WebExtension so the game and manager can share browser state and installed add-ons.
+An unofficial native Android client for [Lasthavens](https://lasthavens.com/play). The project is undergoing a major rebuild to use Android System WebView (Chromium) for gameplay and a native-backed Addon Manager.
 
-> **Project status:** v1.0.0 has been released. v1.0.1 is being prepared with the primary game URL and release-metadata corrections. This is an unofficial, independent client; it is not endorsed by Lasthavens or Blizzard Entertainment. This is an unofficial, independent client; it is not endorsed by Lasthavens or Blizzard Entertainment.
+> **Status:** v1.0.0 was the first public release. The current source is the transition baseline; the Chromium game screen and native Addon Manager are not yet complete or released. This project is independent and is not endorsed by Lasthavens or Blizzard Entertainment.
 
-## At a glance
+## Project
 
 - **Platform:** Android
-- **Engine:** Mozilla GeckoView
-- **Language:** Kotlin
-- **Application ID:** `com.lasthavens.android`
-- **Development branch:** `main`
-- **Distribution target:** GitHub Releases; no Google Play track is planned
+- **Language:** Kotlin, JavaScript
+- **Target engine:** Android System WebView supplied by the device
+- **Application ID:** com.lasthavens.android
+- **Development branch:** main
+- **Distribution:** GitHub Releases; no Google Play track
 
 Useful links: [Game](https://lasthavens.com/play) · [Repository](https://github.com/iNeonyne/Lasthavens-Android) · [Builds](https://github.com/iNeonyne/Lasthavens-Android/actions) · [Releases](https://github.com/iNeonyne/Lasthavens-Android/releases)
 
-## Features
+## Current source and target
 
-- Orientation-adaptive Home and Storage screens with Play and Addon Manager entry points.
-- GeckoView-powered game session.
-- Bundled Addon Manager WebExtension.
-- Shared Gecko runtime/profile design for game and manager.
-- Read-only storage dashboard for shared app/profile data, cache, and available device space.
-- HTTPS-only in-app navigation for Lasthavens pages; external sites open in the system browser.
-- Android integration for fullscreen, JavaScript dialogs, file selection, downloads, popups, and external links.
-- User-triggered updater that checks published stable GitHub Releases, verifies SHA-256 and signing-certificate compatibility, and hands installation to Android.
+The checked-in source still contains the existing GeckoView game screen and WebExtension-based Addon Manager, plus a debug-only Chromium WebView probe. They are transitional code, not the target architecture.
 
-## Get a build
+The target app uses Android System WebView without bundling a second browser engine. The Addon Manager will use native app-private storage and a restricted local WebView host. The migration is planned to preserve installed add-ons and manager settings. Gecko login cookies/session state are not assumed to transfer to WebView, so a new sign-in may be required.
 
-Stable downloads are distributed through [GitHub Releases](https://github.com/iNeonyne/Lasthavens-Android/releases). The in-app updater lists the installed version and newer published stable releases without downloading anything; the user selects a release before its ARM64 APK and checksum are downloaded and verified. Draft releases and prereleases are ignored. Main CI artifacts are for validation and are not update sources.
+See [ROADMAP.md](ROADMAP.md) for the architecture and phase gates, and [TODO.md](TODO.md) for the one active implementation queue.
 
-Use a spare test device for same-certificate update testing. Do not uninstall a data-bearing installation signed with a different key.
+## Existing app capabilities
 
-**Important:** Pull-request and manual test APKs may be debug-signed. Do not uninstall an existing installation signed with a different certificate if its app data matters; uninstalling can erase the local app profile. A successful CI build is not proof of device compatibility.
+The current source includes native Home, Play, Addon Manager and Storage screens, a stable-release updater, HTTPS navigation policy, Android file selection/download handling and the current 1.0.5 Addon Manager implementation. The target architecture and migration status are tracked separately; planned Chromium functionality must not be described as shipped.
 
-## Build locally
+## Build
 
-Open the repository in Android Studio with JDK 17 and the Android SDK required by the project. Build with:
+Open the project in Android Studio with JDK 17 and the Android SDK required by the project. Build with:
 
 ```bash
 ./gradlew assembleRelease
 ```
 
-GitHub Actions runs automated checks on `main`, pull requests, and manual dispatches. Main builds are validation builds and publish temporary artifacts; the in-app updater does not use them. Tagged builds create draft GitHub Releases with the permanent-key-signed ARM64 APK and checksums. The updater reads only published stable releases.
+GitHub Actions runs automated validation and builds ARM64 APKs. Main builds are validation artifacts, not updater sources. Tagged builds create draft GitHub Releases signed with the permanent release key. A draft must be reviewed and explicitly published by the owner.
 
-## Versions
+## Updates and app identity
 
-| Component | Current version | Status |
-|---|---:|---|
-| Android app | `1.0.1` | Next patch release being prepared |
-| Bundled Addon Manager | `1.0.5` | Crash-safe add-on replacement; preserves existing library data |
-| GeckoView | `159.0.20261102144711` | Pinned dependency |
+The native updater is independent of the browser engine. Preserve its metadata-only version check, explicit version selection, full ARM64 APK download, SHA-256 verification, package/version/ABI/signing-certificate checks and Android installer confirmation. It must never clear app data or silently install an update.
 
-The extension version is independent of the Android app version. Check the bundled extension's `manifest.json` for its authoritative version. Existing add-on files remain in their current storage locations until that add-on is updated; new replacements use staged storage generations so an interrupted update does not replace the last committed files.
+The application ID and permanent signing identity must remain unchanged so compatible in-place updates remain possible. Android versionCode comes from the existing globally increasing GitHub Actions run-number sequence. Keep stable SemVer versionName values; do not bump them for ordinary commits.
 
-
-## Versioning and updates
-
-The Android app's `versionName` follows `MAJOR.MINOR.PATCH` (Semantic Versioning). Android's numeric `versionCode` is separate and determines whether an APK can replace an installed version. The Android app, bundled Addon Manager, and GeckoView each have independent versions.
-
-The first public Android app release is `1.0.0` (tag `v1.0.0`). The next patch release is `1.0.1`, `1.1.0` for the next backward-compatible feature release, or `2.0.0` only for a breaking release. Android `versionCode` is taken from the existing workflow's monotonically increasing `GITHUB_RUN_NUMBER`; local builds use a development-only fallback and are never update candidates. `main` is the sole development and release branch; do not create a permanent beta branch or prerelease version stream.
-
-The user-triggered updater lists the installed version and newer published stable GitHub Releases, ignoring drafts and prereleases. Checking is metadata-only and never downloads an APK. The user selects a newer version and explicitly starts its download. The updater downloads the exact ARM64 APK and `SHA256SUMS.txt` assets, then verifies declared size, SHA-256, package ID, versionName/versionCode, device ABI, and exact installed signing-certificate equality before handing the APK to Android's user-confirmed installer. It never silently installs, uninstalls, or clears app data. Main CI, pull-request, manual-dispatch, and draft-release builds are not update sources. A debug-signed test installation cannot be upgraded in place to the permanent release key; do not uninstall a data-bearing installation to switch signing identities. Use a separate test device for release-signing validation. The release-based updater still requires same-certificate physical-device upgrade and data-preservation testing. See [AGENTS.md](AGENTS.md) for the rules agents must follow.
-
-## Create a GitHub Release
-
-Release tags can be requested through GitHub without using Termux:
-
-1. Complete the required physical-device, same-certificate upgrade, data-preservation, and distribution-permission checks in [MANUAL_CHECKLIST.md](MANUAL_CHECKLIST.md).
-2. Update `versionName` in `app/build.gradle.kts` and add the user-visible changes to `CHANGELOG.md`. Merge the release-ready commit into `main`.
-3. Update `.github/release-request.json` to the requested version and set `dry_run` to `false`. The request workflow validates stable SemVer, the Gradle version, and that the version is newer than existing stable tags.
-4. GitHub Actions creates the annotated tag and explicitly dispatches the existing signed release build on that tag. The build verifies the permanent signing key, ARM64 APK, package/version metadata, and checksums, then creates a **draft GitHub Release**.
-5. Review the draft, its assets, and release notes. Publish it manually only after release sign-off.
-
-For a validation-only run, set `dry_run` to `true`; it validates the request without creating a tag or release. Do not create a tag for an unreleased version just to test CI. A successful CI build is not proof of physical-device validation or distribution approval. The release request file is a trigger, not permission to bypass the manual release checklist or draft review.
+See [AGENTS.md](AGENTS.md) for mandatory development and release rules.
 
 ## Project documents
 
 | Document | Purpose |
 |---|---|
-| [TODO.md](TODO.md) | Current priorities, demo test plan, bugs, and deferred work |
-| [CHANGELOG.md](CHANGELOG.md) | User-visible changes by version |
-| [AGENTS.md](AGENTS.md) | Required instructions for AI agents and contributors |
-| [PROJECT_OVERVIEW.md](PROJECT_OVERVIEW.md) | Technical architecture and current project state |
+| [ROADMAP.md](ROADMAP.md) | Approved target architecture, delivery phases and acceptance gates |
+| [TODO.md](TODO.md) | Single actionable development queue |
+| [AGENTS.md](AGENTS.md) | Mandatory agent/contributor rules |
+| [PROJECT_OVERVIEW.md](PROJECT_OVERVIEW.md) | Current source architecture and verified status |
+| [MANUAL_CHECKLIST.md](MANUAL_CHECKLIST.md) | Owner-only legal, key-custody and release actions |
+| [CHANGELOG.md](CHANGELOG.md) | User-visible changes that have actually shipped |
 
-## Important notice
+## Distribution notice
 
-The Lasthavens Terms of Use restrict modified clients, with an exception for add-ons in the in-game AddOn Library. Whether this independent client and its bundled manager are permitted has not been confirmed. Obtain explicit guidance from the Lasthavens team before public distribution. Do not present this app as official or endorsed.
-
-## License
+The Lasthavens Terms of Use restrict modified clients except for add-ons in the in-game AddOn Library. Permission to distribute this independent client and its bundled manager has not been confirmed. Obtain written guidance from the Lasthavens team before public distribution. Do not present this app as official or endorsed.
 
 No project license has been declared. Do not assume this repository grants permission to reuse or redistribute its code.
