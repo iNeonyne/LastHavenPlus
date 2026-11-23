@@ -54,7 +54,25 @@ LastHavenPlus is a focused Android client for the Lasthavens game, built with Ko
 - Do not claim a build, test, artifact, device check, or release succeeded unless its actual result was checked.
 - CI success proves only the checks that ran. It does not prove physical-device compatibility, performance, thermals, or gameplay stability.
 
-## 7. Development workflow
+## 7. Versioning and automatic-update compatibility
+
+- The Android app uses Semantic Versioning for its user-facing `versionName`: `MAJOR.MINOR.PATCH`.
+  - **MAJOR:** an incompatible user-facing change or a breaking app/data contract. Any data-format migration still requires a documented, tested backup, migration, and rollback path.
+  - **MINOR:** a backward-compatible user-facing feature or substantial capability.
+  - **PATCH:** backward-compatible bug fixes, security fixes, and maintenance.
+- Do not increase `versionName` for every commit or CI run. Keep it unchanged while producing successive development builds of the same release line. Do not add a leading `v` to `versionName`; Git release tags use `v<versionName>`.
+- Until version metadata is deliberately centralized, `app/build.gradle.kts` is the authoritative source for the Android app's `versionName`. Any build validation, UI, release, or updater metadata must derive from that value rather than maintaining a second manually edited copy.
+- Android `versionCode` is a separate positive integer used for install/update ordering. An updater must compare numeric `versionCode` values, never compare version-name strings, filenames, dates, or commit hashes.
+- **When main-branch CI updates are implemented, set the CI APK's `versionCode` from the monotonically increasing GitHub Actions workflow run number (`GITHUB_RUN_NUMBER`) of the existing `.github/workflows/build.yml` workflow.** This number increases across runs on the workflow's branches and tags; a rerun of the same workflow run retains its number and must not be treated as a newer build. Keep the workflow identity stable. If the workflow is renamed/recreated or numbering changes, migrate the counter and prove that the next code is greater than every previously distributed code before publishing another update.
+- The first CI-generated code must be greater than the currently distributed/installable app code. The current source still hard-codes `versionCode = 2`; that is the legacy value, not the final updater numbering implementation. Local builds without a CI run number are development builds and must not be advertised as update candidates.
+- A new main CI build may have the same `versionName` as the previous build but must have a greater `versionCode`. Do not bump the SemVer version just to make an APK install over another APK.
+- **Automatic update source is `main` only.** The updater may consider only the latest successful, completed workflow run whose source branch is exactly `main`. Ignore `beta`, pull-request, tag/release, failed, cancelled, and in-progress runs. The current workflow does not yet build on pushes to `main`; do not claim an update feed exists until that trigger and its artifact path are deliberately implemented.
+- When implementing the feed, publish a machine-readable metadata file with each main artifact. It must include at least the app `versionName`, resolved `versionCode`, branch/ref, commit SHA, workflow run ID/number, APK filenames/ABIs, and each APK's SHA-256. The updater must validate the metadata, require branch `main`, choose the correct ABI APK, verify its checksum, and confirm the APK package ID and version metadata before offering installation.
+- **Signing is an independent update requirement.** Every main artifact offered to an installed app must use the same stable signing certificate as that installed app. A dedicated stable CI key may be used for a testing channel; it does not have to be the eventual public-release key, but it must be protected and its certificate fingerprint must remain identical across builds. The current fallback to the runner's debug signing configuration is not an approved continuity guarantee. Verify the APK signer fingerprint and perform a same-certificate in-place upgrade test before enabling updates.
+- Never work around a package ID, signing-certificate, or version mismatch by uninstalling the existing app or clearing its data. Stop safely and explain the blocker. Preserve the application ID `com.lasthavens.android` for normal upgrades.
+- The Addon Manager version remains independent and is read from its bundled `manifest.json`; the GeckoView dependency version is also independent. Do not bump either one just because the Android app version changes, and do not change the bundled Addon Manager without the owner's authorization and the required data-preservation checks.
+
+## 8. Development workflow
 
 1. Verify branch `beta`, inspect the latest commits, workflow runs, and relevant source.
 2. Read the related items in `TODO.md`; reconcile stale tasks with the actual implementation.
@@ -66,7 +84,7 @@ LastHavenPlus is a focused Android client for the Lasthavens game, built with Ko
 8. Update `TODO.md`, `CHANGELOG.md`, `README.md`, or `PROJECT_OVERVIEW.md` only when their information actually changes.
 9. Report the branch, commit, changed files, tests and build results, known risks, and work still unverified.
 
-## 8. Documentation responsibilities
+## 9. Documentation responsibilities
 
 - `README.md` is for human readers. Keep it concise and avoid duplicating the roadmap or agent rules.
 - `AGENTS.md` is the authoritative instruction file for agents and contributors.
@@ -75,10 +93,10 @@ LastHavenPlus is a focused Android client for the Lasthavens game, built with Ko
 - `PROJECT_OVERVIEW.md` contains the technical architecture and current verified project state.
 - Do not let documents contradict source code, version metadata, CI configuration, or one another.
 
-## 9. Service terms and project identity
+## 10. Service terms and project identity
 
 The Lasthavens Terms of Use restrict modified clients except for add-ons in the in-game AddOn Library. Compatibility of this independent GeckoView client and bundled manager is unconfirmed. Obtain explicit guidance from the Lasthavens team before public distribution. Clearly identify the app as unofficial and not affiliated with or endorsed by Lasthavens or Blizzard Entertainment.
 
-## 10. Scope control
+## 11. Scope control
 
 Do not add unrelated browser features, analytics, push notifications, background services, or differential APK updates without a demonstrated requirement and project-owner approval where appropriate. Prefer reliability and safe data handling over feature count.
