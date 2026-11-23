@@ -5,7 +5,7 @@ import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
 import java.nio.file.Files
-import java.nio.file.StandardCopyOption
+import java.nio.file.StandardCopyOption\nimport java.nio.channels.FileChannel\nimport java.nio.file.StandardOpenOption
 import java.security.MessageDigest
 import java.util.UUID
 
@@ -110,9 +110,7 @@ class AddonRepository(private val filesDir: File) {
 
     private fun syncDirectories(directory: File) {
         directory.walkBottomUp().filter { it.isDirectory }.forEach { dir ->
-            runCatching { android.system.Os.open(dir.path, android.system.OsConstants.O_RDONLY, 0).let { fd ->
-                try { android.system.Os.fsync(fd) } finally { android.system.Os.close(fd) }
-            } }
+            runCatching { FileChannel.open(dir.toPath(), StandardOpenOption.READ).use { it.force(true) } }
         }
     }
 
