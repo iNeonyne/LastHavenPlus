@@ -41,7 +41,7 @@ internal class UpdateManager(context: Context) {
         onProgress: (UpdateProgress) -> Unit,
         callback: (Result<AvailableUpdate?>) -> Unit,
     ) {
-        fun report(progress: UpdateProgress) = mainHandler.post { onProgress(progress) }
+        fun report(progress: UpdateProgress) { mainHandler.post { onProgress(progress) } }
         executor.execute {
             report(UpdateProgress(UpdateStage.CHECKING))
             val result = runCatching { checkAndDownloadBlocking(::report) }
