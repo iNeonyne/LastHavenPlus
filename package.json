@@ -1,8 +1,0 @@
-{
-  "name": "lasthavenplus-addon-manager-tests",
-  "private": true,
-  "type": "module",
-  "scripts": {
-    "test:addon-manager": "node --test tests/addon-manager.test.mjs"
-  }
-}

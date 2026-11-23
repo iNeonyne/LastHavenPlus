@@ -1,123 +1,38 @@
-# Instructions for AI agents and contributors
+# General agent workflow and efficiency
 
-Read this file and TODO.md before changing the repository. Use ROADMAP.md for the approved target architecture and delivery gates. The checked-in source and current CI configuration take precedence over stale historical notes.
+These rules apply to work in this repository regardless of the project being developed.
 
-## 1. Branch policy
+## Work selection
+- Maintain one clear, prioritised work queue. Select the highest-priority task whose dependencies are satisfied.
+- Complete one coherent vertical slice at a time: implementation, focused regression tests, and required documentation.
+- Before starting, identify the owning files, public interfaces, callers, dependencies, and existing tests.
+- Avoid speculative refactors, duplicate abstractions, unnecessary frameworks, and unrelated changes.
 
-- main is the only active development, integration, CI and release branch.
-- Do not recreate or target the retired beta branch.
-- Requests to continue, fix, review, tidy or improve the project authorize work on main.
-- Verify the target branch is main before editing and before every push. Do not create long-lived development branches.
+## Efficient investigation
+- Read only the documentation, code, tests, and data formats needed for the current task.
+- Do not repeatedly inspect unchanged files or unrelated modules.
+- Parallelise independent read-only investigations and test analysis.
+- Ask delegated agents for concise findings with exact file paths, symbols, evidence, risks, and a recommended next action.
+- Treat agent summaries as leads, not proof; verify important claims against source and test results.
 
-## 2. Product direction
+## Agent coordination
+- Give each concurrent implementation effort exclusive ownership of its files.
+- Serialize overlapping edits, integration, and commits.
+- Define each delegated task with a bounded scope, expected output, and clear completion criteria.
+- Share discoveries promptly so agents do not repeat the same investigation.
+- Integrate completed work in dependency order and resolve conflicts centrally.
 
-LastHavenPlus is a focused Android client for the Lasthavens game, not a general-purpose browser.
+## Implementation and validation
+- Prefer extending existing abstractions over introducing parallel implementations.
+- Run the narrowest relevant test after each logical change.
+- Run broader validation once the complete change is assembled.
+- Do not rebuild unchanged modules or rerun successful checks without a code or configuration reason.
+- Never claim a build, test, deployment, or other operation succeeded unless its actual result was checked.
 
-The approved final architecture is:
-- Kotlin native Android application shell.
-- Android System WebView (Chromium) for gameplay; the engine is provided by the device and is not bundled in the APK.
-- A native-backed Addon Manager hosted from local app assets.
-- Native Android updater, storage dashboard, file selection, downloads and navigation.
-- AndroidX WebKit document-start scripts and origin-restricted WebMessageListener bridges.
-
-Do not use TWA, bundle Chromium, reintroduce GeckoView or add unrelated browser functionality. The current source must remain Gecko-free. The previous app's 1.0.6 migration exporter is retained only as historical/test fixture source outside packaged app assets.
-
-## 3. User data and manager migration
-
-The owner has authorized the major engine and Addon Manager overhaul, including migration from the existing manager.
-
-Preserve:
-- Add-on file bytes and relative paths.
-- Add-on folder IDs, versions, enabled/disabled state and load order/dependency metadata.
-- Library revision and relevant manager settings/preferences.
-- Existing native app data and updater compatibility.
-
-Rules:
-- Never clear app data, reset the manager, or silently discard installed add-ons.
-- Users upgrading from the previous Gecko-based app must export a versioned migration ZIP using its Addon Manager 1.0.6 before installing the Gecko-free build.
-- The new app imports that package with strict validation, file checksums, staged writes, atomic metadata activation, idempotency and rollback.
-- Do not delete or clear the old Gecko profile files or unrelated app data during source cleanup or app update. The new app cannot read the old profile; describe it as retained but inaccessible through the new app.
-- Browser cookies/login state are not migrated; tell users that sign-in may be required again.
-- Existing ZIP backups contain add-on files only; do not treat them as complete manager-state backups.
-- Do not mark migration complete until native data is re-read and reconciled against exported metadata and file hashes.
-
-## 4. WebView security
-
-- Treat the remote game, add-ons, downloaded files, catalogue responses and imported archives as untrusted.
-- Use the minimum WebView settings and Android permissions required by the game.
-- Restrict document-start scripts and WebMessageListener to explicit approved HTTPS Lasthavens origins. Validate source origin, message schema, size and operation on every message. Same-origin game frames may request payload chunks because the game may initialize workers in a frame; never accept an untrusted origin.
-- The remote game bridge is read-only for add-on payload retrieval and accepts only sanitized diagnostics. It must not expose arbitrary native commands, filesystem access or manager mutation.
-- Restrict the manager's privileged bridge to the local app-assets origin. Do not reuse it in the remote game WebView.
-- Never expose addJavascriptInterface or @JavascriptInterface to remote game content.
-- Keep navigation allow-lists strict; reject insecure HTTP and dangerous/untrusted schemes. Open approved external links through Android.
-- Validate ZIP paths, file counts, compressed/expanded sizes, checksums, redirects and streamed byte limits. Fail closed.
-
-## 5. Updater and app identity
-
-The updater is a native Kotlin feature and must remain independent of WebView and the Addon Manager.
-
-Preserve:
-- Application ID com.lasthavens.android.
-- The existing permanent signing certificate and signing configuration.
-- ARM64-only release distribution.
-- Monotonic CI versionCode from GITHUB_RUN_NUMBER.
-- Metadata-only discovery of the installed version and newer published stable releases.
-- Explicit user selection before APK download.
-- Full APK download, SHA-256, declared-size, package/version/versionCode, ABI and exact signing-certificate validation.
-- Android user-confirmed package installer handoff and accurate success/failure reporting.
-
-The updater must never clear app data, uninstall the app or silently install an APK. Do not bypass package, version, ABI or signer checks. Main CI artifacts, pull-request builds, drafts and prereleases are not updater sources.
-
-## 6. Build and release policy
-
-- GitHub Actions is the build and validation path. GitHub Releases are the distribution channel; there is no Google Play release track.
-- Main builds are validation artifacts, not update candidates.
-- Tagged builds must use the permanent signing key and create a draft release only. Never publish a release without explicit owner approval.
-- The expected signing certificate SHA-256 is B3BBF7520E77DFC384A60B1EEE6C5F205B978F9B453849E2BE523F642018D263. Keep CI's direct exported-certificate-byte fingerprint check; never change the expected fingerprint to accommodate a different key.
-- Release tags use stable vMAJOR.MINOR.PATCH and must match app/build.gradle.kts versionName and point to a commit reachable from main.
-- Keep versionName stable across ordinary commits. Do not bump it merely because CI ran. versionCode must remain globally monotonic across main and tags; local fallback codes are never update candidates.
-- Do not claim a build, test, artifact, migration or release succeeded unless its actual result was checked.
-- No physical-device testing tasks should be assigned to the owner. Prefer deterministic unit, integration, screenshot and emulator-based automation. Clearly state what automated tests cannot prove.
-
-## 7. Development workflow
-
-1. Verify main, inspect the latest commits and current workflow status.
-2. Read the relevant TODO items and the matching ROADMAP phase.
-3. Inspect existing code and data formats before replacing them.
-4. Identify user-data, security, upgrade and rollback risks before editing.
-5. Make a complete, reviewable change; add focused regression tests.
-6. Run targeted tests and then the full CI/build checks where feasible.
-7. Review the final diff, packaged APK contents and generated artifacts. Confirm obsolete engine code/assets are actually absent only after replacement is complete.
-8. Update TODO and technical documentation when task status or architecture changes. CHANGELOG contains only actual user-visible changes.
-9. Report branch, commit, changed files, test/build results and remaining uncertainty.
-
-10. Batch related implementation, regression tests and required documentation into one complete commit. Do not push file-by-file changes or intermediate commits that leave imports, tests or packaged assets temporarily inconsistent. Review the complete diff and run focused checks before committing; each main-branch push can start a full APK build and cancel the previous in-progress run.
-
-### Agent efficiency protocol
-
-- Treat `TODO.md` as the sole work queue. Select the highest-priority dependency-unblocked item; finish a vertical slice (implementation, regression test and required docs) before starting another.
-- Read the relevant ROADMAP section and only the code, tests and data formats needed for that slice. Do not repeatedly re-read unchanged repository-wide documentation or inspect unrelated modules.
-- Before editing, identify the owning files, public interfaces, callers and existing tests. Prefer extending existing abstractions over adding frameworks, parallel implementations or speculative refactors.
-- Parallelize independent read-only investigations and test analysis. Give each concurrent implementation effort exclusive ownership of its files; serialize overlapping edits and all commits to `main`.
-- Ask delegated agents for concise findings with exact file paths, symbols, evidence, risks and recommended next action. Do not accept unverified summaries as proof that code or tests pass.
-- Run the narrowest relevant test after each logical change, then the required CI checks once the complete change is assembled. Avoid rebuilding unchanged modules or rerunning successful checks without a code/configuration reason.
-- Review one final diff against the starting commit. Remove temporary files, duplicate checks, dead code and stale TODO entries before the atomic commit.
-- After committing, verify the pushed SHA and its workflow result. Leave a concise handoff in the response: completed slice, commit, checks, remaining blocker and the next TODO item. Never leave a half-finished implementation for another agent to infer.
-
-Do not use or recommend Termux for project workflows.
-
-## 8. Documentation ownership
-
-- ROADMAP.md defines the approved final architecture, phases and acceptance gates.
-- TODO.md is the only actionable implementation queue. Keep tasks ordered by dependency and remove completed, superseded or duplicate tasks.
-- AGENTS.md contains contributor/agent rules, not a second roadmap.
-- PROJECT_OVERVIEW.md describes current verified source state and clearly separates it from the target architecture.
-- README.md is concise human-facing product/build information and must not claim planned features are shipped.
-- MANUAL_CHECKLIST.md contains only owner-only legal, key-custody and release-approval actions; do not put physical-device testing requests there.
-- CHANGELOG.md records user-visible changes that actually shipped. Do not put plans or unreleased work in release entries.
-
-## 9. Scope and distribution
-
-Do not add analytics, tracking, push notifications, background services, differential APK updates, bundled browser engines or unrelated frameworks without a demonstrated requirement and explicit approval where appropriate.
-
-The Lasthavens Terms of Use restrict modified clients except for add-ons in the in-game AddOn Library. Obtain written guidance from the Lasthavens team before public distribution. Identify this as an unofficial independent client; do not imply endorsement by Lasthavens or Blizzard Entertainment.
+## Review and delivery
+- Review one final diff against the starting commit.
+- Remove temporary files, duplicate checks, dead code, and stale work-queue entries.
+- Batch related implementation, tests, and documentation into a complete, reviewable commit.
+- Avoid intermediate commits that leave the repository inconsistent.
+- After pushing, verify the pushed commit and any relevant CI result.
+- End each handoff with the completed work, commit, checks performed, remaining blockers, and next actionable task.
