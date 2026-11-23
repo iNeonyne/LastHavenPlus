@@ -6,7 +6,7 @@ Development and code changes remain on `main`, the sole active branch. The forme
 
 ## Physical Android device validation
 
-- [ ] On a spare test device, download the permanent-key-signed ARM64 APK from main run #196. Do not install it over a data-bearing debug-signed installation.
+- [ ] On a spare test device, download the permanent-key-signed ARM64 APK from main run #231. Do not install it over a data-bearing debug-signed installation.
 - [ ] Install it on a physical Android phone. Do not uninstall a differently signed existing app if its data must be preserved.
 - [ ] Test first launch, landscape Home, Play, game loading, sign-in, and gameplay.
 - [ ] Test Home → Play return and verify the game session remains usable.
@@ -38,12 +38,12 @@ Development and code changes remain on `main`, the sole active branch. The forme
 
 - [ ] Decide whether to expand Addon Manager backup coverage beyond managed add-on files, or approve clear disclosure of the exclusions (game settings, SavedVariables, and manager enabled/disabled flags). Any manager-code change requires explicit authorization.
 - [x] Main run #196 confirmed the existing `ANDROID_KEYSTORE_BASE64` secret matches the expected fingerprint; no replacement was needed.
-- [ ] Back up the permanent private key securely in at least two offline locations.
+- [ ] Back up the permanent keystore file securely in at least two offline locations. Keep its passwords/alias recovery information in a separate secure location; verify both copies by checking the certificate fingerprint with keytool on a trusted offline machine. Never upload the keystore or passwords to GitHub, chat, or cloud storage.
 - [x] GitHub Actions signing secrets are configured and were successfully used by main run #196; keep all key material out of source control, logs, and chat.
 - [x] Main run #196 logged identical configured and expected certificate fingerprints.
 - [x] Main run #231 verified the single ARM64 APK signature with the permanent release certificate.
 - [ ] Install a main/release-signed APK, then verify a subsequent same-certificate main APK upgrades in place.
-- [ ] Clarify terms/permission to distribute the independent client with the Lasthavens team.
+- [ ] Obtain written permission from the Lasthavens team before distributing this independent client. Current Terms of Use prohibit modified clients except add-ons in the in-game AddOn Library and prohibit copying/redistributing the web client; ask whether this GeckoView client and bundled manager are permitted. Contact: contact@lasthavens.com or the official Discord support channel.
 - [ ] Explicitly approve any release and any beta-to-main promotion.
 
 ## Release sign-off
