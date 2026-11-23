@@ -6,9 +6,9 @@
 - Repository: https://github.com/iNeonyne/Lasthavens-Android
 - Latest CI: https://github.com/iNeonyne/Lasthavens-Android/actions/workflows/build.yml
 
-## Project brief for AI agents and contributors
+## Project overview
 
-**Read this section and the active To-do list before making any change.** Treat this README as the project's shared source of truth; check the current source and CI workflow before relying on documentation alone.
+Contributor and AI-agent rules are maintained in [AGENTS.md](AGENTS.md). User-visible changes are tracked in [CHANGELOG.md](CHANGELOG.md). Read those files and the active roadmap before making changes; always verify the current source and CI workflow rather than relying on documentation alone.
 
 ### Project summary
 
@@ -25,7 +25,7 @@ The project is maintained in [this GitHub repository](https://github.com/iNeonyn
 - Protect user data. Before changing Gecko profiles, extension storage, add-on formats, backup behavior, or migration logic, understand the existing behavior and provide a tested backup/migration/rollback path.
 - Prefer small, reviewable changes. Check related Kotlin code, extension code, Gradle configuration, manifests, and CI checks before editing.
 - Validate changes with the narrowest relevant tests, then run the repository's CI/release build when feasible. Do not describe a build, test, device check, or release as successful unless it actually ran and passed.
-- Defer physical-device testing until the app has completed at least a couple of substantial feature/update cycles and source-level, automated, and CI checks show no known blocking issues. Physical testing is a later validation gate, not the first development task; never claim device compatibility or performance before it is measured.
+- Test the first installable demo on a real phone as soon as CI produces it. Emulator and source checks cannot validate touch latency, Gecko process recovery, memory pressure, thermals, or OEM behavior. Record results honestly; never claim device compatibility or measured performance before testing.
 - Keep permissions minimal, handle untrusted web content carefully, and do not weaken URL/navigation boundaries for convenience.
 - Keep this README, version metadata, release notes, and the actual implementation in sync. Update the To-do list when work changes project status.
 - Do not add unrelated browser features, analytics, push notifications, background services, or differential updating without a demonstrated requirement.
@@ -59,7 +59,7 @@ The app and Addon Manager versions are independent. The Addon Manager version is
 
 ## Performance and device compatibility
 
-Development prioritizes smooth gameplay, responsive touch controls, stable GeckoView sessions, efficient memory use, and reasonable battery and thermal behavior. During early development, use code review, automated tests, emulator checks where useful, and CI to catch issues without making physical-device testing an immediate blocker. Schedule comprehensive physical-device testing after at least a couple of substantial feature/update cycles, once known bugs and data-handling risks have been addressed. At that stage, test different hardware and display configurations, record device models and Android versions, and add device-specific workarounds only for reproducible compatibility issues. Do not claim real-device compatibility or measured performance before those tests are completed.
+Development prioritizes smooth gameplay, responsive touch controls, stable GeckoView sessions, efficient memory use, and reasonable battery and thermal behavior. Test the first demo on a real phone immediately, then repeat focused device checks after meaningful changes. Measure memory, touch responsiveness, battery and thermals during longer sessions; record device model, RAM, Android version, and reproducible issues. Do not claim compatibility or measured performance before those tests are completed.
 
 ## Architecture
 
@@ -126,43 +126,45 @@ A version is published as a GitHub Release only after its build and validation p
 
 For every future release, add a new row under **Released versions** and summarize the user-visible changes. Keep this README in the same commit as the version bump.
 
-## To-do list
+## Development priorities
+
+The roadmap below is the current priority order. Detailed task tracking will move to GitHub Issues as tasks are split into actionable, testable work items.
 
 ### Top priority — Demo making (get a test APK ASAP)
 
-**Goal:** produce an installable demo APK from `main` so the app can be tested on an Android phone before signing and release work are finished. This is a test build, not a public/stable release.
+**Goal:** install and test the current demo on a real Android phone now. This is a debug-signed test build, not a public/stable release.
 
-- [x] Make normal pushes to `main` build and upload debug-signed demo APKs without requiring release-keystore secrets; verified by successful main-branch CI run #99.
-- [x] Keep permanent release signing mandatory for version-tagged GitHub Releases; never publish a debug-signed APK as a release.
-- [x] Produce the first successful CI demo artifacts; successful run #99 uploaded ARM64 and multi-ABI APK artifacts. Download/install and phone testing remain open.
-- [ ] Install and smoke-test: first launch, Home screen, Play, game loading/sign-in, return Home and resume Play, open Addon Manager, and return to the game.
-- [ ] Check basic touch input, orientation/fullscreen, keyboard, network failure/retry, back navigation, and app background/resume.
-- [ ] Record crashes, broken screens, loading failures, and device/Android version; fix demo-blocking issues before adding optional features.
-- [ ] Verify the demo APK can be installed cleanly. Debug-signed demos cannot upgrade an APK signed with a different certificate; do not uninstall an existing app if its data needs preserving.
-- [ ] Keep the demo clearly labelled as a test build and do not call it a validated release.
+- [x] Make normal pushes to `main` build and upload debug-signed demo APKs without release-keystore secrets.
+- [x] Produce successful CI demo artifacts. Latest landscape build: [run #107](https://github.com/iNeonyne/Lasthavens-Android/actions/runs/45089891036); ARM64 and multi-ABI artifacts uploaded.
+- [x] Set the Home screen to landscape and add a dedicated landscape layout; CI build #107 passed.
+- [ ] Download and install the `arm64-v8a` demo APK; do not uninstall an existing differently signed app if its data needs preserving.
+- [ ] Smoke-test first launch, landscape Home, Play, game loading/sign-in, Home → Play resume, Addon Manager, and return to the game.
+- [ ] Check touch, fullscreen, keyboard, network failure/retry, back navigation, and background/resume.
+- [ ] Record crashes, loading failures, device model, RAM, and Android version; fix demo blockers.
+- [ ] Keep the demo labelled as a test build; CI success is not device validation.
 
-**Demo scope:** Home, GeckoView game session, bundled Addon Manager, shared profile, and essential Android integration. Defer optional features, performance tuning, full manager redesign, release signing, and public release until the basic demo has been tested.
+**Demo scope:** Home, GeckoView game session, bundled Addon Manager, shared profile, and essential Android integration. The first real-device smoke test is not deferred until later feature cycles.
 
-This is the active development roadmap, ordered by immediate demo delivery first, then reliability and release readiness. The game client and Addon Manager are both core parts of the app. The Addon Manager is not frozen: its code may be fixed, improved, redesigned, or upgraded when useful. Its current version is `1.0.1`. Changes must be tested against real add-on workflows and must protect existing user data.
+### Priority 1 — Immediate device, security, and data validation
 
-### Priority 1 — Demo blockers and core reliability (after the first demo artifact)
-- [ ] Audit the Kotlin app, bundled extension, Gradle configuration, manifest, and CI workflow against the documented architecture.
-- [ ] Build a test matrix for game navigation, shared Gecko profile behavior, add-on workflows, file handling, lifecycle, and error recovery.
-- [ ] Add or expand automated tests for URL routing/allow-listing, version parsing, download filename sanitization, and other testable Kotlin logic.
-- [ ] Validate bundled extension JSON, JavaScript, manifests, locale files, and APK contents on every relevant CI run.
-- [ ] Use emulator tests where practical for launch, navigation, lifecycle, file-picker integration, and basic UI behavior.
-- [ ] Reproduce and fix known bugs before advancing major feature/update milestones.
-- [ ] Review data-storage behavior and document exactly what is preserved, backed up, or excluded before changing profile or extension storage.
-- [ ] Keep a record of unresolved issues and risks; do not treat passing CI as proof that the app is bug-free.
+- [ ] Install the current `arm64-v8a` demo on a physical phone and complete the smoke test above before expanding scope.
+- [ ] Measure memory use, touch responsiveness, Gecko content-process recovery, battery, and thermals during a 30–60 minute gameplay session.
+- [ ] Add focused Kotlin unit tests for URL routing/allow-listing and native-bridge exposure; untrusted web content must not reach privileged Android functionality.
+- [ ] Audit navigation boundaries, external links, popup handling, HTTPS-only behavior, and permission checks; keep failures closed.
+- [ ] Review what backup/restore actually preserves. Current ZIP backups contain managed add-on files only, not manager enabled/disabled state, game settings, or SavedVariables.
+- [ ] Decide and implement a tested backup format for settings and enabled/disabled states, or clearly disclose those exclusions in the manager UI before users rely on backups.
+- [ ] Audit storage/profile preservation and document exactly what is preserved, backed up, or excluded.
+- [ ] Keep a record of unresolved issues; passing CI is not proof of runtime correctness.
 
-### Priority 2 — Reliable signed releases and upgrades (not required for the first demo)
-- [ ] Create and securely back up the permanent release keystore; configure the four documented GitHub Actions secrets. Required for tagged releases, not branch demo APKs.
-- [ ] Verify a release-signed APK installs cleanly and a subsequent release upgrades it without uninstalling the app.
-- [ ] Verify the signing certificate is identical across ABI APKs and remains unchanged between releases.
-- [ ] Verify app upgrades preserve the Gecko profile, login/session data, manager settings, and installed add-ons.
-- [ ] Once the later physical-device validation gate has passed, publish a tested GitHub Release with all supported APK variants and SHA-256 checksums.
-- [ ] Keep version metadata, release notes, README history, and generated APK names synchronized.
-- [ ] Add CI checks for version consistency, manifest permissions, bundled extension files, and APK ABI contents.
+### Priority 2 — Permanent signing and safe public upgrades
+
+- [ ] Before the first public GitHub Release, resolve the certificate mismatch, create/confirm the permanent release key, and make at least two secure offline backups.
+- [ ] Configure the required GitHub Actions secrets without exposing key material in logs or the repository.
+- [ ] Verify a release-signed APK installs cleanly and a subsequent APK with the same certificate upgrades without uninstalling.
+- [ ] Verify the certificate is identical across ABI APKs and remains unchanged between releases.
+- [ ] Verify upgrades preserve the Gecko profile, login/session data, manager settings, and installed add-ons.
+- [ ] Keep debug-signed CI demo artifacts separate from public release APKs; never publish a debug-signed APK as a release.
+- [ ] Publish only after the signing and upgrade path has been tested on-device.
 
 ### Priority 3 — Addon Manager quality and evolution (demo-critical fixes first)
 - [ ] Audit the current bundled Addon Manager source, architecture, permissions, and GeckoView API usage; document its current capabilities and known limitations.
@@ -184,25 +186,14 @@ This is the active development roadmap, ordered by immediate demo delivery first
 - [ ] Add focused Kotlin unit tests for URL routing/allow-listing, download filename sanitization, and version parsing.
 - [ ] Keep Android permissions to the minimum required and document any permission changes with their purpose.
 
-### Priority 5 — Physical-device validation (deferred milestone)
-- [ ] Begin this phase after at least a couple of substantial feature/update cycles and after known blocking bugs and data risks have been addressed.
-- [ ] Install the current `arm64-v8a` APK on a physical Android phone and verify installation, first launch, Home → Play, sign-in, and gameplay.
-- [ ] Verify the game and Addon Manager use the intended shared Gecko runtime/profile.
-- [ ] Test add-on install, update, enable/disable, removal, import/export, backup/restore, and game integration.
-- [ ] Test JavaScript dialogs, file picker, downloads, external links, popups, fullscreen, back navigation, keyboard, and screen insets.
-- [ ] Test background/foreground, network loss/reconnect, activity recreation, and Gecko content-process recovery.
-- [ ] Establish startup, memory, frame pacing, touch responsiveness, battery, and thermal baselines, including a 30–60 minute gameplay session.
-- [ ] Test at least one additional Android device or hardware configuration when practical.
-- [ ] Record device model, RAM, Android version, vendor OS build, results, and remaining limitations.
+### Priority 5 — Updates and maintenance
 
-### Priority 6 — Maintenance and useful optional features
-- [ ] Review GeckoView stable security updates regularly; test gameplay and Addon Manager compatibility before upgrading either component.
+- [ ] Add an in-app GitHub Releases update checker and installer handoff; make current version, latest version, release notes, and download choice clear.
+- [ ] Keep full signed APK downloads as the default update method; defer differential updates unless download size becomes a demonstrated problem.
+- [ ] Add Dependabot or Renovate checks for GeckoView and other dependencies; review security updates promptly and test game/manager compatibility before upgrading.
 - [ ] Review Android Gradle Plugin, Kotlin, AndroidX, and Gradle updates in separate, build-verified changes.
 - [ ] Evaluate R8/resource shrinking against release builds and extension/runtime regression tests.
-- [ ] Consider an in-app GitHub Releases checker and installer handoff after signing and upgrade behavior are reliable.
-- [ ] Keep full signed APK downloads as the default update method; defer differential updates unless download size becomes a demonstrated problem.
-- [ ] Expand OEM/cloud-device testing when real compatibility gaps or user reports justify it.
-
+- [ ] Expand OEM/device testing when real compatibility gaps or user reports justify it.
 ### Release checklist
 - [ ] Run CI validation, unit tests, and a release build.
 - [ ] Complete physical-device validation at the deferred milestone before declaring device compatibility or publishing a fully validated stable release.
@@ -236,7 +227,7 @@ Do not commit the keystore or passwords to the repository.
 - Live Game Scan observes add-on file requests; it cannot prove that an add-on's Lua code initialized successfully.
 - Backup ZIPs contain managed add-on files only. They do not include game settings, SavedVariables, or manager enabled/disabled flags.
 - The bundled extension's Gecko minimum version is 142.0; keep GeckoView at or above that version and test extension compatibility before upgrades.
-- A successful CI build proves packaging and the checks actually run; it does not prove the app is bug-free or establish real-device functionality. Physical-device validation is intentionally scheduled after at least a couple of substantial feature/update cycles.
+- A successful CI build proves packaging and the checks actually run; it does not prove the app is bug-free or establish real-device functionality. The first physical-device smoke test is an immediate demo gate.
 
 ## Project structure
 
@@ -248,5 +239,7 @@ app/src/main/res/                 Android layouts, icons, themes, and strings
 app/build.gradle.kts              Android config and app version
 gradle.properties                 GeckoView version and Gradle settings
 PROJECT_OVERVIEW.md               Development plan and device test checklist
-README.md                         User-facing project summary, releases, and to-do list
+README.md                         User-facing overview, build instructions, and release notes
+AGENTS.md                         Contributor and AI-agent working instructions
+CHANGELOG.md                      Versioned user-visible change history
 ```
