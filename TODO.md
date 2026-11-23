@@ -77,6 +77,10 @@ The owner has authorized necessary manager maintenance only with preservation of
 - [ ] Test orientation changes, recreation, fullscreen, keyboard visibility, dialogs, back navigation, background/resume, and navigation between activities; preserve state and avoid layout regressions.
 - [ ] Capture and review screenshots for key screens in portrait and landscape, then fix visual regressions before marking the UI/UX work complete.
 
+- [ ] Redesign the updater UI to match the app's dark, frost-blue and gold theme; improve visual hierarchy, spacing, typography, icons, progress/status presentation, update-available/current/error states, and install/cancel actions.
+- [ ] Make updater dialogs and screens responsive in portrait and landscape, accessible, and consistent with Home and Addon Manager; clearly show version, download size/progress, checksum/verification status, and Android installer handoff without exposing technical clutter.
+- [ ] Test updater UI states (checking, up to date, update available, downloading, verifying, failed/offline, incompatible build/signature, and installer handoff) with screenshots in both orientations.
+
 ## P3 — Release engineering code and CI
 
 - [x] Add a GitHub Actions release-request workflow that validates `.github/release-request.json`, supports dry-run validation, creates annotated tags with `GITHUB_TOKEN`, and explicitly dispatches the existing signed build workflow; verify the dry-run on GitHub Actions.
