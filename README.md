@@ -2,7 +2,7 @@
 
 A native Android client for [Lasthavens](https://alt.lasthavens.com/play), built with Kotlin and Mozilla GeckoView. It includes a bundled Addon Manager WebExtension so the game and manager can share browser state and installed add-ons.
 
-> **Project status:** beta development. Updater policy/build checks are passing, but the first main-signed in-place update and complete physical-device smoke test remain unverified. This is an unofficial, independent client; it is not endorsed by Lasthavens or Blizzard Entertainment.
+> **Project status:** main-branch development. The beta history has been merged into main. The first post-merge signed updater build and complete physical-device smoke test remain unverified. This is an unofficial, independent client; it is not endorsed by Lasthavens or Blizzard Entertainment.
 
 ## At a glance
 
