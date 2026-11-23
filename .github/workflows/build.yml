@@ -36,7 +36,7 @@ jobs:
           if not match:
               raise SystemExit("Could not read appVersionName from app/build.gradle.kts")
           version = match.group(1)
-          if not re.fullmatch(r"v(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)", tag):
+          if not re.fullmatch(r"v(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)", tag):
               raise SystemExit(f"Release tag must be stable vMAJOR.MINOR.PATCH (got {tag})")
           if tag != f"v{version}":
               raise SystemExit(f"Release tag {tag} does not match appVersionName {version}")
@@ -129,7 +129,7 @@ jobs:
           ref = os.environ.get("GITHUB_REF", "")
           if ref.startswith("refs/tags/v"):
               tag_version = ref.removeprefix("refs/tags/")
-              if tag_version != f"v{version}" or not re.fullmatch(r"v(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)", tag_version):
+              if tag_version != f"v{version}" or not re.fullmatch(r"v(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)", tag_version):
                   raise SystemExit(f"Release tag {ref} must be stable v{version} and match appVersionName")
           print(f"Build metadata OK: app {version} (versionCode {code}), manager {manifest['version']}, GeckoView {engine}")
           PY
