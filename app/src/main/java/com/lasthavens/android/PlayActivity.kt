@@ -42,6 +42,7 @@ class PlayActivity : AppCompatActivity() {
     private lateinit var progress: ProgressBar
     private var fileChooserCallback: android.webkit.ValueCallback<Array<Uri>>? = null
     private var pageStarted = false
+    private var addonBridge: GameAddonBridge? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -88,6 +89,16 @@ class PlayActivity : AppCompatActivity() {
             databaseEnabled = true
         }
         CookieManager.getInstance().setAcceptCookie(true)
+
+        // Register origin-restricted document-start scripts before the game URL is loaded.
+        addonBridge = runCatching {
+            GameAddonBridge.install(webView, AddonRepository(filesDir))
+        }.onFailure {
+            android.util.Log.e("LastHavenWebView", "Native add-on bridge could not be installed", it)
+        }.getOrNull()
+        if (addonBridge == null) {
+            android.util.Log.w("LastHavenWebView", "Game will start without native add-on injection")
+        }
 
         webView.webChromeClient = object : WebChromeClient() {
             override fun onProgressChanged(view: WebView, newProgress: Int) {
@@ -266,6 +277,8 @@ class PlayActivity : AppCompatActivity() {
         fileChooserCallback?.onReceiveValue(null)
         fileChooserCallback = null
         if (::webView.isInitialized) {
+            addonBridge?.close()
+            addonBridge = null
             webView.stopLoading()
             webView.webChromeClient = null
             webView.webViewClient = WebViewClient()
