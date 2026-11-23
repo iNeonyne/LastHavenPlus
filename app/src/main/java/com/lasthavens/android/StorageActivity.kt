@@ -121,7 +121,7 @@ class StorageActivity : AppCompatActivity() {
                 progress.visibility = View.GONE
                 refresh.isEnabled = true
                 result.onSuccess { data ->
-                    persistent.text = formatBytes(data.persistentProfileAndAppBytes)
+                    persistent.text = formatBytes(data.persistentAppAndWebViewBytes)
                     cache.text = formatBytes(data.cacheBytes)
                     available.text = formatBytes(data.availableDeviceBytes)
                     status.setText(if (data.scanComplete) R.string.storage_scan_complete else R.string.storage_scan_partial)
