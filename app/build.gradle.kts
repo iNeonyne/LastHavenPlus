@@ -24,17 +24,16 @@ extensions.configure<ApplicationExtension>("android") {
         targetSdk = 35
         versionCode = appVersionCode
         versionName = appVersionName
-        ndk { abiFilters += listOf("arm64-v8a", "armeabi-v7a", "x86_64") }
+        ndk { abiFilters += listOf("arm64-v8a") }
     }
 
-    // Ship per-CPU APKs so phones do not download all GeckoView native engines.
-    // Keep a universal APK as a fallback for devices and manual testing.
+    // Ship only ARM64: this is the supported release target.
     splits {
         abi {
             isEnable = true
             reset()
-            include("arm64-v8a", "armeabi-v7a", "x86_64")
-            isUniversalApk = true
+            include("arm64-v8a")
+            isUniversalApk = false
         }
     }
 
