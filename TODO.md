@@ -9,10 +9,10 @@ All development work stays on `main`, the sole active branch. The former `beta` 
 - Active development branch: `main`.
 - Android app: `2.0.0` development version.
 - Bundled Addon Manager: `1.0.2`.
-- Latest main CI run #195 (commit `de83811`) passed Addon Manager, metadata-generator, and updater-policy tests, then failed at `Prepare signing key` because the workflow's text-based certificate fingerprint extraction returned an empty value. The actual signing-secret certificate has not yet been confirmed; no main APK build or update artifacts were produced. The workflow now hashes the exported DER certificate directly.
+- Latest main CI run #196 (commit `ed0c5bb`) passed all automated tests, permanent-key verification, four release APK builds, APK signature and package/version checks, checksum generation, metadata creation, and all five main update artifact uploads. The direct DER certificate hash matched the expected permanent release fingerprint.
 - Physical-device validation and owner-only release actions are tracked separately in [MANUAL_CHECKLIST.md](MANUAL_CHECKLIST.md).
-- The GitHub Actions signing secrets are present. CI's previous text parser returned an empty certificate fingerprint, so the secret's actual certificate identity is not yet known. The workflow now hashes the exported certificate bytes directly; only request a secret replacement if that result differs from the expected fingerprint.
-- A manual, main-only updater is implemented and now lives on `main`. It selects only successful completed `main` push runs, downloads the metadata/checksum artifact and only the device-matched full APK artifact, verifies run/artifact provenance, metadata, checksums, package/version and signing-certificate compatibility, then invokes Android's user-confirmed package installer. The first post-merge main build must pass the permanent-key fingerprint check and publish all five update artifacts before live operation is confirmed. Physical same-certificate upgrade testing remains outstanding.
+- Main run #196 confirmed the configured GitHub Actions keystore and passwords/alias work and the certificate fingerprint matches the expected permanent release key. No secret replacement is needed.
+- A manual, main-only updater is implemented on `main`. Run #196 published the metadata/checksum artifact and four ABI-specific signed APK artifacts; the updater verifies their shared run provenance, metadata, checksum, package/version and signing-certificate compatibility before invoking Android's user-confirmed installer. Physical same-certificate upgrade and data-preservation testing remains outstanding.
 - Version flow: main-only SemVer releases with a monotonic workflow-run `versionCode`; see `AGENTS.md`.
 
 ## P0 — Data safety and demo-blocking code
@@ -75,7 +75,7 @@ The owner has authorized necessary manager maintenance only with preservation of
 
 ## Updater verification boundary
 
-The implementation and beta automated policy/build checks are complete. The first post-merge main workflow must prove that permanent-key signing and all dedicated main artifacts publish successfully. Then complete the same-certificate physical-device upgrade checks in `MANUAL_CHECKLIST.md`.
+The updater implementation and automated policy/build checks are complete. Main run #196 proved permanent-key signing, release APK validation, metadata/checksum generation, and publication of all five main update artifacts. Complete the same-certificate physical-device upgrade and data-preservation checks in `MANUAL_CHECKLIST.md`.
 
 ## Not active work
 

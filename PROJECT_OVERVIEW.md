@@ -23,7 +23,7 @@ LastHavenPlus is a focused native Android client for the Lasthavens game. It use
 
 - Android app: 2.0.0 — development version, not released or device-validated.
 - Android versionCode: `GITHUB_RUN_NUMBER` on CI builds; local builds use a development-only fallback. The number is global to the existing workflow and never resets between branches/tags.
-- Version promotion policy: main receives clean stable SemVer versions; after each approved promotion, beta restarts from that main version and uses the next SemVer prerelease candidate. The numeric CI versionCode sequence never resets.
+- Version policy: `main` is the sole active branch and uses clean stable SemVer versions. There is no beta prerelease stream. The numeric CI versionCode sequence never resets.
 - Addon Manager: 1.0.2 — staged storage generations protect existing add-on files during replacement; read the bundled `manifest.json` for the authoritative version.
 - GeckoView: 159.0.20261102144711 — pinned dependency.
 
@@ -33,26 +33,26 @@ The app and extension have independent versions. Necessary Addon Manager mainten
 
 - Landscape Home layout and orientation are committed on `main`.
 - The read-only storage dashboard is implemented and included in the current main build. It reports shared app/profile persistent storage, cache, and available device space; it does not claim game-only storage or lifetime downloaded bytes.
-- Main run [#195](https://github.com/iNeonyne/Lasthavens-Android/actions/runs/45186581842), for commit `de83811`, passed Addon Manager, metadata-generator, and updater-policy tests but failed because the keytool text parser returned an empty certificate fingerprint. No APKs or main update artifacts were produced; the workflow now hashes the exported DER certificate directly.
+- Main run [#196](https://github.com/iNeonyne/Lasthavens-Android/actions/runs/45187442263), for commit `ed0c5bb`, passed all automated tests, direct DER release-certificate verification, four release APK builds, signature/package/version checks, checksum generation, metadata creation, and all five main update artifact uploads.
 - In-app navigation now permits HTTPS Lasthavens hosts and the required Gecko internal schemes; insecure HTTP, executable/data/file/intent schemes, untrusted blob origins, and lookalike hosts are rejected by the tested policy.
-- Main builds require the permanent signing certificate and publish one metadata/checksum artifact plus four per-ABI APK artifacts only after all checks pass. The first post-consolidation main runs failed because CI's keytool text parser returned an empty fingerprint; the actual secret certificate identity is not yet confirmed. No update feed is live.
+- Main run #196 verified the permanent signing certificate and published one metadata/checksum artifact plus four per-ABI APK artifacts. The metadata artifact and ARM64 APK artifact were downloaded; the ARM64 APK's actual size and SHA-256 matched the metadata/checksum. Physical-device upgrade testing remains outstanding.
 - Physical-device installation and smoke testing remain outstanding. CI success does not establish device compatibility, performance, or gameplay stability.
 
 ## Automatic updater
 
 The landscape Home screen has a user-triggered **Check for updates** action. The updater filters the existing GitHub Actions workflow for successful completed `push` runs from `main`, checks artifact provenance and expiry, downloads the metadata/checksum artifact and only the full APK artifact for the device ABI (universal fallback), verifies metadata and SHA-256, then checks Android package ID, version code and exact signing-certificate equality. Installation is handed to Android's package installer and requires user confirmation. The updater does not clear app data, GeckoView profile, cookies, login/session state or add-ons.
 
-The main-only metadata/checksum and per-ABI artifact creation paths are configured on `main`; the direct DER certificate hash check must confirm the permanent key before artifacts can be published. End-to-end same-certificate upgrade and data-preservation checks remain pending on a physical device.
+Main run #196 has published the metadata/checksum and per-ABI artifacts. The first same-certificate in-place update and data-preservation test remains to be completed on a physical device. End-to-end same-certificate upgrade and data-preservation checks remain pending on a physical device.
 
 ## Immediate validation sequence
 
-1. Download the ARM64 demo artifact from run #179 and install it without uninstalling an existing differently signed app if its data must be preserved.
+1. Install the permanent-key-signed ARM64 APK from main run #196 on a spare test device. Do not uninstall an existing differently signed app if its data must be preserved.
 2. Test first launch, landscape Home, Play, sign-in/gameplay, Home → Play session return, Addon Manager launch, and return to the game.
 3. Test touch, fullscreen, keyboard, network loss/recovery, back navigation, background/resume, and Gecko content-process recovery.
 4. Record device model, RAM, Android/vendor OS version, crashes, memory behavior, touch responsiveness, battery use, and thermals.
 5. Review native-bridge exposure and confirm untrusted pages cannot invoke privileged Android functionality.
 6. Review backup/restore: current backup ZIPs contain managed add-on files only, not game settings, SavedVariables, or manager enabled/disabled flags.
-7. Resolve permanent release signing and test same-certificate in-place upgrades before the first public GitHub Release.
+7. Use a later successful main build to test the same-certificate in-place update from run #196 before the first public GitHub Release.
 
 ## Data and security constraints
 

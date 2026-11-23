@@ -6,7 +6,7 @@ Development and code changes remain on `main`, the sole active branch. The forme
 
 ## Physical Android device validation
 
-- [ ] Download an ARM64 APK from a successful main build or pull-request test artifact, and record whether it is release- or debug-signed.
+- [ ] On a spare test device, download the permanent-key-signed ARM64 APK from main run #196. Do not install it over a data-bearing debug-signed installation.
 - [ ] Install it on a physical Android phone. Do not uninstall a differently signed existing app if its data must be preserved.
 - [ ] Test first launch, landscape Home, Play, game loading, sign-in, and gameplay.
 - [ ] Test Home → Play return and verify the game session remains usable.
@@ -24,7 +24,7 @@ Development and code changes remain on `main`, the sole active branch. The forme
 ### Main-only updater verification
 
 - [ ] Do not use a debug-signed pull-request or test APK to test a main update; the updater must block a signer mismatch. A debug-signed installation cannot be upgraded in place to the permanent release key. Do not uninstall a data-bearing install to switch signing identities; use a separate test device.
-- [ ] After CI's direct DER certificate hash confirms the expected key, confirm a successful main workflow run uploads exactly one unexpired `LastHavenPlus-Main-Update-Metadata` artifact containing `update.json` and `SHA256SUMS.txt`, plus exactly one unexpired APK artifact for each ABI: `LastHavenPlus-Main-Update-arm64-v8a`, `LastHavenPlus-Main-Update-armeabi-v7a`, `LastHavenPlus-Main-Update-x86_64`, and `LastHavenPlus-Main-Update-universal`.
+- [x] Main run #196 verified the expected permanent-key fingerprint and uploaded one unexpired metadata/checksum artifact plus one APK artifact for each ABI. The metadata ZIP and ARM64 APK artifact were downloaded and checked against their declared size and SHA-256; CI verified signatures/checksums for all four variants.
 - [ ] On a test device, install the permanent-key-signed main APK and create test data (login/session, installed add-ons, manager settings, and GeckoView profile state).
 - [ ] Trigger a later successful main build and use Home → Check for updates; confirm it selects only that successful main push and the device-compatible ABI.
 - [ ] Confirm displayed version, workflow build number, APK size and commit match the selected artifact.
@@ -37,11 +37,11 @@ Development and code changes remain on `main`, the sole active branch. The forme
 ## Owner actions and release decisions
 
 - [ ] Decide whether to expand Addon Manager backup coverage beyond managed add-on files, or approve clear disclosure of the exclusions (game settings, SavedVariables, and manager enabled/disabled flags). Any manager-code change requires explicit authorization.
-- [ ] After the direct DER hash check, if CI reports a fingerprint different from `B3BBF7520E77DFC384A60B1EEE6C5F205B978F9B453849E2BE523F642018D263`, replace `ANDROID_KEYSTORE_BASE64` with the Base64 contents of the local keystore that has the expected fingerprint. Do not change the expected fingerprint.
+- [x] Main run #196 confirmed the existing `ANDROID_KEYSTORE_BASE64` secret matches the expected fingerprint; no replacement was needed.
 - [ ] Back up the permanent private key securely in at least two offline locations.
-- [ ] Configure the GitHub Actions secrets `ANDROID_KEYSTORE_BASE64`, `ANDROID_KEYSTORE_PASSWORD`, `ANDROID_KEY_ALIAS`, and `ANDROID_KEY_PASSWORD` without exposing key material in the repository, logs, or chat.
-- [ ] Confirm the next main CI run logs the configured and expected certificate fingerprints as identical.
-- [ ] Verify all ABI APKs use the same release certificate.
+- [x] GitHub Actions signing secrets are configured and were successfully used by main run #196; keep all key material out of source control, logs, and chat.
+- [x] Main run #196 logged identical configured and expected certificate fingerprints.
+- [x] Main run #196's APK signature verification passed for all four ABI variants.
 - [ ] Install a main/release-signed APK, then verify a subsequent same-certificate main APK upgrades in place.
 - [ ] Clarify terms/permission to distribute the independent client with the Lasthavens team.
 - [ ] Explicitly approve any release and any beta-to-main promotion.
