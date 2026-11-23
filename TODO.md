@@ -42,6 +42,12 @@ The owner reports that in-app updating did not work from v1.0.0. Treat this as a
 - [ ] Add storage-failure and interrupted-write tests without changing persistence behavior unless a safe migration and rollback path are demonstrated.
 - [x] Extract staged-generation commit orchestration and add a failure-injection regression test: metadata commit failure rolls back only the new generation while the prior library pointer and files remain intact.
 - [ ] Review install/update/remove/backup/restore code paths for data-preservation defects; fix only defects that can be verified through code and automated tests.
+- [ ] Fix silent Addon Manager installation failures: every ZIP import, catalogue download, validation, and storage failure must produce a visible, actionable error; distinguish cancellation from failure and never swallow exceptions.
+- [ ] Trace the complete Android Storage Access Framework flow for ZIP imports: picker launch, returned content URI, persisted/read permission where needed, MIME/filename handling, stream opening, archive read, validation, IndexedDB write, and final library commit. Handle null results, revoked permissions, unreadable providers, and interrupted streams safely.
+- [ ] Add automated tests for the manager's file-picker result handling and import pipeline using mocked content URIs/streams, including malformed ZIPs, missing TOC, oversized archives, read failures, cancellation, and storage-write/commit failures. Do not change existing library data on failure.
+- [ ] Trace online add-on installation separately through catalogue request, download permissions/CORS, redirects, HTTP status, ZIP validation, and the shared import/commit path. Show per-stage progress and actionable network/validation/storage errors.
+- [ ] Add a manager diagnostics/log view for recent installation attempts with stage, timestamp, and sanitized error details; provide copy/export and exclude cookies, tokens, credentials, and browsing data.
+- [ ] Add an end-to-end regression test proving both ZIP import and online installation reach the same safe commit path, preserve existing add-ons on failure, and report success only after the library pointer is committed.
 - [ ] Inspect the implementation and document precisely which profile, login/session, add-on, and setting data is preserved by app updates; clearly distinguish verified code behavior from device-only verification.
 
 ## P1 — Addon Manager and requested features
@@ -63,6 +69,17 @@ The owner has authorized necessary manager maintenance only with preservation of
 - [ ] Review manager capabilities and limitations against the bundled source and update its documentation.
 - [ ] Review compatibility with GeckoView upgrades without modifying the manager.
 - [ ] Review future manager changes for backward compatibility and data preservation before implementation.
+
+
+## P1 — Web-app integration ideas from the reference APK
+
+The reference APK is a lightweight Trusted Web Activity wrapper around the Lasthavens website. Keep GeckoView as the app's engine because Addon Manager depends on GeckoView WebExtension APIs and its shared profile; do not replace it with a TWA or move browser storage.
+
+- [ ] Audit the website's web app manifest and Android launch URL for useful install/standalone metadata; adopt compatible improvements without changing the game origin or GeckoView profile.
+- [ ] Verify Digital Asset Links for the existing Android package and website origin, and document whether they provide any benefit to our GeckoView-based app. Do not change package ID or signing identity.
+- [ ] Review launch/loading and offline/fallback behavior so website availability failures are clearly explained while native Home, updater, and Addon Manager remain accessible.
+- [ ] Keep game content web-driven where practical so website-side improvements do not require an APK release; keep native functionality and extension management in the Android app.
+
 
 ## P2 — Reliability, accessibility, and maintenance
 
