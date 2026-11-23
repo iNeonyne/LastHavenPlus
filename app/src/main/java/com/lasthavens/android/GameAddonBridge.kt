@@ -28,28 +28,36 @@ class GameAddonBridge private constructor(
     @Volatile
     private var activePayload: ActivePayload? = null
 
-    private val listener = WebViewCompat.WebMessageListener { _, message, sourceOrigin, isMainFrame, replyProxy ->
-        if (!isMainFrame || !isAllowedOrigin(sourceOrigin)) return@WebMessageListener
-        if (message.type != WebMessageCompat.TYPE_STRING) {
-            replyError(replyProxy, "Only JSON string requests are accepted")
-            return@WebMessageListener
-        }
-        val raw = message.data ?: ""
-        if (raw.length > MAX_REQUEST_CHARS) {
-            replyError(replyProxy, "Native bridge request is too large")
-            return@WebMessageListener
-        }
-        runCatching {
-            val request = JSONObject(raw)
-            when (request.optString("kind")) {
-                "payload" -> sendPayload(replyProxy)
-                "chunk" -> sendChunk(request, replyProxy)
-                "status", "gameStorage" -> Log.d(TAG, "Game reported ${request.optString("kind")}")
-                else -> replyError(replyProxy, "Unsupported native bridge request")
+    private val listener = object : WebViewCompat.WebMessageListener {
+        override fun onPostMessage(
+            view: WebView,
+            message: WebMessageCompat,
+            sourceOrigin: Uri,
+            isMainFrame: Boolean,
+            replyProxy: JavaScriptReplyProxy,
+        ) {
+            if (!isMainFrame || !isAllowedOrigin(sourceOrigin)) return
+            if (message.type != WebMessageCompat.TYPE_STRING) {
+                replyError(replyProxy, "Only JSON string requests are accepted")
+                return
             }
-        }.onFailure { error ->
-            Log.w(TAG, "Rejected game bridge request", error)
-            replyError(replyProxy, error.message ?: "Native add-on bridge failed")
+            val raw = message.data ?: ""
+            if (raw.length > MAX_REQUEST_CHARS) {
+                replyError(replyProxy, "Native bridge request is too large")
+                return
+            }
+            runCatching {
+                val request = JSONObject(raw)
+                when (request.optString("kind")) {
+                    "payload" -> sendPayload(replyProxy)
+                    "chunk" -> sendChunk(request, replyProxy)
+                    "status", "gameStorage" -> Log.d(TAG, "Game reported ${request.optString("kind")}")
+                    else -> replyError(replyProxy, "Unsupported native bridge request")
+                }
+            }.onFailure { error ->
+                Log.w(TAG, "Rejected game bridge request", error)
+                replyError(replyProxy, error.message ?: "Native add-on bridge failed")
+            }
         }
     }
 
