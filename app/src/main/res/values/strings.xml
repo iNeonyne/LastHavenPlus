@@ -53,19 +53,22 @@
     <string name="migration_tool">Verify migration package</string>
     <string name="migration_back">‹ Home</string>
     <string name="migration_title">Move add-ons to native storage</string>
-    <string name="migration_intro">Choose the migration ZIP exported by Addon Manager 1.0.6. LastHavenPlus will validate every file and checksum, then stage a private copy. This step does not activate add-ons or change your existing Gecko profile.</string>
+    <string name="migration_intro">Choose the migration ZIP exported by Addon Manager 1.0.6. LastHavenPlus will validate every file and checksum, then stage a private copy. Your selected package is verified before you confirm import. Existing Gecko profile data is never changed.</string>
     <string name="migration_choose">Choose migration ZIP</string>
     <string name="migration_idle">Your current add-on data remains untouched until native import and rollback are complete.</string>
     <string name="migration_verifying">Checking archive structure, file limits and SHA-256 checksums…</string>
     <string name="migration_verified">Package verified. No active add-on data was changed.</string>
     <string name="migration_verified_title">Migration package verified</string>
-    <string name="migration_preview">%1$d add-ons, %2$d files, %3$s expanded. A verified private staging copy is ready. Native activation is not available yet; your existing manager remains unchanged.</string>
+    <string name="migration_preview">%1$d add-ons, %2$d files, %3$s expanded. A verified private staging copy is ready for atomic activation. Your existing Gecko manager remains unchanged.</string>
     <string name="migration_activate">Import into native storage</string>
-    <string name="migration_discard_stage">Discard staged copy</string>\n    <string name="migration_activating">Activating verified add-on library…</string>\n    <string name="migration_activated">%1$d add-ons are now safely stored in the native repository. The legacy Gecko profile is unchanged; game loading is not connected yet.</string>
+    <string name="migration_discard_stage">Discard staged copy</string>
+    <string name="migration_activating">Activating verified add-on library…</string>
+    <string name="migration_activated">%1$d add-ons are now safely stored in the native repository. The legacy Gecko profile is unchanged; game loading is not connected yet.</string>
     <string name="migration_stage_discarded">Staged copy discarded. The selected source ZIP was not changed.</string>
     <string name="migration_failed">Could not verify package: %1$s</string>
     <string name="migration_unknown_error">Unknown error</string>
-\n    <string name="storage">Storage</string>
+
+    <string name="storage">Storage</string>
     <string name="storage_back">‹ Home</string>
     <string name="storage_title">Storage usage</string>
     <string name="storage_intro">A read-only estimate of app-private storage. During migration this includes both the legacy Gecko profile and the new WebView data; it is not a game-only measurement.</string>
