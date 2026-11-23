@@ -24,7 +24,7 @@ Development and code changes remain on `main`, the sole active branch. The forme
 ### Main-only updater verification
 
 - [ ] Do not use a debug-signed pull-request or test APK to test a main update; the updater must block a signer mismatch. A debug-signed installation cannot be upgraded in place to the permanent release key. Do not uninstall a data-bearing install to switch signing identities; use a separate test device.
-- [x] Main run #196 verified the expected permanent-key fingerprint and uploaded one unexpired metadata/checksum artifact plus one APK artifact for each ABI. The metadata ZIP and ARM64 APK artifact were downloaded and checked against their declared size and SHA-256; CI verified signatures/checksums for all four variants.
+- [x] Main run #196 verified the expected permanent-key fingerprint and uploaded one unexpired metadata/checksum artifact plus one APK artifact for each ABI. The metadata ZIP and ARM64 APK artifact were downloaded and checked against their declared size and SHA-256; CI verified signatures/checksums for all four variants in the previous multi-ABI configuration. The new ARM64-only workflow still needs CI verification.
 - [ ] On a test device, install the permanent-key-signed main APK and create test data (login/session, installed add-ons, manager settings, and GeckoView profile state).
 - [ ] Trigger a later successful main `push` run (not workflow dispatch, pull request, or tag) and use Home → Check for updates; confirm it selects only that successful main push and the device-compatible ABI.
 - [ ] Confirm displayed version, workflow build number, APK size and commit match the selected artifact.
@@ -32,7 +32,7 @@ Development and code changes remain on `main`, the sole active branch. The forme
 - [ ] Verify login/session, GeckoView profile, installed add-ons, manager settings and other app data remain intact after update.
 - [ ] Cancel an installation and verify the installed version remains unchanged.
 - [ ] Confirm missing/expired artifacts, failed or incomplete downloads, insufficient free storage, checksum mismatch, wrong package/version, and different signing certificates all block installation without altering app data.
-- [ ] Repeat on available supported ABI devices/emulators.
+- [ ] Repeat on ARM64 devices/emulators only; confirm non-ARM64 devices are clearly reported as unsupported.
 
 ## Owner actions and release decisions
 
