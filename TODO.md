@@ -62,7 +62,8 @@ The owner has authorized necessary manager changes on the condition that install
 These are planned features, not prerequisites for the first demo. Implement only after the core app and existing data have been validated.
 
 - [ ] Add `.7z` archive support to Addon Manager import/export, with safe extraction, path validation, archive/expanded-size limits, and backward compatibility for existing ZIP backups.
-- [ ] Add a way to view the game's on-device storage/download footprint. Investigate GeckoView cache and site storage APIs; show cache and persistent site data separately where possible, label estimates clearly, and never clear/reset data automatically.
+- [ ] Add a game storage dashboard showing the game's on-device storage/download footprint, available device space, and (where APIs permit) Gecko cache versus persistent site data separately. Label estimates and unknowns clearly; initially make this read-only and never clear/reset data automatically.
+- [ ] Add a diagnostics page showing app and GeckoView versions, device/Android details, add-on integration status, storage health, and recent app errors. Include a user-triggered copy/export diagnostics action; exclude credentials, cookies, tokens, and personal browsing data.
 - [ ] Create a device test checklist for install, update, enable/disable, remove, import/export, backup/restore, and game integration.
 - [ ] Verify error states and recovery for failed imports, failed downloads, unavailable permissions, and interrupted operations.
 - [ ] Verify usability on phone-sized screens, touch targets, accessibility, and large add-on lists.
@@ -72,8 +73,8 @@ These are planned features, not prerequisites for the first demo. Implement only
 
 ## P3 — Updates and ongoing maintenance
 
-- [ ] Add an in-app GitHub Releases update checker and installer handoff.
-- [ ] Show current version, latest version, release notes, and appropriate APK choice.
+- [ ] Add an in-app GitHub Releases update checker that displays current/latest versions, release notes, and the correct ABI APK.
+- [ ] Allow the app to download an update and hand it to Android's package installer. This does not require the permanent release key merely to check or download; Android will only install it as an in-place update if its signing certificate matches the installed app. Never advise uninstalling when that could erase user data.
 - [ ] Keep full APK downloads as the default update method; defer differential updates unless there is a demonstrated need.
 - [ ] Add Dependabot or Renovate monitoring for dependencies and review security updates.
 - [ ] Upgrade GeckoView and Android dependencies in isolated, build-verified changes.
