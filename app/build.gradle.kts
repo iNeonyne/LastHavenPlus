@@ -6,7 +6,7 @@ plugins {
     id("org.jetbrains.kotlin.android")
 }
 
-val appVersionName = "2.0.0"
+val appVersionName = "1.0.0"
 // GitHub Actions owns the never-resetting code sequence across beta, main, and tags.
 val appVersionCode = System.getenv("GITHUB_RUN_NUMBER")?.toIntOrNull() ?: 3
 
