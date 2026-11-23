@@ -6,7 +6,7 @@ import android.content.Intent
 import android.net.Uri
 
 object GameUrls {
-    const val GAME_URL = "https://alt.lasthavens.com/play"
+    const val GAME_URL = "https://lasthavens.com/play"
     const val ADDON_MANAGER_PAGE = "manager.html"
 
     /** True for lasthavens.com and any of its subdomains. */
