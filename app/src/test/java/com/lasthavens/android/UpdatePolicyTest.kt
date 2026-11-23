@@ -40,22 +40,31 @@ class UpdatePolicyTest {
     @Test fun rejectsUnexpectedExpiredOrMismatchedArtifacts() {
         val expected = run()
         assertTrue(UpdatePolicy.isEligibleArtifact(
-            "LastHavenPlus-Main-Update", false, expected.id, "main", expected.commitSha, expected,
+            UpdatePolicy.METADATA_ARTIFACT_NAME, UpdatePolicy.METADATA_ARTIFACT_NAME, false, expected.id, "main", expected.commitSha, expected,
         ))
         assertFalse(UpdatePolicy.isEligibleArtifact(
-            "LastHavenPlus-Demo-APKs", false, expected.id, "main", expected.commitSha, expected,
+            "LastHavenPlus-Demo-APKs", UpdatePolicy.METADATA_ARTIFACT_NAME, false, expected.id, "main", expected.commitSha, expected,
         ))
         assertFalse(UpdatePolicy.isEligibleArtifact(
-            "LastHavenPlus-Main-Update", true, expected.id, "main", expected.commitSha, expected,
+            UpdatePolicy.METADATA_ARTIFACT_NAME, UpdatePolicy.METADATA_ARTIFACT_NAME, true, expected.id, "main", expected.commitSha, expected,
         ))
         assertFalse(UpdatePolicy.isEligibleArtifact(
-            "LastHavenPlus-Main-Update", false, expected.id + 1, "main", expected.commitSha, expected,
+            UpdatePolicy.METADATA_ARTIFACT_NAME, UpdatePolicy.METADATA_ARTIFACT_NAME, false, expected.id + 1, "main", expected.commitSha, expected,
         ))
         assertFalse(UpdatePolicy.isEligibleArtifact(
-            "LastHavenPlus-Main-Update", false, expected.id, "beta", expected.commitSha, expected,
+            UpdatePolicy.METADATA_ARTIFACT_NAME, UpdatePolicy.METADATA_ARTIFACT_NAME, false, expected.id, "beta", expected.commitSha, expected,
         ))
         assertFalse(UpdatePolicy.isEligibleArtifact(
-            "LastHavenPlus-Main-Update", false, expected.id, "main", "f".repeat(40), expected,
+            UpdatePolicy.METADATA_ARTIFACT_NAME, UpdatePolicy.METADATA_ARTIFACT_NAME, false, expected.id, "main", "f".repeat(40), expected,
+        ))
+
+        assertTrue(UpdatePolicy.isEligibleArtifact(
+            "LastHavenPlus-Main-Update-arm64-v8a", "LastHavenPlus-Main-Update-arm64-v8a",
+            false, expected.id, "main", expected.commitSha, expected,
+        ))
+        assertFalse(UpdatePolicy.isEligibleArtifact(
+            "LastHavenPlus-Main-Update-arm64-v8a", "LastHavenPlus-Main-Update-universal",
+            false, expected.id, "main", expected.commitSha, expected,
         ))
     }
 

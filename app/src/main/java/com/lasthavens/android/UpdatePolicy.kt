@@ -11,6 +11,8 @@ internal object UpdatePolicy {
     const val WORKFLOW_ID = 427170801L
     const val WORKFLOW_PATH = ".github/workflows/build.yml"
     const val REPOSITORY = "iNeonyne/Lasthavens-Android"
+    const val METADATA_ARTIFACT_NAME = "LastHavenPlus-Main-Update-Metadata"
+    const val APK_ARTIFACT_PREFIX = "LastHavenPlus-Main-Update-"
     val supportedAbis = setOf("arm64-v8a", "armeabi-v7a", "x86_64", "universal")
 
     fun isEligibleRun(run: UpdateRun): Boolean =
@@ -30,16 +32,19 @@ internal object UpdatePolicy {
 
     fun isEligibleArtifact(
         name: String,
+        expectedName: String,
         expired: Boolean,
         artifactRunId: Long,
         artifactBranch: String,
         artifactCommitSha: String,
         expectedRun: UpdateRun,
-    ): Boolean =
-        name == "LastHavenPlus-Main-Update" && !expired &&
-            artifactRunId == expectedRun.id &&
-            artifactBranch == "main" &&
+    ): Boolean {
+        val validExpectedName = expectedName == METADATA_ARTIFACT_NAME ||
+            supportedAbis.any { expectedName == "$APK_ARTIFACT_PREFIX$it" }
+        return validExpectedName && name == expectedName && !expired &&
+            artifactRunId == expectedRun.id && artifactBranch == "main" &&
             artifactCommitSha == expectedRun.commitSha
+    }
 
     fun isValidDownload(
         expectedSize: Long,
