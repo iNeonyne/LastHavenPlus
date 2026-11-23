@@ -20,3 +20,8 @@ Backup scope
 - They do not contain manager settings, enabled/disabled flags, game SavedVariables, login/session data, or the shared Gecko profile.
 - Restored add-ons are disabled by default when newly added. When restoring over an existing add-on, its current enabled/disabled state is preserved by the library merge logic.
 - A ZIP restore is an add-on file import, not a full application/profile restore.
+
+
+## Game site storage estimate (Addon Manager 1.0.3)
+
+The Addon Manager displays the browser StorageManager estimate for the Lasthavens game origin when the game page is open. It reports origin-scoped website storage usage (and quota when available), separately from app-wide shared GeckoView profile usage. The estimate refreshes while the game page remains open. It is not a measure of lifetime network downloads, and browser estimates may be approximate.
