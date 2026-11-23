@@ -72,14 +72,28 @@ The owner has authorized necessary manager maintenance only with preservation of
 - [ ] Review future manager changes for backward compatibility and data preservation before implementation.
 
 
+## P0 — Chromium engine and Addon Manager migration
+
+The owner has selected Chromium as the target engine to investigate and migrate toward because the game currently reaches a black screen when 3D rendering starts. Follow [docs/CHROMIUM_MIGRATION.md](docs/CHROMIUM_MIGRATION.md). Use Android System WebView as the initial target; do not bundle Chromium. TWA is not the selected implementation because the loader needs document-start injection and request/runtime control.
+
+- [ ] Build an isolated WebView game proof of concept with hardware acceleration and safe WebView settings; keep the existing GeckoView path available until the new path is verified.
+- [ ] Add an in-game-origin diagnostic for WebGL 1/2, WebAssembly, SharedArrayBuffer/isolation, worker startup, console errors and WebGL context loss; use it to identify whether Chromium resolves the 3D black screen.
+- [ ] Port the current 1.0.5 manager loader to WebView. The uploaded 0.5.1 ZIP is a reference, not a replacement: current `overlay.js`/`inject.js` already provide broader XHR/Fetch interception, worker bootstrap and diagnostics.
+- [ ] Replace extension-only storage/messaging APIs with native storage and an origin-restricted WebView message bridge. Do not expose a general-purpose `addJavascriptInterface` to the remote game page.
+- [ ] Port current ZIP validation, TOC/dependency handling, catalogue, import/export, enable/disable/remove, staged writes and diagnostics; preserve current manager behavior and limits.
+- [ ] Define and test a Gecko-to-native add-on library export/import format that preserves files, folder IDs, versions, enabled state, dependency metadata and manager settings. Keep the Gecko profile intact for rollback.
+- [ ] Investigate Gecko cookie/login/session portability to WebView. Do not claim preservation or switch the default engine until this is proven or the exact limitation is explicitly documented.
+- [ ] Add automated loader, WebView bridge, storage migration and rollback tests. Keep package ID, signing identity, updater and versionCode behavior unchanged.
+- [ ] Remove GeckoView dependencies and old profile integration only after the Chromium game, Addon Manager, migration and rollback gates pass.
+
 ## P1 — Web-app integration ideas from the reference APK
 
-The reference APK is a lightweight Trusted Web Activity wrapper around the Lasthavens website. Keep GeckoView as the app's engine because Addon Manager depends on GeckoView WebExtension APIs and its shared profile; do not replace it with a TWA or move browser storage.
+The reference APK is a lightweight Trusted Web Activity wrapper around the Lasthavens website. TWA remains a comparison/reference only; the current migration target is Android System WebView because the add-on loader requires document-start injection and deeper runtime control.
 
-- [ ] Audit the website's web app manifest and Android launch URL for useful install/standalone metadata; adopt compatible improvements without changing the game origin or GeckoView profile.
-- [ ] Verify Digital Asset Links for the existing Android package and website origin, and document whether they provide any benefit to our GeckoView-based app. Do not change package ID or signing identity.
-- [ ] Review launch/loading and offline/fallback behavior so website availability failures are clearly explained while native Home, updater, and Addon Manager remain accessible.
-- [ ] Keep game content web-driven where practical so website-side improvements do not require an APK release; keep native functionality and extension management in the Android app.
+- [ ] Audit the website's web app manifest and Android launch URL for compatible standalone metadata without changing the game origin.
+- [ ] Verify Digital Asset Links for the existing Android package and website origin; do not change package ID or signing identity.
+- [ ] Review launch/loading and offline/fallback behavior so website availability failures are clearly explained while native Home, updater and Addon Manager remain accessible.
+- [ ] Keep game content web-driven where practical so website-side improvements do not require an APK release.
 
 
 ## P2 — Reliability, accessibility, and maintenance
