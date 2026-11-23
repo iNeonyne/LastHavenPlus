@@ -1,7 +1,7 @@
 // Native read-only game bridge. Injected only into the approved Lasthavens HTTPS origins.
 (() => {
   "use strict";
-  if (window.top !== window || window.__lhNativeGameBridge) return;
+  if (window.__lhNativeGameBridge) return;
   window.__lhNativeGameBridge = true;
 
   const CHANNEL = "lh-addons-v2";
