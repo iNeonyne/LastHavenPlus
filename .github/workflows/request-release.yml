@@ -30,7 +30,7 @@ jobs:
         id: validate
         env:
           REQUEST_FILE: .github/release-request.json
-          REQUEST_COMMIT: ${ github.sha }
+          REQUEST_COMMIT: ${{ github.sha }}
         run: |
           python3 - <<'PY'
           import json
@@ -101,8 +101,8 @@ jobs:
       - name: Create annotated tag
         if: steps.validate.outputs.dry_run == 'false'
         env:
-          TAG: ${ steps.validate.outputs.tag }
-          GH_TOKEN: ${ secrets.GITHUB_TOKEN }
+          TAG: ${{ steps.validate.outputs.tag }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -euo pipefail
           if git rev-parse --verify --quiet "refs/tags/$TAG" >/dev/null; then
@@ -122,12 +122,12 @@ jobs:
       - name: Start signed release build on the new tag
         if: steps.validate.outputs.dry_run == 'false'
         env:
-          TAG: ${ steps.validate.outputs.tag }
-          GH_TOKEN: ${ secrets.GITHUB_TOKEN }
+          TAG: ${{ steps.validate.outputs.tag }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: gh workflow run 427170801 --ref "$TAG"
 
       - name: Report dry-run result
         if: steps.validate.outputs.dry_run == 'true'
         env:
-          TAG: ${ steps.validate.outputs.tag }
+          TAG: ${{ steps.validate.outputs.tag }}
         run: echo "Dry run passed for $TAG. No tag or release was created."
