@@ -175,7 +175,7 @@ jobs:
 
           output_dir = Path("app/build/outputs/apk/release")
           apks = sorted(output_dir.glob("*.apk"))
-          expected = {"arm64-v8a", "armeabi-v7a", "x86_64", "universal"}
+          expected = {"arm64-v8a"}
           if not apks:
               raise SystemExit("Gradle produced no release APKs")
 
@@ -192,14 +192,7 @@ jobs:
                   "assets/extensions/lh-addon-manager/manifest.json",
                   "assets/extensions/lh-addon-manager/_locales/en/messages.json",
               }
-              if variant == "universal":
-                  required.update({
-                      "lib/arm64-v8a/libxul.so",
-                      "lib/armeabi-v7a/libxul.so",
-                      "lib/x86_64/libxul.so",
-                  })
-              else:
-                  required.add(f"lib/{variant}/libxul.so")
+              required.add(f"lib/{variant}/libxul.so")
               missing = sorted(required - contents)
               if missing:
                   raise SystemExit(f"{apk.name} is missing: " + ", ".join(missing))
@@ -219,7 +212,7 @@ jobs:
           root = pathlib.Path("app/build/outputs/apk/release")
           apks = sorted(root.glob("*.apk"))
           if len(apks) != 4:
-              raise SystemExit(f"Expected four APK variants, found {len(apks)}")
+              raise SystemExit(f"Expected exactly one ARM64 APK, found {len(apks)}")
           app = pathlib.Path("app/build.gradle.kts").read_text()
           expected_name = re.search(r'val appVersionName = "([^"]+)"', app).group(1)
           expected_code = int(os.environ["GITHUB_RUN_NUMBER"])
@@ -253,7 +246,7 @@ jobs:
             variant="${variant%-release.apk}"
             cp "$apk" "dist/LastHavenPlus-$VERSION-$variant.apk"
           done
-          test "$(find dist -maxdepth 1 -name '*.apk' | wc -l)" -eq 4
+          test "$(find dist -maxdepth 1 -name '*.apk' | wc -l)" -eq 1
           ls -lh dist/
 
       - name: Generate and verify APK checksums
@@ -290,36 +283,6 @@ jobs:
         with:
           name: LastHavenPlus-Main-Update-arm64-v8a
           path: dist/LastHavenPlus-*-arm64-v8a.apk
-          if-no-files-found: error
-          retention-days: 90
-          overwrite: true
-
-      - name: Upload main ARMv7 update APK
-        if: github.ref == 'refs/heads/main'
-        uses: actions/upload-artifact@v7
-        with:
-          name: LastHavenPlus-Main-Update-armeabi-v7a
-          path: dist/LastHavenPlus-*-armeabi-v7a.apk
-          if-no-files-found: error
-          retention-days: 90
-          overwrite: true
-
-      - name: Upload main x86_64 update APK
-        if: github.ref == 'refs/heads/main'
-        uses: actions/upload-artifact@v7
-        with:
-          name: LastHavenPlus-Main-Update-x86_64
-          path: dist/LastHavenPlus-*-x86_64.apk
-          if-no-files-found: error
-          retention-days: 90
-          overwrite: true
-
-      - name: Upload main universal update APK
-        if: github.ref == 'refs/heads/main'
-        uses: actions/upload-artifact@v7
-        with:
-          name: LastHavenPlus-Main-Update-universal
-          path: dist/LastHavenPlus-*-universal.apk
           if-no-files-found: error
           retention-days: 90
           overwrite: true
