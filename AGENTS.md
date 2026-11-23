@@ -91,7 +91,8 @@ LastHavenPlus is a focused Android client for the Lasthavens game, built with Ko
 
 - `README.md` is for human readers. Keep it concise and avoid duplicating the roadmap or agent rules.
 - `AGENTS.md` is the authoritative instruction file for agents and contributors.
-- `TODO.md` is the authoritative active roadmap and task tracker. Keep priorities and completion status current.
+- `TODO.md` is the authoritative AI-actionable development roadmap. Keep it limited to implementation, automated tests, CI, code review, technical investigation, and documentation an agent can perform.
+- `MANUAL_CHECKLIST.md` tracks physical-device verification, owner-only actions, private-key handling, legal/permission decisions, and release sign-off. Do not mark these complete without direct evidence from the owner or an actual device/test result.
 - `CHANGELOG.md` records actual user-visible changes by version. Do not use it as a task list or claim unreleased work is shipped.
 - `PROJECT_OVERVIEW.md` contains the technical architecture and current verified project state.
 - Do not let documents contradict source code, version metadata, CI configuration, or one another.
