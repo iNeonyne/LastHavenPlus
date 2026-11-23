@@ -1,37 +1,24 @@
 # LastHavenPlus — Active TODO
 
-This is the single actionable work queue. The architecture and phase rationale live in [ROADMAP.md](ROADMAP.md). Do not create parallel checklists in other documents.
+This is the single actionable work queue. Architecture and phase rationale live in [ROADMAP.md](ROADMAP.md). Keep work on `main`; do not create parallel checklists.
 
 **Branch:** main only  
 **Current source baseline:** GeckoView app with a debug-only Chromium WebView probe  
 **Target:** Android System WebView + native-backed Addon Manager  
-**Current bundled manager:** 1.0.6 (verified from its manifest)  
-**App identity:** keep com.lasthavens.android, the permanent signing certificate, ARM64-only distribution and monotonic GITHUB_RUN_NUMBER versionCode.
+**Legacy exporter:** Addon Manager 1.0.6  
+**App identity:** preserve `com.lasthavens.android`, permanent signing certificate, ARM64-only distribution and monotonic `GITHUB_RUN_NUMBER` versionCode.
 
-The tasks below are ordered by dependency. Do not remove the Gecko migration source until the native manager import has been verified.
+## Build strategy
 
-## P0 — 1. Baseline and contracts
+Get a small, installable Chromium build working first. Do not block that build on full feature parity, visual polish or removal of every old file. Keep Gecko migration code and the old profile intact until add-on migration is verified. The first build must prove the game starts, WebView data persists, and the minimum native add-on path works; remaining manager features can follow.
+
+## P0 — 1. Unblock and protect the build
 
 - [ ] Record the baseline signed ARM64 APK size from a trusted main build; retain the artifact/run reference for final comparison.
-- [ ] Inventory every manager persistence key, library field, IndexedDB file record, setting, catalogue mapping and diagnostic field used by manager 1.0.5.
-- [ ] Inventory all current manager screens and operations; use the existing 1.0.6 behavior as the feature baseline, not the uploaded 0.5.1 archive.
 - [x] Specify and version the migration-package schema: metadata, settings, folder IDs, versions, enabled state, dependency fields, relative file paths, bytes and SHA-256 checksums.
 - [ ] Specify the local-manager bridge and game bridge message schemas, allowed origins, payload limits, error responses and timeout behavior.
-- [ ] Define the native repository layout and staged-write/atomic-activation rules before implementing storage.
-- [ ] Document the login/session boundary: Gecko cookies and WebView cookies are separate; do not claim automatic session migration.
 
-## P0 — 2. One-time legacy data export/import
-
-- [x] Add a Gecko-side exporter to the existing manager (now manager 1.0.6) that reads the library, settings and IndexedDB bytes without modifying source records.
-- [x] Export manager state into a versioned migration package with file paths, byte sizes, per-file SHA-256 checksums and a metadata manifest.
-- [ ] Implement a native importer with archive/path validation, strict byte/file/count limits, checksum verification and clear user-readable errors.
-- [ ] Stage imported files separately, commit the metadata pointer only after verification, and roll back only the new generation on failure.
-- [ ] Make migration idempotent: repeated starts/import attempts must not duplicate add-ons, downgrade versions, overwrite newer native data or mark incomplete work complete.
-- [ ] Re-read the committed native library and compare file hashes, folder IDs, versions, enabled flags, dependencies, settings and library revision against the export.
-- [ ] Add automated tests for empty libraries, many add-ons, large files, malformed metadata, traversal paths, mismatched hashes, interrupted writes, low storage, duplicate imports and rollback.
-- [ ] Keep legacy Gecko profile data untouched until migration verification succeeds; do not clear app data as a migration step.
-
-## P0 — 3. Production Chromium game screen
+## P0 — 2. Get the game running in Android System WebView
 
 - [ ] Replace the debug-only ChromiumProbeActivity with the production PlayActivity backed by Android System WebView.
 - [ ] Configure hardware acceleration, JavaScript, DOM storage, media, safe browsing, file access and mixed-content behavior with least privilege.
@@ -43,7 +30,57 @@ The tasks below are ordered by dependency. Do not remove the Gecko migration sou
 - [ ] Verify WebGL 1/2, WebAssembly, SharedArrayBuffer/cross-origin isolation, workers, OffscreenCanvas, game 3D initialization, console errors and context-loss recovery through automated checks.
 - [ ] Add automated tests for bridge rejection (wrong origin, subframe, malformed/oversized messages), navigation policy, popups, file chooser outcomes and renderer recovery.
 
-## P0 — 4. Native-backed Addon Manager
+
+- [ ] Add game-origin storage checks: call `navigator.storage.estimate()`, request `navigator.storage.persist()` where supported, and handle unsupported/denied results gracefully.
+- [ ] Verify IndexedDB/Cache Storage data survives app restarts, process death, WebView recreation and same-signature APK upgrades; never clear website data during routine updates.
+- [ ] Verify previously downloaded game assets are reused; distinguish durable game data from evictable HTTP cache and document that device storage pressure can still cause eviction.
+## P0 — 3. Safe native migration
+
+- [x] Add a Gecko-side exporter to the existing manager (now manager 1.0.6) that reads the library, settings and IndexedDB bytes without modifying source records.
+- [x] Export manager state into a versioned migration package with file paths, byte sizes, per-file SHA-256 checksums and a metadata manifest.
+- [ ] Implement a native importer with archive/path validation, strict byte/file/count limits, checksum verification and clear user-readable errors.
+- [ ] Stage imported files separately, commit the metadata pointer only after verification, and roll back only the new generation on failure.
+- [ ] Make migration idempotent: repeated starts/import attempts must not duplicate add-ons, downgrade versions, overwrite newer native data or mark incomplete work complete.
+- [ ] Re-read the committed native library and compare file hashes, folder IDs, versions, enabled flags, dependencies, settings and library revision against the export.
+- [ ] Add automated tests for empty libraries, many add-ons, large files, malformed metadata, traversal paths, mismatched hashes, interrupted writes, low storage, duplicate imports and rollback.
+- [ ] Keep legacy Gecko profile data untouched until migration verification succeeds; do not clear app data as a migration step.
+
+## P0 — 3A. Minimum native Addon Manager for the first build
+
+- [ ] Finish and verify the native migration archive reader/staging tests already added; fix CI failures before proceeding.
+- [ ] Implement native import using the system document picker and bounded streaming; validate paths, limits, metadata and SHA-256 checksums.
+- [ ] Preview package contents before import; show clear errors and require explicit confirmation.
+- [ ] Stage files separately, verify the staged library, then atomically activate a new generation; roll back only the new generation on failure.
+- [ ] Make imports idempotent; never duplicate add-ons, downgrade versions or overwrite newer native data.
+- [ ] Compare committed hashes, folder IDs, versions, enabled flags, dependencies, settings and revision against the export.
+- [ ] Keep Gecko profile data untouched; never clear app data or delete legacy records during migration.
+- [ ] Host the existing manager UI locally through WebViewAssetLoader; reuse its HTML/CSS/localization/icons and portable modules.
+- [ ] Implement the native AddonRepository as source of truth for metadata, settings and raw add-on files.
+- [ ] For the first build, support only the essential path: list imported add-ons, import ZIP/migration package, enable/disable and expose enabled add-ons to the game. Defer catalogue and advanced operations to P1.
+- [ ] Restrict the privileged manager bridge to the local app-assets origin; never share it with the remote game WebView.
+- [ ] Add automated tests for valid/invalid imports, checksum mismatch, interrupted writes, low storage, duplicate imports and rollback.
+
+## P0 — 4. Minimum game add-on loader
+
+- [ ] Port the 1.0.5 overlay/inject behavior to document-start WebView scripts; remove extension-only message transport.
+- [ ] Implement the minimal read-only game bridge that returns the enabled add-on payload and accepts sanitized diagnostics only.
+- [ ] Preserve dependency-first load order, file batching, built-in add-on conflict detection and revision tracking.
+- [ ] Verify the current game's em-pthread worker wrapping and bootstrap timing before relying on the hook.
+- [ ] Preserve XHR and Fetch interception, manifest extension, local file responses, HEAD/range handling, bundle masking and cached blocks.idx masking.
+- [ ] Verify SharedArrayBuffer use where cross-origin isolation permits it and retain a bounded copy-transfer fallback.
+- [ ] Report prepared, requested, loaded and failed add-ons accurately; never equate packaging with actual game loading.
+- [ ] Add deterministic JavaScript tests for URL classification, range responses, manifest patching, worker bootstrap, payload transfer, conflict handling and diagnostics.
+- [ ] Add integration tests with a controlled game fixture that simulates the expected worker/VFS requests; fail closed when expected hooks are missing.
+
+## P0 — 5. First working Chromium build gate
+
+- [ ] Produce a debug ARM64 build with production WebView game screen, persistent game-origin storage checks and no Gecko dependency in the active launch path.
+- [ ] Demonstrate game startup, 3D rendering, worker/VFS initialization and stable navigation in automated emulator/integration tests.
+- [ ] Demonstrate add-on import, listing, enable/disable and game-loader handoff using a controlled fixture before declaring the native manager operational.
+- [ ] Demonstrate that downloaded game assets are reused after closing/reopening the app and that app updates do not intentionally clear WebView data.
+- [ ] Record known compatibility gaps, storage quota/eviction behavior, APK size and test results; do not call the build release-ready until all P0 gates pass.
+
+## P1 — 6. Complete Addon Manager feature parity
 
 - [ ] Reuse manager.html, manager.css, localization, icons and portable modules that remain useful; host the UI locally through WebViewAssetLoader.
 - [ ] Restrict the manager's privileged bridge to its local app-assets origin; do not reuse that privileged bridge in the remote game WebView.
@@ -56,27 +93,18 @@ The tasks below are ordered by dependency. Do not remove the Gecko migration sou
 - [ ] Ensure success is shown only after staged storage and metadata commit complete.
 - [ ] Add automated regression tests for every manager operation, storage failure, network failure, interrupted import/update and recovery.
 
-## P0 — 5. Port the current game add-on loader
-
-- [ ] Port the 1.0.5 overlay/inject behavior to document-start WebView scripts; remove extension-only message transport.
-- [ ] Implement the minimal read-only game bridge that returns the enabled add-on payload and accepts sanitized diagnostics only.
-- [ ] Preserve dependency-first load order, file batching, built-in add-on conflict detection and revision tracking.
-- [ ] Verify the current game's em-pthread worker wrapping and bootstrap timing before relying on the hook.
-- [ ] Preserve XHR and Fetch interception, manifest extension, local file responses, HEAD/range handling, bundle masking and cached blocks.idx masking.
-- [ ] Verify SharedArrayBuffer use where cross-origin isolation permits it and retain a bounded copy-transfer fallback.
-- [ ] Report prepared, requested, loaded and failed add-ons accurately; never equate packaging with actual game loading.
-- [ ] Add deterministic JavaScript tests for URL classification, range responses, manifest patching, worker bootstrap, payload transfer, conflict handling and diagnostics.
-- [ ] Add integration tests with a controlled game fixture that simulates the expected worker/VFS requests; fail closed when expected hooks are missing.
-
-## P0 — 6. Storage dashboard and state recovery
+## P1 — 7. Storage dashboard and state recovery
 
 - [ ] Rework StorageUsage to report native add-on files, app-private persistent data, cache and WebView game-origin storage without Gecko labels or misleading game-only totals.
 - [ ] Keep storage reporting read-only and clearly distinguish app storage from game-origin browser storage.
+- [ ] Report game-origin usage/quota from `navigator.storage.estimate()` where available; label it as an estimate.
+- [ ] Keep durable game data separate from disposable HTTP cache where feasible; never promise cache entries cannot be evicted.
+- [ ] Never clear WebView cookies, IndexedDB, Cache Storage or service-worker data during normal app updates or routine cleanup.
 - [ ] Add integrity checks and recovery diagnostics for the native add-on repository.
 - [ ] Ensure add-on activation, update, restore and remove operations preserve the previous committed generation until the new state is verified.
 - [ ] Verify process death/restart and interrupted operations leave the native library consistent.
 
-## P0 — 7. Preserve and verify the updater
+## P1 — 8. Preserve and verify the updater
 
 - [ ] Keep the updater native and independent of all WebView/manager code.
 - [ ] Preserve metadata-only checking: show the installed version and newer published stable versions; do not download an APK during discovery.
@@ -86,30 +114,7 @@ The tasks below are ordered by dependency. Do not remove the Gecko migration sou
 - [ ] Verify the installer handoff and completion/error reporting do not report success before Android confirms the result.
 - [ ] Keep the updater UI aligned with the new theme and responsive in portrait and landscape.
 
-## P0 — 8. CI and build-system overhaul
-
-- [ ] Remove GeckoView dependency and Mozilla Maven repository after the migration gate passes; remove geckoViewVersion.
-- [ ] Update build metadata validation to use the native manager version/schema rather than the extension manifest and Gecko version.
-- [ ] Replace extension-manifest validation with native manager asset, localization, archive-module and loader validation.
-- [ ] Replace APK checks that require libxul.so or extension manifest assets with checks for the expected WebView manager assets and native components.
-- [ ] Add a static guard that rejects Gecko dependencies, Gecko imports, Gecko activities/layouts and extension-runtime APIs from the final app.
-- [ ] Add CI coverage for migration export/import, native storage, manager operations, WebView bridge security, loader behavior and updater policies.
-- [ ] Add automated Android WebView integration/emulator coverage where supported by GitHub Actions; do not make physical-device testing a task for the owner.
-- [ ] Measure final signed ARM64 APK size against the recorded baseline and confirm libxul.so is absent.
-- [ ] Keep permanent-key verification, package ID, ARM64 output, monotonic versionCode, checksums and draft-only release creation unchanged.
-
-## P0 — 9. First working Chromium build gate\n\n- [ ] Produce a debug ARM64 build with production WebView game screen, persistent game-origin storage checks and no Gecko dependency in the active launch path.\n- [ ] Demonstrate game startup, 3D rendering, worker/VFS initialization and stable navigation in automated emulator/integration tests.\n- [ ] Demonstrate add-on import, listing, enable/disable and game-loader handoff using a controlled fixture before declaring the native manager operational.\n- [ ] Demonstrate that downloaded game assets are reused after closing/reopening the app and that app updates do not intentionally clear WebView data.\n- [ ] Record known compatibility gaps, storage quota/eviction behavior, APK size and test results; do not call the build release-ready until all P0 gates pass.\n\n## P1 — 10. Remove obsolete implementation and assets
-
-- [ ] Remove GeckoRuntime/GeckoSession setup and App extension installation after migration is verified.
-- [ ] Remove Gecko-only Delegates.kt, FilePicker.kt implementation, Gecko-specific ManagerActivity/PlayActivity code and activity_gecko layout after WebView replacements are complete.
-- [ ] Remove Gecko WebExtension manifest, background runtime, isolated-world bridge and extension-only API adapters; retain only manager modules that the native host actually uses.
-- [ ] Remove obsolete Gecko version metadata, Mozilla repository configuration and old profile-only code.
-- [ ] Remove the debug Chromium probe once its production diagnostics are in place; avoid keeping two implementations of the same function.
-- [ ] Remove duplicate/obsolete documentation and historical release-note assets from the APK; preserve required third-party licenses.
-- [ ] Audit the final repository and packaged APK for unused resources, dependencies, permissions and duplicate code.
-- [ ] Do not delete legacy app-private profile data during source cleanup.
-
-## P1 — 11. UI/UX overhaul
+## P1 — 9. UI/UX after the first working build
 
 - [ ] Make Home responsive in portrait and landscape, retaining the existing dark, frost-blue and gold theme.
 - [ ] Make Storage responsive in portrait and landscape with accurate native/WebView storage labels.
@@ -121,7 +126,30 @@ The tasks below are ordered by dependency. Do not remove the Gecko migration sou
 - [ ] Add automated screenshot/layout checks and UI-state tests for portrait and landscape.
 - [ ] Preserve state and prevent clipped, overlapping or unreachable controls during orientation changes and activity recreation.
 
-## P1 — 12. Final cleanup and release readiness
+## P2 — 10. CI and build-system overhaul
+
+- [ ] Remove GeckoView dependency and Mozilla Maven repository after the migration gate passes; remove geckoViewVersion.
+- [ ] Update build metadata validation to use the native manager version/schema rather than the extension manifest and Gecko version.
+- [ ] Replace extension-manifest validation with native manager asset, localization, archive-module and loader validation.
+- [ ] Replace APK checks that require libxul.so or extension manifest assets with checks for the expected WebView manager assets and native components.
+- [ ] Add a static guard that rejects Gecko dependencies, Gecko imports, Gecko activities/layouts and extension-runtime APIs from the final app.
+- [ ] Add CI coverage for migration export/import, native storage, manager operations, WebView bridge security, loader behavior and updater policies.
+- [ ] Add automated Android WebView integration/emulator coverage where supported by GitHub Actions; do not make physical-device testing a task for the owner.
+- [ ] Measure final signed ARM64 APK size against the recorded baseline and confirm libxul.so is absent.
+- [ ] Keep permanent-key verification, package ID, ARM64 output, monotonic versionCode, checksums and draft-only release creation unchanged.
+
+## P2 — 11. Remove obsolete implementation and assets
+
+- [ ] Remove GeckoRuntime/GeckoSession setup and App extension installation after migration is verified.
+- [ ] Remove Gecko-only Delegates.kt, FilePicker.kt implementation, Gecko-specific ManagerActivity/PlayActivity code and activity_gecko layout after WebView replacements are complete.
+- [ ] Remove Gecko WebExtension manifest, background runtime, isolated-world bridge and extension-only API adapters; retain only manager modules that the native host actually uses.
+- [ ] Remove obsolete Gecko version metadata, Mozilla repository configuration and old profile-only code.
+- [ ] Remove the debug Chromium probe once its production diagnostics are in place; avoid keeping two implementations of the same function.
+- [ ] Remove duplicate/obsolete documentation and historical release-note assets from the APK; preserve required third-party licenses.
+- [ ] Audit the final repository and packaged APK for unused resources, dependencies, permissions and duplicate code.
+- [ ] Do not delete legacy app-private profile data during source cleanup.
+
+## P2 — 12. Final cleanup and release readiness
 
 - [ ] Update README, PROJECT_OVERVIEW, ROADMAP and CHANGELOG to describe only the final WebView/native architecture and accurately identify migration limitations.
 - [ ] Verify no roadmap or contributor instruction still directs development toward GeckoView, TWA or a bundled Chromium engine.
@@ -131,6 +159,14 @@ The tasks below are ordered by dependency. Do not remove the Gecko migration sou
 - [ ] Run all JavaScript, Kotlin, Python, Gradle, packaging, signing, checksum and release-metadata checks.
 - [ ] Do not publish a release until all automated gates pass and the owner explicitly approves publication.
 
+## Not in scope
+
+- GeckoView as a final or fallback game engine.
+- Bundled Chromium, TWA, Firefox TWA or general-purpose browser features.
+- Analytics, tracking, push notifications or background services.
+- Differential APK updates.
+- Unrelated frameworks, dependencies or UI features.
+- Automatic deletion of existing app data or the legacy profile.
 ## Not in scope
 
 - GeckoView as a final or fallback game engine.
