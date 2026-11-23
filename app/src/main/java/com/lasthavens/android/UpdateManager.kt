@@ -105,7 +105,11 @@ internal class UpdateManager(context: Context) {
         }
         val installed = installedPackageInfo()
         val release = latestPublishedRelease()
-        val versionName = release.getString("tag_name").removePrefix("v")
+        val releaseTag = release.getString("tag_name")
+        val versionName = releaseTag.removePrefix("v")
+        check(UpdatePolicy.isPublishedStableRelease(releaseTag, release.optBoolean("draft", true), release.optBoolean("prerelease", true))) {
+            "Only published stable GitHub Releases can provide updates."
+        }
         check(UpdatePolicy.isStableVersionName(versionName)) { "The latest published release does not use stable SemVer." }
 
         val assets = release.optJSONArray("assets") ?: throw IOException("The GitHub Release has no assets.")
@@ -170,7 +174,7 @@ internal class UpdateManager(context: Context) {
 
     private fun latestPublishedRelease(): JSONObject {
         val release = getJson("https://api.github.com/repos/${UpdatePolicy.REPOSITORY}/releases/latest")
-        check(!release.optBoolean("draft", true) && !release.optBoolean("prerelease", true)) {
+        check(UpdatePolicy.isPublishedStableRelease(release.optString("tag_name"), release.optBoolean("draft", true), release.optBoolean("prerelease", true))) {
             "The latest GitHub Release is not a published stable release."
         }
         check(release.optString("html_url").startsWith("https://github.com/${UpdatePolicy.REPOSITORY}/releases/tag/")) {
