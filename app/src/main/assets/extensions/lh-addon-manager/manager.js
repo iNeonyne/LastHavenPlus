@@ -11,6 +11,7 @@ import {
 } from "./library.js";
 import { readLibrary, writeLibrary, withLock } from "./repository.js";
 import { putAddons, deleteAddon, getAllFiles, gc } from "./db.js";
+import { commitStagedGeneration } from "./staged-storage.js";
 import { languages, setLocale, t, formatSize, formatDate } from "./i18n.js";
 import {
   hasAccess,
@@ -174,19 +175,19 @@ async function addArchive(bytes) {
       library,
       staged.map(({ files: _files, ...meta }) => meta),
     );
-    await putAddons(
-      staged.map(({ storageFolder, files }) => ({ folder: storageFolder, files })),
-    );
-    try {
-      await commit(next);
-    } catch (error) {
-      await Promise.allSettled(staged.map((part) => deleteAddon(part.storageFolder)));
-      throw error;
-    }
-    // If cleanup is interrupted, startup GC removes the unreferenced generation.
-    await gc(next.addons.map((addon) => addon.storageFolder || addon.folder)).catch((error) =>
-      console.warn("Old add-on generation cleanup skipped", error),
-    );
+    await commitStagedGeneration({
+      stage: () =>
+        putAddons(
+          staged.map(({ storageFolder, files }) => ({ folder: storageFolder, files })),
+        ),
+      commit: () => commit(next),
+      rollback: () => staged.map((part) => deleteAddon(part.storageFolder)),
+      // If cleanup is interrupted, startup GC removes the unreferenced generation.
+      cleanup: () =>
+        gc(next.addons.map((addon) => addon.storageFolder || addon.folder)).catch((error) =>
+          console.warn("Old add-on generation cleanup skipped", error),
+        ),
+    });
   }
   return { folders, duplicates, imported: accepted.length };
 }
