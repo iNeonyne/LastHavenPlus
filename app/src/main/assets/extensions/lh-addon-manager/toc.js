@@ -9,7 +9,7 @@ export function tocMeta(text) {
   }
   const numbered = Object.keys(m)
     .filter((k) => /^dep\d+$/.test(k))
-    .sort()
+    .sort((a, b) => Number(a.slice(3)) - Number(b.slice(3)))
     .flatMap((k) => list(m[k]));
   return {
     title: clean(m.title),

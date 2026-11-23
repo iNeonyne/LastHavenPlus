@@ -24,6 +24,7 @@ test("TOC metadata parses title, version, interface and dependency variants", ()
     "## Interface: 30300, 30400",
     "## Dependencies: Core, Shared",
     "## OptionalDeps: Extras",
+    "## Dep10: Last",
     "## Dep2: MoreCore",
     "## Dep1: Base",
     "## LoadOnDemand: 1",
@@ -32,7 +33,7 @@ test("TOC metadata parses title, version, interface and dependency variants", ()
   assert.equal(meta.title, "Example Addon");
   assert.equal(meta.version, "2.4.1");
   assert.equal(meta.interface, "30300, 30400");
-  assert.deepEqual(meta.dependencies, ["Core", "Shared", "Base", "MoreCore"]);
+  assert.deepEqual(meta.dependencies, ["Core", "Shared", "Base", "MoreCore", "Last"]);
   assert.deepEqual(meta.optionalDeps, ["Extras"]);
   assert.equal(meta.loadOnDemand, true);
 });
@@ -55,15 +56,28 @@ test("load order puts dependencies before dependants and reports cycles", () => 
 test("merge replaces matching folders case-insensitively and preserves enabled state", () => {
   const current = {
     ...emptyLibrary(),
-    addons: [{ folder: "Example", version: "1.0", size: 10, enabled: true }],
+    addons: [{
+      folder: "Example",
+      version: "1.0",
+      size: 10,
+      enabled: true,
+      storageFolder: "lh_old_generation",
+    }],
   };
   const merged = mergeAddons(current, [
-    { folder: "example", version: "2.0", size: 20, enabled: false },
+    {
+      folder: "example",
+      version: "2.0",
+      size: 20,
+      enabled: false,
+      storageFolder: "lh_new_generation",
+    },
   ]);
 
   assert.equal(merged.addons.length, 1);
   assert.equal(merged.addons[0].version, "2.0");
   assert.equal(merged.addons[0].enabled, true);
+  assert.equal(merged.addons[0].storageFolder, "lh_new_generation");
 });
 
 test("same-version detection is case-insensitive and dependencies use enabled state", () => {

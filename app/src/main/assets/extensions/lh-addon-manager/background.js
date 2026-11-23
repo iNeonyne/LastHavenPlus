@@ -13,10 +13,7 @@ async function list() {
   const { order } = loadOrder(library.addons.filter((a) => a.enabled));
   return {
     revision: library.revision,
-    addons: order.map((a) => ({
-      folder: a.folder,
-      storageFolder: a.storageFolder || a.folder,
-    })),
+    addons: order.map((a) => ({ folder: a.folder })),
   };
 }
 function files(m) {
