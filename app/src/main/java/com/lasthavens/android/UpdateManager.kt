@@ -100,202 +100,129 @@ internal class UpdateManager(context: Context) {
     }
 
     private fun checkAndDownloadBlocking(): AvailableUpdate? {
+        check("arm64-v8a" in Build.SUPPORTED_ABIS) {
+            "LastHavenPlus updates are available for ARM64 (arm64-v8a) devices only."
+        }
         val installed = installedPackageInfo()
-        val run = latestSuccessfulMainRun()
-        if (!UpdatePolicy.isNewerVersion(PackageInfoCompat.getLongVersionCode(installed), run.runNumber)) {
-            return null
+        val release = latestPublishedRelease()
+        val versionName = release.getString("tag_name").removePrefix("v")
+        check(UpdatePolicy.isStableVersionName(versionName)) { "The latest published release does not use stable SemVer." }
+
+        val assets = release.optJSONArray("assets") ?: throw IOException("The GitHub Release has no assets.")
+        val apkName = "LastHavenPlus-$versionName-arm64-v8a.apk"
+        val apkAssets = (0 until assets.length()).mapNotNull { assets.optJSONObject(it) }
+            .filter { it.optString("name") == apkName && it.optString("state") == "uploaded" }
+        val checksumAssets = (0 until assets.length()).mapNotNull { assets.optJSONObject(it) }
+            .filter { it.optString("name") == "SHA256SUMS.txt" && it.optString("state") == "uploaded" }
+        check(apkAssets.size == 1 && checksumAssets.size == 1) {
+            "The latest GitHub Release must contain exactly one ARM64 APK and one SHA256SUMS.txt asset."
+        }
+        val apkAsset = apkAssets.single()
+        val checksumAsset = checksumAssets.single()
+        val apkSize = apkAsset.optLong("size")
+        check(apkSize in 1..MAX_APK_BYTES) { "The release APK has an invalid size." }
+        check(checksumAsset.optLong("size") in 1..MAX_CHECKSUM_BYTES.toLong()) {
+            "The release checksum file has an invalid size."
         }
 
-        val metadataArtifact = runArtifact(run, UpdatePolicy.METADATA_ARTIFACT_NAME, MAX_METADATA_ARTIFACT_BYTES)
-        val metadataZip = File(appContext.cacheDir, "main-update-metadata-${run.id}.zip")
-        val metadataZipPart = File(appContext.cacheDir, "main-update-metadata-${run.id}.zip.part")
-        val apkZip = File(appContext.cacheDir, "main-update-apk-${run.id}.zip")
-        val apkZipPart = File(appContext.cacheDir, "main-update-apk-${run.id}.zip.part")
-        val apkPart = File(appContext.cacheDir, "main-update.apk.part")
-        val readyApk = File(appContext.cacheDir, "main-update.apk")
-
+        val checksumFile = File(appContext.cacheDir, "release-checksums.txt")
+        val apkPart = File(appContext.cacheDir, "release-update.apk.part")
+        val readyApk = File(appContext.cacheDir, "release-update.apk")
         try {
-            downloadArtifact(metadataArtifact, metadataZipPart, MAX_METADATA_ARCHIVE_BYTES)
-            verifyArtifactArchiveDigest(metadataArtifact, metadataZipPart)
-            if (metadataZip.exists()) check(metadataZip.delete()) { "Could not replace the previous metadata archive." }
-            check(metadataZipPart.renameTo(metadataZip)) { "Could not stage the update metadata archive." }
-
-            val metadataAndChecksums = ZipFile(metadataZip).use { zip ->
-                val entries = zip.entries().asSequence().filterNot { it.isDirectory }.toList()
-                check(entries.size == 2 && entries.map { it.name }.toSet() == setOf("update.json", "SHA256SUMS.txt")) {
-                    "The main metadata artifact must contain only update.json and SHA256SUMS.txt."
-                }
-                entries.forEach { entry ->
-                    check(!entry.name.contains('/') && !entry.name.contains(92.toChar())) {
-                        "The metadata artifact contains an unsafe path."
-                    }
-                }
-                JSONObject(readZipText(zip, "update.json", MAX_METADATA_BYTES)) to
-                    readZipText(zip, "SHA256SUMS.txt", MAX_CHECKSUM_BYTES)
+            downloadReleaseAsset(checksumAsset, checksumFile, MAX_CHECKSUM_BYTES.toLong())
+            val checksums = checksumFile.readText(Charsets.UTF_8)
+            val checksumLines = checksums.lineSequence().filter { it.isNotBlank() }.toList()
+            check(checksumLines.size == 1) { "The release checksum file must contain exactly one APK checksum." }
+            val checksum = checksumLines.single().trim().split(Regex("\\s+"), limit = 2)
+            check(checksum.size == 2 && checksum[1].removePrefix("*") == apkName &&
+                UpdatePolicy.isValidSha256(checksum[0])) {
+                "The release checksum file does not describe the expected ARM64 APK."
             }
-
-            val metadata = metadataAndChecksums.first
-            val checksums = metadataAndChecksums.second
-            validateMetadata(metadata, run)
-            val variants = parseApkVariants(metadata)
-            val selected = UpdatePolicy.selectApk(Build.SUPPORTED_ABIS.toList(), variants)
-                ?: throw IOException("This release supports ARM64 (`arm64-v8a`) devices only.")
-            check(UpdatePolicy.checksumFileMatches(checksums, selected.fileName, selected.sha256)) {
-                "The APK checksum does not match the checksum list from this main build."
-            }
-            check(UpdatePolicy.isNewerVersion(
-                PackageInfoCompat.getLongVersionCode(installed), metadata.getLong("versionCode"),
-            )) { "The latest successful main build is not newer than this installation." }
-
-            val apkArtifactName = "${UpdatePolicy.APK_ARTIFACT_PREFIX}${selected.abi}"
-            val apkArtifact = runArtifact(run, apkArtifactName, MAX_APK_ARTIFACT_BYTES)
-            // The compressed archive and extracted APK coexist briefly in the cache.
-            val requiredFreeSpace = apkArtifact.optLong("size_in_bytes") + selected.sizeBytes + MIN_FREE_SPACE_BYTES
-            check(requiredFreeSpace > 0 && appContext.cacheDir.usableSpace >= requiredFreeSpace) {
+            check(appContext.cacheDir.usableSpace >= apkSize + MIN_FREE_SPACE_BYTES) {
                 "Not enough free storage to download and verify this update. Free up space and try again."
             }
-            downloadArtifact(apkArtifact, apkZipPart, MAX_APK_ARCHIVE_BYTES)
-            verifyArtifactArchiveDigest(apkArtifact, apkZipPart)
-            if (apkZip.exists()) check(apkZip.delete()) { "Could not replace the previous APK archive." }
-            check(apkZipPart.renameTo(apkZip)) { "Could not stage the selected APK archive." }
-
-            ZipFile(apkZip).use { zip ->
-                val entries = zip.entries().asSequence().filterNot { it.isDirectory }.toList()
-                check(entries.size == 1 && entries.single().name == selected.fileName) {
-                    "The selected ABI artifact does not contain exactly the expected APK."
-                }
-                val entry = entries.single()
-                check(!entry.name.contains('/') && !entry.name.contains(92.toChar())) {
-                    "The APK artifact contains an unsafe path."
-                }
-                check(entry.size == selected.sizeBytes) { "The APK size does not match its published metadata." }
-                FileOutputStream(apkPart).use { output ->
-                    zip.getInputStream(entry).use { input ->
-                        val digest = MessageDigest.getInstance("SHA-256")
-                        val buffer = ByteArray(DEFAULT_BUFFER_SIZE)
-                        var total = 0L
-                        while (true) {
-                            val count = input.read(buffer)
-                            if (count < 0) break
-                            total += count
-                            check(total <= selected.sizeBytes && total <= MAX_APK_BYTES) {
-                                "APK exceeded its declared size."
-                            }
-                            digest.update(buffer, 0, count)
-                            output.write(buffer, 0, count)
-                        }
-                        val actualDigest = digest.digest().toHex()
-                        check(UpdatePolicy.isValidDownload(
-                            selected.sizeBytes, total, MAX_APK_BYTES, selected.sha256,
-                            actualDigest, completed = total == selected.sizeBytes,
-                        )) {
-                            "The APK is incomplete or failed SHA-256 verification. Installation was blocked."
-                        }
-                        output.fd.sync()
-                    }
-                }
+            downloadReleaseAsset(apkAsset, apkPart, MAX_APK_BYTES)
+            check(apkPart.length() == apkSize && sha256(apkPart).equals(checksum[0], ignoreCase = true)) {
+                "The release APK is incomplete or failed SHA-256 verification. Installation was blocked."
             }
 
-            verifyArchivePackage(apkPart, metadata, installed)
+            val releaseMetadata = JSONObject()
+                .put("versionName", versionName)
+            val downloaded = archivePackageInfo(apkPart)
+                ?: throw IOException("Android could not read the downloaded release APK.")
+            releaseMetadata.put("versionCode", PackageInfoCompat.getLongVersionCode(downloaded))
+            check(UpdatePolicy.isNewerVersion(
+                PackageInfoCompat.getLongVersionCode(installed), releaseMetadata.getLong("versionCode"),
+            )) { "The latest published GitHub Release is not newer than this installation." }
+            verifyArchivePackage(apkPart, releaseMetadata, installed)
+
             if (readyApk.exists()) check(readyApk.delete()) { "Could not replace the previous verified update." }
-            check(apkPart.renameTo(readyApk)) { "Could not finalize the verified APK." }
+            check(apkPart.renameTo(readyApk)) { "Could not finalize the verified release APK." }
             return AvailableUpdate(
-                metadata.getString("versionName"), metadata.getLong("versionCode"),
-                selected.sizeBytes, run.commitSha, run.runNumber, readyApk,
+                versionName, releaseMetadata.getLong("versionCode"), apkSize,
+                release.getString("tag_name"), releaseMetadata.getLong("versionCode"), readyApk,
             )
         } finally {
-            metadataZipPart.delete()
-            metadataZip.delete()
-            apkZipPart.delete()
-            apkZip.delete()
+            checksumFile.delete()
             apkPart.delete()
         }
     }
 
-    private fun latestSuccessfulMainRun(): UpdateRun {
-        val url = "https://api.github.com/repos/${UpdatePolicy.REPOSITORY}/actions/workflows/build.yml/runs" +
-            "?branch=main&status=completed&event=push&per_page=100"
-        val runs = getJson(url).optJSONArray("workflow_runs") ?: JSONArray()
-        val candidates = (0 until runs.length()).mapNotNull { i ->
-            val item = runs.optJSONObject(i) ?: return@mapNotNull null
-            val repo = item.optJSONObject("head_repository")?.optString("full_name")?.takeIf { it.isNotBlank() }
-                ?: item.optJSONObject("repository")?.optString("full_name").orEmpty()
-            UpdateRun(
-                item.optLong("id"), item.optLong("run_number"), item.optLong("workflow_id"),
-                item.optString("head_branch"), item.optString("event"), item.optString("status"),
-                item.optString("conclusion"), item.optString("path"), repo, item.optString("head_sha"),
-            ).takeIf(UpdatePolicy::isEligibleRun)
+    private fun latestPublishedRelease(): JSONObject {
+        val release = getJson("https://api.github.com/repos/${UpdatePolicy.REPOSITORY}/releases/latest")
+        check(!release.optBoolean("draft", true) && !release.optBoolean("prerelease", true)) {
+            "The latest GitHub Release is not a published stable release."
         }
-        return candidates.maxByOrNull { it.runNumber }
-            ?: throw IOException("No successful completed main-branch update build was found.")
+        check(release.optString("html_url").startsWith("https://github.com/${UpdatePolicy.REPOSITORY}/releases/tag/")) {
+            "The release does not belong to the official LastHavenPlus repository."
+        }
+        return release
     }
 
-    private fun runArtifact(
-        run: UpdateRun,
-        artifactName: String,
-        maxSizeBytes: Long,
-    ): JSONObject {
-        val response = getJson(
-            "https://api.github.com/repos/${UpdatePolicy.REPOSITORY}/actions/runs/${run.id}/artifacts?per_page=100",
-        )
-        val artifacts = response.optJSONArray("artifacts") ?: JSONArray()
-        val matches = (0 until artifacts.length()).mapNotNull { artifacts.optJSONObject(it) }
-            .filter { it.optString("name") == artifactName }
-        check(matches.size == 1) { "The successful main build does not contain exactly one $artifactName artifact." }
-        val artifact = matches.single()
-        check(!artifact.optBoolean("expired", true)) { "The main update artifact $artifactName has expired." }
-        check(artifact.optLong("id") > 0) { "The update artifact ID is invalid." }
-        val runInfo = artifact.optJSONObject("workflow_run")
-            ?: throw IOException("Artifact has no workflow-run provenance.")
-        check(UpdatePolicy.isEligibleArtifact(
-            artifact.optString("name"), artifactName, artifact.optBoolean("expired", true),
-            runInfo.optLong("id"), runInfo.optString("head_branch"), runInfo.optString("head_sha"), run,
-        )) { "Artifact $artifactName does not belong to the latest successful main commit." }
-        check(artifact.optLong("size_in_bytes") in 1..maxSizeBytes) {
-            "The main update artifact $artifactName is invalid or exceeds its download limit."
+    private fun downloadReleaseAsset(asset: JSONObject, destination: File, maxBytes: Long) {
+        val expectedSize = asset.optLong("size")
+        val url = asset.optString("browser_download_url")
+        check(asset.optString("state") == "uploaded" && expectedSize in 1..maxBytes) {
+            "The GitHub Release asset is missing, incomplete, or exceeds its download limit."
         }
-        return artifact
-    }
-
-    private fun verifyArtifactArchiveDigest(artifact: JSONObject, archive: File) {
-        val digest = artifact.optString("digest")
-        if (digest.startsWith("sha256:", ignoreCase = true)) {
-            val expected = digest.substringAfter(':')
-            check(UpdatePolicy.isValidSha256(expected) && sha256(archive) == expected.lowercase()) {
-                "The GitHub Actions artifact archive failed its SHA-256 integrity check."
+        val uri = Uri.parse(url)
+        check(uri.scheme == "https" && uri.host == "github.com" &&
+            uri.path?.startsWith("/${UpdatePolicy.REPOSITORY}/releases/download/") == true) {
+            "The release asset URL is not a trusted GitHub Releases download."
+        }
+        val connection = (URL(url).openConnection() as HttpURLConnection).apply {
+            requestMethod = "GET"
+            connectTimeout = CONNECT_TIMEOUT_MS
+            readTimeout = DOWNLOAD_TIMEOUT_MS
+            instanceFollowRedirects = true
+            setRequestProperty("User-Agent", USER_AGENT)
+            setRequestProperty("Accept", "application/octet-stream")
+        }
+        try {
+            val status = connection.responseCode
+            if (status !in 200..299) throw IOException("GitHub Release asset download failed (HTTP $status).")
+            FileOutputStream(destination).use { output ->
+                connection.inputStream.use { input ->
+                    val buffer = ByteArray(DEFAULT_BUFFER_SIZE)
+                    var total = 0L
+                    while (true) {
+                        val count = input.read(buffer)
+                        if (count < 0) break
+                        total += count
+                        check(total <= expectedSize && total <= maxBytes) {
+                            "Release asset exceeded its declared size or download limit."
+                        }
+                        output.write(buffer, 0, count)
+                    }
+                    output.fd.sync()
+                }
             }
+            check(UpdatePolicy.isCompleteArtifact(expectedSize, destination.length(), maxBytes)) {
+                "The GitHub Release asset download was incomplete."
+            }
+        } finally {
+            connection.disconnect()
         }
-    }
-
-    private fun validateMetadata(meta: JSONObject, run: UpdateRun) {
-        check(meta.optInt("schemaVersion") == 1) { "Update metadata format is unsupported." }
-        check(meta.optString("packageName") == appContext.packageName) { "Update is for a different Android package." }
-        check(UpdatePolicy.isStableVersionName(meta.optString("versionName"))) { "Main update metadata must use stable SemVer." }
-        check(meta.optLong("versionCode") == run.runNumber) { "versionCode does not match the workflow run number." }
-        check(meta.optString("branch") == "main" && meta.optString("ref") == "refs/heads/main") { "Update metadata is not from main." }
-        check(meta.optString("commitSha") == run.commitSha && meta.optLong("workflowRunId") == run.id &&
-            meta.optLong("workflowRunNumber") == run.runNumber && meta.optLong("workflowId") == run.workflowId) {
-            "Update metadata does not match the successful main workflow run."
-        }
-    }
-
-    private fun parseApkVariants(meta: JSONObject): List<UpdateApk> {
-        val version = meta.getString("versionName")
-        val apks = meta.optJSONArray("apks") ?: throw IOException("Update metadata has no APK list.")
-        check(apks.length() == 1) { "Main build must publish exactly one ARM64 APK." }
-        val variants = (0 until apks.length()).map { i ->
-            val item = apks.getJSONObject(i)
-            val abi = item.getString("abi")
-            val name = item.getString("file")
-            val hash = item.getString("sha256")
-            val size = item.getLong("sizeBytes")
-            check(UpdatePolicy.isExpectedApkName(version, abi, name)) { "Unexpected APK filename or ABI in metadata." }
-            check(UpdatePolicy.isValidSha256(hash)) { "Invalid SHA-256 digest in metadata." }
-            check(size in 1..MAX_APK_BYTES) { "Invalid APK size in metadata." }
-            UpdateApk(abi, name, hash, size)
-        }
-        check(variants.map { it.abi }.toSet() == UpdatePolicy.supportedAbis) { "The ARM64 APK variant is missing or unsupported variants were published." }
-        return variants
     }
 
     private fun verifyArchivePackage(apk: File, meta: JSONObject, installed: PackageInfo) {
@@ -370,53 +297,6 @@ internal class UpdateManager(context: Context) {
         } finally { connection.disconnect() }
     }
 
-    private fun downloadArtifact(artifact: JSONObject, destination: File, maxBytes: Long) {
-        val artifactId = artifact.optLong("id")
-        check(artifactId > 0) { "The update artifact ID is invalid." }
-        val expectedSize = artifact.optLong("size_in_bytes")
-        check(expectedSize in 1..maxBytes) { "The update artifact size is invalid." }
-        val url = "https://api.github.com/repos/${UpdatePolicy.REPOSITORY}/actions/artifacts/$artifactId/zip"
-        val connection = (URL(url).openConnection() as HttpURLConnection).apply {
-            requestMethod = "GET"
-            connectTimeout = CONNECT_TIMEOUT_MS
-            readTimeout = DOWNLOAD_TIMEOUT_MS
-            instanceFollowRedirects = true
-            setRequestProperty("Accept", "application/vnd.github+json")
-            setRequestProperty("User-Agent", USER_AGENT)
-        }
-        try {
-            val status = connection.responseCode
-            if (status !in 200..299) throw IOException("Main update artifact download failed (HTTP $status).")
-            FileOutputStream(destination).use { output ->
-                connection.inputStream.use { input ->
-                    val buffer = ByteArray(DEFAULT_BUFFER_SIZE)
-                    var total = 0L
-                    while (true) {
-                        val count = input.read(buffer)
-                        if (count < 0) break
-                        total += count
-                        check(total <= expectedSize && total <= maxBytes) {
-                            "Update artifact exceeded its declared size or download limit."
-                        }
-                        output.write(buffer, 0, count)
-                    }
-                    output.fd.sync()
-                }
-            }
-            check(UpdatePolicy.isCompleteArtifact(expectedSize, destination.length(), maxBytes)) {
-                "The update artifact download was incomplete."
-            }
-        } finally {
-            connection.disconnect()
-        }
-    }
-
-    private fun readZipText(zip: ZipFile, name: String, limit: Int): String {
-        val entry = zip.getEntry(name) ?: throw IOException("The artifact is missing $name.")
-        check(!entry.isDirectory && entry.size >= 0 && entry.size <= limit.toLong()) { "$name has an invalid size." }
-        return zip.getInputStream(entry).use { it.readBounded(limit).toString(Charsets.UTF_8) }
-    }
-
     private fun java.io.InputStream.readBounded(limit: Int): ByteArray {
         val output = java.io.ByteArrayOutputStream()
         val buffer = ByteArray(DEFAULT_BUFFER_SIZE)
@@ -448,13 +328,8 @@ internal class UpdateManager(context: Context) {
         private const val READ_TIMEOUT_MS = 30_000
         private const val DOWNLOAD_TIMEOUT_MS = 120_000
         private const val MAX_JSON_BYTES = 2 * 1024 * 1024
-        private const val MAX_METADATA_BYTES = 64 * 1024
         private const val MAX_CHECKSUM_BYTES = 64 * 1024
         private const val MAX_APK_BYTES = 400L * 1024 * 1024
-        private const val MAX_METADATA_ARTIFACT_BYTES = 2L * 1024 * 1024
-        private const val MAX_APK_ARTIFACT_BYTES = MAX_APK_BYTES + 5L * 1024 * 1024
-        private const val MAX_METADATA_ARCHIVE_BYTES = MAX_METADATA_ARTIFACT_BYTES + 1024L * 1024
-        private const val MAX_APK_ARCHIVE_BYTES = MAX_APK_ARTIFACT_BYTES + 1024L * 1024
         private const val MIN_FREE_SPACE_BYTES = 16L * 1024 * 1024
         private val executor = Executors.newSingleThreadExecutor()
         private val mainHandler = android.os.Handler(android.os.Looper.getMainLooper())
