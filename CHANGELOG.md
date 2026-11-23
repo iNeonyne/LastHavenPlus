@@ -5,6 +5,7 @@ This file records notable user-visible changes. It is not the development task l
 ## [Unreleased] — development
 
 ### Added
+- Themed updater progress and update-ready dialogs with live download percentage and a verification stage.
 - Matching storage and update action icons on both Home layouts, using the existing frost-blue and gold palette.
 - Read-only storage dashboard for shared GeckoView/app persistent data, browser/app cache, and available device storage; distinguishes current storage from lifetime downloads.
 - Native JavaScript alert, confirm, and prompt dialogs.
@@ -21,6 +22,7 @@ This file records notable user-visible changes. It is not the development task l
 - Restricted in-app navigation to HTTPS Lasthavens hosts and required Gecko internal schemes; reject insecure HTTP, executable/data/file/intent schemes, untrusted blob origins, and lookalike hosts. Added JVM regression tests to CI.
 
 ### Improved
+- Replaced static updater alerts with a branded progress panel, clearer update details, and an explicit Android installer confirmation handoff.
 - Refined the Home screen's dark overlay and translucent action surfaces for more consistent text contrast over the hero background.
 - Addon Manager installs and updates now write add-on files to a new storage generation before switching library metadata. Interrupted updates leave the previous installed files intact; orphaned generations are cleaned up later.
 - Numbered TOC dependencies are now ordered numerically (Dep1, Dep2, Dep10).
