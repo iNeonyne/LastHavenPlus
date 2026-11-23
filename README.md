@@ -52,7 +52,7 @@ GitHub Actions runs automated checks on `main`, pull requests, and manual dispat
 
 | Component | Current version | Status |
 |---|---:|---|
-| Android app | `2.0.0` | Development; not released or device-validated |
+| Android app | `1.0.0` | First release candidate; not yet published or device-validated |
 | Bundled Addon Manager | `1.0.2` | Crash-safe add-on replacement; preserves existing library data |
 | GeckoView | `159.0.20261102144711` | Pinned dependency |
 
@@ -63,7 +63,7 @@ The extension version is independent of the Android app version. Check the bundl
 
 The Android app's `versionName` follows `MAJOR.MINOR.PATCH` (Semantic Versioning). Android's numeric `versionCode` is separate and determines whether an APK can replace an installed version. The Android app, bundled Addon Manager, and GeckoView each have independent versions.
 
-The current app line uses `versionName = 2.0.0`. Keep this stable across ordinary commits. Use `2.0.1` for the next patch release, `2.1.0` for the next backward-compatible feature release, or `3.0.0` only for a breaking release. Android `versionCode` is taken from the existing workflow's monotonically increasing `GITHUB_RUN_NUMBER`; local builds use a development-only fallback and are never update candidates. `main` is the sole development and release branch; do not create a permanent beta branch or prerelease version stream.
+The first public Android app release is planned as `1.0.0` (tag `v1.0.0`). Keep this stable across ordinary commits. After `1.0.0`, use `1.0.1` for the next patch release, `1.1.0` for the next backward-compatible feature release, or `2.0.0` only for a breaking release. Android `versionCode` is taken from the existing workflow's monotonically increasing `GITHUB_RUN_NUMBER`; local builds use a development-only fallback and are never update candidates. `main` is the sole development and release branch; do not create a permanent beta branch or prerelease version stream.
 
 The main branch contains a user-triggered updater. It queries only successful completed `push` runs from `main`, downloads the metadata/checksum artifact and the complete ARM64 APK artifact, and offers it only when the device supports ARM64, checks artifact/run/commit provenance and metadata, verifies the APK SHA-256, and checks package ID, version code and installed signing certificate before offering Android's user-confirmed package installer. It never silently installs, uninstalls, or clears app data. Debug-signed pull-request/test APKs are not accepted as update sources. A debug-signed test installation cannot be upgraded in place to a permanent-key-signed main build; do not uninstall a data-bearing installation to switch signing identities. Use a separate test device for release-signing validation. Main run #196 passed permanent-key signing and artifact publication; the live update feed still requires same-certificate physical-device validation. No public download link is published until an approved release exists. See [AGENTS.md](AGENTS.md) for the rules agents must follow.
 
@@ -73,7 +73,7 @@ Official releases are created from stable version tags on `main`:
 
 1. Complete the required physical-device, same-certificate upgrade, data-preservation, and distribution-permission checks in [MANUAL_CHECKLIST.md](MANUAL_CHECKLIST.md).
 2. Update `versionName` in `app/build.gradle.kts` and add the user-visible changes to `CHANGELOG.md`. Keep the tag exactly aligned with the app version.
-3. Merge the release-ready commit into `main`, then create and push the matching tag, for example `v2.0.1`.
+3. Merge the release-ready commit into `main`, then create and push the matching tag, for example `v1.0.0`.
 4. GitHub Actions validates that the tag is stable SemVer, matches `versionName`, and points to a commit reachable from `main`. It builds and verifies the permanent-key-signed ARM64 APK and creates a **draft GitHub Release** with generated notes, the APK, and checksums.
 5. Review the draft, its assets, and release notes. Publish it manually only after release sign-off.
 
