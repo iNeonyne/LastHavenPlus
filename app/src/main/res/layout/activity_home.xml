@@ -92,9 +92,21 @@
             android:textColor="@color/text_primary"
             android:textSize="18sp" />
 
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btnStorage"
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/btn_manager"
+            android:fontFamily="sans-serif-medium"
+            android:text="@string/storage"
+            android:textAllCaps="false"
+            android:textColor="@color/text_primary"
+            android:textSize="16sp" />
+
         <Space
             android:layout_width="match_parent"
-            android:layout_height="28dp" />
+            android:layout_height="18dp" />
 
         <LinearLayout
             android:layout_width="wrap_content"
