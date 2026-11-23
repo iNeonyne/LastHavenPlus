@@ -17,6 +17,16 @@ Useful links: [Game](https://lasthavens.com/play) · [Repository](https://github
 
 ## Current source and target
 
+Current build metadata (the checked-in transition baseline):
+
+| Component | Version |
+|---|---|
+| Android app | `1.0.1` |
+| Addon Manager | `1.0.6` |
+| Current GeckoView runtime (temporary) | `159.0.20261102144711` |
+
+The GeckoView entry describes the current source only; it is not part of the approved target architecture.
+
 The checked-in source still contains the existing GeckoView game screen and WebExtension-based Addon Manager, plus a debug-only Chromium WebView probe. They are transitional code, not the target architecture.
 
 The target app uses Android System WebView without bundling a second browser engine. The Addon Manager will use native app-private storage and a restricted local WebView host. The migration is planned to preserve installed add-ons and manager settings. Gecko login cookies/session state are not assumed to transfer to WebView, so a new sign-in may be required.
