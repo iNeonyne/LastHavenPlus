@@ -91,6 +91,8 @@ internal class UpdateManager(context: Context) {
                 )
                 session.commit(status.intentSender)
             }
+            // PackageInstaller now owns the staged session data; free the cached source APK.
+            runCatching { apk.delete() }
         } catch (error: Exception) {
             runCatching { installer.abandonSession(sessionId) }
             throw error

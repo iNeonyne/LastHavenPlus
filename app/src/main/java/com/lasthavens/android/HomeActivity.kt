@@ -33,8 +33,15 @@ class HomeActivity : AppCompatActivity() {
 
     private fun checkForUpdates() {
         updateButton.isEnabled = false
+        val checking = AlertDialog.Builder(this)
+            .setTitle(R.string.update_checking)
+            .setMessage(R.string.update_checking_message)
+            .setCancelable(false)
+            .create()
+        checking.show()
         updateManager.checkAndDownload { result ->
             if (isFinishing || isDestroyed) return@checkAndDownload
+            if (checking.isShowing) checking.dismiss()
             updateButton.isEnabled = true
             result.fold(
                 onSuccess = { update ->

@@ -10,6 +10,8 @@
     <string name="version_addons">Addon Manager %1$s</string>
 
     <string name="update_check">Check for updates</string>
+    <string name="update_checking">Checking for updates</string>
+    <string name="update_checking_message">Checking the latest successful main build and downloading the verified APK for this device. This may take a while.</string>
     <string name="update_title">App updates</string>
     <string name="update_none">No newer compatible update is available from the latest successful main build.</string>
     <string name="update_available">Update available</string>
