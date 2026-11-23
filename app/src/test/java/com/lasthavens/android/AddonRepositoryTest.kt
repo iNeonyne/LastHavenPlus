@@ -3,6 +3,7 @@ package com.lasthavens.android
 import org.json.JSONObject
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
+import org.junit.Assert.assertNotEquals
 import org.junit.Test
 import java.io.File
 import java.nio.file.Files
@@ -49,6 +50,60 @@ class AddonRepositoryTest {
             val second = repository.activate(stage)
             assertEquals(first.generation, second.generation)
         } finally { root.deleteRecursively() }
+    }
+
+    @Test
+    fun enableDisablePublishesNewGenerationWithoutChangingAddonBytes() {
+        val root = Files.createTempDirectory("addon-repository-toggle").toFile()
+        try {
+            val repository = AddonRepository(root)
+            val first = repository.activate(addonStage(root, true))
+            val disabled = repository.setEnabled("Test", false)
+            assertNotEquals(first.generation, disabled.generation)
+            assertEquals(false, disabled.manifest.getJSONObject("library").getJSONArray("addons")
+                .getJSONObject(0).getBoolean("enabled"))
+            assertEquals("addon bytes", File(disabled.directory, "files/Test/Test.toc").readText())
+
+            val enabled = repository.setEnabled("test", true)
+            assertEquals(true, enabled.manifest.getJSONObject("library").getJSONArray("addons")
+                .getJSONObject(0).getBoolean("enabled"))
+            assertEquals("addon bytes", File(enabled.directory, "files/Test/Test.toc").readText())
+        } finally { root.deleteRecursively() }
+    }
+
+    private fun addonStage(root: File, enabled: Boolean): MigrationArchiveReader.Stage {
+        val directory = File(root, "addon-stage-$enabled").apply { mkdirs() }
+        val bytes = "addon bytes".toByteArray()
+        val addonDir = File(directory, "files/Test").apply { mkdirs() }
+        File(addonDir, "Test.toc").writeBytes(bytes)
+        val checksum = java.security.MessageDigest.getInstance("SHA-256").digest(bytes)
+            .joinToString("") { "%02x".format(it) }
+        val addon = JSONObject()
+            .put("folder", "Test")
+            .put("storageFolder", "Test")
+            .put("version", "1.0")
+            .put("enabled", enabled)
+            .put("dependencies", org.json.JSONArray())
+            .put("optionalDeps", org.json.JSONArray())
+            .put("size", bytes.size)
+            .put("fileCount", 1)
+        val manifest = JSONObject()
+            .put("format", MigrationArchiveReader.FORMAT)
+            .put("schema", MigrationArchiveReader.SCHEMA)
+            .put("library", JSONObject().put("revision", "toggle-rev").put("addons", org.json.JSONArray().put(addon)))
+            .put("files", org.json.JSONArray().put(
+                JSONObject()
+                    .put("addonFolder", "Test")
+                    .put("storageFolder", "Test")
+                    .put("path", "Test.toc")
+                    .put("archivePath", "files/Test/Test.toc")
+                    .put("size", bytes.size)
+                    .put("sha256", checksum),
+            ))
+            .put("preferences", JSONObject())
+            .put("totals", JSONObject().put("addons", 1).put("files", 1).put("expandedBytes", bytes.size))
+        File(directory, "manifest.json").writeText(manifest.toString())
+        return MigrationArchiveReader.Stage(directory, manifest, 1, bytes.size.toLong())
     }
 
     private fun stage(root: File, revision: String, bytes: String): MigrationArchiveReader.Stage {
