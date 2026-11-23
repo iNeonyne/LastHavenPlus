@@ -26,7 +26,7 @@ const sha256 = async (bytes) =>
     .join("");
 
 /**
- * Creates a self-contained, checksummed migration archive from the real 1.0.5
+ * Creates a self-contained, checksummed migration archive from the real 1.0.6
  * library and its IndexedDB file records. It does not mutate source storage.
  */
 export async function createMigrationArchive({
