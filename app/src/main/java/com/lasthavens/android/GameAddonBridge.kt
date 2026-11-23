@@ -36,7 +36,8 @@ class GameAddonBridge private constructor(
             isMainFrame: Boolean,
             replyProxy: JavaScriptReplyProxy,
         ) {
-            if (!isMainFrame || !isAllowedOrigin(sourceOrigin)) return
+            if (!isAllowedOrigin(sourceOrigin)) return
+            if (!isMainFrame) Log.v(TAG, "Accepted first-party game frame: $sourceOrigin")
             if (message.type != WebMessageCompat.TYPE_STRING) {
                 replyError(replyProxy, "Only JSON string requests are accepted")
                 return
