@@ -14,8 +14,8 @@ import androidx.core.view.WindowCompat
 import java.util.concurrent.Executors
 
 /**
- * Verifies a Gecko Addon Manager migration archive and activates it in the separate native
- * repository only after the user explicitly confirms. The legacy Gecko profile is untouched.
+ * Verifies a migration archive exported by the previous Addon Manager and activates it in the native
+ * repository only after the user explicitly confirms. Existing app data is not modified.
  */
 class MigrationImportActivity : AppCompatActivity() {
     private val executor = Executors.newSingleThreadExecutor()
