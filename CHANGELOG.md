@@ -15,6 +15,8 @@ This file records notable user-visible changes. It is not the development task l
 - GitHub Actions produces debug-signed demo APK artifacts for pushes to `beta`.
 
 ### Improved
+- Addon Manager installs and updates now write add-on files to a new storage generation before switching library metadata. Interrupted updates leave the previous installed files intact; orphaned generations are cleaned up later.
+- Numbered TOC dependencies are now ordered numerically (Dep1, Dep2, Dep10).
 - Added automated Addon Manager regression tests for metadata parsing, dependency handling, library merge behavior, archive round-trips, and malicious/duplicate ZIP paths.
 - Added checks for bundled extension JSON/JavaScript, locale assets, and GeckoView native engine packaging.
 - Added SHA-256 checksum generation and verification for CI artifacts and GitHub Releases.

@@ -20,10 +20,10 @@ LastHavenPlus is a focused native Android client for the Lasthavens game. It use
 ## Version snapshot
 
 - Android app: 2.0.0 — development version, not released or device-validated.
-- Addon Manager: 1.0.1 — read the bundled `manifest.json` for the authoritative version.
+- Addon Manager: 1.0.2 — staged storage generations protect existing add-on files during replacement; read the bundled `manifest.json` for the authoritative version.
 - GeckoView: 159.0.20261102144711 — pinned dependency.
 
-The app and extension have independent versions. Do not change the bundled Addon Manager without explicit project-owner authorization. Protect existing extension data and shared Gecko profile state.
+The app and extension have independent versions. Necessary Addon Manager maintenance is owner-authorized only with strict preservation of existing add-on files, enabled state, metadata, settings, and shared Gecko profile state.
 
 ## Current build status
 
