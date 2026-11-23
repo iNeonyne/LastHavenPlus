@@ -63,14 +63,14 @@ The owner has authorized necessary manager maintenance only with preservation of
 - [x] Add CI safeguards ensuring debug-signed beta/demo artifacts are not accepted as main or tagged release assets; main/tag builds fail closed unless the permanent certificate matches.
 - [x] Add CI validation for package ID, APK-embedded versionName/versionCode, ABI coverage, signer consistency, and SHA-256 checksums.
 - [x] Keep release workflows compatible with the versioning and promotion policy in `AGENTS.md`.
-- [x] Configure one main-only metadata/checksum artifact and one ARM64 APK artifact; beta/demo artifacts remain separate and are rejected by the updater. Main publishes them directly; verify the first post-merge run.
+- [x] Configure the tagged-release pipeline to attach one permanent-key-signed ARM64 APK and SHA256SUMS.txt to a draft GitHub Release; main CI artifacts remain temporary validation outputs.
 - [x] Require the permanent release key and exact expected certificate on main/tag builds; missing secrets or fingerprint mismatch fail closed. A main-signed build remains to be verified after consolidation.
 - [x] Replace static Android `versionCode` with the existing workflow's global `GITHUB_RUN_NUMBER`; local builds use a development-only fallback and are never update candidates.
-- [x] Implement the `main`-only update checker; reject beta, tag, PR, manual, failed, cancelled, in-progress, expired, mismatched and incompatible build artifacts.
+- [x] Implement the published stable GitHub Release update checker; reject drafts, prereleases, malformed tags, missing/duplicate assets, and incompatible package/version/signing data.
 - [x] Implement full-APK download for ARM64 (`arm64-v8a`) devices only; reject other device architectures; no universal fallback or differential updates.
-- [x] Verify APK size and SHA-256 against metadata and the checksum file from the same main build; reject missing/mismatched checksums and incomplete downloads.
-- [x] Hand the verified APK to Android's package installer with build/version, size and commit information; Android requires user confirmation and the app never silently installs or uninstalls.
-- [x] Add JVM policy tests for main-only runs/artifacts, provenance, expiry, ARM64-only selection, unsupported devices, version ordering, interrupted/incomplete/checksum failures and signer mismatch; add Python tests for ARM64-only metadata generation and validation.
+- [x] Verify release APK size and SHA-256 against the published release checksum asset; reject missing/mismatched checksums and incomplete downloads.
+- [x] Hand the verified release APK to Android's package installer with release version, versionCode, size and tag information; Android requires user confirmation and the app never silently installs or uninstalls.
+- [x] Add JVM policy tests for published stable releases, draft/prerelease rejection, strict SemVer, ARM64-only selection, asset sizes, version ordering, checksums, and signer mismatch.
 - [x] Document and enforce exact signing-certificate, package ID and version compatibility; incompatible candidates are blocked instead of prompting an uninstall.
 - [x] Keep the updater to an Android package replacement only; it does not clear app data, cookies, login/session, GeckoView profile or add-ons. Physical verification remains in `MANUAL_CHECKLIST.md`.
 
@@ -86,5 +86,5 @@ The following are not implementation tasks unless the owner explicitly reopens t
 - Replacing GeckoView without a technical case and migration plan.
 - Analytics, tracking, push notifications, or background services.
 - Differential APK patching.
-- Automatic updates beyond the defined main-only, checksum-verified, same-certificate in-place update design.
+- Automatic updates beyond the defined published-release-only, checksum-verified, same-certificate in-place update design.
 - Resetting or wiping existing add-on data, or changing its format without a tested migration and rollback path.
