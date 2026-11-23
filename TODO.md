@@ -17,6 +17,19 @@ All development work stays on `main`, the sole active branch. The former `beta` 
 - Version flow: main-only SemVer releases with a monotonic workflow-run `versionCode`; see `AGENTS.md`.
 - A Termux-free release-request workflow is installed. Its dry-run validation is being repeated for `v1.0.1`; real requests create the annotated tag and dispatch the signed tag build, which creates a draft for manual review.
 
+## P0 — Updater reliability (highest priority)
+
+The owner reports that in-app updating did not work from v1.0.0. Treat this as a release-blocking defect. Do not start differential APK work until the full-APK path is reliable and covered by automated tests.
+
+- [ ] Reproduce the v1.0.0 failure from the exact tagged source and trace each stage: GitHub API lookup, published-release selection, asset discovery, checksum download/parse, APK download/redirect, size/hash validation, package/version/ABI/signer checks, installer handoff, and PackageInstaller result.
+- [ ] Add structured, user-readable failure categories and safe diagnostic logging for each updater stage. Never log credentials, private URLs, cookies, or personal data.
+- [ ] Verify GitHub API and release-asset HTTP behavior, including redirects to GitHub's asset CDN, non-2xx responses, rate limits, offline states, timeouts, and interrupted transfers.
+- [ ] Add automated tests for release JSON parsing, exact APK/checksum asset selection, redirect destination validation, checksum parsing, partial downloads, retry cleanup, and old-cache-file handling.
+- [ ] Add retry/recovery behavior for transient network failures without bypassing checksum, package, ABI, version, or signing-certificate checks.
+- [ ] Verify installer handoff and report the actual PackageInstaller completion/failure result; never report success merely because a session was submitted.
+- [ ] Confirm v1.0.0 → v1.0.1 is recognized as an available update, and that no-update, unsupported ABI, insufficient storage, incompatible signer, and invalid-release cases fail clearly without changing app data.
+- [ ] Keep the full APK as the safe fallback for every update. Only after the full-APK updater is proven reliable, design and benchmark differential patches with signed/full-APK verification and automatic full-download fallback.
+
 ## P0 — Data safety and demo-blocking code
 
 - [x] Review lifecycle handling, delegate cleanup, Back behavior, and Gecko process recovery; fix confirmed code defects. Fixed delegate cleanup and guarded duplicate process-recovery callbacks in Play and Addon Manager; main CI run #270 passed. Physical-device lifecycle checks remain in MANUAL_CHECKLIST.md.
