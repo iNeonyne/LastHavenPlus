@@ -124,18 +124,19 @@ internal class UpdateManager(context: Context) {
         check(UpdatePolicy.isStableVersionName(versionName)) { "The latest published release does not use stable SemVer." }
 
         val assets = release.optJSONArray("assets") ?: throw IOException("The GitHub Release has no assets.")
-        val apkName = "LastHavenPlus-$versionName-arm64-v8a.apk"
-        check(UpdatePolicy.isExpectedReleaseApkName(versionName, apkName)) { "The release APK filename is invalid." }
-        val apkAssets = (0 until assets.length()).mapNotNull { assets.optJSONObject(it) }
-            .filter { it.optString("name") == apkName && it.optString("state") == "uploaded" }
-        val checksumAssets = (0 until assets.length()).mapNotNull { assets.optJSONObject(it) }
-            .filter { it.optString("name") == "SHA256SUMS.txt" && it.optString("state") == "uploaded" }
-        check(apkAssets.size == 1 && checksumAssets.size == 1) {
-            "The latest GitHub Release must contain exactly one ARM64 APK and one SHA256SUMS.txt asset."
+        val releaseAssets = (0 until assets.length()).mapNotNull { assets.optJSONObject(it) }.map {
+            UpdateAsset(
+                name = it.optString("name"),
+                state = it.optString("state"),
+                sizeBytes = it.optLong("size"),
+                downloadUrl = it.optString("browser_download_url"),
+            )
         }
-        val apkAsset = apkAssets.single()
-        val checksumAsset = checksumAssets.single()
-        val apkSize = apkAsset.optLong("size")
+        val selectedAssets = UpdatePolicy.selectReleaseAssets(versionName, releaseAssets)
+            ?: throw IOException("The latest GitHub Release must contain exactly one uploaded ARM64 APK and one SHA256SUMS.txt asset.")
+        val apkAsset = selectedAssets.apk
+        val checksumAsset = selectedAssets.checksum
+        val apkSize = apkAsset.sizeBytes
         check(apkSize in 1..MAX_APK_BYTES) { "The release APK has an invalid size." }
         check(checksumAsset.optLong("size") in 1..MAX_CHECKSUM_BYTES.toLong()) {
             "The release checksum file has an invalid size."
@@ -200,19 +201,17 @@ internal class UpdateManager(context: Context) {
     }
 
     private fun downloadReleaseAsset(
-        asset: JSONObject,
+        asset: UpdateAsset,
         destination: File,
         maxBytes: Long,
         onProgress: (downloadedBytes: Long, totalBytes: Long) -> Unit = { _, _ -> },
     ) {
-        val expectedSize = asset.optLong("size")
-        val url = asset.optString("browser_download_url")
-        check(asset.optString("state") == "uploaded" && expectedSize in 1..maxBytes) {
+        val expectedSize = asset.sizeBytes
+        val url = asset.downloadUrl
+        check(asset.state == "uploaded" && expectedSize in 1..maxBytes) {
             "The GitHub Release asset is missing, incomplete, or exceeds its download limit."
         }
-        val uri = Uri.parse(url)
-        check(uri.scheme == "https" && uri.host == "github.com" &&
-            uri.path?.startsWith("/${UpdatePolicy.REPOSITORY}/releases/download/") == true) {
+        check(UpdatePolicy.isTrustedReleaseAssetUrl(url)) {
             "The release asset URL is not a trusted GitHub Releases download."
         }
         val connection = (URL(url).openConnection() as HttpURLConnection).apply {
@@ -226,6 +225,9 @@ internal class UpdateManager(context: Context) {
         try {
             val status = connection.responseCode
             if (status !in 200..299) throw IOException("GitHub Release asset download failed (HTTP $status).")
+            check(UpdatePolicy.isTrustedReleaseAssetRedirect(connection.url.toString())) {
+                "GitHub redirected the update download to an untrusted destination."
+            }
             FileOutputStream(destination).use { output ->
                 var lastProgressPercent = -1
                 connection.inputStream.use { input ->
