@@ -24,7 +24,6 @@ extensions.configure<ApplicationExtension>("android") {
         targetSdk = 35
         versionCode = appVersionCode
         versionName = appVersionName
-        ndk { abiFilters += listOf("arm64-v8a") }
     }
 
     // Ship only ARM64: this is the supported release target.
