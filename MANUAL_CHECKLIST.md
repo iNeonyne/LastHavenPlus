@@ -26,7 +26,7 @@ Development and code changes remain on `main`, the sole active branch. The forme
 - [ ] Do not use a debug-signed pull-request or test APK to test a main update; the updater must block a signer mismatch. A debug-signed installation cannot be upgraded in place to the permanent release key. Do not uninstall a data-bearing install to switch signing identities; use a separate test device.
 - [x] Main run #196 verified the expected permanent-key fingerprint and uploaded one unexpired metadata/checksum artifact plus one APK artifact for each ABI. The metadata ZIP and ARM64 APK artifact were downloaded and checked against their declared size and SHA-256; CI verified signatures/checksums for all four variants.
 - [ ] On a test device, install the permanent-key-signed main APK and create test data (login/session, installed add-ons, manager settings, and GeckoView profile state).
-- [ ] Trigger a later successful main build and use Home → Check for updates; confirm it selects only that successful main push and the device-compatible ABI.
+- [ ] Trigger a later successful main `push` run (not workflow dispatch, pull request, or tag) and use Home → Check for updates; confirm it selects only that successful main push and the device-compatible ABI.
 - [ ] Confirm displayed version, workflow build number, APK size and commit match the selected artifact.
 - [ ] Confirm Android's installer requires user approval and completes an in-place update without uninstalling.
 - [ ] Verify login/session, GeckoView profile, installed add-ons, manager settings and other app data remain intact after update.

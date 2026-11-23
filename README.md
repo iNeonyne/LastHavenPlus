@@ -30,7 +30,7 @@ Useful links: [Game](https://alt.lasthavens.com/play) · [Repository](https://gi
 
 For testing, main run #196 publishes one metadata/checksum artifact and four signed APK artifacts. These are temporary CI artifacts, not permanent release downloads:
 1. Open [GitHub Actions](https://github.com/iNeonyne/Lasthavens-Android/actions).
-2. Select run #196 or a later successful `main` run.
+2. Select the latest successful `push` run from `main`. Manual-dispatch, pull-request, and tag runs are not updater candidates.
 3. Download `LastHavenPlus-Main-Update-<ABI>` for the device ABI, or `LastHavenPlus-Main-Update-universal` as fallback.
 4. Use a spare test device for same-certificate update testing; do not uninstall a data-bearing debug-signed installation.
 
