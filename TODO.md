@@ -28,6 +28,7 @@ The owner reports that in-app updating did not work from v1.0.0. Treat this as a
 - [ ] Add retry/recovery behavior for transient network failures without bypassing checksum, package, ABI, version, or signing-certificate checks.
 - [ ] Verify installer handoff and report the actual PackageInstaller completion/failure result; never report success merely because a session was submitted.
 - [ ] Confirm v1.0.0 → v1.0.1 is recognized as an available update, and that no-update, unsupported ABI, insufficient storage, incompatible signer, and invalid-release cases fail clearly without changing app data.
+- [x] Separate release discovery from APK transfer: checking lists the installed version and newer published stable versions only; no APK is downloaded until the user selects a version and explicitly starts the download. Keep checksum, package, versionCode, ABI, and signing-certificate checks before installer handoff.
 - [ ] Keep the full APK as the safe fallback for every update. Only after the full-APK updater is proven reliable, design and benchmark differential patches with signed/full-APK verification and automatic full-download fallback.
 
 ## P0 — Data safety and demo-blocking code
