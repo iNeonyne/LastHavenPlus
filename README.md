@@ -57,6 +57,13 @@ GitHub Actions runs the repository's automated checks and produces demo APK arti
 
 The extension version is independent of the Android app version. Check the bundled extension's `manifest.json` for its authoritative version. Existing add-on files remain in their current storage locations until that add-on is updated; new replacements use staged storage generations so an interrupted update does not replace the last committed files.
 
+
+## Versioning and updates
+
+The Android app's `versionName` follows `MAJOR.MINOR.PATCH` (Semantic Versioning). Android's numeric `versionCode` is separate and determines whether an APK can replace an installed version. The Android app, bundled Addon Manager, and GeckoView each have independent versions.
+
+The current app build uses `versionName = 2.0.0` and a static `versionCode = 2`. Automatic updates are not implemented. The intended update source is the latest successful CI artifact from `main` only; the current workflow builds `beta` pushes and version tags, not `main`. Before enabling updates, CI must assign strictly increasing version codes and sign every update APK with the same stable certificate. See [AGENTS.md](AGENTS.md) for the rules agents must follow.
+
 ## Project documents
 
 | Document | Purpose |
