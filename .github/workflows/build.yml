@@ -4,7 +4,27 @@ on:
   push:
     branches: [main]
     tags: ["v*"]
+    paths:
+      - "app/**"
+      - "scripts/**"
+      - "tests/**"
+      - "gradle/**"
+      - ".github/workflows/**"
+      - "build.gradle.kts"
+      - "settings.gradle.kts"
+      - "gradle.properties"
+      - "package.json"
   pull_request:
+    paths:
+      - "app/**"
+      - "scripts/**"
+      - "tests/**"
+      - "gradle/**"
+      - ".github/workflows/**"
+      - "build.gradle.kts"
+      - "settings.gradle.kts"
+      - "gradle.properties"
+      - "package.json"
   workflow_dispatch:
 
 permissions:
@@ -20,7 +40,7 @@ jobs:
     steps:
       - uses: actions/checkout@v7
         with:
-          fetch-depth: 0
+          fetch-depth: 1
 
       - name: Guard against direct JavaScript-to-native bridges
         run: python3 tests/test_native_bridge_guard.py && python3 scripts/check_native_bridge_exposure.py && python3 tests/test_no_gecko.py
@@ -45,7 +65,7 @@ jobs:
               raise SystemExit(f"Release tag {tag} does not match appVersionName {version}")
           print(f"Validated stable release tag {tag}")
           PY
-          git fetch --no-tags origin +refs/heads/main:refs/remotes/origin/main
+          git fetch --no-tags --unshallow origin +refs/heads/main:refs/remotes/origin/main
           git merge-base --is-ancestor "$RELEASE_SHA" origin/main || {
             echo "Release tag must point to a commit already reachable from main."
             exit 1
@@ -74,9 +94,6 @@ jobs:
       - uses: gradle/actions/setup-gradle@v6
         with:
           gradle-version: "9.9.2"
-
-      - name: Test Android navigation and updater policy
-        run: gradle --no-daemon :app:testDebugUnitTest
 
       - name: Prepare signing key (main builds and tagged releases only)
         if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v')
@@ -140,13 +157,13 @@ jobs:
           node --check app/src/main/assets/extensions/lh-addon-manager/overlay.js
           node --check app/src/main/assets/extensions/lh-addon-manager/inject.js
 
-      - name: Build release APKs
+      - name: Test Android code and build release APK
         env:
           GITHUB_RUN_NUMBER: ${{ github.run_number }}
           KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
           KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
           KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
-        run: gradle --no-daemon :app:assembleRelease
+        run: gradle --no-daemon :app:testDebugUnitTest :app:assembleRelease
 
       - name: Verify APK signatures
         run: |

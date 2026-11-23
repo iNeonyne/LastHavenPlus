@@ -91,6 +91,8 @@ The updater must never clear app data, uninstall the app or silently install an 
 8. Update TODO and technical documentation when task status or architecture changes. CHANGELOG contains only actual user-visible changes.
 9. Report branch, commit, changed files, test/build results and remaining uncertainty.
 
+10. Batch related implementation, regression tests and required documentation into one complete commit. Do not push file-by-file changes or intermediate commits that leave imports, tests or packaged assets temporarily inconsistent. Review the complete diff and run focused checks before committing; each main-branch push can start a full APK build and cancel the previous in-progress run.
+
 Do not use or recommend Termux for project workflows.
 
 ## 8. Documentation ownership
