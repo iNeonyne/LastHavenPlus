@@ -131,13 +131,6 @@ jobs:
           node --check app/src/main/assets/extensions/lh-addon-manager/overlay.js
           node --check app/src/main/assets/extensions/lh-addon-manager/inject.js
 
-      - name: Validate native WebView loader assets
-        run: |
-          python3 tests/test_no_gecko.py
-          node --check app/src/main/assets/webview-game-bridge.js
-          node --check app/src/main/assets/extensions/lh-addon-manager/overlay.js
-          node --check app/src/main/assets/extensions/lh-addon-manager/inject.js
-
       - name: Build release APK
         env:
           GITHUB_RUN_NUMBER: ${{ github.run_number }}
