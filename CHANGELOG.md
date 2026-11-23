@@ -20,7 +20,7 @@ User-visible changes are recorded here. This project follows a Keep a Changelog-
 - Migrated to a current Android Gradle Plugin/Kotlin toolchain and public Gradle DSLs.
 - Fixed CI APK signature verification to use the SDK's explicit `apksigner` path.
 - Added early release-keystore, alias, and private-key password validation.
-- Normal pushes to `main` produce debug-signed demo APK artifacts; tagged releases still require the permanent release key.
+- Normal pushes to `beta` produce debug-signed demo APK artifacts; tagged releases still require the permanent release key.
 
 ## [2.0.0] — In development
 

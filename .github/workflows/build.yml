@@ -2,7 +2,7 @@ name: Build LastHavenPlus APK
 
 on:
   push:
-    branches: [main]
+    branches: [beta]
     tags: ["v*"]
   pull_request:
   workflow_dispatch:

@@ -27,7 +27,7 @@ The app and extension have independent versions. Do not change the bundled Addon
 
 ## Current build status
 
-- Landscape Home layout and orientation are committed on `main`.
+- Landscape Home layout and orientation are committed on `beta`.
 - GitHub Actions run [#107](https://github.com/iNeonyne/Lasthavens-Android/actions/runs/45089891036) passed, including Addon Manager regression tests, APK compilation, signature verification, packaged asset checks, ABI naming, and SHA-256 checksum generation.
 - Run #107 uploaded `LastHavenPlus-Demo-ARM64` and `LastHavenPlus-Demo-APKs` artifacts.
 - CI success confirms only the checks that ran. The APK has not yet been installed and smoke-tested on a physical phone.

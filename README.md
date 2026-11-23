@@ -28,7 +28,7 @@ The project is maintained in [this GitHub repository](https://github.com/iNeonyn
 ### Technical direction and working rules
 
 - Keep the product focused on reliable Lasthavens gameplay and add-on management.
-- Preserve GeckoView unless a concrete technical reason justifies an engine change. The Addon Manager is a core part of the product and may be fixed, improved, redesigned, or upgraded when justified; the bundled extension uses its own semantic version, starting at `1.0.0`.
+- Preserve GeckoView unless a concrete technical reason justifies an engine change. The bundled Addon Manager is protected. Do not modify, replace, redesign, or upgrade it without explicit project-owner authorization. Its version is independent of the Android app.
 - Protect user data. Before changing Gecko profiles, extension storage, add-on formats, backup behavior, or migration logic, understand the existing behavior and provide a tested backup/migration/rollback path.
 - Prefer small, reviewable changes. Check related Kotlin code, extension code, Gradle configuration, manifests, and CI checks before editing.
 - Validate changes with the narrowest relevant tests, then run the repository's CI/release build when feasible. Do not describe a build, test, device check, or release as successful unless it actually ran and passed.
@@ -78,7 +78,7 @@ Development prioritizes smooth gameplay, responsive touch controls, stable Gecko
 
 ## Build and downloads
 
-GitHub Actions builds on pushes to `main`, pull requests, and manual dispatches.
+GitHub Actions builds on pushes to `beta`, pull requests, and manual dispatches.
 
 **Download the right APK from the latest successful run's `LastHavenPlus-APKs` artifact:**
 
@@ -117,7 +117,7 @@ A version is published as a GitHub Release only after its build and validation p
 | 1.0.0 | Baseline; CI build candidate, physical-device validation deferred | First packaged Android app baseline with GeckoView, Home/Play/Addon Manager screens, shared runtime, and bundled Addon Manager. |
 | 2.0.0 | Major version in development; not released | Removes the in-game top loading-progress line while retaining the configurable LH diagnostics badge and diagnostic logging. |
 
-### Unreleased changes on `main`
+### Unreleased changes on `beta`
 
 - Migrated the build to a current Android Gradle Plugin/Kotlin toolchain and public Gradle DSLs.
 - Added validation for every bundled Addon Manager JSON and JavaScript file.
@@ -141,7 +141,7 @@ The roadmap below is the current priority order. Detailed task tracking will mov
 
 **Goal:** install and test the current demo on a real Android phone now. This is a debug-signed test build, not a public/stable release.
 
-- [x] Make normal pushes to `main` build and upload debug-signed demo APKs without release-keystore secrets.
+- [x] Make normal pushes to `beta` build and upload debug-signed demo APKs without release-keystore secrets.
 - [x] Produce successful CI demo artifacts. Latest landscape build: [run #107](https://github.com/iNeonyne/Lasthavens-Android/actions/runs/45089891036); ARM64 and multi-ABI artifacts uploaded.
 - [x] Set the Home screen to landscape and add a dedicated landscape layout; CI build #107 passed.
 - [ ] Download and install the `arm64-v8a` demo APK; do not uninstall an existing differently signed app if its data needs preserving.
