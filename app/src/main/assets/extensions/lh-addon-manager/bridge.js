@@ -66,7 +66,15 @@
   window.addEventListener("message", (event) => {
     const d = event.data;
     if (!d || d.channel !== CH || event.origin !== location.origin) return;
-    if (d.kind === "hello") {
+    if (d.kind === "gameStorage") {
+      const usage = Number(d.usage), quota = d.quota == null ? null : Number(d.quota);
+      const at = Number(d.at);
+      if (Number.isSafeInteger(usage) && usage >= 0 &&
+          (quota === null || (Number.isSafeInteger(quota) && quota >= usage)) &&
+          Number.isSafeInteger(at) && Math.abs(Date.now() - at) < 10 * 60 * 1000) {
+        browser.runtime.sendMessage({ kind: "gameStorage", usage, quota, at }).catch(() => {});
+      }
+    } else if (d.kind === "hello") {
       build();
       send(false);
     } else if (d.kind === "status") {
