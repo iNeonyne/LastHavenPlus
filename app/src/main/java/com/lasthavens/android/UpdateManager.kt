@@ -21,6 +21,14 @@ import java.net.URL
 import java.security.MessageDigest
 import java.util.concurrent.Executors
 
+internal enum class UpdateStage { CHECKING, DOWNLOADING, VERIFYING }
+
+internal data class UpdateProgress(
+    val stage: UpdateStage,
+    val downloadedBytes: Long = 0,
+    val totalBytes: Long = 0,
+)
+
 internal data class AvailableUpdate(
     val versionName: String, val versionCode: Long, val sizeBytes: Long,
     val releaseTag: String, val apkFile: File,
@@ -29,9 +37,14 @@ internal data class AvailableUpdate(
 internal class UpdateManager(context: Context) {
     private val appContext = context.applicationContext
 
-    fun checkAndDownload(callback: (Result<AvailableUpdate?>) -> Unit) {
+    fun checkAndDownload(
+        onProgress: (UpdateProgress) -> Unit,
+        callback: (Result<AvailableUpdate?>) -> Unit,
+    ) {
+        fun report(progress: UpdateProgress) = mainHandler.post { onProgress(progress) }
         executor.execute {
-            val result = runCatching { checkAndDownloadBlocking() }
+            report(UpdateProgress(UpdateStage.CHECKING))
+            val result = runCatching { checkAndDownloadBlocking(::report) }
             mainHandler.post { callback(result) }
         }
     }
@@ -97,7 +110,7 @@ internal class UpdateManager(context: Context) {
         }
     }
 
-    private fun checkAndDownloadBlocking(): AvailableUpdate? {
+    private fun checkAndDownloadBlocking(report: (UpdateProgress) -> Unit): AvailableUpdate? {
         check(UpdatePolicy.supportsDevice(Build.SUPPORTED_ABIS.toList())) {
             "LastHavenPlus updates are available for ARM64 (arm64-v8a) devices only."
         }
@@ -144,7 +157,11 @@ internal class UpdateManager(context: Context) {
             check(appContext.cacheDir.usableSpace >= apkSize + MIN_FREE_SPACE_BYTES) {
                 "Not enough free storage to download and verify this update. Free up space and try again."
             }
-            downloadReleaseAsset(apkAsset, apkPart, MAX_APK_BYTES)
+            report(UpdateProgress(UpdateStage.DOWNLOADING, 0, apkSize))
+            downloadReleaseAsset(apkAsset, apkPart, MAX_APK_BYTES) { downloaded, total ->
+                report(UpdateProgress(UpdateStage.DOWNLOADING, downloaded, total))
+            }
+            report(UpdateProgress(UpdateStage.VERIFYING))
             check(UpdatePolicy.isCompleteAsset(apkSize, apkPart.length(), MAX_APK_BYTES) && sha256(apkPart).equals(checksum[0], ignoreCase = true)) {
                 "The release APK is incomplete or failed SHA-256 verification. Installation was blocked."
             }
@@ -182,7 +199,12 @@ internal class UpdateManager(context: Context) {
         return release
     }
 
-    private fun downloadReleaseAsset(asset: JSONObject, destination: File, maxBytes: Long) {
+    private fun downloadReleaseAsset(
+        asset: JSONObject,
+        destination: File,
+        maxBytes: Long,
+        onProgress: (downloadedBytes: Long, totalBytes: Long) -> Unit = { _, _ -> },
+    ) {
         val expectedSize = asset.optLong("size")
         val url = asset.optString("browser_download_url")
         check(asset.optString("state") == "uploaded" && expectedSize in 1..maxBytes) {
@@ -216,6 +238,7 @@ internal class UpdateManager(context: Context) {
                             "Release asset exceeded its declared size or download limit."
                         }
                         output.write(buffer, 0, count)
+                        onProgress(total, expectedSize)
                     }
                     output.fd.sync()
                 }
