@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="24dp"
+    android:background="@drawable/bg_update_dialog">
+
+    <ImageView
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:contentDescription="@null"
+        android:src="@drawable/ic_update"
+        android:tint="@color/frost" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="18dp"
+        android:letterSpacing="0.12"
+        android:text="LASTHAVENPLUS  /  SYSTEM UPDATE"
+        android:textColor="@color/frost"
+        android:textSize="10sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/updateProgressStage"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:accessibilityLiveRegion="polite"
+        android:text="@string/update_stage_checking"
+        android:textColor="@color/text_primary"
+        android:textSize="22sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/updateProgressDetail"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="@string/update_stage_checking_detail"
+        android:textColor="@color/text_secondary"
+        android:textSize="14sp" />
+
+    <ProgressBar
+        android:id="@+id/updateProgressBar"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="match_parent"
+        android:layout_height="8dp"
+        android:layout_marginTop="24dp"
+        android:indeterminate="true"
+        android:progressDrawable="@drawable/progress_update"
+        android:contentDescription="@string/update_progress_accessibility" />
+
+    <TextView
+        android:id="@+id/updateProgressPercent"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:gravity="end"
+        android:textColor="@color/gold_light"
+        android:textSize="13sp"
+        android:textStyle="bold"
+        android:visibility="gone" />
+</LinearLayout>
