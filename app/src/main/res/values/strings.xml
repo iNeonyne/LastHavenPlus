@@ -68,11 +68,11 @@
 \n    <string name="storage">Storage</string>
     <string name="storage_back">‹ Home</string>
     <string name="storage_title">Storage usage</string>
-    <string name="storage_intro">A read-only estimate of space used by LastHavenPlus and its embedded browser.</string>
-    <string name="storage_persistent_label">Persistent app + browser profile</string>
-    <string name="storage_persistent_detail">Includes the shared GeckoView profile, game and Addon Manager site data, add-on data, and app files. It is not a game-only figure.</string>
+    <string name="storage_intro">A read-only estimate of app-private storage. During migration this includes both the legacy Gecko profile and the new WebView data; it is not a game-only measurement.</string>
+    <string name="storage_persistent_label">Persistent app and browser data</string>
+    <string name="storage_persistent_detail">Includes app files, legacy Gecko profile data, and Android System WebView site data. The two browser profiles are separate and are counted together here.</string>
     <string name="storage_cache_label">Browser and app cache</string>
-    <string name="storage_cache_detail">Temporary cached files are shown separately. Android or GeckoView may clear or rebuild them.</string>
+    <string name="storage_cache_detail">Temporary cached files are shown separately. Android, GeckoView or WebView may clear or rebuild them.</string>
     <string name="storage_available_label">Available device storage</string>
     <string name="storage_scanning">Measuring app-private storage…</string>
     <string name="storage_scan_complete">Measurement complete. These are current stored bytes, not lifetime network downloads.</string>
