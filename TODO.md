@@ -13,7 +13,7 @@ All development work stays on `main`, the sole active branch. The former `beta` 
 - Main workflow-dispatch run #198 completed successfully and uploaded artifacts, but it is intentionally ignored by the updater; the latest eligible main push run remains #196.
 - Physical-device validation and owner-only release actions are tracked separately in [MANUAL_CHECKLIST.md](MANUAL_CHECKLIST.md).
 - Main run #196 confirmed the configured GitHub Actions keystore and passwords/alias work and the certificate fingerprint matches the expected permanent release key. No secret replacement is needed.
-- A manual, main-only updater is implemented on `main`. Run #196 published the metadata/checksum artifact and four ABI-specific signed APK artifacts; the updater verifies their shared run provenance, metadata, checksum, package/version and signing-certificate compatibility before invoking Android's user-confirmed installer. Physical same-certificate upgrade and data-preservation testing remains outstanding.
+- A manual, main-only updater is implemented on `main`. Run #196 published the metadata/checksum artifact and four ABI-specific signed APK artifacts in the previous configuration; the updater verifies their shared run provenance, metadata, checksum, package/version and signing-certificate compatibility before invoking Android's user-confirmed installer. Physical same-certificate upgrade and data-preservation testing remains outstanding.
 - Version flow: main-only SemVer releases with a monotonic workflow-run `versionCode`; see `AGENTS.md`.
 
 ## P0 — Data safety and demo-blocking code
@@ -63,7 +63,7 @@ The owner has authorized necessary manager maintenance only with preservation of
 - [x] Add CI safeguards ensuring debug-signed beta/demo artifacts are not accepted as main or tagged release assets; main/tag builds fail closed unless the permanent certificate matches.
 - [x] Add CI validation for package ID, APK-embedded versionName/versionCode, ABI coverage, signer consistency, and SHA-256 checksums.
 - [x] Keep release workflows compatible with the versioning and promotion policy in `AGENTS.md`.
-- [x] Configure one main-only metadata/checksum artifact and four separate ABI-specific APK artifacts; beta/demo artifacts remain separate and are rejected by the updater. Main publishes them directly; verify the first post-merge run.
+- [x] Configure one main-only metadata/checksum artifact and one ARM64 APK artifact; beta/demo artifacts remain separate and are rejected by the updater. Main publishes them directly; verify the first post-merge run.
 - [x] Require the permanent release key and exact expected certificate on main/tag builds; missing secrets or fingerprint mismatch fail closed. A main-signed build remains to be verified after consolidation.
 - [x] Replace static Android `versionCode` with the existing workflow's global `GITHUB_RUN_NUMBER`; local builds use a development-only fallback and are never update candidates.
 - [x] Implement the `main`-only update checker; reject beta, tag, PR, manual, failed, cancelled, in-progress, expired, mismatched and incompatible build artifacts.
@@ -76,7 +76,7 @@ The owner has authorized necessary manager maintenance only with preservation of
 
 ## Updater verification boundary
 
-The updater implementation and automated policy/build checks are complete. Main run #196 proved permanent-key signing, release APK validation, metadata/checksum generation, and publication of all five main update artifacts. Complete the same-certificate physical-device upgrade and data-preservation checks in `MANUAL_CHECKLIST.md`.
+The updater implementation and automated policy/build checks previously passed with multi-ABI artifacts. ARM64-only packaging and updater selection are now being changed; rerun CI and update verification before relying on the new configuration. Complete the same-certificate physical-device upgrade and data-preservation checks in `MANUAL_CHECKLIST.md`.
 
 ## Not active work
 
