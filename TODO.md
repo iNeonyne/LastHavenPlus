@@ -1,160 +1,141 @@
-# LastHavenPlus — AI Development Roadmap
+# LastHavenPlus — Active TODO
 
-This is the active work queue for tasks an AI coding agent can perform in the repository: implementation, automated tests, CI, code review, technical investigation, and documentation. Human-only actions and physical-device verification are tracked in [MANUAL_CHECKLIST.md](MANUAL_CHECKLIST.md).
+This is the single actionable work queue. The architecture and phase rationale live in [ROADMAP.md](ROADMAP.md). Do not create parallel checklists in other documents.
 
-All development work stays on `main`, the sole active branch. The former `beta` branch has been consolidated and is retired. Follow [AGENTS.md](AGENTS.md), especially the data-preservation and versioning rules.
+**Branch:** main only  
+**Current source baseline:** GeckoView app with a debug-only Chromium WebView probe  
+**Target:** Android System WebView + native-backed Addon Manager  
+**Current bundled manager:** 1.0.5 (verified from its manifest)  
+**App identity:** keep com.lasthavens.android, the permanent signing certificate, ARM64-only distribution and monotonic GITHUB_RUN_NUMBER versionCode.
 
-## Current status
+The tasks below are ordered by dependency. Do not remove the Gecko migration source until the native manager import has been verified.
 
-- Active development branch: `main`.
-- Android app: `1.0.1` next patch release being prepared; owner reports `1.0.0` is released.
-- Bundled Addon Manager: `1.0.3`.
-- Main CI run #231 (commit `58a0b6c`) passed automated tests, permanent-key verification, ARM64 APK build/signature/package/version checks, and checksum generation.
-- The in-app updater now uses published stable GitHub Releases; main CI artifacts are not update sources.
-- Physical-device validation and owner-only release actions are tracked separately in [MANUAL_CHECKLIST.md](MANUAL_CHECKLIST.md).
-- Main run #231 confirmed the configured GitHub Actions keystore and passwords/alias work and the certificate fingerprint matches the expected permanent release key. No secret replacement is needed.
-- The updater is being migrated from expiring Actions artifacts to published stable GitHub Releases. It now fetches the latest published release, requires the exact ARM64 APK and checksum assets, and verifies APK integrity, package/version, ABI, and installed signing-certificate compatibility before Android installer handoff. CI and physical-device validation are pending.
-- Version flow: main-only SemVer releases with a monotonic workflow-run `versionCode`; see `AGENTS.md`.
-- A Termux-free release-request workflow is installed. Its dry-run validation is being repeated for `v1.0.1`; real requests create the annotated tag and dispatch the signed tag build, which creates a draft for manual review.
+## P0 — 1. Baseline and contracts
 
-## P0 — Updater reliability (highest priority)
+- [ ] Record the baseline signed ARM64 APK size from a trusted main build; retain the artifact/run reference for final comparison.
+- [ ] Inventory every manager persistence key, library field, IndexedDB file record, setting, catalogue mapping and diagnostic field used by manager 1.0.5.
+- [ ] Inventory all current manager screens and operations; use the existing 1.0.5 behavior as the feature baseline, not the uploaded 0.5.1 archive.
+- [ ] Specify and version the migration-package schema: metadata, settings, folder IDs, versions, enabled state, dependency fields, relative file paths, bytes and SHA-256 checksums.
+- [ ] Specify the local-manager bridge and game bridge message schemas, allowed origins, payload limits, error responses and timeout behavior.
+- [ ] Define the native repository layout and staged-write/atomic-activation rules before implementing storage.
+- [ ] Document the login/session boundary: Gecko cookies and WebView cookies are separate; do not claim automatic session migration.
 
-The owner reports that in-app updating did not work from v1.0.0. Treat this as a release-blocking defect. Do not start differential APK work until the full-APK path is reliable and covered by automated tests.
+## P0 — 2. One-time legacy data export/import
 
-- [ ] Reproduce the v1.0.0 failure from the exact tagged source and trace each stage: GitHub API lookup, published-release selection, asset discovery, checksum download/parse, APK download/redirect, size/hash validation, package/version/ABI/signer checks, installer handoff, and PackageInstaller result.
-- [ ] Add structured, user-readable failure categories and safe diagnostic logging for each updater stage. Never log credentials, private URLs, cookies, or personal data.
-- [ ] Verify GitHub API and release-asset HTTP behavior, including redirects to GitHub's asset CDN, non-2xx responses, rate limits, offline states, timeouts, and interrupted transfers.
-- [ ] Add automated tests for release JSON parsing, exact APK/checksum asset selection, redirect destination validation, checksum parsing, partial downloads, retry cleanup, and old-cache-file handling.
-- [ ] Add retry/recovery behavior for transient network failures without bypassing checksum, package, ABI, version, or signing-certificate checks.
-- [ ] Verify installer handoff and report the actual PackageInstaller completion/failure result; never report success merely because a session was submitted.
-- [ ] Confirm v1.0.0 → v1.0.1 is recognized as an available update, and that no-update, unsupported ABI, insufficient storage, incompatible signer, and invalid-release cases fail clearly without changing app data.
-- [x] Separate release discovery from APK transfer: checking lists the installed version and newer published stable versions only; no APK is downloaded until the user selects a version and explicitly starts the download. Keep checksum, package, versionCode, ABI, and signing-certificate checks before installer handoff.
-- [ ] Keep the full APK as the safe fallback for every update. Only after the full-APK updater is proven reliable, design and benchmark differential patches with signed/full-APK verification and automatic full-download fallback.
+- [ ] Add a Gecko-side exporter to the existing manager that reads the real 1.0.5 library, settings and IndexedDB bytes without modifying the source records.
+- [ ] Export all required manager state into a versioned migration package with file paths, byte sizes, checksums and a complete metadata manifest.
+- [ ] Implement a native importer with archive/path validation, strict byte/file/count limits, checksum verification and clear user-readable errors.
+- [ ] Stage imported files separately, commit the metadata pointer only after verification, and roll back only the new generation on failure.
+- [ ] Make migration idempotent: repeated starts/import attempts must not duplicate add-ons, downgrade versions, overwrite newer native data or mark incomplete work complete.
+- [ ] Re-read the committed native library and compare file hashes, folder IDs, versions, enabled flags, dependencies, settings and library revision against the export.
+- [ ] Add automated tests for empty libraries, many add-ons, large files, malformed metadata, traversal paths, mismatched hashes, interrupted writes, low storage, duplicate imports and rollback.
+- [ ] Keep legacy Gecko profile data untouched until migration verification succeeds; do not clear app data as a migration step.
 
-## P0 — Data safety and demo-blocking code
+## P0 — 3. Production Chromium game screen
 
-- [ ] Investigate owner-reported total data loss and Addon Manager failure after a successful Android in-place update from v1.0.0 to v1.0.1 (Android displayed/accepted Update; no uninstall). Treat them as potentially related shared-profile/runtime or bundled-extension regressions. Compare package ID, signer lineage, APK build provenance, GeckoView profile path/runtime initialization, built-in extension installation/update behavior, and first-launch behavior across both exact release artifacts. Do not assume uninstall or clear-data; do not change profile paths or attempt migration until the existing profile location and a safe backup/rollback strategy are proven. Add automated regression coverage where possible and document any device-only evidence separately.
-- [x] Review lifecycle handling, delegate cleanup, Back behavior, and Gecko process recovery; fix confirmed code defects. Fixed delegate cleanup and guarded duplicate process-recovery callbacks in Play and Addon Manager; main CI run #270 passed. Physical-device lifecycle checks remain in MANUAL_CHECKLIST.md.
-- [x] Trace and document the Gecko profile/runtime sharing behavior between Play and Addon Manager in [docs/GECKOVIEW_PROFILE.md](docs/GECKOVIEW_PROFILE.md); same single App-owned runtime, separate Play/Manager sessions.
-- [ ] Review navigation, redirects, popup handling, external links, HTTPS behavior, and custom URL schemes; fix confirmed defects.
-- [x] Add focused Kotlin/JVM tests for URL routing and host allow-listing; CI runs them before packaging.
-- [x] Audit native bridge exposure: no direct JavaScript-to-native interface is registered. Added JVM-independent tests and a CI source guard that reject `addJavascriptInterface` and `@JavascriptInterface` in app source. File prompts remain user-mediated through Android's Storage Access Framework.
-- [x] Extract download filename sanitization into a pure JVM policy and add regression tests for path separators, reserved/control characters, length limits, empty names, and Unicode filenames. Other native file-handling boundaries remain to be audited.
-- [ ] Add storage-failure and interrupted-write tests without changing persistence behavior unless a safe migration and rollback path are demonstrated.
-- [x] Extract staged-generation commit orchestration and add a failure-injection regression test: metadata commit failure rolls back only the new generation while the prior library pointer and files remain intact.
-- [ ] Review install/update/remove/backup/restore code paths for data-preservation defects; fix only defects that can be verified through code and automated tests.
-- [ ] Fix silent Addon Manager installation failures: every ZIP import, catalogue download, validation, and storage failure must produce a visible, actionable error; distinguish cancellation from failure and never swallow exceptions.
-- [ ] Trace the complete Android Storage Access Framework flow for ZIP imports: picker launch, returned content URI, persisted/read permission where needed, MIME/filename handling, stream opening, archive read, validation, IndexedDB write, and final library commit. Handle null results, revoked permissions, unreadable providers, and interrupted streams safely.
-- [ ] Add automated tests for the manager's file-picker result handling and import pipeline using mocked content URIs/streams, including malformed ZIPs, missing TOC, oversized archives, read failures, cancellation, and storage-write/commit failures. Do not change existing library data on failure.
-- [ ] Trace online add-on installation separately through catalogue request, download permissions/CORS, redirects, HTTP status, ZIP validation, and the shared import/commit path. Show per-stage progress and actionable network/validation/storage errors.
-- [ ] Add a manager diagnostics/log view for recent installation attempts with stage, timestamp, and sanitized error details; provide copy/export and exclude cookies, tokens, credentials, and browsing data.
-- [ ] Add an end-to-end regression test proving both ZIP import and online installation reach the same safe commit path, preserve existing add-ons on failure, and report success only after the library pointer is committed.
-- [ ] Inspect the implementation and document precisely which profile, login/session, add-on, and setting data is preserved by app updates; clearly distinguish verified code behavior from device-only verification.
+- [ ] Replace the debug-only ChromiumProbeActivity with the production PlayActivity backed by Android System WebView.
+- [ ] Configure hardware acceleration, JavaScript, DOM storage, media, safe browsing, file access and mixed-content behavior with least privilege.
+- [ ] Register document-start loader scripts before loading the game; require the supported AndroidX WebKit features and fail clearly if unavailable.
+- [ ] Restrict WebMessageListener and injected scripts to the exact approved HTTPS Lasthavens origins; validate main-frame/source-origin on every message.
+- [ ] Expose no general-purpose addJavascriptInterface or arbitrary native command API to the remote game page.
+- [ ] Implement allow-listed navigation, external-link handling, target=_blank/popups, fullscreen, downloads, file chooser, back behavior and landscape gameplay orientation.
+- [ ] Handle WebView renderer crashes, recreation, background/resume and network failures without corrupting manager storage.
+- [ ] Verify WebGL 1/2, WebAssembly, SharedArrayBuffer/cross-origin isolation, workers, OffscreenCanvas, game 3D initialization, console errors and context-loss recovery through automated checks.
+- [ ] Add automated tests for bridge rejection (wrong origin, subframe, malformed/oversized messages), navigation policy, popups, file chooser outcomes and renderer recovery.
 
-## P1 — Addon Manager and requested features
+## P0 — 4. Native-backed Addon Manager
 
-The owner has authorized necessary manager maintenance only with preservation of existing add-on files, folder IDs, versions, enabled state, library metadata, settings, and the shared Gecko profile. Do not reset or wipe existing data. Any additional manager-code change outside the authorized scope requires explicit owner approval.
+- [ ] Reuse manager.html, manager.css, localization, icons and portable modules that remain useful; host the UI locally through WebViewAssetLoader.
+- [ ] Restrict the manager's privileged bridge to its local app-assets origin; do not reuse that privileged bridge in the remote game WebView.
+- [ ] Replace browser.storage.local/session, browser.runtime messaging, browser.permissions and browser.tabs with explicit native-backed adapters.
+- [ ] Implement the native AddonRepository as the only source of truth for library metadata, settings and raw add-on files.
+- [ ] Preserve ZIP import/export, archive validation, limits, TOC parsing, dependencies, load order, catalogue browse/search/filter, online installation, update-all, enable/disable, remove, backup, restore and pre-removal backup.
+- [ ] Preserve current localization, language preference, badge setting, progress/status feedback, diagnostics and game-storage display where applicable.
+- [ ] Implement SAF file selection and bounded streaming for imports/restores; distinguish user cancellation from permission, read, validation and storage failures.
+- [ ] Route catalogue and add-on downloads through an explicit HTTPS host allow-list with redirect, size, timeout and archive validation.
+- [ ] Ensure success is shown only after staged storage and metadata commit complete.
+- [ ] Add automated regression tests for every manager operation, storage failure, network failure, interrupted import/update and recovery.
 
-- [x] Make add-on replacement crash-safe by writing files to a fresh IndexedDB storage generation before switching the library pointer.
-- [x] Preserve the existing storage-key format for already-installed add-ons; legacy entries without a storage pointer continue to read from their original folder key.
-- [x] Clean up unreferenced storage generations after successful commits and at startup.
-- [x] Correct numeric ordering of numbered TOC dependencies.
-- [x] Enforce archive/download byte limits against actual streamed bytes, including imported/restored archives and remote ZIPs.
-- [x] Run the Addon Manager regression suite (including streaming-limit tests) and full CI build (beta run #159).
-- [ ] Add `.7z` archive support to Addon Manager import/export, with safe extraction, path validation, archive/expanded-size limits, and backward compatibility for existing ZIP backups.
-- [x] Add a read-only storage dashboard showing persistent app/shared GeckoView profile usage, browser/app cache, and available device storage. Do not label shared profile usage as game-only storage or claim lifetime network download totals from stored-byte figures.
-- [x] Add a game-origin storage estimate to the Addon Manager, measured from the running game origin and kept distinct from shared profile usage and lifetime network downloads.
-- [ ] Investigate reliable GeckoView network-byte instrumentation if a lifetime downloaded-data counter is still wanted; do not infer it from current stored bytes.
-- [ ] Add a diagnostics page showing app and GeckoView versions, device/Android details, add-on integration status, storage health, and recent app errors. Include a user-triggered copy/export action; exclude credentials, cookies, tokens, and personal browsing data.
-- [x] Review the current backup implementation and document its exact scope and exclusions in the manager UI and README-1.0.2.txt: ZIPs contain managed add-on files only, not manager settings, enabled state, game SavedVariables, login/session data, or the shared Gecko profile. New restored add-ons default to disabled; existing enabled state is retained.
-- [ ] Review manager capabilities and limitations against the bundled source and update its documentation.
-- [ ] Review compatibility with GeckoView upgrades without modifying the manager.
-- [ ] Review future manager changes for backward compatibility and data preservation before implementation.
+## P0 — 5. Port the current game add-on loader
 
+- [ ] Port the 1.0.5 overlay/inject behavior to document-start WebView scripts; remove extension-only message transport.
+- [ ] Implement the minimal read-only game bridge that returns the enabled add-on payload and accepts sanitized diagnostics only.
+- [ ] Preserve dependency-first load order, file batching, built-in add-on conflict detection and revision tracking.
+- [ ] Verify the current game's em-pthread worker wrapping and bootstrap timing before relying on the hook.
+- [ ] Preserve XHR and Fetch interception, manifest extension, local file responses, HEAD/range handling, bundle masking and cached blocks.idx masking.
+- [ ] Verify SharedArrayBuffer use where cross-origin isolation permits it and retain a bounded copy-transfer fallback.
+- [ ] Report prepared, requested, loaded and failed add-ons accurately; never equate packaging with actual game loading.
+- [ ] Add deterministic JavaScript tests for URL classification, range responses, manifest patching, worker bootstrap, payload transfer, conflict handling and diagnostics.
+- [ ] Add integration tests with a controlled game fixture that simulates the expected worker/VFS requests; fail closed when expected hooks are missing.
 
-## P0 — Chromium engine and Addon Manager migration
+## P0 — 6. Storage dashboard and state recovery
 
-The owner has selected Chromium as the target engine to investigate and migrate toward because the game currently reaches a black screen when 3D rendering starts. Follow [docs/CHROMIUM_MIGRATION.md](docs/CHROMIUM_MIGRATION.md). Use Android System WebView as the initial target; do not bundle Chromium. TWA is not the selected implementation because the loader needs document-start injection and request/runtime control.
+- [ ] Rework StorageUsage to report native add-on files, app-private persistent data, cache and WebView game-origin storage without Gecko labels or misleading game-only totals.
+- [ ] Keep storage reporting read-only and clearly distinguish app storage from game-origin browser storage.
+- [ ] Add integrity checks and recovery diagnostics for the native add-on repository.
+- [ ] Ensure add-on activation, update, restore and remove operations preserve the previous committed generation until the new state is verified.
+- [ ] Verify process death/restart and interrupted operations leave the native library consistent.
 
-- [ ] Build an isolated WebView game proof of concept with hardware acceleration and safe WebView settings; keep the existing GeckoView path available until the new path is verified.
-- [ ] Add an in-game-origin diagnostic for WebGL 1/2, WebAssembly, SharedArrayBuffer/isolation, worker startup, console errors and WebGL context loss; use it to identify whether Chromium resolves the 3D black screen.
-- [ ] Port the current 1.0.5 manager loader to WebView. The uploaded 0.5.1 ZIP is a reference, not a replacement: current `overlay.js`/`inject.js` already provide broader XHR/Fetch interception, worker bootstrap and diagnostics.
-- [ ] Replace extension-only storage/messaging APIs with native storage and an origin-restricted WebView message bridge. Do not expose a general-purpose `addJavascriptInterface` to the remote game page.
-- [ ] Port current ZIP validation, TOC/dependency handling, catalogue, import/export, enable/disable/remove, staged writes and diagnostics; preserve current manager behavior and limits.
-- [ ] Define and test a Gecko-to-native add-on library export/import format that preserves files, folder IDs, versions, enabled state, dependency metadata and manager settings. Keep the Gecko profile intact for rollback.
-- [ ] Investigate Gecko cookie/login/session portability to WebView. Do not claim preservation or switch the default engine until this is proven or the exact limitation is explicitly documented.
-- [ ] Add automated loader, WebView bridge, storage migration and rollback tests. Keep package ID, signing identity, updater and versionCode behavior unchanged.
-- [ ] Remove GeckoView dependencies and old profile integration only after the Chromium game, Addon Manager, migration and rollback gates pass.
+## P0 — 7. Preserve and verify the updater
 
-## P1 — Web-app integration ideas from the reference APK
+- [ ] Keep the updater native and independent of all WebView/manager code.
+- [ ] Preserve metadata-only checking: show the installed version and newer published stable versions; do not download an APK during discovery.
+- [ ] Preserve explicit version selection, ARM64-only full APK download, SHA-256 verification, package/versionCode checks, signer equality, progress, and Android installer confirmation.
+- [ ] Keep the updater from clearing app data or changing package ID, signing identity or versionCode sequencing.
+- [ ] Add/retain regression tests for drafts, prereleases, malformed releases, missing/duplicate assets, redirects, incomplete downloads, checksum mismatch, unsupported ABI, package/version mismatch and signer mismatch.
+- [ ] Verify the installer handoff and completion/error reporting do not report success before Android confirms the result.
+- [ ] Keep the updater UI aligned with the new theme and responsive in portrait and landscape.
 
-The reference APK is a lightweight Trusted Web Activity wrapper around the Lasthavens website. TWA remains a comparison/reference only; the current migration target is Android System WebView because the add-on loader requires document-start injection and deeper runtime control.
+## P0 — 8. CI and build-system overhaul
 
-- [ ] Audit the website's web app manifest and Android launch URL for compatible standalone metadata without changing the game origin.
-- [ ] Verify Digital Asset Links for the existing Android package and website origin; do not change package ID or signing identity.
-- [ ] Review launch/loading and offline/fallback behavior so website availability failures are clearly explained while native Home, updater and Addon Manager remain accessible.
-- [ ] Keep game content web-driven where practical so website-side improvements do not require an APK release.
+- [ ] Remove GeckoView dependency and Mozilla Maven repository after the migration gate passes; remove geckoViewVersion.
+- [ ] Update build metadata validation to use the native manager version/schema rather than the extension manifest and Gecko version.
+- [ ] Replace extension-manifest validation with native manager asset, localization, archive-module and loader validation.
+- [ ] Replace APK checks that require libxul.so or extension manifest assets with checks for the expected WebView manager assets and native components.
+- [ ] Add a static guard that rejects Gecko dependencies, Gecko imports, Gecko activities/layouts and extension-runtime APIs from the final app.
+- [ ] Add CI coverage for migration export/import, native storage, manager operations, WebView bridge security, loader behavior and updater policies.
+- [ ] Add automated Android WebView integration/emulator coverage where supported by GitHub Actions; do not make physical-device testing a task for the owner.
+- [ ] Measure final signed ARM64 APK size against the recorded baseline and confirm libxul.so is absent.
+- [ ] Keep permanent-key verification, package ID, ARM64 output, monotonic versionCode, checksums and draft-only release creation unchanged.
 
+## P1 — 9. Remove obsolete implementation and assets
 
-## P2 — Reliability, accessibility, and maintenance
+- [ ] Remove GeckoRuntime/GeckoSession setup and App extension installation after migration is verified.
+- [ ] Remove Gecko-only Delegates.kt, FilePicker.kt implementation, Gecko-specific ManagerActivity/PlayActivity code and activity_gecko layout after WebView replacements are complete.
+- [ ] Remove Gecko WebExtension manifest, background runtime, isolated-world bridge and extension-only API adapters; retain only manager modules that the native host actually uses.
+- [ ] Remove obsolete Gecko version metadata, Mozilla repository configuration and old profile-only code.
+- [ ] Remove the debug Chromium probe once its production diagnostics are in place; avoid keeping two implementations of the same function.
+- [ ] Remove duplicate/obsolete documentation and historical release-note assets from the APK; preserve required third-party licenses.
+- [ ] Audit the final repository and packaged APK for unused resources, dependencies, permissions and duplicate code.
+- [ ] Do not delete legacy app-private profile data during source cleanup.
 
-- [ ] Add automated tests for failed imports, failed downloads, unavailable permissions, and interrupted operations wherever the behavior can be exercised without a physical device.
-- [ ] Improve error reporting and recovery for import, download, storage, and GeckoView failures.
-- [ ] Review phone-sized layouts, touch targets, accessibility semantics, and large add-on lists; implement code-side improvements.
-- [ ] Add Dependabot or Renovate monitoring for dependencies and document the update/review workflow.
-- [ ] Upgrade GeckoView and Android dependencies in isolated, build-verified changes.
-- [ ] Evaluate R8/resource shrinking against release builds and extension/runtime regression checks.
-- [ ] Expand automated tests and CI validation when code changes or reproducible reports justify them.
+## P1 — 10. UI/UX overhaul
 
+- [ ] Make Home responsive in portrait and landscape, retaining the existing dark, frost-blue and gold theme.
+- [ ] Make Storage responsive in portrait and landscape with accurate native/WebView storage labels.
+- [ ] Make Addon Manager fully usable in portrait and landscape, including lists, dialogs, browse filters and import controls.
+- [ ] Keep gameplay landscape-locked.
+- [ ] Standardize icons, backgrounds, typography, cards, buttons, surfaces, spacing, progress indicators, empty states and error states across all screens.
+- [ ] Make updater dialogs and progress screens responsive in both orientations.
+- [ ] Audit system insets, edge-to-edge behavior, small/large screens, touch targets, TalkBack labels/order, text scaling, contrast and keyboard/focus navigation.
+- [ ] Add automated screenshot/layout checks and UI-state tests for portrait and landscape.
+- [ ] Preserve state and prevent clipped, overlapping or unreachable controls during orientation changes and activity recreation.
 
-## P2 — UI/UX consistency and responsive layouts
+## P1 — 11. Final cleanup and release readiness
 
-- [ ] Make Home orientation-adaptive: support portrait and landscape with layouts that rearrange cleanly for each available screen size; remove the forced-landscape restriction only when both layouts are ready.
-- [ ] Make Addon Manager orientation-adaptive: provide a deliberate portrait layout as well as a landscape layout, with responsive navigation, lists, cards, dialogs, and controls.
-- [ ] Keep Play/gameplay landscape-locked unless a separate product decision changes that requirement; verify transitions between Home, Manager, and Play do not cause awkward orientation jumps.
-- [ ] Audit every screen (Home, Play, Addon Manager, Storage, updater and diagnostics when added) for consistent UI/UX, navigation, hierarchy, spacing, alignment, typography, and interaction feedback.
-- [ ] Establish and apply one coherent visual theme across all screens: reuse the existing dark, frost-blue and gold palette; align backgrounds, surfaces, gradients/overlays, borders, elevation, and text contrast. Avoid unrelated colors or inconsistent styling.
-- [ ] Standardize icons across the app: consistent visual family, stroke/fill treatment, size, alignment, tint, meaning, and accessible descriptions; replace mismatched or unclear icons.
-- [ ] Review backgrounds on every screen and in dialogs/cards: use theme-consistent surfaces and image overlays, maintain legibility over imagery, and avoid visual noise or excessive contrast differences.
-- [ ] Create/reuse shared styles, dimensions, colors, shapes, and drawable resources instead of duplicating screen-specific values; keep day/night behavior coherent if night resources are supported.
-- [ ] Improve buttons, cards, text fields, menus, dialogs, progress/loading states, empty states, error states, and pressed/disabled/focus feedback so components behave and look consistently.
-- [ ] Review portrait, landscape, small phones, large phones, tablets, cutouts, system bars, and edge-to-edge/inset handling; prevent clipped, overlapping, or unreachable content.
-- [ ] Review touch target sizes, spacing, text scaling, contrast, TalkBack labels/order, keyboard/focus navigation, and other accessibility semantics.
-- [ ] Test orientation changes, recreation, fullscreen, keyboard visibility, dialogs, back navigation, background/resume, and navigation between activities; preserve state and avoid layout regressions.
-- [ ] Capture and review screenshots for key screens in portrait and landscape, then fix visual regressions before marking the UI/UX work complete.
+- [ ] Update README, PROJECT_OVERVIEW, ROADMAP and CHANGELOG to describe only the final WebView/native architecture and accurately identify migration limitations.
+- [ ] Verify no roadmap or contributor instruction still directs development toward GeckoView, TWA or a bundled Chromium engine.
+- [ ] Review the final manifest and remove permissions no longer required by the native architecture.
+- [ ] Confirm the app uses the existing package ID and permanent signing certificate and remains upgrade-compatible.
+- [ ] Choose the release SemVer based on the final user-visible/data-contract changes; do not change versionName merely for intermediate commits.
+- [ ] Run all JavaScript, Kotlin, Python, Gradle, packaging, signing, checksum and release-metadata checks.
+- [ ] Do not publish a release until all automated gates pass and the owner explicitly approves publication.
 
-- [x] Redesign the updater's checking, download-progress, verification, update-ready, and installer-handoff UI to match the dark, frost-blue and gold theme; improve hierarchy, spacing, typography, icon use, and primary/cancel actions. Error and up-to-date dialogs retain the shared dark/gold AppCompat dialog theme.
-- [ ] Make updater dialogs and screens responsive in portrait and landscape, accessible, and consistent with Home and Addon Manager; clearly show version, download size/progress, checksum/verification status, and Android installer handoff without exposing technical clutter.
-- [ ] Test updater UI states (checking, up to date, update available, downloading, verifying, failed/offline, incompatible build/signature, and installer handoff) with screenshots in both orientations.
+## Not in scope
 
-## P3 — Release engineering code and CI
-
-- [x] Add a GitHub Actions release-request workflow that validates `.github/release-request.json`, supports dry-run validation, creates annotated tags with `GITHUB_TOKEN`, and explicitly dispatches the existing signed build workflow; verify the dry-run on GitHub Actions.
-- [x] Add CI safeguards ensuring debug-signed beta/demo artifacts are not accepted as main or tagged release assets; main/tag builds fail closed unless the permanent certificate matches.
-- [x] Add CI validation for package ID, APK-embedded versionName/versionCode, ABI coverage, signer consistency, and SHA-256 checksums.
-- [x] Keep release workflows compatible with the versioning and promotion policy in `AGENTS.md`.
-- [x] Configure the tagged-release pipeline to attach one permanent-key-signed ARM64 APK and SHA256SUMS.txt to a draft GitHub Release; main CI artifacts remain temporary validation outputs.
-- [x] Require the permanent release key and exact expected certificate on main/tag builds; missing secrets or fingerprint mismatch fail closed. A main-signed build remains to be verified after consolidation.
-- [x] Replace static Android `versionCode` with the existing workflow's global `GITHUB_RUN_NUMBER`; local builds use a development-only fallback and are never update candidates.
-- [x] Implement the published stable GitHub Release update checker; reject drafts, prereleases, malformed tags, missing/duplicate assets, and incompatible package/version/signing data.
-- [x] Implement full-APK download for ARM64 (`arm64-v8a`) devices only; reject other device architectures; no universal fallback or differential updates.
-- [x] Verify release APK size and SHA-256 against the published release checksum asset; reject missing/mismatched checksums and incomplete downloads.
-- [x] Hand the verified release APK to Android's package installer with release version, versionCode, size and tag information; Android requires user confirmation and the app never silently installs or uninstalls.
-- [x] Add JVM policy tests for published stable releases, draft/prerelease rejection, strict SemVer, ARM64-only selection, asset sizes, version ordering, checksums, and signer mismatch.
-- [x] Document and enforce exact signing-certificate, package ID and version compatibility; incompatible candidates are blocked instead of prompting an uninstall.
-- [x] Keep the updater to an Android package replacement only; it does not clear app data, cookies, login/session, GeckoView profile or add-ons. Physical verification remains in `MANUAL_CHECKLIST.md`.
-
-## Updater verification boundary
-
-The release-based updater implementation is in progress. Validate it against a published stable release, including asset discovery, checksum failure, malformed/draft/prerelease release rejection, package/version mismatch, unsupported ABI, and signer mismatch. Complete the same-certificate physical-device upgrade and data-preservation checks in `MANUAL_CHECKLIST.md`.
-
-## Not active work
-
-The following are not implementation tasks unless the owner explicitly reopens them:
-
-- General-purpose browser features unrelated to Lasthavens.
-- Replacing GeckoView without a technical case and migration plan.
-- Analytics, tracking, push notifications, or background services.
-- Differential APK patching.
-- Automatic updates beyond the defined published-release-only, checksum-verified, same-certificate in-place update design.
-- Resetting or wiping existing add-on data, or changing its format without a tested migration and rollback path.
+- GeckoView as a final or fallback game engine.
+- Bundled Chromium, TWA, Firefox TWA or general-purpose browser features.
+- Analytics, tracking, push notifications or background services.
+- Differential APK updates.
+- Unrelated frameworks, dependencies or UI features.
+- Automatic deletion of existing app data or the legacy profile.
