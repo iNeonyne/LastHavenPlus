@@ -1,50 +1,33 @@
 # Changelog
 
-This file records notable user-visible changes. It is not the development task list; see [TODO.md](TODO.md) for current work. Unreleased entries describe changes present on the development branch and are not release claims.
+Notable changes in each release. Development work that is not yet part of a release belongs in [TODO.md](TODO.md).
 
-## [Unreleased] — development
+## [Unreleased]
 
-### Added
-- Themed updater progress and update-ready dialogs with live download percentage and a verification stage.
-- Matching storage and update action icons on both Home layouts, using the existing frost-blue and gold palette.
-- Read-only storage dashboard for shared GeckoView/app persistent data, browser/app cache, and available device storage; distinguishes current storage from lifetime downloads.
-- Native JavaScript alert, confirm, and prompt dialogs.
-- Landscape-specific Home screen layout.
-- ARM64-only release APK output and updater support.
-- A user-triggered updater that checks published stable GitHub Releases, verifies release asset size and SHA-256, ARM64 compatibility, package/version and signing-certificate continuity, then hands installation to Android.
+_No release notes yet._
 
-### Changed
-- Home screen now uses sensor landscape orientation.
-- Removed the thin top-edge game loading-progress line while retaining the LH diagnostics badge and diagnostic logging.
-- GitHub Actions creates draft GitHub Releases from stable version tags with the permanent-key-signed ARM64 APK and checksums. The updater ignores drafts and prereleases and uses only published stable releases.
+## [1.0.1] — Release candidate
 
-### Security
-- Restricted in-app navigation to HTTPS Lasthavens hosts and required Gecko internal schemes; reject insecure HTTP, executable/data/file/intent schemes, untrusted blob origins, and lookalike hosts. Added JVM regression tests to CI.
+### What's new
+- **Safer, clearer updates:** The updater now shows download progress and verification status, then hands the verified update to Android's installer.
+- **More reliable Addon Manager updates:** Add-on files are staged before an update is activated. If an update is interrupted, the previous installation remains available.
+- **Storage overview:** See app and browser storage, cache usage, and available device space, with current usage kept separate from lifetime download totals.
+- **Improved Home screen:** Updated themed icons and translucent controls, with a dedicated landscape layout.
+- **Better web compatibility:** JavaScript alert, confirmation, and prompt dialogs now use native Android dialogs.
+- **Direct game access:** The Play action now opens the primary game address, `https://lasthavens.com/play`.
 
-### Improved
-- Replaced static updater alerts with a branded progress panel, clearer update details, and an explicit Android installer confirmation handoff.
-- Refined the Home screen's dark overlay and translucent action surfaces for more consistent text contrast over the hero background.
-- Addon Manager installs and updates now write add-on files to a new storage generation before switching library metadata. Interrupted updates leave the previous installed files intact; orphaned generations are cleaned up later.
-- Numbered TOC dependencies are now ordered numerically (Dep1, Dep2, Dep10).
-- Added automated Addon Manager regression tests for metadata parsing, dependency handling, library merge behavior, archive round-trips, and malicious/duplicate ZIP paths.
-- Added checks for bundled extension JSON/JavaScript, locale assets, and GeckoView native engine packaging.
-- Added SHA-256 checksum generation and verification for CI artifacts and GitHub Releases.
-- Addon Manager permission checks fail closed when the browser permissions API reports an error.
-- Addon Manager archive imports, restores, and downloads now enforce byte limits while streaming actual data.
-- Clarified the Addon Manager ZIP backup scope in the UI: backups contain managed add-on files only, not manager settings, enabled state, game SavedVariables, login/session data, or the shared Gecko profile.
+### Security and reliability
+- The updater accepts published stable releases only and checks the APK's size, SHA-256 checksum, ABI, package/version information, and signing-certificate continuity before installation.
+- In-app navigation is restricted to approved HTTPS Lasthavens hosts and required Gecko internal schemes. Insecure and untrusted URL schemes and lookalike hosts are rejected.
+- Addon Manager permission checks fail closed if the browser permission API errors.
+- Addon Manager archive imports, restores, and downloads enforce byte limits while streaming data.
+- Addon Manager backups are limited to managed add-on files; they do not include manager settings, enabled state, game saves, login/session data, or the shared browser profile.
 
-### Build and maintenance
-- Updated the Android Gradle Plugin/Kotlin toolchain and Gradle configuration.
-- Fixed APK signature verification to use the Android SDK's explicit `apksigner` path.
-- Added early validation of release keystore, alias, and private-key password configuration.
-
-## [1.0.1] — Unreleased
-
-- Switch the in-app game destination from the alternate host to `https://lasthavens.com/play`.
-- Correct release metadata to match the bundled Addon Manager version `1.0.3`.
+### Compatibility and maintenance
+- Release APKs target ARM64 devices.
+- Automated checks cover Addon Manager metadata, dependencies, archive handling, bundled assets, and release checksums.
 
 ## [1.0.0] — Released
 
-- Removes the in-game top loading-progress line while retaining the configurable LH diagnostics badge and diagnostic logging.
-
-- Includes the first packaged Android app baseline with GeckoView, Home, Play, Addon Manager screens, shared runtime design, and bundled Addon Manager.
+- First packaged Android app release, including GeckoView, Home, Play, and Addon Manager.
+- Removed the thin in-game loading-progress line while retaining the LH diagnostics badge and diagnostic logging.
