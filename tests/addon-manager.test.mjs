@@ -12,6 +12,7 @@ import {
 } from "../app/src/main/assets/extensions/lh-addon-manager/library.js";
 import { tocMeta } from "../app/src/main/assets/extensions/lh-addon-manager/toc.js";
 import { hasAccess } from "../app/src/main/assets/extensions/lh-addon-manager/browse.js";
+import { commitStagedGeneration } from "../app/src/main/assets/extensions/lh-addon-manager/staged-storage.js";
 
 if (!globalThis.crypto) globalThis.crypto = webcrypto;
 
@@ -176,4 +177,35 @@ test("Browse permission checks fail closed when the permissions API errors", asy
   globalThis.browser = { permissions: { contains: async () => false } };
   assert.equal(await hasAccess(), false);
   delete globalThis.browser;
+});
+
+test("metadata commit failure keeps the previous addon generation and rolls back staged files", async () => {
+  const previousLibrary = {
+    revision: "stable-revision",
+    addons: [{ folder: "Example", version: "1.0", enabled: true, storageFolder: "lh_previous" }],
+  };
+  const previousFiles = new Map([["lh_previous/Example.lua", bytes("old addon data")]]);
+  const stagedFiles = new Map();
+  let library = previousLibrary;
+
+  await assert.rejects(
+    commitStagedGeneration({
+      stage: async () => stagedFiles.set("lh_staged/Example.lua", bytes("new addon data")),
+      commit: async () => {
+        throw new Error("simulated metadata storage failure");
+      },
+      rollback: async () => {
+        stagedFiles.delete("lh_staged/Example.lua");
+      },
+      cleanup: async () => {
+        throw new Error("cleanup must not run after failed commit");
+      },
+    }),
+    /simulated metadata storage failure/,
+  );
+
+  assert.equal(library, previousLibrary);
+  assert.equal(library.addons[0].storageFolder, "lh_previous");
+  assert.equal(new TextDecoder().decode(previousFiles.get("lh_previous/Example.lua")), "old addon data");
+  assert.equal(stagedFiles.has("lh_staged/Example.lua"), false);
 });
