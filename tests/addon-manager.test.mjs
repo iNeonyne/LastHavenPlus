@@ -298,6 +298,21 @@ test("migration export rejects unsafe paths, missing TOCs, and mismatched metada
     }),
     /TOC file is missing/,
   );
+
+  await assert.rejects(
+    createMigrationArchive({
+      library: { revision: "x", addons: [{ folder: "Example", storageFolder: "same" }, { folder: "Second", storageFolder: "SAME" }] },
+      getFiles: async () => ({ "Example.toc": bytes("x") }),
+    }),
+    /invalid or duplicate storage folder/,
+  );
+  await assert.rejects(
+    createMigrationArchive({
+      library: { revision: "x", addons: [{ folder: "Example" }] },
+      getFiles: async () => ({ "Example.toc": bytes("x"), "nested\\\\escape.lua": bytes("x") }),
+    }),
+    /Unsafe or duplicate file path/,
+  );
   await assert.rejects(
     createMigrationArchive({
       library: { revision: "x", addons: [{ ...addon, size: 99 }] },
