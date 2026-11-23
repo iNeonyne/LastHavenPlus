@@ -48,6 +48,7 @@ jobs:
           KS_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
           ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
           KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+          EXPECTED_CERT_SHA256: B3BBF7520E77DFC384A60B1EEE6C5F205B978F9B453849E2BE523F642018D263
         run: |
           for name in KS KS_PASSWORD ALIAS KEY_PASSWORD; do
             if [ -z "${!name}" ]; then
@@ -57,7 +58,12 @@ jobs:
           done
           echo "$KS" | base64 -d > "$RUNNER_TEMP/release.jks"
           test -s "$RUNNER_TEMP/release.jks"
-          keytool -list -keystore "$RUNNER_TEMP/release.jks" -storepass "$KS_PASSWORD" -alias "$ALIAS" >/dev/null
+          fingerprint=$(keytool -list -v -keystore "$RUNNER_TEMP/release.jks" -storepass "$KS_PASSWORD" -alias "$ALIAS" | awk -F': ' '/SHA256:/{print $2; exit}' | tr -d ':' | tr '[:lower:]' '[:upper:]')
+          if [ "$fingerprint" != "$EXPECTED_CERT_SHA256" ]; then
+            echo "The configured keystore certificate does not match the expected Lasthavens release key."
+            exit 1
+          fi
+          echo "Release keystore fingerprint matches the expected certificate."
           keytool -certreq -alias "$ALIAS" -keystore "$RUNNER_TEMP/release.jks" -storepass "$KS_PASSWORD" -keypass "$KEY_PASSWORD" -file "$RUNNER_TEMP/signing-key-check.csr" >/dev/null
           rm -f "$RUNNER_TEMP/signing-key-check.csr"
           echo "KEYSTORE_PATH=$RUNNER_TEMP/release.jks" >> "$GITHUB_ENV"
@@ -81,8 +87,10 @@ jobs:
               if f"| {chr(96)}{value}{chr(96)} |" not in readme:
                   raise SystemExit(f"README current-version table is missing {label} version {value}")
           ref = os.environ.get("GITHUB_REF", "")
-          if ref.startswith("refs/tags/v") and ref.removeprefix("refs/tags/v") != version:
-              raise SystemExit(f"Release tag {ref} does not match appVersionName {version}")
+          if ref.startswith("refs/tags/v"):
+              tag_version = ref.removeprefix("refs/tags/v").split("-", 1)[0]
+              if tag_version != version:
+                  raise SystemExit(f"Release tag {ref} does not match appVersionName {version}")
           print(f"Release metadata OK: app {version} (code {code}), manager {manifest['version']}, GeckoView {engine}")
           PY
 
@@ -127,18 +135,21 @@ jobs:
             echo "$output"
             cert=$(printf '%s\n' "$output" | sed -nE 's/^(V[0-9.]+ )?Signer( #[0-9]+)?: certificate SHA-256 digest: //p' | head -n1)
             [ -n "$cert" ] || { echo "Could not read signer certificate from $apk"; exit 1; }
-            if [[ "$GITHUB_REF" == refs/tags/v* ]] && printf '%s' "$output" | grep -qi 'CN=Android Debug'; then
-              echo "Refusing to accept a debug-signed APK in a trusted build"
-              exit 1
+            if [[ "$GITHUB_REF" == refs/tags/v* ]]; then
+              normalized_cert=$(printf '%s' "$cert" | tr -d ':' | tr '[:lower:]' '[:upper:]')
+              if [ "$normalized_cert" != "B3BBF7520E77DFC384A60B1EEE6C5F205B978F9B453849E2BE523F642018D263" ]; then
+                echo "APK signer fingerprint does not match the expected Lasthavens release key."
+                exit 1
+              fi
+              if printf '%s' "$output" | grep -qi 'CN=Android Debug'; then
+                echo "Refusing to accept a debug-signed APK in a trusted build"
+                exit 1
+              fi
             fi
             if [ -z "$expected" ]; then
               expected="$cert"
             elif [ "$cert" != "$expected" ]; then
               echo "APK variants were signed with different certificates"
-              exit 1
-            fi
-            if [[ "$GITHUB_REF" == refs/tags/v* ]] && printf '%s' "$output" | grep -qi 'CN=Android Debug'; then
-              echo "Refusing to publish a debug-signed APK"
               exit 1
             fi
           done
@@ -222,4 +233,6 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           files: dist/*
+          name: LastHavenPlus ${{ github.ref_name }}
+          prerelease: ${{ contains(github.ref_name, '-') }}
           generate_release_notes: true
