@@ -15,21 +15,22 @@ These are mandatory project rules. Read this file and `TODO.md` before doing wor
 
 LastHavenPlus is a focused Android client for the Lasthavens game, built with Kotlin and Mozilla GeckoView. It is not a general-purpose browser. Keep work focused on reliable gameplay, add-on management, Android integration, security, and data preservation.
 
-## 3. Protected Addon Manager
+## 3. Addon Manager changes and data preservation
 
-- The bundled Addon Manager is a protected component. Its current bundled version is recorded in its `manifest.json` (currently documented as 1.0.1).
-- Do not edit, replace, upgrade, downgrade, repackage, redesign, or otherwise change the bundled Addon Manager or its assets without explicit authorization from the project owner.
-- A general request to audit, review, or fix bugs is not authorization to change this protected component.
-- You may inspect it read-only, report findings, and propose changes.
-- Keep validation tests that inspect the bundled manager read-only unless the owner authorizes manager changes.
-- Never silently change the manager version or its stored data format.
+- The project owner has authorized necessary Addon Manager maintenance, provided installed add-ons carry over.
+- Preserve add-on files, folder IDs, versions, enabled/disabled state, library metadata, manager settings, and the shared Gecko profile.
+- Never reset, wipe, or silently discard existing add-on data.
+- Before changing storage or backup formats, inspect existing records and maintain backward-compatible reads or provide a tested migration and rollback path.
+- Prefer staged writes and pointer swaps so a failed or interrupted update leaves the last committed add-on files intact.
+- Clean up orphaned data only after confirming it is not referenced by the active library.
+- Never silently change the manager version or stored data format.
 
 ## 4. Architecture and user data
 
 - Keep GeckoView unless a concrete technical reason and migration plan justify changing engines.
 - The game and Addon Manager are intended to share the Gecko runtime/profile. Preserve this relationship.
 - Protect login/session state, cookies, profile data, installed add-ons, manager settings, and other user data.
-- Before changing profile, storage, backup/restore, add-on format, or migration behavior: inspect the current implementation; document what is preserved and excluded; define a tested backup, migration, and rollback path; and obtain owner authorization when the change affects protected manager code.
+- Before changing profile, storage, backup/restore, add-on format, or migration behavior: inspect the current implementation; document what is preserved and excluded; and define a tested backup, migration, and rollback path. The owner has authorized necessary manager maintenance only when existing add-ons carry over.
 - Never recommend uninstalling an existing differently signed app without clearly warning that local data may be lost.
 - Do not claim backups preserve settings or enabled state unless the implementation demonstrably includes them.
 

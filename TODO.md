@@ -6,7 +6,7 @@ This is the authoritative active task list. Priorities are ordered by importance
 
 - Development branch: `beta`.
 - Android app: `2.0.0` development version.
-- Bundled Addon Manager: `1.0.1`, protected from changes without explicit authorization.
+- Bundled Addon Manager: `1.0.2`, owner-authorized maintenance in progress with add-on data preservation required.
 - CI: beta build workflow configured; check the latest run before claiming it passed.
 - Physical-device validation: not yet confirmed complete.
 - Permanent release signing: paused; required before public releases, not for debug demo testing.
@@ -41,9 +41,18 @@ This is the authoritative active task list. Priorities are ordered by importance
 - [ ] Decide whether to expand backup coverage or clearly disclose those exclusions in the UI and documentation. Any manager-code change requires explicit authorization.
 - [ ] Test storage failure and interrupted-write recovery before changing persistence behavior.
 
-## P1 — Audit findings awaiting owner decision
+## P1 — Authorized Addon Manager hardening
 
-These findings came from a read-only code review. The bundled Addon Manager is protected, so do not implement manager-side fixes until the owner explicitly authorizes them.
+The owner has authorized necessary manager changes on the condition that installed add-ons carry over. Preserve add-on files, folder IDs, versions, enabled state, library metadata, settings, and the shared Gecko profile. Do not reset or wipe existing data. Use staged writes, compatibility fallbacks, and verified rollback behavior.
+
+- [x] Make add-on replacement crash-safe by writing files to a fresh IndexedDB storage generation before switching the library pointer.
+- [x] Preserve the existing storage-key format for already-installed add-ons; legacy entries without a storage pointer continue to read from their original folder key.
+- [x] Clean up unreferenced storage generations after successful commits and at startup.
+- [x] Correct numeric ordering of numbered TOC dependencies.
+- [ ] Run the Addon Manager regression suite and full CI build.
+- [ ] Verify install, update, remove, backup/restore, and game loading on a physical device with pre-existing add-ons.
+- [ ] Add a failure-injection test for metadata commit failure and confirm the prior generation remains readable.
+- [ ] Enforce archive/download byte limits while reading actual data, not only from declared sizes.
 
 - [ ] **Manager data consistency:** add-on files are written before library metadata is committed. Investigate crash/failure recovery and design a transactional or rollback-safe update.
 - [ ] **Archive memory use:** import/restore reads selected files into memory before enforcing archive limits. Assess safer preflight and bounded-read handling.
@@ -53,14 +62,14 @@ These findings came from a read-only code review. The bundled Addon Manager is p
 - [ ] **Duplicate permission logic:** consider centralizing permission checks and origin definitions.
 - [ ] **Navigation duplication:** consider sharing common routing logic between Play and Manager activities.
 
-## P2 — Addon Manager verification (read-only unless authorized)
+## P2 — Addon Manager verification
 
 - [ ] Create a device test checklist for install, update, enable/disable, remove, import/export, backup/restore, and game integration.
 - [ ] Verify error states and recovery for failed imports, failed downloads, unavailable permissions, and interrupted operations.
 - [ ] Verify usability on phone-sized screens, touch targets, accessibility, and large add-on lists.
 - [ ] Document manager capabilities and limitations based on the current bundled source.
 - [ ] Review compatibility with GeckoView upgrades without modifying the manager.
-- [ ] If changes are proposed, present the exact files, behavior, and migration/data risks for approval before editing.
+- [ ] Review every future manager change for backward compatibility and data preservation before editing.
 
 ## P3 — Release signing and safe upgrades
 
@@ -103,4 +112,4 @@ Do not publish until all applicable items are complete:
 - Replacing GeckoView without a technical case and migration plan.
 - Analytics, tracking, push notifications, or background services.
 - Differential APK patching.
-- Modifying or replacing the bundled Addon Manager without explicit owner authorization.
+- Resetting or wiping existing add-on data; any data-format change without a tested migration and rollback path.
