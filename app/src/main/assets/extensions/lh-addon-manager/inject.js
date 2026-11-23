@@ -201,9 +201,9 @@
   async function process(p) {
     if (!p) {
       badgeOn = true; // always show this failure
-      state = { kind: "err", text: "no answer from extension" };
-      log("TIMEOUT: the extension never answered. Is access to this site allowed in the add-on's permissions?");
-      report("error", "Extension payload timeout. Starting without local addons.");
+      state = { kind: "err", text: "no answer from native manager" };
+      log("TIMEOUT: the native add-on bridge did not answer. Check that this WebView provider supports the required WebKit messaging features.");
+      report("error", "Native add-on payload timeout. Starting without local add-ons.");
       return empty;
     }
     try {
@@ -237,7 +237,7 @@
       clearInterval(helloTimer);
       const p = d.payload || {};
       badgeOn = p.badge !== false;
-      log("data received from extension: " + (p.addons || []).length + " enabled add-on(s)");
+      log("data received from native storage: " + (p.addons || []).length + " enabled add-on(s)");
       gotPayload(p);
     } else if (d.kind === "changed" && gameSeen) {
       report("pending", "Library changed. Reload the game to apply.");
