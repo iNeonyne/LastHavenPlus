@@ -224,6 +224,7 @@ Do not commit the keystore or passwords to the repository.
 
 ## Known limitations
 
+- The Lasthavens Terms of Use prohibit modified clients, except for add-ons in the in-game AddOn Library. Whether this independent GeckoView client and its bundled Addon Manager are permitted is unconfirmed; obtain explicit guidance from the Lasthavens team before public distribution. The app must clearly state that it is unofficial and not endorsed by Lasthavens or Blizzard.
 - Live Game Scan observes add-on file requests; it cannot prove that an add-on's Lua code initialized successfully.
 - Backup ZIPs contain managed add-on files only. They do not include game settings, SavedVariables, or manager enabled/disabled flags.
 - The bundled extension's Gecko minimum version is 142.0; keep GeckoView at or above that version and test extension compatibility before upgrades.
