@@ -33,9 +33,9 @@ The app and extension have independent versions. Necessary Addon Manager mainten
 
 - Landscape Home layout and orientation are committed on `main`.
 - The read-only storage dashboard is implemented and included in the current main build. It reports shared app/profile persistent storage, cache, and available device space; it does not claim game-only storage or lifetime downloaded bytes.
-- Main run [#196](https://github.com/iNeonyne/Lasthavens-Android/actions/runs/45187442263), for commit `ed0c5bb`, passed all automated tests, direct DER release-certificate verification, the previous four-variant release build and artifact uploads. The new ARM64-only pipeline is awaiting CI verification.
+- Main run [#231](https://github.com/iNeonyne/Lasthavens-Android/actions/runs/45200763306), for commit `58a0b6c`, passed automated tests, permanent-key verification, ARM64 packaging, APK signature and package/version checks, and checksum generation.
 - In-app navigation now permits HTTPS Lasthavens hosts and the required Gecko internal schemes; insecure HTTP, executable/data/file/intent schemes, untrusted blob origins, and lookalike hosts are rejected by the tested policy.
-- Main run #196 verified the permanent signing certificate and published one metadata/checksum artifact plus four per-ABI APK artifacts in the previous multi-ABI pipeline. New runs will publish one ARM64 APK artifact. The metadata artifact and ARM64 APK artifact were downloaded; the ARM64 APK's actual size and SHA-256 matched the metadata/checksum. Manual-dispatch run #198 also succeeded, but is intentionally ignored by the updater; #196 remains the latest eligible main push run. Physical-device upgrade testing remains outstanding.
+- Main run #231 verified the permanent signing certificate and uploaded the ARM64 APK artifact. The release-based updater now targets published stable GitHub Releases rather than expiring Actions artifacts. Physical-device upgrade testing remains outstanding.
 - Physical-device installation and smoke testing remain outstanding. CI success does not establish device compatibility, performance, or gameplay stability.
 
 ## Automatic updater
