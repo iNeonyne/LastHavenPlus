@@ -3,20 +3,20 @@ import assert from "node:assert/strict";
 import { webcrypto } from "node:crypto";
 import { readFile } from "node:fs/promises";
 import vm from "node:vm";
-import { zipSync } from "../app/src/main/assets/extensions/lh-addon-manager/vendor/fflate.js";
-import { importZip, exportZip, readStreamLimited } from "../app/src/main/assets/extensions/lh-addon-manager/archive.js";
+import { zipSync } from "./legacy-addon-manager/vendor/fflate.js";
+import { importZip, exportZip, readStreamLimited } from "./legacy-addon-manager/archive.js";
 import {
   emptyLibrary,
   loadOrder,
   mergeAddons,
   missingDependencies,
   sameVersionCopy,
-} from "../app/src/main/assets/extensions/lh-addon-manager/library.js";
-import { tocMeta } from "../app/src/main/assets/extensions/lh-addon-manager/toc.js";
-import { hasAccess, requestAccess, DOWNLOAD_ORIGINS } from "../app/src/main/assets/extensions/lh-addon-manager/browse.js";
-import { commitStagedGeneration } from "../app/src/main/assets/extensions/lh-addon-manager/staged-storage.js";
-import { createMigrationArchive, MIGRATION_FORMAT, MIGRATION_SCHEMA } from "../app/src/main/assets/extensions/lh-addon-manager/migration-export.js";
-import { unzipSync } from "../app/src/main/assets/extensions/lh-addon-manager/vendor/fflate.js";
+} from "./legacy-addon-manager/library.js";
+import { tocMeta } from "./legacy-addon-manager/toc.js";
+import { hasAccess, requestAccess, DOWNLOAD_ORIGINS } from "./legacy-addon-manager/browse.js";
+import { commitStagedGeneration } from "./legacy-addon-manager/staged-storage.js";
+import { createMigrationArchive, MIGRATION_FORMAT, MIGRATION_SCHEMA } from "./legacy-addon-manager/migration-export.js";
+import { unzipSync } from "./legacy-addon-manager/vendor/fflate.js";
 
 if (!globalThis.crypto) globalThis.crypto = webcrypto;
 
