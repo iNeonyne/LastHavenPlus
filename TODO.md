@@ -9,10 +9,10 @@ All development work stays on `main`, the sole active branch. The former `beta` 
 - Active development branch: `main`.
 - Android app: `1.0.0` first release candidate; not yet published.
 - Bundled Addon Manager: `1.0.2`.
-- Latest main CI run #196 (commit `ed0c5bb`) passed all automated tests, permanent-key verification, four release APK builds, APK signature and package/version checks, checksum generation, metadata creation, and all five main update artifact uploads. The direct DER certificate hash matched the expected permanent release fingerprint.
-- Main workflow-dispatch run #198 completed successfully and uploaded artifacts, but it is intentionally ignored by the updater; the latest eligible main push run remains #196.
+- Main CI run #231 (commit `58a0b6c`) passed automated tests, permanent-key verification, ARM64 APK build/signature/package/version checks, and checksum generation.
+- The in-app updater now uses published stable GitHub Releases; main CI artifacts are not update sources.
 - Physical-device validation and owner-only release actions are tracked separately in [MANUAL_CHECKLIST.md](MANUAL_CHECKLIST.md).
-- Main run #196 confirmed the configured GitHub Actions keystore and passwords/alias work and the certificate fingerprint matches the expected permanent release key. No secret replacement is needed.
+- Main run #231 confirmed the configured GitHub Actions keystore and passwords/alias work and the certificate fingerprint matches the expected permanent release key. No secret replacement is needed.
 - The updater is being migrated from expiring Actions artifacts to published stable GitHub Releases. It now fetches the latest published release, requires the exact ARM64 APK and checksum assets, and verifies APK integrity, package/version, ABI, and installed signing-certificate compatibility before Android installer handoff. CI and physical-device validation are pending.
 - Version flow: main-only SemVer releases with a monotonic workflow-run `versionCode`; see `AGENTS.md`.
 
