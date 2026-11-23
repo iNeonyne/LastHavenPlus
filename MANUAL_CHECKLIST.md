@@ -24,7 +24,7 @@ Development and code changes remain on `main`, the sole active branch. The forme
 ### Main-only updater verification
 
 - [ ] Do not use a debug-signed pull-request or test APK to test a main update; the updater must block a signer mismatch. A debug-signed installation cannot be upgraded in place to the permanent release key. Do not uninstall a data-bearing install to switch signing identities; use a separate test device.
-- [x] Main run #196 verified the expected permanent-key fingerprint and uploaded one unexpired metadata/checksum artifact plus one APK artifact for each ABI. The metadata ZIP and ARM64 APK artifact were downloaded and checked against their declared size and SHA-256; CI verified signatures/checksums for all four variants in the previous multi-ABI configuration. The new ARM64-only workflow still needs CI verification.
+- [x] Main run #196 verified the expected permanent-key fingerprint and uploaded one unexpired metadata/checksum artifact plus four APK artifacts in the previous multi-ABI configuration. The metadata ZIP and ARM64 APK artifact were downloaded and checked against their declared size and SHA-256; CI verified signatures/checksums for all four variants in the previous multi-ABI configuration. The new ARM64-only workflow still needs CI verification.
 - [ ] On a test device, install the permanent-key-signed main APK and create test data (login/session, installed add-ons, manager settings, and GeckoView profile state).
 - [ ] Trigger a later successful main `push` run (not workflow dispatch, pull request, or tag) and use Home → Check for updates; confirm it selects only that successful main push and the device-compatible ABI.
 - [ ] Confirm displayed version, workflow build number, APK size and commit match the selected artifact.
@@ -41,7 +41,7 @@ Development and code changes remain on `main`, the sole active branch. The forme
 - [ ] Back up the permanent private key securely in at least two offline locations.
 - [x] GitHub Actions signing secrets are configured and were successfully used by main run #196; keep all key material out of source control, logs, and chat.
 - [x] Main run #196 logged identical configured and expected certificate fingerprints.
-- [x] Main run #196's APK signature verification passed for all four ABI variants.
+- [x] Main run #196's APK signature verification passed for all four variants in the previous configuration; verify the new single ARM64 APK after the ARM64-only CI run.
 - [ ] Install a main/release-signed APK, then verify a subsequent same-certificate main APK upgrades in place.
 - [ ] Clarify terms/permission to distribute the independent client with the Lasthavens team.
 - [ ] Explicitly approve any release and any beta-to-main promotion.
