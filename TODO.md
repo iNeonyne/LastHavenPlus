@@ -15,6 +15,7 @@ All development work stays on `main`, the sole active branch. The former `beta` 
 - Main run #231 confirmed the configured GitHub Actions keystore and passwords/alias work and the certificate fingerprint matches the expected permanent release key. No secret replacement is needed.
 - The updater is being migrated from expiring Actions artifacts to published stable GitHub Releases. It now fetches the latest published release, requires the exact ARM64 APK and checksum assets, and verifies APK integrity, package/version, ABI, and installed signing-certificate compatibility before Android installer handoff. CI and physical-device validation are pending.
 - Version flow: main-only SemVer releases with a monotonic workflow-run `versionCode`; see `AGENTS.md`.
+- A Termux-free release-request workflow is installed. Its `v1.0.0` dry-run validation passed; real requests create the annotated tag and dispatch the signed tag build, which still creates a draft for manual review.
 
 ## P0 — Data safety and demo-blocking code
 
@@ -60,6 +61,7 @@ The owner has authorized necessary manager maintenance only with preservation of
 
 ## P3 — Release engineering code and CI
 
+- [x] Add a GitHub Actions release-request workflow that validates `.github/release-request.json`, supports dry-run validation, creates annotated tags with `GITHUB_TOKEN`, and explicitly dispatches the existing signed build workflow; verify the dry-run on GitHub Actions.
 - [x] Add CI safeguards ensuring debug-signed beta/demo artifacts are not accepted as main or tagged release assets; main/tag builds fail closed unless the permanent certificate matches.
 - [x] Add CI validation for package ID, APK-embedded versionName/versionCode, ABI coverage, signer consistency, and SHA-256 checksums.
 - [x] Keep release workflows compatible with the versioning and promotion policy in `AGENTS.md`.
