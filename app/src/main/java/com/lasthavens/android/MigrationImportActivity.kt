@@ -92,16 +92,51 @@ class MigrationImportActivity : AppCompatActivity() {
         status.setText(R.string.migration_verifying)
         executor.execute {
             val result = runCatching {
-                val size = contentResolver.openAssetFileDescriptor(uri, "r")?.use { it.length }
-                    ?: error("Could not read the selected archive size")
-                val input = contentResolver.openInputStream(uri)
-                    ?: error("Could not open the selected archive")
-                input.use {
-                    MigrationArchiveReader.stage(
-                        input = it,
-                        archiveBytes = size,
-                        stagingRoot = java.io.File(filesDir, "manager-migration/staging"),
-                    )
+                val declaredSize = contentResolver.openAssetFileDescriptor(uri, "r")?.use { it.length } ?: -1L
+                require(declaredSize <= MigrationArchiveReader.MAX_ARCHIVE_BYTES) {
+                    "Migration archive exceeds the 128 MB limit"
+                }
+                if (declaredSize > 0L) {
+                    val input = contentResolver.openInputStream(uri)
+                        ?: error("Could not open the selected archive")
+                    input.use {
+                        MigrationArchiveReader.stage(
+                            input = it,
+                            archiveBytes = declaredSize,
+                            stagingRoot = java.io.File(filesDir, "manager-migration/staging"),
+                        )
+                    }
+                } else {
+                    // Some document providers do not report a length. Spool with a hard bound
+                    // so the validator always receives the real compressed size.
+                    val temp = java.io.File(cacheDir, "migration-${java.util.UUID.randomUUID()}.zip")
+                    try {
+                        val input = contentResolver.openInputStream(uri)
+                            ?: error("Could not open the selected archive")
+                        input.use { source ->
+                            java.io.FileOutputStream(temp).use { output ->
+                                val buffer = ByteArray(DEFAULT_BUFFER_SIZE)
+                                var total = 0L
+                                while (true) {
+                                    val read = source.read(buffer)
+                                    if (read < 0) break
+                                    total += read
+                                    require(total <= MigrationArchiveReader.MAX_ARCHIVE_BYTES) {
+                                        "Migration archive exceeds the 128 MB limit"
+                                    }
+                                    output.write(buffer, 0, read)
+                                }
+                                output.fd.sync()
+                            }
+                        }
+                        MigrationArchiveReader.stage(
+                            input = temp.inputStream(),
+                            archiveBytes = temp.length(),
+                            stagingRoot = java.io.File(filesDir, "manager-migration/staging"),
+                        )
+                    } finally {
+                        temp.delete()
+                    }
                 }
             }
             runOnUiThread {
