@@ -13,6 +13,8 @@ import {
 import { tocMeta } from "../app/src/main/assets/extensions/lh-addon-manager/toc.js";
 import { hasAccess, requestAccess, DOWNLOAD_ORIGINS } from "../app/src/main/assets/extensions/lh-addon-manager/browse.js";
 import { commitStagedGeneration } from "../app/src/main/assets/extensions/lh-addon-manager/staged-storage.js";
+import { createMigrationArchive, MIGRATION_FORMAT, MIGRATION_SCHEMA } from "../app/src/main/assets/extensions/lh-addon-manager/migration-export.js";
+import { unzipSync } from "../app/src/main/assets/extensions/lh-addon-manager/vendor/fflate.js";
 
 if (!globalThis.crypto) globalThis.crypto = webcrypto;
 
@@ -221,4 +223,98 @@ test("metadata commit failure keeps the previous addon generation and rolls back
   assert.equal(library.addons[0].storageFolder, "lh_previous");
   assert.equal(new TextDecoder().decode(previousFiles.get("lh_previous/Example.lua")), "old addon data");
   assert.equal(stagedFiles.has("lh_staged/Example.lua"), false);
+});
+
+
+test("migration export includes library state, manager preferences, and checksummed raw files", async () => {
+  const sourceLibrary = {
+    revision: "revision-123",
+    addons: [{
+      folder: "Example",
+      storageFolder: "lh_generation_1",
+      version: "2.3.4",
+      enabled: true,
+      dependencies: ["Core"],
+      optionalDeps: ["Extras"],
+      size: 26,
+      fileCount: 2,
+    }],
+  };
+  const sourceFiles = {
+    "Example.toc": bytes("## Interface: 30300\n"),
+    "Example.lua": bytes("print('migration')"),
+  };
+  const { archive, manifest } = await createMigrationArchive({
+    library: sourceLibrary,
+    preferences: {
+      settings: { badge: false },
+      language: "fr",
+      browseInstalled: { "catalog-entry": ["Example"] },
+    },
+    getFiles: async (folder) => {
+      assert.equal(folder, "lh_generation_1");
+      return sourceFiles;
+    },
+    exportedAt: 123456,
+  });
+
+  assert.equal(manifest.format, MIGRATION_FORMAT);
+  assert.equal(manifest.schema, MIGRATION_SCHEMA);
+  assert.equal(manifest.exportedAt, 123456);
+  assert.equal(manifest.library.revision, "revision-123");
+  assert.equal(manifest.library.addons[0].enabled, true);
+  assert.deepEqual(manifest.library.addons[0].dependencies, ["Core"]);
+  assert.deepEqual(manifest.preferences.settings, { badge: false });
+  assert.equal(manifest.preferences.language, "fr");
+  assert.deepEqual(manifest.preferences.browseInstalled, { "catalog-entry": ["Example"] });
+  assert.equal(manifest.totals.files, 2);
+  assert.equal(manifest.totals.expandedBytes, 26);
+
+  const unpacked = unzipSync(archive);
+  const exportedManifest = JSON.parse(new TextDecoder().decode(unpacked["manifest.json"]));
+  assert.deepEqual(exportedManifest, manifest);
+  assert.deepEqual([...unpacked["files/lh_generation_1/Example.lua"]], [...sourceFiles["Example.lua"]]);
+  assert.match(manifest.files[0].sha256, /^[a-f0-9]{64}$/);
+  assert.equal(manifest.files[0].size, sourceFiles["Example.toc"].length);
+  assert.deepEqual(sourceLibrary.addons[0], {
+    folder: "Example", storageFolder: "lh_generation_1", version: "2.3.4",
+    enabled: true, dependencies: ["Core"], optionalDeps: ["Extras"], size: 26, fileCount: 2,
+  });
+});
+
+test("migration export rejects unsafe paths, missing TOCs, and mismatched metadata", async () => {
+  const addon = { folder: "Example", size: 3, fileCount: 1 };
+  await assert.rejects(
+    createMigrationArchive({
+      library: { revision: "x", addons: [addon] },
+      getFiles: async () => ({ "../escape.lua": bytes("bad"), "Example.toc": bytes("x") }),
+    }),
+    /Unsafe file path/,
+  );
+  await assert.rejects(
+    createMigrationArchive({
+      library: { revision: "x", addons: [addon] },
+      getFiles: async () => ({ "Other.toc": bytes("x") }),
+    }),
+    /TOC file is missing/,
+  );
+  await assert.rejects(
+    createMigrationArchive({
+      library: { revision: "x", addons: [{ ...addon, size: 99 }] },
+      getFiles: async () => ({ "Example.toc": bytes("x") }),
+    }),
+    /file size does not match/,
+  );
+});
+
+test("empty migration export is valid and preserves the empty library revision", async () => {
+  const { archive, manifest } = await createMigrationArchive({
+    library: { revision: "empty-revision", addons: [] },
+    getFiles: async () => ({}),
+  });
+  assert.equal(manifest.library.revision, "empty-revision");
+  assert.equal(manifest.totals.addons, 0);
+  assert.equal(manifest.totals.files, 0);
+  const unpacked = unzipSync(archive);
+  assert.equal(JSON.parse(new TextDecoder().decode(unpacked["manifest.json"])).format, MIGRATION_FORMAT);
 });
