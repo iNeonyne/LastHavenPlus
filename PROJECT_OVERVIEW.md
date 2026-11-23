@@ -7,7 +7,7 @@ LastHavenPlus is a focused native Android client for the Lasthavens game. It use
 - Game: https://alt.lasthavens.com/play
 - Repository: https://github.com/iNeonyne/Lasthavens-Android
 - Distribution target: GitHub Releases only; no Google Play track.
-- Automatic updater: implemented on `beta`; only successful completed main-branch push artifacts are eligible. The main-only metadata/checksum artifact and four separate signed ABI APK artifacts are configured but will not be available until owner-approved promotion.
+- Automatic updater: implemented on `main`; it accepts only successful main push artifacts and verifies provenance, ABI, checksum, package/version, and signing compatibility before Android installer handoff.
 - Android application ID: `com.lasthavens.android`
 
 ## Architecture
@@ -31,18 +31,18 @@ The app and extension have independent versions. Necessary Addon Manager mainten
 
 ## Current build status
 
-- Landscape Home layout and orientation are committed on `beta`.
-- The read-only storage dashboard is implemented and included in the current beta build. It reports shared app/profile persistent storage, cache, and available device space; it does not claim game-only storage or lifetime downloaded bytes.
-- GitHub Actions beta run [#179](https://github.com/iNeonyne/Lasthavens-Android/actions/runs/45183038304), for commit `593fec6`, completed successfully. The Addon Manager regression suite, metadata-generator tests, updater-policy tests, APK compilation, signer-consistency check, packaged asset checks, APK package/version validation, ABI naming, SHA-256 checksum generation, and beta artifact uploads passed. Main-only signing and artifact uploads remain untested until promotion.
+- Landscape Home layout and orientation are committed on `main`.
+- The read-only storage dashboard is implemented and included in the current main build. It reports shared app/profile persistent storage, cache, and available device space; it does not claim game-only storage or lifetime downloaded bytes.
+- GitHub Actions pre-merge beta run [#179](https://github.com/iNeonyne/Lasthavens-Android/actions/runs/45183038304), for commit `593fec6`, completed successfully. The Addon Manager regression suite, metadata-generator tests, updater-policy tests, APK compilation, signer-consistency check, packaged asset checks, APK package/version validation, ABI naming, SHA-256 checksum generation, and beta demo artifact uploads passed. Main-only signing and artifact uploads remain untested until promotion.
 - In-app navigation now permits HTTPS Lasthavens hosts and the required Gecko internal schemes; insecure HTTP, executable/data/file/intent schemes, untrusted blob origins, and lookalike hosts are rejected by the tested policy.
-- The beta build produces debug-signed demo APKs. The workflow is configured to require the permanent signing certificate for main/tag builds and to create a metadata/checksum artifact plus one signed APK artifact per ABI. This path has not been exercised on `main`, which remains unchanged.
+- The main build produces debug-signed demo APKs. The workflow is configured to require the permanent signing certificate for main/tag builds and to create a metadata/checksum artifact plus one signed APK artifact per ABI. This path has not been exercised on `main`, which remains unchanged.
 - Physical-device installation and smoke testing remain outstanding. CI success does not establish device compatibility, performance, or gameplay stability.
 
 ## Automatic updater
 
 The landscape Home screen has a user-triggered **Check for updates** action. The updater filters the existing GitHub Actions workflow for successful completed `push` runs from `main`, checks artifact provenance and expiry, downloads the metadata/checksum artifact and only the full APK artifact for the device ABI (universal fallback), verifies metadata and SHA-256, then checks Android package ID, version code and exact signing-certificate equality. Installation is handed to Android's package installer and requires user confirmation. The updater does not clear app data, GeckoView profile, cookies, login/session state or add-ons.
 
-The main-only metadata/checksum and per-ABI artifact creation paths are configured on `beta`, but `main` has not been promoted and does not yet publish those artifacts. End-to-end same-certificate upgrade and data-preservation checks remain pending on a physical device.
+The main-only metadata/checksum and per-ABI artifact creation paths are configured on `main`; the first successful post-merge main run must confirm the permanent-key signed artifacts. End-to-end same-certificate upgrade and data-preservation checks remain pending on a physical device.
 
 ## Immediate validation sequence
 
