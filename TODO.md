@@ -11,7 +11,23 @@ This is the authoritative active task list. Priorities are ordered by what gets 
 - Physical-device validation: not yet confirmed complete.
 - Permanent release signing: paused; required before public releases, not for debug demo testing.
 
-## P0 — Demo making (highest priority)
+## P0 — Main-branch automatic updater (new top priority)
+
+**Goal:** let installed users check for and install app updates distributed from `main` only. Development work remains on `beta`; the updater must never offer beta commits, beta workflow artifacts, or prerelease builds.
+
+- [ ] Implement an update checker that reads the stable release/version feed from the repository's `main` release channel only.
+- [ ] Ignore beta branch commits, beta CI artifacts, and prereleases; validate that the selected release is a stable main release.
+- [ ] Show installed version, available version, release notes, download size, and the correct APK ABI.
+- [ ] Download the APK from the main stable release and verify its published SHA-256 checksum before handing it to Android.
+- [ ] Hand the verified APK to Android's package installer; request package-install permission only when needed.
+- [ ] Keep a persistent signing identity across builds intended to update one another. Android permits in-place updates only when package ID and signing certificate match; a debug-signed install cannot be updated by a differently signed main release.
+- [ ] Handle signature mismatch safely: explain that Android will reject the update, do not uninstall the existing app, and do not imply that data will survive an uninstall/reinstall.
+- [ ] Test update checks, interrupted downloads, checksum mismatch, wrong ABI, no update available, installer cancellation, and successful same-certificate in-place update.
+- [ ] Keep beta builds out of the updater's feed and keep all updater development on `beta` until the owner explicitly promotes changes.
+
+**Signing clarification:** checking, displaying, and downloading a main release does not itself require permanent signing. Installing it over an existing app requires the release APK to use the same signing certificate as that installed app. Debug signing is suitable only if the same persistent debug key signs both the installed app and the main release APK. A later certificate change needs a separately planned migration; never silently uninstall or reset app data.
+
+## P0 — Demo making
 
 **Goal:** get a working beta demo installed on a physical Android phone as soon as possible. Keep this list focused on the shortest path to testing the core app.
 
@@ -71,10 +87,8 @@ These are planned features, not prerequisites for the first demo. Implement only
 - [ ] Review compatibility with GeckoView upgrades without modifying the manager.
 - [ ] Review every future manager change for backward compatibility and data preservation before editing.
 
-## P3 — Updates and ongoing maintenance
+## P3 — Ongoing maintenance
 
-- [ ] Add an in-app GitHub Releases update checker that displays current/latest versions, release notes, and the correct ABI APK.
-- [ ] Allow the app to download an update and hand it to Android's package installer. This does not require the permanent release key merely to check or download; Android will only install it as an in-place update if its signing certificate matches the installed app. Never advise uninstalling when that could erase user data.
 - [ ] Keep full APK downloads as the default update method; defer differential updates unless there is a demonstrated need.
 - [ ] Add Dependabot or Renovate monitoring for dependencies and review security updates.
 - [ ] Upgrade GeckoView and Android dependencies in isolated, build-verified changes.
