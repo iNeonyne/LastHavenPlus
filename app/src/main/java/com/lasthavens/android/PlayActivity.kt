@@ -28,8 +28,7 @@ import androidx.core.view.WindowInsetsControllerCompat
  * Production game screen backed by Android System WebView.
  *
  * WebView owns its own persistent Chromium profile. It is deliberately not cleared on
- * activity recreation, app updates, or normal navigation. Gecko remains temporarily
- * available to the legacy Addon Manager until native migration is complete.
+ * activity recreation, app updates, or normal navigation.
  */
 class PlayActivity : AppCompatActivity() {
 
