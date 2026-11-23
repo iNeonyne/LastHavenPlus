@@ -21,7 +21,7 @@ LastHavenPlus is a focused native Android client for the Lasthavens game. It use
 
 ## Version snapshot
 
-- Android app: 2.0.0 — development version, not released or device-validated.
+- Android app: 1.0.0 — first release candidate, not published or device-validated.
 - Android versionCode: `GITHUB_RUN_NUMBER` on CI builds; local builds use a development-only fallback. The number is global to the existing workflow and never resets between branches/tags.
 - Version policy: `main` is the sole active branch and uses clean stable SemVer versions. There is no beta prerelease stream. The numeric CI versionCode sequence never resets.
 - Addon Manager: 1.0.2 — staged storage generations protect existing add-on files during replacement; read the bundled `manifest.json` for the authoritative version.
