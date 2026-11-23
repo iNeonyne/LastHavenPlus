@@ -11,7 +11,6 @@ import android.net.Uri
 import android.os.Build
 import android.provider.Settings
 import androidx.core.content.pm.PackageInfoCompat
-import org.json.JSONArray
 import org.json.JSONObject
 import java.io.File
 import java.io.FileInputStream
@@ -21,7 +20,6 @@ import java.net.HttpURLConnection
 import java.net.URL
 import java.security.MessageDigest
 import java.util.concurrent.Executors
-import java.util.zip.ZipFile
 
 internal data class AvailableUpdate(
     val versionName: String, val versionCode: Long, val sizeBytes: Long,
@@ -296,6 +294,9 @@ internal class UpdateManager(context: Context) {
         }
         try {
             val status = connection.responseCode
+            if (status == 404 && url.endsWith("/releases/latest")) {
+                throw IOException("No published stable GitHub Release is available yet.")
+            }
             if (status !in 200..299) throw IOException("GitHub update service returned HTTP $status.")
             return JSONObject(connection.inputStream.use { it.readBounded(MAX_JSON_BYTES).toString(Charsets.UTF_8) })
         } finally { connection.disconnect() }
