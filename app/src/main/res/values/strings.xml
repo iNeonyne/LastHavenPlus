@@ -19,7 +19,7 @@
     <string name="update_install">Continue</string>
     <string name="update_stage_checking">Checking for updates</string>
     <string name="update_stage_checking_detail">Looking for the latest compatible release…</string>
-    <string name="update_stage_downloading">Downloading update</string>
+    <string name="update_stage_checksum_detail">Retrieving the release checksum…</string>\n    <string name="update_stage_downloading">Downloading update</string>
     <string name="update_stage_downloading_detail">Downloading %1$s. Keep LastHavenPlus open.</string>
     <string name="update_stage_verifying">Verifying update</string>
     <string name="update_stage_verifying_detail">Checking file integrity and app compatibility…</string>
