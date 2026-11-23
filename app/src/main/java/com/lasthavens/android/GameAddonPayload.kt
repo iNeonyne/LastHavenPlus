@@ -45,13 +45,17 @@ object GameAddonPayload {
                 .add(FileRef(storage, path, archivePath, size))
         }
 
+        val enabledAddons = ArrayList<JSONObject>()
+        for (index in 0 until addons.length()) {
+            val addon = addons.getJSONObject(index)
+            if (addon.optBoolean("enabled", false)) enabledAddons += addon
+        }
+        val orderedAddons = dependencyOrder(enabledAddons)
         val enabled = ArrayList<JSONObject>()
         val refs = LinkedHashMap<String, FileRef>()
         var totalBytes = 0L
         var totalFiles = 0
-        for (index in 0 until addons.length()) {
-            val addon = addons.getJSONObject(index)
-            if (!addon.optBoolean("enabled", false)) continue
+        for (addon in orderedAddons) {
             val folder = addon.getString("folder")
             val storage = addon.optString("storageFolder", folder)
             require(isSafeFolder(folder) && isSafeFolder(storage)) { "Active add-on identity is invalid" }
@@ -106,6 +110,31 @@ object GameAddonPayload {
             input.readFully(bytes)
         }
         return bytes
+    }
+
+    /** Mirrors the manager's dependency-first DFS while preserving the stored top-level order. */
+    private fun dependencyOrder(addons: List<JSONObject>): List<JSONObject> {
+        val byFolder = addons.associateBy { it.getString("folder").lowercase() }
+        val state = HashMap<String, Int>()
+        val ordered = ArrayList<JSONObject>()
+        fun visit(addon: JSONObject) {
+            val key = addon.getString("folder").lowercase()
+            when (state[key]) {
+                1, 2 -> return
+            }
+            state[key] = 1
+            for (field in listOf("dependencies", "optionalDeps")) {
+                val dependencies = addon.optJSONArray(field) ?: continue
+                for (index in 0 until dependencies.length()) {
+                    val dependency = dependencies.optString(index).lowercase()
+                    byFolder[dependency]?.let(::visit)
+                }
+            }
+            state[key] = 2
+            ordered += addon
+        }
+        addons.forEach(::visit)
+        return ordered
     }
 
     private fun isSafeFolder(value: String): Boolean =
