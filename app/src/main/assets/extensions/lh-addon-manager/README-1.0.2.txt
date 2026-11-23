@@ -14,3 +14,9 @@ Fixes
 Validation
 - Added regression coverage for numeric dependency ordering and storage-generation metadata replacement.
 - Full CI and physical-device verification are pending.
+
+Backup scope
+- ZIP backups contain the files of managed add-ons only.
+- They do not contain manager settings, enabled/disabled flags, game SavedVariables, login/session data, or the shared Gecko profile.
+- Restored add-ons are disabled by default when newly added. When restoring over an existing add-on, its current enabled/disabled state is preserved by the library merge logic.
+- A ZIP restore is an add-on file import, not a full application/profile restore.
