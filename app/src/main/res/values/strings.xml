@@ -17,6 +17,8 @@
     <string name="update_available_size">Download size · %1$s</string>
     <string name="update_available_detail">The update has been downloaded and verified. Android will ask you to confirm before installing it.</string>
     <string name="update_install">Continue</string>
+    <string name="update_download">Download selected version</string>
+    <string name="update_current_selected">That version is already installed. Select a newer version to download.</string>
     <string name="update_stage_checking">Checking for updates</string>
     <string name="update_stage_checking_detail">Looking for the latest compatible release…</string>
     <string name="update_stage_checksum_detail">Retrieving the release checksum…</string>\n    <string name="update_stage_downloading">Downloading update</string>
