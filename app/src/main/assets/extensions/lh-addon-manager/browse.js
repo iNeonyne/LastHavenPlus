@@ -9,16 +9,27 @@ const FRESH_MS = 24 * 60 * 60 * 1000;
 const CATALOG_SCHEMA = 3;
 const repoTreeCache = new Map();
 
+export const DOWNLOAD_ORIGINS = [
+  "https://api.github.com/*",
+  "https://github.com/*",
+  "https://raw.githubusercontent.com/*",
+  "https://codeload.github.com/*",
+  "https://objects.githubusercontent.com/*",
+  "https://release-assets.githubusercontent.com/*",
+  "https://media.githubusercontent.com/*",
+  "https://gitlab.com/*",
+];
+
 export async function hasAccess() {
   try {
-    return await browser.permissions.contains({ origins: ORIGINS });
+    return await browser.permissions.contains({ origins: DOWNLOAD_ORIGINS });
   } catch {
     // Do not assume optional network permissions were granted if the API fails.
     return false;
   }
 }
-// Must be called straight from a tap handler.
-export const requestAccess = () => browser.permissions.request({ origins: ORIGINS });
+// Must be called straight from a tap handler. Game-site permissions are separate.
+export const requestAccess = () => browser.permissions.request({ origins: DOWNLOAD_ORIGINS });
 
 const rawUrl = (owner, repo, branch, path) =>
   `https://raw.githubusercontent.com/${owner}/${repo}/${encodeURIComponent(branch)}/${path
