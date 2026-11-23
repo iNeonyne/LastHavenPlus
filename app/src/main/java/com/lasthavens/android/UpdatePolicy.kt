@@ -12,6 +12,15 @@ internal data class SelectedReleaseAssets(
     val checksum: UpdateAsset,
 )
 
+internal data class ReleaseVersion(
+    val versionName: String,
+    val releaseTag: String?,
+    val sizeBytes: Long,
+    val apkAsset: UpdateAsset?,
+    val checksumAsset: UpdateAsset?,
+    val isInstalled: Boolean = false,
+)
+
 internal object UpdatePolicy {
     const val REPOSITORY = "iNeonyne/Lasthavens-Android"
 
@@ -22,6 +31,35 @@ internal object UpdatePolicy {
         val checksums = assets.filter { it.name == "SHA256SUMS.txt" && it.state == "uploaded" }
         if (apks.size != 1 || checksums.size != 1) return null
         return SelectedReleaseAssets(apks.single(), checksums.single())
+    }
+
+    /** Strict SemVer ordering for the stable MAJOR.MINOR.PATCH versions used by this app. */
+    fun compareStableVersions(left: String, right: String): Int? {
+        if (!isStableVersionName(left) || !isStableVersionName(right)) return null
+        val a = left.split('.').map { it.toLongOrNull() ?: return null }
+        val b = right.split('.').map { it.toLongOrNull() ?: return null }
+        for (index in 0..2) {
+            val comparison = a[index].compareTo(b[index])
+            if (comparison != 0) return comparison
+        }
+        return 0
+    }
+
+    fun newerStableReleases(currentVersion: String, candidates: List<ReleaseVersion>): List<ReleaseVersion> {
+        if (!isStableVersionName(currentVersion)) return emptyList()
+        return candidates
+            .filter { !it.isInstalled && it.apkAsset != null && it.checksumAsset != null &&
+                compareStableVersions(it.versionName, currentVersion)?.let { comparison -> comparison > 0 } == true }
+            .distinctBy { it.versionName }
+            .sortedWith { left, right -> compareStableVersions(right.versionName, left.versionName) ?: 0 }
+    }
+
+    fun isTrustedReleasePage(value: String, tag: String): Boolean {
+        val uri = runCatching { java.net.URI(value) }.getOrNull() ?: return false
+        return uri.scheme.equals("https", ignoreCase = true) &&
+            uri.host.equals("github.com", ignoreCase = true) &&
+            uri.userInfo == null && (uri.port == -1 || uri.port == 443) &&
+            uri.path == "/$REPOSITORY/releases/tag/$tag"
     }
 
     fun isTrustedReleaseAssetUrl(value: String): Boolean {
