@@ -25,7 +25,7 @@ class HomeActivity : AppCompatActivity() {
         setContentView(R.layout.activity_home)
         applySystemBarPadding(findViewById(R.id.content), top = false)
         findViewById<TextView>(R.id.versionApp).text = getString(R.string.version_app, Versions.app)
-        findViewById<TextView>(R.id.versionAddons).text = getString(R.string.version_addons, Versions.addonManager(this))
+        findViewById<TextView>(R.id.versionAddons).text = getString(R.string.version_addons, "Native")
         findViewById<View>(R.id.btnPlay).setOnClickListener { startActivity(Intent(this, PlayActivity::class.java)) }
         findViewById<View>(R.id.btnManager).setOnClickListener { startActivity(Intent(this, ManagerActivity::class.java)) }
         findViewById<View>(R.id.btnStorage).setOnClickListener { startActivity(Intent(this, StorageActivity::class.java)) }
