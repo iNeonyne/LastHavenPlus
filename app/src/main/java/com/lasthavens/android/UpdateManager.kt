@@ -11,6 +11,7 @@ import android.net.Uri
 import android.os.Build
 import android.provider.Settings
 import androidx.core.content.pm.PackageInfoCompat
+import org.json.JSONArray
 import org.json.JSONObject
 import java.io.File
 import java.io.FileInputStream
@@ -37,14 +38,22 @@ internal data class AvailableUpdate(
 internal class UpdateManager(context: Context) {
     private val appContext = context.applicationContext
 
-    fun checkAndDownload(
+    fun checkAvailableVersions(callback: (Result<List<ReleaseVersion>>) -> Unit) {
+        executor.execute {
+            val result = runCatching { checkAvailableVersionsBlocking() }
+            mainHandler.post { callback(result) }
+        }
+    }
+
+    /** Downloads and verifies only the release explicitly selected by the user. */
+    fun downloadUpdate(
+        release: ReleaseVersion,
         onProgress: (UpdateProgress) -> Unit,
-        callback: (Result<AvailableUpdate?>) -> Unit,
+        callback: (Result<AvailableUpdate>) -> Unit,
     ) {
         fun report(progress: UpdateProgress) { mainHandler.post { onProgress(progress) } }
         executor.execute {
-            report(UpdateProgress(UpdateStage.CHECKING))
-            val result = runCatching { checkAndDownloadBlocking(::report) }
+            val result = runCatching { downloadUpdateBlocking(release, ::report) }
             mainHandler.post { callback(result) }
         }
     }
@@ -110,36 +119,93 @@ internal class UpdateManager(context: Context) {
         }
     }
 
-    private fun checkAndDownloadBlocking(report: (UpdateProgress) -> Unit): AvailableUpdate? {
+    private fun checkAvailableVersionsBlocking(): List<ReleaseVersion> {
         check(UpdatePolicy.supportsDevice(Build.SUPPORTED_ABIS.toList())) {
             "LastHavenPlus updates are available for ARM64 (arm64-v8a) devices only."
         }
         val installed = installedPackageInfo()
-        val release = latestPublishedRelease()
-        val releaseTag = release.getString("tag_name")
-        val versionName = releaseTag.removePrefix("v")
-        check(UpdatePolicy.isPublishedStableRelease(releaseTag, release.optBoolean("draft", true), release.optBoolean("prerelease", true))) {
-            "Only published stable GitHub Releases can provide updates."
+        val installedVersion = installed.versionName ?: BuildConfig.VERSION_NAME
+        check(UpdatePolicy.isStableVersionName(installedVersion)) {
+            "The installed app version cannot be compared with stable releases."
         }
-        check(UpdatePolicy.isStableVersionName(versionName)) { "The latest published release does not use stable SemVer." }
 
-        val assets = release.optJSONArray("assets") ?: throw IOException("The GitHub Release has no assets.")
-        val releaseAssets = (0 until assets.length()).mapNotNull { assets.optJSONObject(it) }.map {
-            UpdateAsset(
-                name = it.optString("name"),
-                state = it.optString("state"),
-                sizeBytes = it.optLong("size"),
-                downloadUrl = it.optString("browser_download_url"),
+        val releases = getJsonArray(
+            "https://api.github.com/repos/${UpdatePolicy.REPOSITORY}/releases?per_page=100",
+        )
+        val candidates = mutableListOf<ReleaseVersion>()
+        for (index in 0 until releases.length()) {
+            val release = releases.optJSONObject(index) ?: continue
+            val tag = release.optString("tag_name")
+            if (!UpdatePolicy.isPublishedStableRelease(
+                    tag, release.optBoolean("draft", true), release.optBoolean("prerelease", true),
+                )) continue
+            if (!UpdatePolicy.isTrustedReleasePage(release.optString("html_url"), tag)) continue
+            val version = tag.removePrefix("v")
+            val assetsJson = release.optJSONArray("assets") ?: continue
+            val assets = (0 until assetsJson.length()).mapNotNull { assetsJson.optJSONObject(it) }.map {
+                UpdateAsset(
+                    name = it.optString("name"),
+                    state = it.optString("state"),
+                    sizeBytes = it.optLong("size"),
+                    downloadUrl = it.optString("browser_download_url"),
+                )
+            }
+            val selected = UpdatePolicy.selectReleaseAssets(version, assets) ?: continue
+            if (selected.apk.sizeBytes !in 1..MAX_APK_BYTES ||
+                selected.checksum.sizeBytes !in 1..MAX_CHECKSUM_BYTES.toLong() ||
+                !UpdatePolicy.isTrustedReleaseAssetUrl(selected.apk.downloadUrl) ||
+                !UpdatePolicy.isTrustedReleaseAssetUrl(selected.checksum.downloadUrl)) continue
+            candidates += ReleaseVersion(
+                versionName = version,
+                releaseTag = tag,
+                sizeBytes = selected.apk.sizeBytes,
+                apkAsset = selected.apk,
+                checksumAsset = selected.checksum,
             )
         }
-        val selectedAssets = UpdatePolicy.selectReleaseAssets(versionName, releaseAssets)
-            ?: throw IOException("The latest GitHub Release must contain exactly one uploaded ARM64 APK and one SHA256SUMS.txt asset.")
-        val apkAsset = selectedAssets.apk
-        val checksumAsset = selectedAssets.checksum
+
+        val current = ReleaseVersion(
+            versionName = installedVersion,
+            releaseTag = null,
+            sizeBytes = 0,
+            apkAsset = null,
+            checksumAsset = null,
+            isInstalled = true,
+        )
+        return listOf(current) + UpdatePolicy.newerStableReleases(installedVersion, candidates)
+    }
+
+    private fun downloadUpdateBlocking(
+        release: ReleaseVersion,
+        report: (UpdateProgress) -> Unit,
+    ): AvailableUpdate {
+        check(!release.isInstalled && release.releaseTag != null &&
+            release.apkAsset != null && release.checksumAsset != null) {
+            "Select a newer stable release before downloading."
+        }
+        check(UpdatePolicy.isStableVersionName(release.versionName) &&
+            release.releaseTag == "v${release.versionName}") {
+            "The selected release metadata is invalid."
+        }
+        check(UpdatePolicy.isTrustedReleaseAssetUrl(release.apkAsset.downloadUrl) &&
+            UpdatePolicy.isTrustedReleaseAssetUrl(release.checksumAsset.downloadUrl)) {
+            "The selected release contains an untrusted download URL."
+        }
+        check(UpdatePolicy.supportsDevice(Build.SUPPORTED_ABIS.toList())) {
+            "LastHavenPlus updates are available for ARM64 (arm64-v8a) devices only."
+        }
+
+        val installed = installedPackageInfo()
+        val installedVersion = installed.versionName ?: BuildConfig.VERSION_NAME
+        check(UpdatePolicy.compareStableVersions(release.versionName, installedVersion)?.let { it > 0 } == true) {
+            "The selected release is no longer newer than this installation."
+        }
+        val apkAsset = release.apkAsset
+        val checksumAsset = release.checksumAsset
         val apkSize = apkAsset.sizeBytes
-        check(apkSize in 1..MAX_APK_BYTES) { "The release APK has an invalid size." }
+        check(apkSize in 1..MAX_APK_BYTES) { "The selected release APK has an invalid size." }
         check(checksumAsset.sizeBytes in 1..MAX_CHECKSUM_BYTES.toLong()) {
-            "The release checksum file has an invalid size."
+            "The selected release checksum file has an invalid size."
         }
 
         val checksumFile = File(appContext.cacheDir, "release-checksums.txt")
@@ -154,7 +220,7 @@ internal class UpdateManager(context: Context) {
             val checksum = checksumLines.single().trim().split(Regex("\\s+"), limit = 2)
             check(checksum.size == 2 && checksum[1].removePrefix("*") == apkAsset.name &&
                 UpdatePolicy.isValidSha256(checksum[0])) {
-                "The release checksum file does not describe the expected ARM64 APK."
+                "The release checksum file does not describe the selected ARM64 APK."
             }
             check(appContext.cacheDir.usableSpace >= apkSize + MIN_FREE_SPACE_BYTES) {
                 "Not enough free storage to download and verify this update. Free up space and try again."
@@ -164,41 +230,30 @@ internal class UpdateManager(context: Context) {
                 report(UpdateProgress(UpdateStage.DOWNLOADING, downloaded, total))
             }
             report(UpdateProgress(UpdateStage.VERIFYING))
-            check(UpdatePolicy.isCompleteAsset(apkSize, apkPart.length(), MAX_APK_BYTES) && sha256(apkPart).equals(checksum[0], ignoreCase = true)) {
+            check(UpdatePolicy.isCompleteAsset(apkSize, apkPart.length(), MAX_APK_BYTES) &&
+                sha256(apkPart).equals(checksum[0], ignoreCase = true)) {
                 "The release APK is incomplete or failed SHA-256 verification. Installation was blocked."
             }
 
-            val releaseMetadata = JSONObject()
-                .put("versionName", versionName)
+            val releaseMetadata = JSONObject().put("versionName", release.versionName)
             val downloaded = archivePackageInfo(apkPart)
                 ?: throw IOException("Android could not read the downloaded release APK.")
             releaseMetadata.put("versionCode", PackageInfoCompat.getLongVersionCode(downloaded))
             check(UpdatePolicy.isNewerVersion(
                 PackageInfoCompat.getLongVersionCode(installed), releaseMetadata.getLong("versionCode"),
-            )) { "The latest published GitHub Release is not newer than this installation." }
+            )) { "The selected release APK is not newer than this installation." }
             verifyArchivePackage(apkPart, releaseMetadata, installed)
 
             if (readyApk.exists()) check(readyApk.delete()) { "Could not replace the previous verified update." }
             check(apkPart.renameTo(readyApk)) { "Could not finalize the verified release APK." }
             return AvailableUpdate(
-                versionName, releaseMetadata.getLong("versionCode"), apkSize,
-                release.getString("tag_name"), readyApk,
+                release.versionName, releaseMetadata.getLong("versionCode"), apkSize,
+                release.releaseTag, readyApk,
             )
         } finally {
             checksumFile.delete()
             apkPart.delete()
         }
-    }
-
-    private fun latestPublishedRelease(): JSONObject {
-        val release = getJson("https://api.github.com/repos/${UpdatePolicy.REPOSITORY}/releases/latest")
-        check(UpdatePolicy.isPublishedStableRelease(release.optString("tag_name"), release.optBoolean("draft", true), release.optBoolean("prerelease", true))) {
-            "The latest GitHub Release is not a published stable release."
-        }
-        check(release.optString("html_url").startsWith("https://github.com/${UpdatePolicy.REPOSITORY}/releases/tag/")) {
-            "The release does not belong to the official LastHavenPlus repository."
-        }
-        return release
     }
 
     private fun downloadReleaseAsset(
@@ -317,9 +372,11 @@ internal class UpdateManager(context: Context) {
         return signatures.map { MessageDigest.getInstance("SHA-256").digest(it.toByteArray()).toHex() }.toSet()
     }
 
-    private fun getJson(url: String): JSONObject {
+    private fun getJsonArray(url: String): JSONArray {
         val connection = (URL(url).openConnection() as HttpURLConnection).apply {
-            requestMethod = "GET"; connectTimeout = CONNECT_TIMEOUT_MS; readTimeout = READ_TIMEOUT_MS
+            requestMethod = "GET"
+            connectTimeout = CONNECT_TIMEOUT_MS
+            readTimeout = READ_TIMEOUT_MS
             instanceFollowRedirects = true
             setRequestProperty("Accept", "application/vnd.github+json")
             setRequestProperty("X-GitHub-Api-Version", "2022-11-28")
@@ -327,12 +384,13 @@ internal class UpdateManager(context: Context) {
         }
         try {
             val status = connection.responseCode
-            if (status == 404 && url.endsWith("/releases/latest")) {
-                throw IOException("No published stable GitHub Release is available yet.")
-            }
             if (status !in 200..299) throw IOException("GitHub update service returned HTTP $status.")
-            return JSONObject(connection.inputStream.use { it.readBounded(MAX_JSON_BYTES).toString(Charsets.UTF_8) })
-        } finally { connection.disconnect() }
+            return JSONArray(connection.inputStream.use {
+                it.readBounded(MAX_JSON_BYTES).toString(Charsets.UTF_8)
+            })
+        } finally {
+            connection.disconnect()
+        }
     }
 
     private fun java.io.InputStream.readBounded(limit: Int): ByteArray {
