@@ -6,6 +6,7 @@ Data safety
 - Existing add-ons keep their current storage keys and continue to load without a data migration.
 - Old storage generations are removed only after the new library metadata is committed; interrupted cleanup is retried during manager startup.
 - Existing add-on folder names, versions, enabled state, library metadata, manager settings, and Gecko profile data are preserved.
+- Archive imports, restores, and remote downloads enforce archive/file/expanded-size limits against actual streamed bytes.
 
 Fixes
 - Numbered TOC dependencies are ordered numerically (Dep1, Dep2, Dep10).
