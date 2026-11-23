@@ -1,73 +1,53 @@
 # LastHavenPlus
 
-An unofficial native Android client for [Lasthavens](https://lasthavens.com/play). The project is undergoing a major rebuild to use Android System WebView (Chromium) for gameplay and a native-backed Addon Manager.
+An unofficial native Android client for [Lasthavens](https://lasthavens.com/play).
 
-> **Status:** v1.0.0 was the first public release. The current source is the transition baseline; the Chromium game screen and native Addon Manager are not yet complete or released. This project is independent and is not endorsed by Lasthavens or Blizzard Entertainment.
+> **Status:** The project is transitioning to Android System WebView (Chromium) and native add-on storage. GeckoView and its browser-extension runtime have been removed from the current source. The game loader and native manager still need integration verification; this source must not be described as release-ready until the P0 checks pass.
 
-## Project
+## Architecture
 
-- **Platform:** Android
-- **Language:** Kotlin, JavaScript
-- **Target engine:** Android System WebView supplied by the device
-- **Application ID:** com.lasthavens.android
-- **Development branch:** main
-- **Distribution:** GitHub Releases; no Google Play track
+- **Engine:** Android System WebView supplied by the device; Chromium is not bundled.
+- **Manager:** Native Android UI backed by app-private storage.
+- **Game integration:** AndroidX WebKit document-start scripts and an origin-restricted, read-only add-on data bridge.
+- **Updater:** Native Kotlin updater for published stable GitHub Releases.
+- **Application ID:** `com.lasthavens.android`
+- **Branch:** `main`
+- **Distribution:** ARM64 APKs through GitHub Releases.
 
-Useful links: [Game](https://lasthavens.com/play) · [Repository](https://github.com/iNeonyne/Lasthavens-Android) · [Builds](https://github.com/iNeonyne/Lasthavens-Android/actions) · [Releases](https://github.com/iNeonyne/Lasthavens-Android/releases)
+## Important migration notice
 
-## Current source and target
+If upgrading from a GeckoView-based LastHavenPlus build, export your add-ons first:
 
-Current build metadata (the checked-in transition baseline):
+1. Open the old app's Addon Manager (version 1.0.6).
+2. Choose **Export migration package**.
+3. Save the ZIP somewhere outside the app, such as Downloads or cloud storage.
+4. Install the new WebView-only build, open Addon Manager, and import that ZIP.
 
-| Component | Version |
-|---|---|
-| Android app | `1.0.1` |
-| Addon Manager | `1.0.6` |
-| Current GeckoView runtime (temporary) | `159.0.20261102144711` |
+The new app no longer contains GeckoView, so it cannot open the old Gecko profile or create an export after upgrading. The update does not clear app data or deliberately delete the old profile files, but those files are not accessible through the new app. Gecko cookies/login state are not transferred; signing in again may be required.
 
-The GeckoView entry describes the current source only; it is not part of the approved target architecture.
+## Current native features
 
-The checked-in source still contains the existing GeckoView game screen and WebExtension-based Addon Manager, plus a debug-only Chromium WebView probe. They are transitional code, not the target architecture.
+- Responsive native Home, Storage and updater screens.
+- WebView gameplay with persistent Chromium site storage.
+- Native migration ZIP validation, checksum verification and atomic activation.
+- Native add-on listing and enable/disable controls.
+- A read-only game bridge with bounded binary file chunks.
+- Stable-release updater with explicit version selection and APK verification.
 
-The target app uses Android System WebView without bundling a second browser engine. The Addon Manager will use native app-private storage and a restricted local WebView host. The migration is planned to preserve installed add-ons and manager settings. Gecko login cookies/session state are not assumed to transfer to WebView, so a new sign-in may be required.
-
-See [ROADMAP.md](ROADMAP.md) for the architecture and phase gates, and [TODO.md](TODO.md) for the one active implementation queue.
-
-## Existing app capabilities
-
-The current source includes native Home, Play, Addon Manager and Storage screens, a stable-release updater, HTTPS navigation policy, Android file selection/download handling and the current 1.0.5 Addon Manager implementation. The target architecture and migration status are tracked separately; planned Chromium functionality must not be described as shipped.
+The add-on loader hooks still require integration validation against the current live game. Add-on storage being imported does not by itself prove that the game loaded those add-ons.
 
 ## Build
 
-Open the project in Android Studio with JDK 17 and the Android SDK required by the project. Build with:
+Use Android Studio, JDK 17 and the Android SDK required by the project:
 
 ```bash
 ./gradlew assembleRelease
 ```
 
-GitHub Actions runs automated validation and builds ARM64 APKs. Main builds are validation artifacts, not updater sources. Tagged builds create draft GitHub Releases signed with the permanent release key. A draft must be reviewed and explicitly published by the owner.
+GitHub Actions builds signed ARM64 validation artifacts on `main`. Main artifacts are not update sources. Tagged builds create draft releases only; publishing requires explicit owner approval.
 
-## Updates and app identity
+## Identity and safety
 
-The native updater is independent of the browser engine. Preserve its metadata-only version check, explicit version selection, full ARM64 APK download, SHA-256 verification, package/version/ABI/signing-certificate checks and Android installer confirmation. It must never clear app data or silently install an update.
+Keep the application ID, permanent signing certificate, ARM64-only output and monotonic CI versionCode unchanged. The updater must never clear app data or silently install an update.
 
-The application ID and permanent signing identity must remain unchanged so compatible in-place updates remain possible. Android versionCode comes from the existing globally increasing GitHub Actions run-number sequence. Keep stable SemVer versionName values; do not bump them for ordinary commits.
-
-See [AGENTS.md](AGENTS.md) for mandatory development and release rules.
-
-## Project documents
-
-| Document | Purpose |
-|---|---|
-| [ROADMAP.md](ROADMAP.md) | Approved target architecture, delivery phases and acceptance gates |
-| [TODO.md](TODO.md) | Single actionable development queue |
-| [AGENTS.md](AGENTS.md) | Mandatory agent/contributor rules |
-| [PROJECT_OVERVIEW.md](PROJECT_OVERVIEW.md) | Current source architecture and verified status |
-| [MANUAL_CHECKLIST.md](MANUAL_CHECKLIST.md) | Owner-only legal, key-custody and release actions |
-| [CHANGELOG.md](CHANGELOG.md) | User-visible changes that have actually shipped |
-
-## Distribution notice
-
-The Lasthavens Terms of Use restrict modified clients except for add-ons in the in-game AddOn Library. Permission to distribute this independent client and its bundled manager has not been confirmed. Obtain written guidance from the Lasthavens team before public distribution. Do not present this app as official or endorsed.
-
-No project license has been declared. Do not assume this repository grants permission to reuse or redistribute its code.
+See [ROADMAP.md](ROADMAP.md), [TODO.md](TODO.md) and [AGENTS.md](AGENTS.md) for engineering rules. This is an independent, unofficial client and is not endorsed by Lasthavens or Blizzard Entertainment. Confirm distribution permissions before public release.
