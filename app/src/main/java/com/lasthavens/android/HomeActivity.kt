@@ -28,7 +28,8 @@ class HomeActivity : AppCompatActivity() {
         findViewById<TextView>(R.id.versionAddons).text = getString(R.string.version_addons, Versions.addonManager(this))
         findViewById<View>(R.id.btnPlay).setOnClickListener { startActivity(Intent(this, PlayActivity::class.java)) }
         findViewById<View>(R.id.btnManager).setOnClickListener { startActivity(Intent(this, ManagerActivity::class.java)) }
-        findViewById<View>(R.id.btnMigration).setOnClickListener { startActivity(Intent(this, MigrationImportActivity::class.java)) }\n        findViewById<View>(R.id.btnStorage).setOnClickListener { startActivity(Intent(this, StorageActivity::class.java)) }
+        findViewById<View>(R.id.btnMigration).setOnClickListener { startActivity(Intent(this, MigrationImportActivity::class.java)) }
+        findViewById<View>(R.id.btnStorage).setOnClickListener { startActivity(Intent(this, StorageActivity::class.java)) }
         updateButton = findViewById(R.id.btnUpdate)
         updateButton.setOnClickListener { checkForUpdates() }
     }
