@@ -7,6 +7,7 @@ LastHavenPlus is a focused native Android client for the Lasthavens game. It use
 - Game: https://alt.lasthavens.com/play
 - Repository: https://github.com/iNeonyne/Lasthavens-Android
 - Distribution target: GitHub Releases only; no Google Play track.
+- Automatic updater: not implemented; intended update source is successful CI artifacts from `main` only. The current workflow does not yet build on `main`.
 - Android application ID: `com.lasthavens.android`
 
 ## Architecture
@@ -20,6 +21,7 @@ LastHavenPlus is a focused native Android client for the Lasthavens game. It use
 ## Version snapshot
 
 - Android app: 2.0.0 — development version, not released or device-validated.
+- Android versionCode: 2 — current static Gradle value; replace with the stable workflow run-number sequence before enabling main-based automatic updates.
 - Addon Manager: 1.0.2 — staged storage generations protect existing add-on files during replacement; read the bundled `manifest.json` for the authoritative version.
 - GeckoView: 159.0.20261102144711 — pinned dependency.
 
