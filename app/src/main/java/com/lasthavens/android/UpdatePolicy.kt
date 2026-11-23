@@ -13,7 +13,7 @@ internal object UpdatePolicy {
     const val REPOSITORY = "iNeonyne/Lasthavens-Android"
     const val METADATA_ARTIFACT_NAME = "LastHavenPlus-Main-Update-Metadata"
     const val APK_ARTIFACT_PREFIX = "LastHavenPlus-Main-Update-"
-    val supportedAbis = setOf("arm64-v8a", "armeabi-v7a", "x86_64", "universal")
+    val supportedAbis = setOf("arm64-v8a")
 
     fun isEligibleRun(run: UpdateRun): Boolean =
         run.id > 0 && run.runNumber > 0 && run.workflowId == WORKFLOW_ID &&
@@ -24,10 +24,8 @@ internal object UpdatePolicy {
             run.commitSha.matches(Regex("[0-9a-fA-F]{40}"))
 
     fun selectApk(deviceAbis: List<String>, apks: List<UpdateApk>): UpdateApk? {
-        val byAbi = apks.associateBy { it.abi }
-        return deviceAbis.firstNotNullOfOrNull { abi ->
-            if (abi in supportedAbis && abi != "universal") byAbi[abi] else null
-        } ?: byAbi["universal"]
+        if ("arm64-v8a" !in deviceAbis) return null
+        return apks.singleOrNull { it.abi == "arm64-v8a" }
     }
 
     fun isEligibleArtifact(
