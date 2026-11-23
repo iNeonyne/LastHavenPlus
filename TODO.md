@@ -9,10 +9,10 @@ All development work stays on `beta`. Never promote, merge, or push work to `mai
 - Development branch: `beta`.
 - Android app: `2.0.0` development version.
 - Bundled Addon Manager: `1.0.2`.
-- Latest completed successful CI validation: beta run #171 tested commit `b07ce3d`; Addon Manager tests, updater policy tests, APK build, signer consistency, packaged assets, checksums, and both beta artifact uploads passed. The separate metadata-generator tests and APK-internal metadata check are now added and are being validated in the latest CI run.
+- Latest completed successful CI validation: beta run #178 tested commit `7ac5e4e`; Addon Manager tests, metadata-generator tests, updater policy tests, APK build, signer consistency, packaged assets, package/version metadata, checksums, and beta artifact uploads passed. Main-only signing and artifact publication are conditional and have not yet been exercised.
 - Physical-device validation and owner-only release actions are tracked separately in [MANUAL_CHECKLIST.md](MANUAL_CHECKLIST.md).
 - Permanent release signing is paused. It is not required for debug demo development.
-- A manual, main-only updater is implemented on `beta`. It selects only successful completed `main` push runs, downloads full ABI-matched APKs, verifies run/artifact provenance, metadata, checksums, package/version and signing-certificate compatibility, then invokes Android's user-confirmed package installer. `main` is unchanged, so the live signed update feed is not active until owner-approved promotion. Physical same-certificate upgrade testing remains outstanding.
+- A manual, main-only updater is implemented on `beta`. It selects only successful completed `main` push runs, downloads the metadata/checksum artifact and only the device-matched full APK artifact, verifies run/artifact provenance, metadata, checksums, package/version and signing-certificate compatibility, then invokes Android's user-confirmed package installer. `main` is unchanged, so the live signed update feed is not active until owner-approved promotion. Physical same-certificate upgrade testing remains outstanding.
 - Version flow: approved main promotions use clean stable SemVer; beta restarts from that main version using the next prerelease candidate. See `AGENTS.md`.
 
 ## P0 — Data safety and demo-blocking code
@@ -62,7 +62,7 @@ The owner has authorized necessary manager maintenance only with preservation of
 - [x] Add CI safeguards ensuring debug-signed beta/demo artifacts are not accepted as main or tagged release assets; main/tag builds fail closed unless the permanent certificate matches.
 - [x] Add CI validation for package ID, APK-embedded versionName/versionCode, ABI coverage, signer consistency, and SHA-256 checksums.
 - [x] Keep release workflows compatible with the versioning and promotion policy in `AGENTS.md`.
-- [x] Configure a dedicated `LastHavenPlus-Main-Update` artifact for main builds; beta/demo artifacts remain separate and are rejected by the updater. Main will start publishing it only after approved promotion.
+- [x] Configure one main-only metadata/checksum artifact and four separate ABI-specific APK artifacts; beta/demo artifacts remain separate and are rejected by the updater. Main will start publishing them only after approved promotion.
 - [x] Require the permanent release key and exact expected certificate on main/tag builds; missing secrets or fingerprint mismatch fail closed. A main-signed build remains to be verified after promotion.
 - [x] Replace static Android `versionCode` with the existing workflow's global `GITHUB_RUN_NUMBER`; local builds use a development-only fallback and are never update candidates.
 - [x] Implement the `main`-only update checker; reject beta, tag, PR, manual, failed, cancelled, in-progress, expired, mismatched and incompatible build artifacts.

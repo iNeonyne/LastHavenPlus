@@ -135,6 +135,11 @@ internal class UpdateManager(context: Context) {
 
             val apkArtifactName = "${UpdatePolicy.APK_ARTIFACT_PREFIX}${selected.abi}"
             val apkArtifact = runArtifact(run, apkArtifactName, MAX_APK_ARTIFACT_BYTES)
+            val requiredFreeSpace = apkArtifact.optLong("size_in_bytes") + selected.sizeBytes +
+                metadataZip.length() + (if (readyApk.isFile) readyApk.length() else 0L) + MIN_FREE_SPACE_BYTES
+            check(requiredFreeSpace > 0 && appContext.cacheDir.usableSpace >= requiredFreeSpace) {
+                "Not enough free storage to download and verify this update. Free up space and try again."
+            }
             downloadArtifact(apkArtifact, apkZipPart, MAX_APK_ARCHIVE_BYTES)
             verifyArtifactArchiveDigest(apkArtifact, apkZipPart)
             if (apkZip.exists()) check(apkZip.delete()) { "Could not replace the previous APK archive." }
@@ -354,6 +359,8 @@ internal class UpdateManager(context: Context) {
     private fun downloadArtifact(artifact: JSONObject, destination: File, maxBytes: Long) {
         val artifactId = artifact.optLong("id")
         check(artifactId > 0) { "The update artifact ID is invalid." }
+        val expectedSize = artifact.optLong("size_in_bytes")
+        check(expectedSize in 1..maxBytes) { "The update artifact size is invalid." }
         val url = "https://api.github.com/repos/${UpdatePolicy.REPOSITORY}/actions/artifacts/$artifactId/zip"
         val connection = (URL(url).openConnection() as HttpURLConnection).apply {
             requestMethod = "GET"
@@ -374,13 +381,17 @@ internal class UpdateManager(context: Context) {
                         val count = input.read(buffer)
                         if (count < 0) break
                         total += count
-                        check(total <= maxBytes) { "Update artifact exceeded its download limit." }
+                        check(total <= expectedSize && total <= maxBytes) {
+                            "Update artifact exceeded its declared size or download limit."
+                        }
                         output.write(buffer, 0, count)
                     }
                     output.fd.sync()
                 }
             }
-            check(destination.length() > 0) { "The update artifact was empty." }
+            check(UpdatePolicy.isCompleteArtifact(expectedSize, destination.length(), maxBytes)) {
+                "The update artifact download was incomplete."
+            }
         } finally {
             connection.disconnect()
         }
@@ -430,6 +441,7 @@ internal class UpdateManager(context: Context) {
         private const val MAX_APK_ARTIFACT_BYTES = MAX_APK_BYTES + 5L * 1024 * 1024
         private const val MAX_METADATA_ARCHIVE_BYTES = MAX_METADATA_ARTIFACT_BYTES + 1024L * 1024
         private const val MAX_APK_ARCHIVE_BYTES = MAX_APK_ARTIFACT_BYTES + 1024L * 1024
+        private const val MIN_FREE_SPACE_BYTES = 16L * 1024 * 1024
         private val executor = Executors.newSingleThreadExecutor()
         private val mainHandler = android.os.Handler(android.os.Looper.getMainLooper())
     }

@@ -78,6 +78,13 @@ class UpdatePolicyTest {
         assertFalse(UpdatePolicy.isValidDownload(1024, 1024, 4096, "bad", digest, true))
     }
 
+    @Test fun rejectsIncompleteOrOversizedArtifactArchives() {
+        assertTrue(UpdatePolicy.isCompleteArtifact(1024, 1024, 4096))
+        assertFalse(UpdatePolicy.isCompleteArtifact(1024, 1023, 4096))
+        assertFalse(UpdatePolicy.isCompleteArtifact(8192, 8192, 4096))
+        assertFalse(UpdatePolicy.isCompleteArtifact(0, 0, 4096))
+    }
+
     @Test fun requiresAnExactNonemptySigningCertificateMatch() {
         val installed = setOf("a".repeat(64))
         assertTrue(UpdatePolicy.sameSigningCertificates(installed, installed))

@@ -58,6 +58,9 @@ internal object UpdatePolicy {
             isValidSha256(expectedSha256) &&
             actualSha256.equals(expectedSha256, ignoreCase = true)
 
+    fun isCompleteArtifact(expectedSize: Long, actualSize: Long, maxSize: Long): Boolean =
+        expectedSize in 1..maxSize && actualSize == expectedSize
+
     fun sameSigningCertificates(installed: Set<String>, candidate: Set<String>): Boolean =
         installed.isNotEmpty() && candidate.isNotEmpty() && installed == candidate
 
