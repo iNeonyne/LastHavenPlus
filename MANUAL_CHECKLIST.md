@@ -24,7 +24,7 @@ Development and code changes remain on `main`, the sole active branch. The forme
 ### Main-only updater verification
 
 - [ ] Do not use a debug-signed pull-request or test APK to test a main update; the updater must block a signer mismatch. A debug-signed installation cannot be upgraded in place to the permanent release key. Do not uninstall a data-bearing install to switch signing identities; use a separate test device.
-- [ ] After the GitHub Actions signing secret is corrected, confirm a successful main workflow run verifies the permanent certificate and uploads exactly one unexpired `LastHavenPlus-Main-Update-Metadata` artifact containing `update.json` and `SHA256SUMS.txt`, plus exactly one unexpired APK artifact for each ABI: `LastHavenPlus-Main-Update-arm64-v8a`, `LastHavenPlus-Main-Update-armeabi-v7a`, `LastHavenPlus-Main-Update-x86_64`, and `LastHavenPlus-Main-Update-universal`.
+- [ ] After CI's direct DER certificate hash confirms the expected key, confirm a successful main workflow run uploads exactly one unexpired `LastHavenPlus-Main-Update-Metadata` artifact containing `update.json` and `SHA256SUMS.txt`, plus exactly one unexpired APK artifact for each ABI: `LastHavenPlus-Main-Update-arm64-v8a`, `LastHavenPlus-Main-Update-armeabi-v7a`, `LastHavenPlus-Main-Update-x86_64`, and `LastHavenPlus-Main-Update-universal`.
 - [ ] On a test device, install the permanent-key-signed main APK and create test data (login/session, installed add-ons, manager settings, and GeckoView profile state).
 - [ ] Trigger a later successful main build and use Home → Check for updates; confirm it selects only that successful main push and the device-compatible ABI.
 - [ ] Confirm displayed version, workflow build number, APK size and commit match the selected artifact.
@@ -37,10 +37,10 @@ Development and code changes remain on `main`, the sole active branch. The forme
 ## Owner actions and release decisions
 
 - [ ] Decide whether to expand Addon Manager backup coverage beyond managed add-on files, or approve clear disclosure of the exclusions (game settings, SavedVariables, and manager enabled/disabled flags). Any manager-code change requires explicit authorization.
-- [ ] Replace the GitHub Actions `ANDROID_KEYSTORE_BASE64` secret with the Base64 contents of the local keystore whose SHA-256 fingerprint is `B3BBF7520E77DFC384A60B1EEE6C5F205B978F9B453849E2BE523F642018D263`.
+- [ ] After the direct DER hash check, if CI reports a fingerprint different from `B3BBF7520E77DFC384A60B1EEE6C5F205B978F9B453849E2BE523F642018D263`, replace `ANDROID_KEYSTORE_BASE64` with the Base64 contents of the local keystore that has the expected fingerprint. Do not change the expected fingerprint.
 - [ ] Back up the permanent private key securely in at least two offline locations.
 - [ ] Configure the GitHub Actions secrets `ANDROID_KEYSTORE_BASE64`, `ANDROID_KEYSTORE_PASSWORD`, `ANDROID_KEY_ALIAS`, and `ANDROID_KEY_PASSWORD` without exposing key material in the repository, logs, or chat.
-- [ ] After updating the secret, confirm main CI logs that the configured keystore fingerprint matches the expected certificate.
+- [ ] Confirm the next main CI run logs the configured and expected certificate fingerprints as identical.
 - [ ] Verify all ABI APKs use the same release certificate.
 - [ ] Install a main/release-signed APK, then verify a subsequent same-certificate main APK upgrades in place.
 - [ ] Clarify terms/permission to distribute the independent client with the Lasthavens team.

@@ -2,7 +2,7 @@
 
 A native Android client for [Lasthavens](https://alt.lasthavens.com/play), built with Kotlin and Mozilla GeckoView. It includes a bundled Addon Manager WebExtension so the game and manager can share browser state and installed add-ons.
 
-> **Project status:** main-branch development. The updater code and automated policy tests are in place, but the first post-merge main build failed its release-signing check because the configured keystore fingerprint does not match the required certificate. No main update APK artifacts have been published yet. Physical-device smoke testing remains outstanding. This is an unofficial, independent client; it is not endorsed by Lasthavens or Blizzard Entertainment.
+> **Project status:** main-branch development. The updater code and automated policy tests are in place, but the latest main build failed because CI's certificate-fingerprint extraction returned an empty value. The actual signing-secret certificate has not yet been confirmed, and no main update APK artifacts have been published. Physical-device smoke testing remains outstanding. This is an unofficial, independent client; it is not endorsed by Lasthavens or Blizzard Entertainment.
 
 ## At a glance
 
@@ -28,7 +28,7 @@ Useful links: [Game](https://alt.lasthavens.com/play) · [Repository](https://gi
 
 ## Get a build
 
-A signed main update APK is not currently available: the latest post-merge main build stopped at the release-certificate check. Once the signing secret is corrected and a successful main run publishes the artifacts:
+A signed main update APK is not currently available: the latest main run failed because the workflow could not extract the certificate fingerprint. The workflow now hashes the exported certificate bytes directly; once CI confirms the expected key and a successful main run publishes the artifacts:
 1. Open [GitHub Actions](https://github.com/iNeonyne/Lasthavens-Android/actions).
 2. Select the latest successful build running from the `main` branch.
 3. Download the separate `LastHavenPlus-Main-Update-<ABI>` artifact matching your device (or `LastHavenPlus-Main-Update-universal` as fallback).
@@ -44,7 +44,7 @@ Open the repository in Android Studio with JDK 17 and the Android SDK required b
 ./gradlew assembleRelease
 ```
 
-GitHub Actions runs automated checks on `main`, pull requests, and manual dispatches. Successful `main` builds publish a metadata/checksum artifact and four permanent-key-signed, ABI-specific update APK artifacts; pull-request and manual builds are not update candidates. The current signing secret must first be corrected to match the expected release certificate.
+GitHub Actions runs automated checks on `main`, pull requests, and manual dispatches. Successful `main` builds publish a metadata/checksum artifact and four permanent-key-signed, ABI-specific update APK artifacts; pull-request and manual builds are not update candidates. The signing workflow now computes the certificate fingerprint directly from the exported certificate bytes; the next main run must confirm that it matches the expected release certificate.
 
 ## Versions
 

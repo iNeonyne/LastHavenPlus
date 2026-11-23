@@ -33,16 +33,16 @@ The app and extension have independent versions. Necessary Addon Manager mainten
 
 - Landscape Home layout and orientation are committed on `main`.
 - The read-only storage dashboard is implemented and included in the current main build. It reports shared app/profile persistent storage, cache, and available device space; it does not claim game-only storage or lifetime downloaded bytes.
-- GitHub Actions pre-merge beta run [#179](https://github.com/iNeonyne/Lasthavens-Android/actions/runs/45183038304), for commit `593fec6`, completed successfully. The Addon Manager regression suite, metadata-generator tests, updater-policy tests, APK compilation, signer-consistency check, packaged asset checks, APK package/version validation, ABI naming, SHA-256 checksum generation, and beta demo artifact uploads passed. Main-only signing and artifact uploads remain untested until promotion.
+- Main run [#195](https://github.com/iNeonyne/Lasthavens-Android/actions/runs/45186581842), for commit `de83811`, passed Addon Manager, metadata-generator, and updater-policy tests but failed because the keytool text parser returned an empty certificate fingerprint. No APKs or main update artifacts were produced; the workflow now hashes the exported DER certificate directly.
 - In-app navigation now permits HTTPS Lasthavens hosts and the required Gecko internal schemes; insecure HTTP, executable/data/file/intent schemes, untrusted blob origins, and lookalike hosts are rejected by the tested policy.
-- The main build produces debug-signed demo APKs. The workflow is configured to require the permanent signing certificate for main/tag builds and to create a metadata/checksum artifact plus one signed APK artifact per ABI. This path has not been exercised on `main`, which remains unchanged.
+- Main builds require the permanent signing certificate and publish one metadata/checksum artifact plus four per-ABI APK artifacts only after all checks pass. The first post-consolidation main runs failed because CI's keytool text parser returned an empty fingerprint; the actual secret certificate identity is not yet confirmed. No update feed is live.
 - Physical-device installation and smoke testing remain outstanding. CI success does not establish device compatibility, performance, or gameplay stability.
 
 ## Automatic updater
 
 The landscape Home screen has a user-triggered **Check for updates** action. The updater filters the existing GitHub Actions workflow for successful completed `push` runs from `main`, checks artifact provenance and expiry, downloads the metadata/checksum artifact and only the full APK artifact for the device ABI (universal fallback), verifies metadata and SHA-256, then checks Android package ID, version code and exact signing-certificate equality. Installation is handed to Android's package installer and requires user confirmation. The updater does not clear app data, GeckoView profile, cookies, login/session state or add-ons.
 
-The main-only metadata/checksum and per-ABI artifact creation paths are configured on `main`; the first successful post-merge main run must confirm the permanent-key signed artifacts. End-to-end same-certificate upgrade and data-preservation checks remain pending on a physical device.
+The main-only metadata/checksum and per-ABI artifact creation paths are configured on `main`; the direct DER certificate hash check must confirm the permanent key before artifacts can be published. End-to-end same-certificate upgrade and data-preservation checks remain pending on a physical device.
 
 ## Immediate validation sequence
 

@@ -64,10 +64,10 @@ jobs:
           done
           echo "$KS" | base64 -d > "$RUNNER_TEMP/release.jks"
           test -s "$RUNNER_TEMP/release.jks"
-          fingerprint=$(keytool -list -v -keystore "$RUNNER_TEMP/release.jks" -storepass "$KS_PASSWORD" -alias "$ALIAS" | awk -F': ' '/SHA256:/{print $2; exit}' | tr -d ':' | tr '[:lower:]' '[:upper:]')
+          fingerprint=$(keytool -exportcert -keystore "$RUNNER_TEMP/release.jks" -storepass "$KS_PASSWORD" -alias "$ALIAS" | sha256sum | awk '{print toupper($1)}')
+          echo "Configured signing certificate SHA-256: $fingerprint"
+          echo "Expected signing certificate SHA-256:  $EXPECTED_CERT_SHA256"
           if [ "$fingerprint" != "$EXPECTED_CERT_SHA256" ]; then
-            echo "Configured signing certificate SHA-256: $fingerprint"
-            echo "Expected signing certificate SHA-256:  $EXPECTED_CERT_SHA256"
             echo "The configured keystore certificate does not match the expected Lasthavens release key."
             exit 1
           fi
