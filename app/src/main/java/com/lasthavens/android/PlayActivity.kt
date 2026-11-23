@@ -31,6 +31,7 @@ class PlayActivity : AppCompatActivity() {
     private val picker = FilePicker(this)
     private lateinit var geckoView: GeckoView
     private lateinit var session: GeckoSession
+    private var processRecoveryScheduled = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -59,8 +60,11 @@ class PlayActivity : AppCompatActivity() {
             context = this,
             onClose = { finish() },
             onProcessGone = {
-                app.discardGameSession()
-                recreate()
+                if (!processRecoveryScheduled && !isFinishing && !isDestroyed) {
+                    processRecoveryScheduled = true
+                    app.discardGameSession()
+                    recreate()
+                }
             },
             onFullScreenChanged = { hideSystemBars() },
         )
@@ -140,6 +144,7 @@ class PlayActivity : AppCompatActivity() {
             session.contentDelegate = null
             session.promptDelegate = null
             session.navigationDelegate = null
+            session.progressDelegate = null
         }
         geckoView.releaseSession()
         super.onDestroy()
