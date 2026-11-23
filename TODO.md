@@ -62,7 +62,9 @@ The owner has authorized necessary manager changes on the condition that install
 These are planned features, not prerequisites for the first demo. Implement only after the core app and existing data have been validated.
 
 - [ ] Add `.7z` archive support to Addon Manager import/export, with safe extraction, path validation, archive/expanded-size limits, and backward compatibility for existing ZIP backups.
-- [ ] Add a game storage dashboard showing the game's on-device storage/download footprint, available device space, and (where APIs permit) Gecko cache versus persistent site data separately. Label estimates and unknowns clearly; initially make this read-only and never clear/reset data automatically.
+- [x] Add a read-only storage dashboard with persistent app/shared GeckoView profile usage, browser/app cache, and available device storage. It labels the persistent figure as shared app/profile data, not game-only storage; lifetime network download totals are not claimed.
+- [ ] Validate dashboard measurements on a physical device against Android app-storage settings.
+- [ ] Investigate reliable GeckoView network-byte instrumentation if a lifetime downloaded-data counter is still wanted; do not infer it from current stored bytes.
 - [ ] Add a diagnostics page showing app and GeckoView versions, device/Android details, add-on integration status, storage health, and recent app errors. Include a user-triggered copy/export diagnostics action; exclude credentials, cookies, tokens, and personal browsing data.
 - [ ] Create a device test checklist for install, update, enable/disable, remove, import/export, backup/restore, and game integration.
 - [ ] Verify error states and recovery for failed imports, failed downloads, unavailable permissions, and interrupted operations.
