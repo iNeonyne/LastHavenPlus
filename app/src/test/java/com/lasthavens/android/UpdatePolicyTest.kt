@@ -37,6 +37,47 @@ class UpdatePolicyTest {
         assertNull(UpdatePolicy.selectApk(listOf("riscv64"), listOf(arm, x64)))
     }
 
+    @Test fun rejectsUnexpectedExpiredOrMismatchedArtifacts() {
+        val expected = run()
+        assertTrue(UpdatePolicy.isEligibleArtifact(
+            "LastHavenPlus-Main-Update", false, expected.id, "main", expected.commitSha, expected,
+        ))
+        assertFalse(UpdatePolicy.isEligibleArtifact(
+            "LastHavenPlus-Demo-APKs", false, expected.id, "main", expected.commitSha, expected,
+        ))
+        assertFalse(UpdatePolicy.isEligibleArtifact(
+            "LastHavenPlus-Main-Update", true, expected.id, "main", expected.commitSha, expected,
+        ))
+        assertFalse(UpdatePolicy.isEligibleArtifact(
+            "LastHavenPlus-Main-Update", false, expected.id + 1, "main", expected.commitSha, expected,
+        ))
+        assertFalse(UpdatePolicy.isEligibleArtifact(
+            "LastHavenPlus-Main-Update", false, expected.id, "beta", expected.commitSha, expected,
+        ))
+        assertFalse(UpdatePolicy.isEligibleArtifact(
+            "LastHavenPlus-Main-Update", false, expected.id, "main", "f".repeat(40), expected,
+        ))
+    }
+
+    @Test fun rejectsIncompleteOversizedOrChecksumMismatchedDownloads() {
+        val digest = "ab".repeat(32)
+        assertTrue(UpdatePolicy.isValidDownload(1024, 1024, 4096, digest, digest, true))
+        assertFalse(UpdatePolicy.isValidDownload(1024, 512, 4096, digest, digest, false))
+        assertFalse(UpdatePolicy.isValidDownload(1024, 512, 4096, digest, digest, true))
+        assertFalse(UpdatePolicy.isValidDownload(1024, 1024, 4096, digest, "cd".repeat(32), true))
+        assertFalse(UpdatePolicy.isValidDownload(8192, 8192, 4096, digest, digest, true))
+        assertFalse(UpdatePolicy.isValidDownload(1024, 1024, 4096, "bad", digest, true))
+    }
+
+    @Test fun requiresAnExactNonemptySigningCertificateMatch() {
+        val installed = setOf("a".repeat(64))
+        assertTrue(UpdatePolicy.sameSigningCertificates(installed, installed))
+        assertFalse(UpdatePolicy.sameSigningCertificates(installed, setOf("b".repeat(64))))
+        assertFalse(UpdatePolicy.sameSigningCertificates(emptySet(), installed))
+        assertFalse(UpdatePolicy.sameSigningCertificates(installed, emptySet()))
+        assertFalse(UpdatePolicy.sameSigningCertificates(installed, installed + "c".repeat(64)))
+    }
+
     @Test fun comparesNumericVersionCodesOnly() {
         assertTrue(UpdatePolicy.isNewerVersion(2, 167))
         assertFalse(UpdatePolicy.isNewerVersion(167, 166))

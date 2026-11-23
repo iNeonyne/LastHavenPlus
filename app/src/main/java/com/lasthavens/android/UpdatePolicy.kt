@@ -28,6 +28,34 @@ internal object UpdatePolicy {
         } ?: byAbi["universal"]
     }
 
+    fun isEligibleArtifact(
+        name: String,
+        expired: Boolean,
+        artifactRunId: Long,
+        artifactBranch: String,
+        artifactCommitSha: String,
+        expectedRun: UpdateRun,
+    ): Boolean =
+        name == "LastHavenPlus-Main-Update" && !expired &&
+            artifactRunId == expectedRun.id &&
+            artifactBranch == "main" &&
+            artifactCommitSha == expectedRun.commitSha
+
+    fun isValidDownload(
+        expectedSize: Long,
+        actualSize: Long,
+        maxSize: Long,
+        expectedSha256: String,
+        actualSha256: String,
+        completed: Boolean,
+    ): Boolean =
+        completed && expectedSize in 1..maxSize && actualSize == expectedSize &&
+            isValidSha256(expectedSha256) &&
+            actualSha256.equals(expectedSha256, ignoreCase = true)
+
+    fun sameSigningCertificates(installed: Set<String>, candidate: Set<String>): Boolean =
+        installed.isNotEmpty() && candidate.isNotEmpty() && installed == candidate
+
     fun isNewerVersion(currentCode: Long, offeredCode: Long): Boolean =
         currentCode > 0 && offeredCode > currentCode
 

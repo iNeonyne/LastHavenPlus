@@ -148,9 +148,12 @@ internal class UpdateManager(context: Context) {
                             digest.update(buffer, 0, count)
                             output.write(buffer, 0, count)
                         }
-                        check(total == selected.sizeBytes) { "The APK download was incomplete." }
-                        check(digest.digest().toHex().equals(selected.sha256, true)) {
-                            "The APK failed SHA-256 verification. Installation was blocked."
+                        val actualDigest = digest.digest().toHex()
+                        check(UpdatePolicy.isValidDownload(
+                            selected.sizeBytes, total, MAX_APK_BYTES, selected.sha256,
+                            actualDigest, completed = total == selected.sizeBytes,
+                        )) {
+                            "The APK is incomplete or failed SHA-256 verification. Installation was blocked."
                         }
                         output.fd.sync()
                     }
@@ -172,7 +175,7 @@ internal class UpdateManager(context: Context) {
 
     private fun latestSuccessfulMainRun(): UpdateRun {
         val url = "https://api.github.com/repos/${UpdatePolicy.REPOSITORY}/actions/workflows/build.yml/runs" +
-            "?branch=main&status=completed&event=push&per_page=30"
+            "?branch=main&status=completed&event=push&per_page=100"
         val runs = getJson(url).optJSONArray("workflow_runs") ?: JSONArray()
         val candidates = (0 until runs.length()).mapNotNull { i ->
             val item = runs.optJSONObject(i) ?: return@mapNotNull null
@@ -200,8 +203,14 @@ internal class UpdateManager(context: Context) {
         check(!artifact.optBoolean("expired", true)) { "The latest main update artifact has expired." }
         check(artifact.optLong("id") > 0) { "The update artifact ID is invalid." }
         val runInfo = artifact.optJSONObject("workflow_run") ?: throw IOException("Artifact has no workflow-run provenance.")
-        check(runInfo.optLong("id") == run.id && runInfo.optString("head_branch") == "main" &&
-            runInfo.optString("head_sha") == run.commitSha) { "Artifact does not belong to the latest successful main commit." }
+        check(UpdatePolicy.isEligibleArtifact(
+            artifact.optString("name"),
+            artifact.optBoolean("expired", true),
+            runInfo.optLong("id"),
+            runInfo.optString("head_branch"),
+            runInfo.optString("head_sha"),
+            run,
+        )) { "Artifact does not belong to the latest successful main commit." }
         check(artifact.optLong("size_in_bytes") in 1..MAX_ARTIFACT_BYTES) { "Artifact size is invalid or too large." }
         return artifact
     }
@@ -247,7 +256,7 @@ internal class UpdateManager(context: Context) {
         check(UpdatePolicy.isNewerVersion(
             PackageInfoCompat.getLongVersionCode(installed), PackageInfoCompat.getLongVersionCode(downloaded),
         )) { "Downloaded APK is not newer than the installed app." }
-        check(signerDigests(downloaded) == signerDigests(installed)) {
+        check(UpdatePolicy.sameSigningCertificates(signerDigests(installed), signerDigests(downloaded))) {
             "APK uses a different signing certificate. It was blocked to protect app data."
         }
     }
@@ -260,7 +269,9 @@ internal class UpdateManager(context: Context) {
         check(UpdatePolicy.isNewerVersion(
             PackageInfoCompat.getLongVersionCode(current), PackageInfoCompat.getLongVersionCode(downloaded),
         )) { "The staged APK is no longer newer than the installed version." }
-        check(signerDigests(downloaded) == signerDigests(current)) { "The signing certificate no longer matches." }
+        check(UpdatePolicy.sameSigningCertificates(signerDigests(current), signerDigests(downloaded))) {
+            "The signing certificate no longer matches."
+        }
     }
 
     private fun installedPackageInfo(): PackageInfo {
