@@ -44,7 +44,7 @@ The owner has authorized necessary manager maintenance only with preservation of
 - [x] Add a read-only storage dashboard showing persistent app/shared GeckoView profile usage, browser/app cache, and available device storage. Do not label shared profile usage as game-only storage or claim lifetime network download totals from stored-byte figures.
 - [ ] Investigate reliable GeckoView network-byte instrumentation if a lifetime downloaded-data counter is still wanted; do not infer it from current stored bytes.
 - [ ] Add a diagnostics page showing app and GeckoView versions, device/Android details, add-on integration status, storage health, and recent app errors. Include a user-triggered copy/export action; exclude credentials, cookies, tokens, and personal browsing data.
-- [ ] Review the current backup implementation and prepare a precise description of its scope and exclusions. Current manager ZIP backups contain managed add-on files only; they do not include game settings, SavedVariables, or manager enabled/disabled flags.
+- [x] Review the current backup implementation and document its exact scope and exclusions in the manager UI and README-1.0.2.txt: ZIPs contain managed add-on files only, not manager settings, enabled state, game SavedVariables, login/session data, or the shared Gecko profile. New restored add-ons default to disabled; existing enabled state is retained.
 - [ ] Review manager capabilities and limitations against the bundled source and update its documentation.
 - [ ] Review compatibility with GeckoView upgrades without modifying the manager.
 - [ ] Review future manager changes for backward compatibility and data preservation before implementation.
