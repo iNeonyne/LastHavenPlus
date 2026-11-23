@@ -10,6 +10,7 @@ import org.junit.Test
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.io.File
+import java.nio.file.Files
 import java.security.MessageDigest
 import java.util.zip.ZipEntry
 import java.util.zip.ZipOutputStream
@@ -98,7 +99,7 @@ class MigrationArchiveReaderTest {
     @Test
     fun stagesFilesAndPreservesLibraryMetadataAndPreferences() {
         val fixture = fixture()
-        val root = createTempDirectory("lh-migration-test").toFile()
+        val root = Files.createTempDirectory("lh-migration-test").toFile()
         try {
             val stage = MigrationArchiveReader.stage(
                 ByteArrayInputStream(fixture.archive),
