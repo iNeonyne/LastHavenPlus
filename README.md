@@ -21,6 +21,7 @@ Useful links: [Game](https://alt.lasthavens.com/play) · [Repository](https://gi
 - GeckoView-powered game session.
 - Bundled Addon Manager WebExtension.
 - Shared Gecko runtime/profile design for game and manager.
+- Read-only storage dashboard for shared app/profile data, cache, and available device space.
 - Android integration for fullscreen, JavaScript dialogs, file selection, downloads, popups, and external links.
 
 ## Get a demo build
