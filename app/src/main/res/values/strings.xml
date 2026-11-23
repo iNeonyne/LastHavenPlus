@@ -21,7 +21,8 @@
     <string name="update_current_selected">That version is already installed. Select a newer version to download.</string>
     <string name="update_stage_checking">Checking for updates</string>
     <string name="update_stage_checking_detail">Looking for the latest compatible release…</string>
-    <string name="update_stage_checksum_detail">Retrieving the release checksum…</string>\n    <string name="update_stage_downloading">Downloading update</string>
+    <string name="update_stage_checksum_detail">Retrieving the release checksum…</string>
+    <string name="update_stage_downloading">Downloading update</string>
     <string name="update_stage_downloading_detail">Downloading %1$s. Keep LastHavenPlus open.</string>
     <string name="update_stage_verifying">Verifying update</string>
     <string name="update_stage_verifying_detail">Checking file integrity and app compatibility…</string>
@@ -64,4 +65,7 @@
     <string name="storage_scan_failed">Could not measure storage. Try again.</string>
     <string name="storage_refresh">Refresh measurements</string>
     <string name="storage_bytes">%1$d bytes</string>
+    <string name="file_picker_title">Choose a file</string>
+    <string name="download_description">Downloading from Lasthavens</string>
+    <string name="download_started">Download started</string>
 </resources>
