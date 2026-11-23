@@ -26,7 +26,7 @@ All development work stays on `main`, the sole active branch. The former `beta` 
 - [x] Audit native bridge exposure: no direct JavaScript-to-native interface is registered. Added JVM-independent tests and a CI source guard that reject `addJavascriptInterface` and `@JavascriptInterface` in app source. File prompts remain user-mediated through Android's Storage Access Framework.
 - [x] Extract download filename sanitization into a pure JVM policy and add regression tests for path separators, reserved/control characters, length limits, empty names, and Unicode filenames. Other native file-handling boundaries remain to be audited.
 - [ ] Add storage-failure and interrupted-write tests without changing persistence behavior unless a safe migration and rollback path are demonstrated.
-- [ ] Add a failure-injection test for Addon Manager metadata commit failure and confirm the prior storage generation remains readable.
+- [x] Extract staged-generation commit orchestration and add a failure-injection regression test: metadata commit failure rolls back only the new generation while the prior library pointer and files remain intact.
 - [ ] Review install/update/remove/backup/restore code paths for data-preservation defects; fix only defects that can be verified through code and automated tests.
 - [ ] Inspect the implementation and document precisely which profile, login/session, add-on, and setting data is preserved by app updates; clearly distinguish verified code behavior from device-only verification.
 
