@@ -470,3 +470,15 @@ button:hover, .secondary:hover { border-color: #64775f; }
   cursor: zoom-in;
 }
 .addon-screenshot:focus-visible { outline: 3px solid #d2eaa4; outline-offset: 3px; }
+
+
+.game-storage {
+  margin: 18px 0;
+  padding: 16px 18px;
+  border: 1px solid var(--line);
+  border-radius: 13px;
+  background: linear-gradient(145deg, #1a261f, #121a15);
+}
+.game-storage h2 { margin: 0 0 8px; font-size: 15px; }
+.game-storage strong { display: block; color: var(--accent); font-size: 26px; }
+.game-storage p { margin: 6px 0 0; overflow-wrap: anywhere; font-size: 12px; }
