@@ -11,36 +11,6 @@ This is the authoritative active task list. Priorities are ordered by what gets 
 - Physical-device validation: not yet confirmed complete.
 - Permanent release signing: paused; required before public releases, not for debug demo testing.
 
-## P0 — Main-branch CI artifact updater (new top priority)
-
-**Goal:** check, download, verify, and offer installation of the latest eligible successful Android CI build from `main` only. Development remains on `beta`; the updater must never offer beta builds, GitHub Releases, tags, pull-request artifacts, or fork builds.
-
-**Full audit and implementation design:** [UPDATER_IMPLEMENTATION_PLAN.md](UPDATER_IMPLEMENTATION_PLAN.md).
-
-- [x] Audit the existing main/beta workflows, recent runs, artifact names/sizes/expiry, app identity/version, signing certificates, installer permissions, and data-preservation boundaries.
-- [ ] Choose and prove a download route that works without embedding a GitHub token. GitHub's artifact metadata APIs support public access, but its artifact archive-download endpoint requires authentication. Candidate: nightly.link (third-party; requires owner approval of its read-only GitHub App); alternative: owner-controlled public static hosting populated by main CI.
-- [ ] Decide and configure a separate persistent demo/update keystore through GitHub Actions secrets, shared by beta and main builds. This does not require using the permanent public-release key, but APKs still must be signed.
-- [ ] Remove the updater-compatible build's silent fallback to each runner's generated debug key. If the persistent demo key is absent, fail the updater-artifact job or mark the build download-only; never claim it can update in place.
-- [ ] Ensure main CI APK version codes increase monotonically and are always greater than ordinary beta demo version codes. Validate against Android's maximum version code; do not keep the current fixed value of `2`.
-- [ ] Produce a small dedicated ARM64 updater artifact containing only the ARM64 APK, `SHA256SUMS.txt`, and `build-info.json`; give it an exact name such as `LastHavenPlus-Main-Updater-ARM64`. Retain the current multi-ABI demo artifacts for manual testing.
-- [ ] Publish the updater artifact only from a completed successful build of the exact `main` branch. Keep beta artifacts out of the updater feed.
-- [ ] Select only the intended canonical workflow and completed successful runs where repository, `head_branch`, event, workflow, commit, and run metadata match. Exclude pull requests, tags, beta, forks, and releases.
-- [ ] Require an exact artifact name, exact run/commit association, non-expired artifact, valid `expires_at`, expected SHA-256 artifact digest, and a working public download route.
-- [ ] Show installed version, candidate main version/build number, commit, run date, ABI, download size, and artifact expiry.
-- [ ] Download to private app-internal storage using a temporary file, actual-byte limits, progress and cancellation. Clean partial downloads without touching the installed app or Gecko profile.
-- [ ] Verify the downloaded artifact ZIP digest, extract only expected files, reject path traversal/unexpected entries/oversized files, and verify the APK against the same-run `SHA256SUMS.txt`.
-- [ ] Preflight the APK package ID, ABI, strictly greater version code, and signing certificate against the installed app. If any check fails or cannot be performed, stop before launching Android's installer.
-- [ ] Add only the required Android installer integration: `REQUEST_INSTALL_PACKAGES`, per-app unknown-source permission guidance, and a narrowly scoped FileProvider for the internal APK.
-- [ ] Keep installation user-confirmed. Handle permission denial, cancellation, install failure, app restart, network loss, disk full, API errors/rate limits, missing artifacts, and the 410 expired-artifact response.
-- [ ] Never uninstall, clear app data, reset GeckoView, or modify add-on/profile data to work around signature/version incompatibility.
-- [ ] Add native tests for main-only run selection, artifact matching/expiry, version codes, checksum parsing, ZIP safety, package ID/ABI, signer match/mismatch, interrupted-download cleanup, and installer failure handling.
-- [ ] Test a same-signer beta-to-main in-place update on a disposable device/profile, then verify game login/session, Gecko profile, installed add-ons, and settings survive. Do not mark complete from CI success alone.
-- [ ] Keep all implementation on `beta`; promote to `main` only on the owner's explicit instruction.
-
-**Verified blockers (2026-11-23):** main run #113 and beta run #138 were both successful, but their APK signer SHA-256 fingerprints differ (`CEA5FFA95F995F121C47BEA059E2A5DC542B91C267E4EF85EF7DC086305CEE77` vs `64C3F237A95EBC9DAA043213743D2D671538D5FB5C936D2EECB42BC60B9C482E`). Both branches currently use version code `2`. The main ARM64 artifact is about 96.5 MB and contains only the APK; the all-ABI artifact is about 541 MB and contains the checksum file. The current source has no updater or Android install permission/FileProvider. **Do not install across the current signer mismatch or advise uninstalling to proceed.**
-
-**Signing clarification:** update checks and downloads do not require the permanent release key. Android will not install an unsigned APK, and an in-place update must be signed compatibly with the installed app. A persistent demo key can postpone permanent release signing; without it, the updater must remain check/download-only when the signer differs.
-
 ## P0 — Demo making
 
 **Goal:** get a working beta demo installed on a physical Android phone as soon as possible. Keep this list focused on the shortest path to testing the core app.
@@ -103,7 +73,6 @@ These are planned features, not prerequisites for the first demo. Implement only
 
 ## P3 — Ongoing maintenance
 
-- [ ] Keep full APK downloads as the default update method; defer differential updates unless there is a demonstrated need.
 - [ ] Add Dependabot or Renovate monitoring for dependencies and review security updates.
 - [ ] Upgrade GeckoView and Android dependencies in isolated, build-verified changes.
 - [ ] Evaluate R8/resource shrinking against release builds and extension/runtime regression checks.
