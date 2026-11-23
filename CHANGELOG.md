@@ -38,9 +38,12 @@ This file records notable user-visible changes. It is not the development task l
 - Fixed APK signature verification to use the Android SDK's explicit `apksigner` path.
 - Added early validation of release keystore, alias, and private-key password configuration.
 
-## [1.0.0] — First release candidate (not yet published)
+## [1.0.1] — Unreleased
 
-Requires successful CI, physical-device validation, and release sign-off before publication.
+- Switch the in-app game destination from the alternate host to `https://lasthavens.com/play`.
+- Correct release metadata to match the bundled Addon Manager version `1.0.3`.
+
+## [1.0.0] — Released
 
 - Removes the in-game top loading-progress line while retaining the configurable LH diagnostics badge and diagnostic logging.
 
