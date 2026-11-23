@@ -1,6 +1,8 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { webcrypto } from "node:crypto";
+import { readFile } from "node:fs/promises";
+import vm from "node:vm";
 import { zipSync } from "../app/src/main/assets/extensions/lh-addon-manager/vendor/fflate.js";
 import { importZip, exportZip, readStreamLimited } from "../app/src/main/assets/extensions/lh-addon-manager/archive.js";
 import {
@@ -332,4 +334,77 @@ test("empty migration export is valid and preserves the empty library revision",
   assert.equal(manifest.totals.files, 0);
   const unpacked = unzipSync(archive);
   assert.equal(JSON.parse(new TextDecoder().decode(unpacked["manifest.json"])).format, MIGRATION_FORMAT);
+});
+
+
+test("WebView game bridge rejects foreign origins and streams native add-on files", async () => {
+  const source = await readFile(
+    new URL("../app/src/main/assets/webview-game-bridge.js", import.meta.url),
+    "utf8",
+  );
+  const origin = "https://lasthavens.com";
+  const windowListeners = [];
+  const nativeListeners = [];
+  const nativeRequests = [];
+  const posted = [];
+  const window = {
+    location: { origin },
+    addEventListener(type, listener) {
+      if (type === "message") windowListeners.push(listener);
+    },
+    postMessage(data) {
+      posted.push(data);
+    },
+  };
+  window.top = window;
+  const native = {
+    addEventListener(type, listener) {
+      if (type === "message") nativeListeners.push(listener);
+    },
+    postMessage(raw) {
+      const request = JSON.parse(raw);
+      nativeRequests.push(request);
+      queueMicrotask(() => {
+        if (request.kind === "payload") {
+          const payload = {
+            revision: "native-rev",
+            badge: false,
+            addons: [{
+              folder: "Example",
+              storageFolder: "native_example",
+              files: [{ path: "Example.toc", size: 4 }],
+            }],
+          };
+          nativeListeners.forEach((listener) => listener({
+            data: JSON.stringify({ kind: "payload", payload }),
+          }));
+        } else if (request.kind === "chunk") {
+          const buffer = vm.runInContext("new ArrayBuffer(4)", context);
+          new Uint8Array(buffer).set([1, 2, 3, 4]);
+          nativeListeners.forEach((listener) => listener({ data: buffer }));
+        }
+      });
+    },
+  };
+  window.LastHavenNative = native;
+  const context = vm.createContext({ window, console, setTimeout, clearTimeout });
+  vm.runInContext(source, context);
+
+  const dispatch = (messageOrigin, data) => {
+    const event = { source: window, origin: messageOrigin, data };
+    windowListeners.forEach((listener) => listener(event));
+  };
+  dispatch("https://attacker.example", { channel: "lh-addons-v2", kind: "hello" });
+  assert.equal(nativeRequests.length, 0);
+
+  dispatch(origin, { channel: "lh-addons-v2", kind: "hello" });
+  await new Promise((resolve) => setTimeout(resolve, 0));
+
+  assert.deepEqual(nativeRequests.map((request) => request.kind), ["payload", "chunk"]);
+  assert.equal(nativeRequests[1].storageFolder, "native_example");
+  const delivered = posted.find((message) => message?.kind === "payload");
+  assert.ok(delivered);
+  assert.equal(delivered.payload.revision, "native-rev");
+  assert.equal(delivered.payload.badge, false);
+  assert.deepEqual(Array.from(delivered.payload.addons[0].files["Example.toc"]), [1, 2, 3, 4]);
 });
