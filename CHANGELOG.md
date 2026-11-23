@@ -8,12 +8,13 @@ This file records notable user-visible changes. It is not the development task l
 - Read-only storage dashboard for shared GeckoView/app persistent data, browser/app cache, and available device storage; distinguishes current storage from lifetime downloads.
 - Native JavaScript alert, confirm, and prompt dialogs.
 - Landscape-specific Home screen layout.
-- ARM64-only release APK output and updater support.\n- A user-triggered updater on beta that considers successful main-branch builds only, verifies artifact provenance, metadata, SHA-256, package/version and signing-certificate compatibility, then hands installation to Android.
+- ARM64-only release APK output and updater support.
+- A user-triggered updater on main that considers successful main-branch builds only, verifies artifact provenance, metadata, SHA-256, package/version and signing-certificate compatibility, then hands installation to Android.
 
 ### Changed
 - Home screen now uses sensor landscape orientation.
 - Removed the thin top-edge game loading-progress line while retaining the LH diagnostics badge and diagnostic logging.
-- GitHub Actions produces debug-signed demo APK artifacts for pushes to `beta`. The dedicated permanent-key-signed main update artifact and metadata generator are configured on beta, pending approved promotion.
+- GitHub Actions produces the permanent-key-signed ARM64 update artifact and metadata on `main`; pull-request and manual test builds are not updater candidates.
 
 ### Security
 - Restricted in-app navigation to HTTPS Lasthavens hosts and required Gecko internal schemes; reject insecure HTTP, executable/data/file/intent schemes, untrusted blob origins, and lookalike hosts. Added JVM regression tests to CI.
@@ -39,7 +40,3 @@ Requires successful CI, physical-device validation, and release sign-off before 
 - Removes the in-game top loading-progress line while retaining the configurable LH diagnostics badge and diagnostic logging.
 
 - Includes the first packaged Android app baseline with GeckoView, Home, Play, Addon Manager screens, shared runtime design, and bundled Addon Manager.
-
-## [Initial baseline] — Historical development snapshot
-
-- First packaged Android app baseline with GeckoView, Home, Play, Addon Manager screens, shared runtime design, and bundled Addon Manager.
