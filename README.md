@@ -67,6 +67,18 @@ The current app line uses `versionName = 2.0.0`. Keep this stable across ordinar
 
 The main branch contains a user-triggered updater. It queries only successful completed `push` runs from `main`, downloads the metadata/checksum artifact and the complete ARM64 APK artifact, and offers it only when the device supports ARM64, checks artifact/run/commit provenance and metadata, verifies the APK SHA-256, and checks package ID, version code and installed signing certificate before offering Android's user-confirmed package installer. It never silently installs, uninstalls, or clears app data. Debug-signed pull-request/test APKs are not accepted as update sources. A debug-signed test installation cannot be upgraded in place to a permanent-key-signed main build; do not uninstall a data-bearing installation to switch signing identities. Use a separate test device for release-signing validation. Main run #196 passed permanent-key signing and artifact publication; the live update feed still requires same-certificate physical-device validation. No public download link is published until an approved release exists. See [AGENTS.md](AGENTS.md) for the rules agents must follow.
 
+## Create a GitHub Release
+
+Official releases are created from stable version tags on `main`:
+
+1. Complete the required physical-device, same-certificate upgrade, data-preservation, and distribution-permission checks in [MANUAL_CHECKLIST.md](MANUAL_CHECKLIST.md).
+2. Update `versionName` in `app/build.gradle.kts` and add the user-visible changes to `CHANGELOG.md`. Keep the tag exactly aligned with the app version.
+3. Merge the release-ready commit into `main`, then create and push the matching tag, for example `v2.0.1`.
+4. GitHub Actions validates that the tag is stable SemVer, matches `versionName`, and points to a commit reachable from `main`. It builds and verifies the permanent-key-signed ARM64 APK and creates a **draft GitHub Release** with generated notes, the APK, and checksums.
+5. Review the draft, its assets, and release notes. Publish it manually only after release sign-off.
+
+Do not create a tag for an unreleased version just to test CI. A tag build is a release candidate, not proof of physical-device validation or distribution approval.
+
 ## Project documents
 
 | Document | Purpose |
