@@ -138,7 +138,7 @@ internal class UpdateManager(context: Context) {
         val checksumAsset = selectedAssets.checksum
         val apkSize = apkAsset.sizeBytes
         check(apkSize in 1..MAX_APK_BYTES) { "The release APK has an invalid size." }
-        check(checksumAsset.optLong("size") in 1..MAX_CHECKSUM_BYTES.toLong()) {
+        check(checksumAsset.sizeBytes in 1..MAX_CHECKSUM_BYTES.toLong()) {
             "The release checksum file has an invalid size."
         }
 
@@ -151,7 +151,7 @@ internal class UpdateManager(context: Context) {
             val checksumLines = checksums.lineSequence().filter { it.isNotBlank() }.toList()
             check(checksumLines.size == 1) { "The release checksum file must contain exactly one APK checksum." }
             val checksum = checksumLines.single().trim().split(Regex("\\s+"), limit = 2)
-            check(checksum.size == 2 && checksum[1].removePrefix("*") == apkName &&
+            check(checksum.size == 2 && checksum[1].removePrefix("*") == apkAsset.name &&
                 UpdatePolicy.isValidSha256(checksum[0])) {
                 "The release checksum file does not describe the expected ARM64 APK."
             }
