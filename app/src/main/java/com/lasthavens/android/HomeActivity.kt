@@ -55,6 +55,12 @@ class HomeActivity : AppCompatActivity() {
                     progressBar.isIndeterminate = true
                     percentView.visibility = View.GONE
                 }
+                UpdateStage.FETCHING_CHECKSUM -> {
+                    stageView.setText(R.string.update_stage_checking)
+                    detailView.setText(R.string.update_stage_checksum_detail)
+                    progressBar.isIndeterminate = true
+                    percentView.visibility = View.GONE
+                }
                 UpdateStage.DOWNLOADING -> {
                     stageView.setText(R.string.update_stage_downloading)
                     detailView.text = getString(
