@@ -65,15 +65,15 @@ The user-triggered updater checks the latest published stable GitHub Release, ig
 
 ## Create a GitHub Release
 
-Official releases are created from stable version tags on `main`:
+Release tags can be requested through GitHub without using Termux:
 
 1. Complete the required physical-device, same-certificate upgrade, data-preservation, and distribution-permission checks in [MANUAL_CHECKLIST.md](MANUAL_CHECKLIST.md).
-2. Update `versionName` in `app/build.gradle.kts` and add the user-visible changes to `CHANGELOG.md`. Keep the tag exactly aligned with the app version.
-3. Merge the release-ready commit into `main`, then create and push the matching tag, for example `v1.0.0`.
-4. GitHub Actions validates that the tag is stable SemVer, matches `versionName`, and points to a commit reachable from `main`. It builds and verifies the permanent-key-signed ARM64 APK and creates a **draft GitHub Release** with generated notes, the APK, and checksums.
+2. Update `versionName` in `app/build.gradle.kts` and add the user-visible changes to `CHANGELOG.md`. Merge the release-ready commit into `main`.
+3. Update `.github/release-request.json` to the requested version and set `dry_run` to `false`. The request workflow validates stable SemVer, the Gradle version, and that the version is newer than existing stable tags.
+4. GitHub Actions creates the annotated tag and explicitly dispatches the existing signed release build on that tag. The build verifies the permanent signing key, ARM64 APK, package/version metadata, and checksums, then creates a **draft GitHub Release**.
 5. Review the draft, its assets, and release notes. Publish it manually only after release sign-off.
 
-Do not create a tag for an unreleased version just to test CI. A tag build is a release candidate, not proof of physical-device validation or distribution approval.
+For a validation-only run, set `dry_run` to `true`; it validates the request without creating a tag or release. Do not create a tag for an unreleased version just to test CI. A successful CI build is not proof of physical-device validation or distribution approval. The release request file is a trigger, not permission to bypass the manual release checklist or draft review.
 
 ## Project documents
 
