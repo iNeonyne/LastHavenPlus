@@ -54,6 +54,11 @@ class StorageActivity : AppCompatActivity() {
             setTextColor(getColor(R.color.gold_light))
         })
         root.addView(bodyText(R.string.storage_intro, 14f).apply { setPadding(0, px(8), 0, px(12)) })
+        root.addView(Button(this).apply {
+            text = getString(R.string.migration_tool)
+            setTextColor(getColor(R.color.text_primary))
+            setOnClickListener { startActivity(android.content.Intent(this@StorageActivity, MigrationImportActivity::class.java)) }
+        }, LinearLayout.LayoutParams(-1, px(52)).apply { bottomMargin = px(8) })
         persistent = addMetric(root, R.string.storage_persistent_label, R.string.storage_persistent_detail)
         cache = addMetric(root, R.string.storage_cache_label, R.string.storage_cache_detail)
         available = addMetric(root, R.string.storage_available_label, null)
