@@ -52,15 +52,8 @@ The owner has authorized necessary manager changes on the condition that install
 - [ ] Run the Addon Manager regression suite and full CI build.
 - [ ] Verify install, update, remove, backup/restore, and game loading on a physical device with pre-existing add-ons.
 - [ ] Add a failure-injection test for metadata commit failure and confirm the prior generation remains readable.
-- [ ] Enforce archive/download byte limits while reading actual data, not only from declared sizes.
-
-- [ ] **Manager data consistency:** add-on files are written before library metadata is committed. Investigate crash/failure recovery and design a transactional or rollback-safe update.
-- [ ] **Archive memory use:** import/restore reads selected files into memory before enforcing archive limits. Assess safer preflight and bounded-read handling.
-- [ ] **Download size enforcement:** remote ZIP downloads rely partly on Content-Length. Enforce a limit while reading the actual response body.
-- [ ] **TOC dependency ordering:** numbered dependency keys are sorted lexicographically; confirm expected behavior and correct numeric ordering.
-- [ ] **URL scheme review:** assess whether `javascript:` and `data:` need to be accepted by the in-app navigation policy.
-- [ ] **Duplicate permission logic:** consider centralizing permission checks and origin definitions.
-- [ ] **Navigation duplication:** consider sharing common routing logic between Play and Manager activities.
+- [x] Enforce archive/download byte limits against actual streamed bytes, including imported/restored archives and remote ZIPs.
+- [ ] Run the new streaming-limit regression tests and full CI build.
 
 ## P2 — Addon Manager verification
 
