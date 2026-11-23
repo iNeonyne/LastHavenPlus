@@ -93,6 +93,17 @@ The updater must never clear app data, uninstall the app or silently install an 
 
 10. Batch related implementation, regression tests and required documentation into one complete commit. Do not push file-by-file changes or intermediate commits that leave imports, tests or packaged assets temporarily inconsistent. Review the complete diff and run focused checks before committing; each main-branch push can start a full APK build and cancel the previous in-progress run.
 
+### Agent efficiency protocol
+
+- Treat `TODO.md` as the sole work queue. Select the highest-priority dependency-unblocked item; finish a vertical slice (implementation, regression test and required docs) before starting another.
+- Read the relevant ROADMAP section and only the code, tests and data formats needed for that slice. Do not repeatedly re-read unchanged repository-wide documentation or inspect unrelated modules.
+- Before editing, identify the owning files, public interfaces, callers and existing tests. Prefer extending existing abstractions over adding frameworks, parallel implementations or speculative refactors.
+- Parallelize independent read-only investigations and test analysis. Give each concurrent implementation effort exclusive ownership of its files; serialize overlapping edits and all commits to `main`.
+- Ask delegated agents for concise findings with exact file paths, symbols, evidence, risks and recommended next action. Do not accept unverified summaries as proof that code or tests pass.
+- Run the narrowest relevant test after each logical change, then the required CI checks once the complete change is assembled. Avoid rebuilding unchanged modules or rerunning successful checks without a code/configuration reason.
+- Review one final diff against the starting commit. Remove temporary files, duplicate checks, dead code and stale TODO entries before the atomic commit.
+- After committing, verify the pushed SHA and its workflow result. Leave a concise handoff in the response: completed slice, commit, checks, remaining blocker and the next TODO item. Never leave a half-finished implementation for another agent to infer.
+
 Do not use or recommend Termux for project workflows.
 
 ## 8. Documentation ownership
