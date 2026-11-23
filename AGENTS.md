@@ -4,12 +4,11 @@ These are mandatory project rules. Read this file and `TODO.md` before doing wor
 
 ## 1. Branch and promotion policy — mandatory
 
-- Do all work on the `beta` branch. This includes source code, tests, workflows, documentation, version changes, and fixes.
-- Do not commit, push, merge, cherry-pick, rebase onto, or otherwise move work to `main` unless the project owner explicitly instructs you to promote it.
-- Keep `main` unchanged during normal development.
-- Requests to continue, fix, review, tidy, or improve the project authorize work on `beta` only. They do not authorize promotion to `main`.
-- Before editing, verify the checked-out/target branch is `beta`. Before pushing, verify the destination is still `beta`.
-- CI demo builds should run from `beta`. Do not change the branch policy without explicit owner approval.
+- `main` is the sole active development, integration, CI, and release branch. All source code, tests, workflows, documentation, version changes, and fixes belong on `main`.
+- The former `beta` branch has been consolidated into `main` and is retired. Do not recreate it or target it unless the owner explicitly changes this policy.
+- Requests to continue, fix, review, tidy, or improve the project authorize work on `main`.
+- Before editing or committing, verify the target branch is `main`; before pushing, verify the destination is still `main`.
+- Do not create long-lived development branches unless a task genuinely requires isolation; if one is needed, use a short-lived branch and merge it back to `main` after checks pass.
 
 ## 2. Product scope
 
@@ -47,8 +46,8 @@ LastHavenPlus is a focused Android client for the Lasthavens game, built with Ko
 ## 6. Build and release
 
 - GitHub Actions is the build and validation path. GitHub Releases are the intended public distribution channel; there is no Google Play release track.
-- Normal `beta` builds may produce debug-signed demo APKs for testing. They are not release-ready.
-- Never publish a debug-signed APK as a public release.
+- Main-branch CI builds are update candidates only when all main-only signing, artifact provenance, checksum, package, version, and signer checks pass.
+- Never publish a debug-signed APK as a public release or main update candidate.
 - Public releases require the permanent release key, verified certificate consistency, secure offline key backups, and a tested same-certificate in-place upgrade.
 - Do not experiment with, rotate, or replace the release key casually. A certificate mismatch can prevent upgrades and put user data at risk.
 - Do not claim a build, test, artifact, device check, or release succeeded unless its actual result was checked.
@@ -56,28 +55,25 @@ LastHavenPlus is a focused Android client for the Lasthavens game, built with Ko
 
 ## 7. Versioning and automatic-update compatibility
 
-- The Android app uses Semantic Versioning for its user-facing `versionName`: `MAJOR.MINOR.PATCH`.
-  - **MAJOR:** an incompatible user-facing change or a breaking app/data contract. Any data-format migration still requires a documented, tested backup, migration, and rollback path.
-  - **MINOR:** a backward-compatible user-facing feature or substantial capability.
+- Use Semantic Versioning for the Android app's user-facing `versionName`: `MAJOR.MINOR.PATCH`.
+  - **MAJOR:** incompatible user-facing change or breaking app/data contract. Any data-format migration still requires documented, tested backup, migration, and rollback.
+  - **MINOR:** backward-compatible user-facing feature or substantial capability.
   - **PATCH:** backward-compatible bug fixes, security fixes, and maintenance.
-- Do not increase `versionName` for every commit or CI run. Keep it unchanged while producing successive development builds of the same release line. Do not add a leading `v` to `versionName`; Git release tags use `v<versionName>`.
-- **Promotion baseline rule:** before any owner-approved promotion from `beta` to `main`, choose and verify the clean stable SemVer release number for the exact promoted commit (for example `2.1.0`, never a CI/run number or a beta suffix). Set the Android `versionName` and matching `v<versionName>` release tag to that stable number as part of the promotion. Never promote a beta/prerelease version string as the main release version.
-- **Restart beta from main:** immediately after a promotion, treat that exact main release version as the new beta baseline. The next beta development version must start from that baseline and advance according to SemVer for the next intended change; use a prerelease suffix such as `2.1.1-beta.1` while validating a patch, or `2.2.0-beta.1` while validating a minor release. Increment the beta prerelease counter for subsequent beta builds of that same candidate. When the candidate is approved for main, remove the prerelease suffix and promote the clean stable version (for example `2.2.0`). Never let beta overwrite or move the main release version backwards.
-- Keep Android `versionCode` independent of this human-readable release sequence. Its CI counter must remain strictly increasing across both branches; promotion must not reset it, and beta builds must not consume a lower code than a main build already distributed.
-- Until version metadata is deliberately centralized, `app/build.gradle.kts` is the authoritative source for the Android app's `versionName`. Any build validation, UI, release, or updater metadata must derive from that value rather than maintaining a second manually edited copy.
-- Android `versionCode` is a separate positive integer used for install/update ordering. An updater must compare numeric `versionCode` values, never compare version-name strings, filenames, dates, or commit hashes.
-- **When main-branch CI updates are implemented, set the CI APK's `versionCode` from the monotonically increasing GitHub Actions workflow run number (`GITHUB_RUN_NUMBER`) of the existing `.github/workflows/build.yml` workflow.** This number increases across runs on the workflow's branches and tags; a rerun of the same workflow run retains its number and must not be treated as a newer build. Keep the workflow identity stable. If the workflow is renamed/recreated or numbering changes, migrate the counter and prove that the next code is greater than every previously distributed code before publishing another update.
-- The first CI-generated code must be greater than the currently distributed/installable app code. On `beta`, `app/build.gradle.kts` now derives `versionCode` from `GITHUB_RUN_NUMBER`; local builds use a development-only fallback and must never be advertised as update candidates. The untouched `main` branch must receive the approved workflow promotion before this policy becomes active there.
-- A new main CI build may have the same `versionName` as the previous build but must have a greater `versionCode`. Do not bump the SemVer version just to make an APK install over another APK.
-- **Automatic update source is `main` only.** The beta implementation considers only successful completed `push` runs whose source branch is exactly `main`, from the existing workflow ID/path. It ignores beta, pull-request, tag/release, manual-dispatch, failed, cancelled, and in-progress runs. The beta workflow configures a dedicated main update artifact; `main` remains unchanged until owner-approved promotion, so the live main update feed is not yet available.
-- Main update artifacts include a machine-readable `update.json` with app `versionName`, resolved `versionCode`, branch/ref, commit SHA, workflow run ID/number, workflow ID, APK filenames/ABIs, sizes and SHA-256 hashes. A tested Python generator rejects non-main contexts, invalid workflow/run metadata, prerelease versions, missing ABIs and oversized/missing APKs. The updater validates metadata, requires `main`, selects a device ABI, verifies the checksum, and checks the APK package ID, version metadata and installed signing certificate before offering installation.
-- **Signing is an independent update requirement.** Every main artifact offered to an installed app must use the same stable signing certificate as that installed app. A dedicated stable CI key may be used for a testing channel; it does not have to be the eventual public-release key, but it must be protected and its certificate fingerprint must remain identical across builds. The current fallback to the runner's debug signing configuration is not an approved continuity guarantee. Verify the APK signer fingerprint and perform a same-certificate in-place upgrade test before enabling updates.
-- Never work around a package ID, signing-certificate, or version mismatch by uninstalling the existing app or clearing its data. Stop safely and explain the blocker. Preserve the application ID `com.lasthavens.android` for normal upgrades.
-- The Addon Manager version remains independent and is read from its bundled `manifest.json`; the GeckoView dependency version is also independent. Do not bump either one just because the Android app version changes, and do not change the bundled Addon Manager without the owner's authorization and the required data-preservation checks.
+- Keep `versionName` stable across ordinary commits and CI runs. Do not encode build numbers, dates, commit hashes, or branch names in it. Do not add a leading `v`; Git release tags use `v<versionName>`.
+- `app/build.gradle.kts` is the authoritative source for Android `versionName`; build validation, UI, release metadata, and updater metadata must derive from it.
+- **Release-number decision:** the current app line remains `2.0.0` until a deliberate SemVer bump is justified. Use `2.0.1` for the next patch-level release, `2.1.0` for the next backward-compatible feature release, or `3.0.0` only for a genuinely breaking release. Do not bump merely because branches were merged or CI ran.
+- Android `versionCode` is a separate positive integer used for install/update ordering. The existing `.github/workflows/build.yml` workflow's `GITHUB_RUN_NUMBER` is the monotonic source. It must remain strictly increasing across main pushes and release tags. Keep the workflow identity stable; if it is ever recreated or numbering changes, migrate the counter and prove the next code exceeds every distributed code before publishing.
+- A rerun of an existing workflow run retains its run number and is not a newer build. The updater must compare numeric `versionCode`, never version-name strings, filenames, dates, or commit hashes.
+- Local builds use a development-only fallback code and must never be advertised as update candidates. The first CI-generated code must exceed every previously installable/distributed code.
+- The single active branch is `main`. The updater may select only successful, completed `push` runs whose source branch is exactly `main`, from the existing workflow ID/path. Ignore pull requests, tags/releases, manual dispatches, failed, cancelled, in-progress, expired, or incompatible runs.
+- Main update artifacts include `update.json` with app `versionName`, resolved `versionCode`, branch/ref, commit SHA, workflow run ID/number, workflow ID, APK filenames/ABIs, sizes, and SHA-256 hashes. The updater validates provenance and metadata, selects a device ABI, verifies checksum and APK package/version, and checks installed signing-certificate compatibility before offering Android's user-confirmed installer.
+- Every main artifact offered to an installed app must use the same stable signing certificate as that installed app. Main builds fail closed if the permanent key is missing or its fingerprint differs from the expected certificate. Verify signer fingerprint and complete a same-certificate in-place upgrade test before declaring updates production-ready.
+- Never work around package ID, signing-certificate, or version mismatch by uninstalling the existing app or clearing data. Preserve application ID `com.lasthavens.android`.
+- Addon Manager version (from bundled `manifest.json`) and GeckoView dependency version are independent. Do not bump either just because the Android app version changes, and do not change Addon Manager without owner authorization and required data-preservation checks.
 
 ## 8. Development workflow
 
-1. Verify branch `beta`, inspect the latest commits, workflow runs, and relevant source.
+1. Verify branch `main`, inspect the latest commits, workflow runs, and relevant source.
 2. Read the related items in `TODO.md`; reconcile stale tasks with the actual implementation.
 3. Identify data, security, compatibility, and upgrade risks before changing behavior.
 4. Make the smallest complete and reviewable change.
@@ -87,7 +83,13 @@ LastHavenPlus is a focused Android client for the Lasthavens game, built with Ko
 8. Update `TODO.md`, `CHANGELOG.md`, `README.md`, or `PROJECT_OVERVIEW.md` only when their information actually changes.
 9. Report the branch, commit, changed files, tests and build results, known risks, and work still unverified.
 
-## 9. Documentation responsibilities
+## 9. Tools, plugins, and agent autonomy
+
+- Agents have the owner's authorization to use any available ChatGPT plugins, connectors, integrations, and tools that materially help complete project work. Choose the appropriate tool without asking for separate permission each time.
+- Respect each tool's permissions, security boundaries, rate limits, and data-handling rules. Never expose repository secrets, signing material, credentials, or private user data to a plugin or external service unless the owner has explicitly authorized that exact transfer and it is necessary.
+- Installing or connecting a plugin may still require an explicit user action in ChatGPT. If a required plugin is unavailable or not connected, use another available tool where practical and explain any remaining limitation.
+
+## 10. Documentation responsibilities
 
 - `README.md` is for human readers. Keep it concise and avoid duplicating the roadmap or agent rules.
 - `AGENTS.md` is the authoritative instruction file for agents and contributors.
@@ -97,10 +99,10 @@ LastHavenPlus is a focused Android client for the Lasthavens game, built with Ko
 - `PROJECT_OVERVIEW.md` contains the technical architecture and current verified project state.
 - Do not let documents contradict source code, version metadata, CI configuration, or one another.
 
-## 10. Service terms and project identity
+## 11. Service terms and project identity
 
 The Lasthavens Terms of Use restrict modified clients except for add-ons in the in-game AddOn Library. Compatibility of this independent GeckoView client and bundled manager is unconfirmed. Obtain explicit guidance from the Lasthavens team before public distribution. Clearly identify the app as unofficial and not affiliated with or endorsed by Lasthavens or Blizzard Entertainment.
 
-## 11. Scope control
+## 12. Scope control
 
 Do not add unrelated browser features, analytics, push notifications, background services, or differential APK updates without a demonstrated requirement and project-owner approval where appropriate. Prefer reliability and safe data handling over feature count.
