@@ -139,7 +139,7 @@ internal class UpdateManager(context: Context) {
             validateMetadata(metadata, run)
             val variants = parseApkVariants(metadata)
             val selected = UpdatePolicy.selectApk(Build.SUPPORTED_ABIS.toList(), variants)
-                ?: throw IOException("No APK for this device ABI was published.")
+                ?: throw IOException("This release supports ARM64 (`arm64-v8a`) devices only.")
             check(UpdatePolicy.checksumFileMatches(checksums, selected.fileName, selected.sha256)) {
                 "The APK checksum does not match the checksum list from this main build."
             }
@@ -282,7 +282,7 @@ internal class UpdateManager(context: Context) {
     private fun parseApkVariants(meta: JSONObject): List<UpdateApk> {
         val version = meta.getString("versionName")
         val apks = meta.optJSONArray("apks") ?: throw IOException("Update metadata has no APK list.")
-        check(apks.length() == 4) { "Main build must publish all ABI APKs and a universal fallback." }
+        check(apks.length() == 1) { "Main build must publish exactly one ARM64 APK." }
         val variants = (0 until apks.length()).map { i ->
             val item = apks.getJSONObject(i)
             val abi = item.getString("abi")
@@ -294,7 +294,7 @@ internal class UpdateManager(context: Context) {
             check(size in 1..MAX_APK_BYTES) { "Invalid APK size in metadata." }
             UpdateApk(abi, name, hash, size)
         }
-        check(variants.map { it.abi }.toSet() == UpdatePolicy.supportedAbis) { "An APK ABI variant is missing." }
+        check(variants.map { it.abi }.toSet() == UpdatePolicy.supportedAbis) { "The ARM64 APK variant is missing or unsupported variants were published." }
         return variants
     }
 
