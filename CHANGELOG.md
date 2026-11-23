@@ -5,6 +5,7 @@ This file records notable user-visible changes. It is not the development task l
 ## [Unreleased] — beta
 
 ### Added
+- Read-only storage dashboard for shared GeckoView/app persistent data, browser/app cache, and available device storage; distinguishes current storage from lifetime downloads.
 - Native JavaScript alert, confirm, and prompt dialogs.
 - Landscape-specific Home screen layout.
 - ABI-specific APK outputs and a universal fallback.
