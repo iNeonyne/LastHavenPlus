@@ -42,7 +42,7 @@ The app and extension have independent versions. Necessary Addon Manager mainten
 
 The landscape Home screen has a user-triggered **Check for updates** action. The updater filters the existing GitHub Actions workflow for successful completed `push` runs from `main`, checks artifact provenance and expiry, downloads the metadata/checksum artifact and only the ARM64 APK artifact, and only when the device supports `arm64-v8a`, verifies metadata and SHA-256, then checks Android package ID, version code and exact signing-certificate equality. Installation is handed to Android's package installer and requires user confirmation. The updater does not clear app data, GeckoView profile, cookies, login/session state or add-ons.
 
-Main run #196 has published the metadata/checksum and per-ABI artifacts. The first same-certificate in-place update and data-preservation test remains to be completed on a physical device. End-to-end same-certificate upgrade and data-preservation checks remain pending on a physical device.
+Main run #196 published the metadata/checksum and per-ABI artifacts in the previous multi-ABI configuration. New ARM64-only runs will publish only the ARM64 APK. The first same-certificate in-place update and data-preservation test remains to be completed on a physical device. End-to-end same-certificate upgrade and data-preservation checks remain pending on a physical device.
 
 ## Immediate validation sequence
 
