@@ -17,7 +17,7 @@ Useful links: [Game](https://lasthavens.com/play) · [Repository](https://github
 
 ## Features
 
-- Landscape Home screen with Play and Addon Manager entry points.
+- Orientation-adaptive Home and Storage screens with Play and Addon Manager entry points.
 - GeckoView-powered game session.
 - Bundled Addon Manager WebExtension.
 - Shared Gecko runtime/profile design for game and manager.
@@ -28,7 +28,7 @@ Useful links: [Game](https://lasthavens.com/play) · [Repository](https://github
 
 ## Get a build
 
-Stable downloads are distributed through [GitHub Releases](https://github.com/iNeonyne/Lasthavens-Android/releases). The in-app updater checks only the latest published stable release, downloads its ARM64 APK and checksum asset, and verifies the APK before handing it to Android. Draft releases and prereleases are ignored. Main CI artifacts are for validation and are not update sources.
+Stable downloads are distributed through [GitHub Releases](https://github.com/iNeonyne/Lasthavens-Android/releases). The in-app updater lists the installed version and newer published stable releases without downloading anything; the user selects a release before its ARM64 APK and checksum are downloaded and verified. Draft releases and prereleases are ignored. Main CI artifacts are for validation and are not update sources.
 
 Use a spare test device for same-certificate update testing. Do not uninstall a data-bearing installation signed with a different key.
 
@@ -49,7 +49,7 @@ GitHub Actions runs automated checks on `main`, pull requests, and manual dispat
 | Component | Current version | Status |
 |---|---:|---|
 | Android app | `1.0.1` | Next patch release being prepared |
-| Bundled Addon Manager | `1.0.3` | Crash-safe add-on replacement; preserves existing library data |
+| Bundled Addon Manager | `1.0.5` | Crash-safe add-on replacement; preserves existing library data |
 | GeckoView | `159.0.20261102144711` | Pinned dependency |
 
 The extension version is independent of the Android app version. Check the bundled extension's `manifest.json` for its authoritative version. Existing add-on files remain in their current storage locations until that add-on is updated; new replacements use staged storage generations so an interrupted update does not replace the last committed files.
@@ -61,7 +61,7 @@ The Android app's `versionName` follows `MAJOR.MINOR.PATCH` (Semantic Versioning
 
 The first public Android app release is `1.0.0` (tag `v1.0.0`). The next patch release is `1.0.1`, `1.1.0` for the next backward-compatible feature release, or `2.0.0` only for a breaking release. Android `versionCode` is taken from the existing workflow's monotonically increasing `GITHUB_RUN_NUMBER`; local builds use a development-only fallback and are never update candidates. `main` is the sole development and release branch; do not create a permanent beta branch or prerelease version stream.
 
-The user-triggered updater checks the latest published stable GitHub Release, ignores drafts and prereleases, downloads the exact ARM64 APK and `SHA256SUMS.txt` assets, and verifies declared size, SHA-256, package ID, versionName/versionCode, device ABI, and exact installed signing-certificate equality before handing the APK to Android's user-confirmed installer. It never silently installs, uninstalls, or clears app data. Main CI, pull-request, manual-dispatch, and draft-release builds are not update sources. A debug-signed test installation cannot be upgraded in place to the permanent release key; do not uninstall a data-bearing installation to switch signing identities. Use a separate test device for release-signing validation. The release-based updater still requires same-certificate physical-device upgrade and data-preservation testing. See [AGENTS.md](AGENTS.md) for the rules agents must follow.
+The user-triggered updater lists the installed version and newer published stable GitHub Releases, ignoring drafts and prereleases. Checking is metadata-only and never downloads an APK. The user selects a newer version and explicitly starts its download. The updater downloads the exact ARM64 APK and `SHA256SUMS.txt` assets, then verifies declared size, SHA-256, package ID, versionName/versionCode, device ABI, and exact installed signing-certificate equality before handing the APK to Android's user-confirmed installer. It never silently installs, uninstalls, or clears app data. Main CI, pull-request, manual-dispatch, and draft-release builds are not update sources. A debug-signed test installation cannot be upgraded in place to the permanent release key; do not uninstall a data-bearing installation to switch signing identities. Use a separate test device for release-signing validation. The release-based updater still requires same-certificate physical-device upgrade and data-preservation testing. See [AGENTS.md](AGENTS.md) for the rules agents must follow.
 
 ## Create a GitHub Release
 
