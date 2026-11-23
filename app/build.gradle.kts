@@ -7,7 +7,8 @@ plugins {
 }
 
 val appVersionName = "2.0.0"
-val appVersionCode = 2
+// GitHub Actions owns the never-resetting code sequence across beta, main, and tags.
+val appVersionCode = System.getenv("GITHUB_RUN_NUMBER")?.toIntOrNull() ?: 3
 
 val keystorePath = System.getenv("KEYSTORE_PATH")
 val keystoreFile = keystorePath?.let { file(it) }

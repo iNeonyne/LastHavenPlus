@@ -137,6 +137,18 @@
                 android:textAllCaps="false"
                 android:textColor="@color/text_primary"
                 android:textSize="16sp" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/btnUpdate"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/btn_manager"
+                android:fontFamily="sans-serif-medium"
+                android:text="@string/update_check"
+                android:textAllCaps="false"
+                android:textColor="@color/text_primary"
+                android:textSize="15sp" />
         </LinearLayout>
     </LinearLayout>
 </FrameLayout>

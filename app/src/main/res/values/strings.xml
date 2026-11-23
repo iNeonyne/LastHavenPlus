@@ -9,6 +9,17 @@
     <string name="version_app">App %1$s</string>
     <string name="version_addons">Addon Manager %1$s</string>
 
+    <string name="update_check">Check for updates</string>
+    <string name="update_title">App updates</string>
+    <string name="update_none">No newer compatible update is available from the latest successful main build.</string>
+    <string name="update_available">Update available</string>
+    <string name="update_available_message">LastHavenPlus %1$s (main build #%2$d) is ready. Verified APK size: %3$s. Commit: %4$s. Continue to Android’s installer?</string>
+    <string name="update_install">Install</string>
+    <string name="update_install_title">Could not start installation</string>
+    <string name="update_install_failed">Android could not start the update installation.</string>
+    <string name="update_failed_title">Update unavailable</string>
+    <string name="update_failed">The update could not be checked or verified. No app files or user data were changed.</string>
+
     <string name="leave_title">Leave the game?</string>
     <string name="leave_message">Your session stays loaded in the background. Reloading will restart the game page.</string>
     <string name="leave_home">Home</string>
