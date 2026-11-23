@@ -132,9 +132,9 @@ For every future release, add a new row under **Released versions** and summariz
 
 **Goal:** produce an installable demo APK from `main` so the app can be tested on an Android phone before signing and release work are finished. This is a test build, not a public/stable release.
 
-- [ ] Make normal pushes to `main` build and upload debug-signed demo APKs without requiring release-keystore secrets.
-- [ ] Keep permanent release signing mandatory for version-tagged GitHub Releases; never publish a debug-signed APK as a release.
-- [ ] Get the first successful CI demo artifact and download the `arm64-v8a` APK (use universal only if the ABI-specific build cannot be installed).
+- [x] Make normal pushes to `main` build and upload debug-signed demo APKs without requiring release-keystore secrets; verified by successful main-branch CI run #99.
+- [x] Keep permanent release signing mandatory for version-tagged GitHub Releases; never publish a debug-signed APK as a release.
+- [x] Produce the first successful CI demo artifacts; successful run #99 uploaded ARM64 and multi-ABI APK artifacts. Download/install and phone testing remain open.
 - [ ] Install and smoke-test: first launch, Home screen, Play, game loading/sign-in, return Home and resume Play, open Addon Manager, and return to the game.
 - [ ] Check basic touch input, orientation/fullscreen, keyboard, network failure/retry, back navigation, and app background/resume.
 - [ ] Record crashes, broken screens, loading failures, and device/Android version; fix demo-blocking issues before adding optional features.
@@ -220,7 +220,7 @@ This is the active development roadmap, ordered by immediate demo delivery first
 
 ## Signing
 
-CI is currently configured to require a permanent release keystore for non-PR builds. The latest build reached APK packaging but failed because Android Gradle could not read the configured private key from the keystore. The workflow now validates the keystore, alias, and key password before Gradle packaging so a misconfigured key fails with a clearer step-level error. Recheck the four GitHub Actions secrets below; do not paste their values into chat or commit them. Normal `main` builds are intended to produce debug-signed demo APKs without those secrets. A successful demo build can be installed for testing before release signing is configured.
+Release signing is paused and is not required for development demo APKs. Normal `main` builds produce debug-signed demo APKs without release-keystore secrets; this was verified by successful CI run #99. Version-tagged GitHub Releases still require the permanent release key and must never use a debug-signed APK. The latest tagged signing test failed because the configured keystore certificate did not match the pinned expected release certificate. Do not spend more time on signing until release publication or in-place upgrades become the active priority. Keep keystore material and passwords out of chat and source control.
 
 For stable in-place updates, configure these GitHub repository secrets:
 
