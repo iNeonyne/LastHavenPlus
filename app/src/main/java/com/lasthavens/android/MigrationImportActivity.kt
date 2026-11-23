@@ -159,12 +159,35 @@ class MigrationImportActivity : AppCompatActivity() {
                         AlertDialog.Builder(this)
                             .setTitle(R.string.migration_verified_title)
                             .setMessage(details)
-                            .setPositiveButton(R.string.migration_keep_stage, null)
+                            .setPositiveButton(R.string.migration_activate) { _, _ -> activateStage(stage) }
                             .setNegativeButton(R.string.migration_discard_stage) { _, _ ->
                                 stage.directory.deleteRecursively()
                                 status.setText(R.string.migration_stage_discarded)
                             }
                             .show()
+                    },
+                    onFailure = { error ->
+                        status.text = getString(R.string.migration_failed, error.message ?: getString(R.string.migration_unknown_error))
+                    },
+                )
+            }
+        }
+    }
+
+    private fun activateStage(stage: MigrationArchiveReader.Stage) {
+        choose.isEnabled = false
+        progress.visibility = android.view.View.VISIBLE
+        status.setText(R.string.migration_activating)
+        executor.execute {
+            val result = runCatching { AddonRepository(filesDir).activate(stage) }
+            runOnUiThread {
+                if (isFinishing || isDestroyed) return@runOnUiThread
+                choose.isEnabled = true
+                progress.visibility = android.view.View.GONE
+                result.fold(
+                    onSuccess = { active ->
+                        val count = active.manifest.getJSONObject("library").getJSONArray("addons").length()
+                        status.text = getString(R.string.migration_activated, count)
                     },
                     onFailure = { error ->
                         status.text = getString(R.string.migration_failed, error.message ?: getString(R.string.migration_unknown_error))
