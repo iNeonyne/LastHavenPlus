@@ -5,7 +5,7 @@ This is the single actionable work queue. The architecture and phase rationale l
 **Branch:** main only  
 **Current source baseline:** GeckoView app with a debug-only Chromium WebView probe  
 **Target:** Android System WebView + native-backed Addon Manager  
-**Current bundled manager:** 1.0.5 (verified from its manifest)  
+**Current bundled manager:** 1.0.6 (verified from its manifest)  
 **App identity:** keep com.lasthavens.android, the permanent signing certificate, ARM64-only distribution and monotonic GITHUB_RUN_NUMBER versionCode.
 
 The tasks below are ordered by dependency. Do not remove the Gecko migration source until the native manager import has been verified.
@@ -14,7 +14,7 @@ The tasks below are ordered by dependency. Do not remove the Gecko migration sou
 
 - [ ] Record the baseline signed ARM64 APK size from a trusted main build; retain the artifact/run reference for final comparison.
 - [ ] Inventory every manager persistence key, library field, IndexedDB file record, setting, catalogue mapping and diagnostic field used by manager 1.0.5.
-- [ ] Inventory all current manager screens and operations; use the existing 1.0.5 behavior as the feature baseline, not the uploaded 0.5.1 archive.
+- [ ] Inventory all current manager screens and operations; use the existing 1.0.6 behavior as the feature baseline, not the uploaded 0.5.1 archive.
 - [x] Specify and version the migration-package schema: metadata, settings, folder IDs, versions, enabled state, dependency fields, relative file paths, bytes and SHA-256 checksums.
 - [ ] Specify the local-manager bridge and game bridge message schemas, allowed origins, payload limits, error responses and timeout behavior.
 - [ ] Define the native repository layout and staged-write/atomic-activation rules before implementing storage.
@@ -98,7 +98,7 @@ The tasks below are ordered by dependency. Do not remove the Gecko migration sou
 - [ ] Measure final signed ARM64 APK size against the recorded baseline and confirm libxul.so is absent.
 - [ ] Keep permanent-key verification, package ID, ARM64 output, monotonic versionCode, checksums and draft-only release creation unchanged.
 
-## P1 — 9. Remove obsolete implementation and assets
+## P0 — 9. First working Chromium build gate\n\n- [ ] Produce a debug ARM64 build with production WebView game screen, persistent game-origin storage checks and no Gecko dependency in the active launch path.\n- [ ] Demonstrate game startup, 3D rendering, worker/VFS initialization and stable navigation in automated emulator/integration tests.\n- [ ] Demonstrate add-on import, listing, enable/disable and game-loader handoff using a controlled fixture before declaring the native manager operational.\n- [ ] Demonstrate that downloaded game assets are reused after closing/reopening the app and that app updates do not intentionally clear WebView data.\n- [ ] Record known compatibility gaps, storage quota/eviction behavior, APK size and test results; do not call the build release-ready until all P0 gates pass.\n\n## P1 — 10. Remove obsolete implementation and assets
 
 - [ ] Remove GeckoRuntime/GeckoSession setup and App extension installation after migration is verified.
 - [ ] Remove Gecko-only Delegates.kt, FilePicker.kt implementation, Gecko-specific ManagerActivity/PlayActivity code and activity_gecko layout after WebView replacements are complete.
@@ -109,7 +109,7 @@ The tasks below are ordered by dependency. Do not remove the Gecko migration sou
 - [ ] Audit the final repository and packaged APK for unused resources, dependencies, permissions and duplicate code.
 - [ ] Do not delete legacy app-private profile data during source cleanup.
 
-## P1 — 10. UI/UX overhaul
+## P1 — 11. UI/UX overhaul
 
 - [ ] Make Home responsive in portrait and landscape, retaining the existing dark, frost-blue and gold theme.
 - [ ] Make Storage responsive in portrait and landscape with accurate native/WebView storage labels.
@@ -121,7 +121,7 @@ The tasks below are ordered by dependency. Do not remove the Gecko migration sou
 - [ ] Add automated screenshot/layout checks and UI-state tests for portrait and landscape.
 - [ ] Preserve state and prevent clipped, overlapping or unreachable controls during orientation changes and activity recreation.
 
-## P1 — 11. Final cleanup and release readiness
+## P1 — 12. Final cleanup and release readiness
 
 - [ ] Update README, PROJECT_OVERVIEW, ROADMAP and CHANGELOG to describe only the final WebView/native architecture and accurately identify migration limitations.
 - [ ] Verify no roadmap or contributor instruction still directs development toward GeckoView, TWA or a bundled Chromium engine.
