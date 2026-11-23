@@ -28,7 +28,7 @@ internal data class AvailableUpdate(
     val commitSha: String, val runNumber: Long, val apkFile: File,
 )
 
-class UpdateManager(context: Context) {
+internal class UpdateManager(context: Context) {
     private val appContext = context.applicationContext
 
     fun checkAndDownload(callback: (Result<AvailableUpdate?>) -> Unit) {
@@ -74,7 +74,8 @@ class UpdateManager(context: Context) {
                     .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                 val status = PendingIntent.getActivity(
                     appContext, sessionId, statusIntent,
-                    PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_MUTABLE,
+                    PendingIntent.FLAG_UPDATE_CURRENT or
+                        (if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) PendingIntent.FLAG_MUTABLE else 0),
                 )
                 session.commit(status.intentSender)
             }
@@ -87,6 +88,9 @@ class UpdateManager(context: Context) {
     private fun checkAndDownloadBlocking(): AvailableUpdate? {
         val installed = installedPackageInfo()
         val run = latestSuccessfulMainRun()
+        if (!UpdatePolicy.isNewerVersion(PackageInfoCompat.getLongVersionCode(installed), run.runNumber)) {
+            return null
+        }
         val artifact = runArtifact(run)
         val zipFile = File(appContext.cacheDir, "main-update-${run.id}.zip")
         val zipPart = File(appContext.cacheDir, "main-update-${run.id}.zip.part")
@@ -107,7 +111,7 @@ class UpdateManager(context: Context) {
 
             val metadata = ZipFile(zipFile).use { zip ->
                 val entries = zip.entries().asSequence().filterNot { it.isDirectory }.toList()
-                check(entries.all { !it.name.contains('/') && !it.name.contains('\\\\') && it.name != "." && it.name != ".." }) {
+                check(entries.all { !it.name.contains('/') && !it.name.contains(92.toChar()) && it.name != "." && it.name != ".." }) {
                     "The update archive contains an unsafe path."
                 }
                 check(entries.map { it.name }.distinct().size == entries.size) { "The archive contains duplicate filenames." }
