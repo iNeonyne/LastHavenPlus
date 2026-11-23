@@ -33,17 +33,18 @@ The app and extension have independent versions. Necessary Addon Manager mainten
 
 - Landscape Home layout and orientation are committed on `beta`.
 - The read-only storage dashboard is implemented and included in the current beta build. It reports shared app/profile persistent storage, cache, and available device space; it does not claim game-only storage or lifetime downloaded bytes.
-- GitHub Actions beta run [#159](https://github.com/iNeonyne/Lasthavens-Android/actions/runs/45174441220), for commit `aca57e4`, completed successfully. The Addon Manager regression suite, APK compilation, signature verification, packaged asset checks, ABI naming, SHA-256 checksum generation, and both artifact uploads passed.
+- GitHub Actions beta run [#162](https://github.com/iNeonyne/Lasthavens-Android/actions/runs/45175473400), for commit `cc06c96`, completed successfully. The Addon Manager regression suite, Android navigation policy JVM tests, APK compilation, signature verification, packaged asset checks, ABI naming, SHA-256 checksum generation, and both artifact uploads passed.
+- In-app navigation now permits HTTPS Lasthavens hosts and the required Gecko internal schemes; insecure HTTP, executable/data/file/intent schemes, untrusted blob origins, and lookalike hosts are rejected by the tested policy.
 - The build produces debug-signed demo APKs. It is not a public release build.
 - Physical-device installation and smoke testing remain outstanding. CI success does not establish device compatibility, performance, or gameplay stability.
 
 ## Immediate validation sequence
 
-1. Download the ARM64 demo artifact from run #107 and install it without uninstalling an existing differently signed app if its data must be preserved.
+1. Download the ARM64 demo artifact from run #162 and install it without uninstalling an existing differently signed app if its data must be preserved.
 2. Test first launch, landscape Home, Play, sign-in/gameplay, Home → Play session return, Addon Manager launch, and return to the game.
 3. Test touch, fullscreen, keyboard, network loss/recovery, back navigation, background/resume, and Gecko content-process recovery.
 4. Record device model, RAM, Android/vendor OS version, crashes, memory behavior, touch responsiveness, battery use, and thermals.
-5. Add tests for URL allow-listing and native-bridge exposure before broadening functionality.
+5. Review native-bridge exposure and confirm untrusted pages cannot invoke privileged Android functionality.
 6. Review backup/restore: current backup ZIPs contain managed add-on files only, not game settings, SavedVariables, or manager enabled/disabled flags.
 7. Resolve permanent release signing and test same-certificate in-place upgrades before the first public GitHub Release.
 

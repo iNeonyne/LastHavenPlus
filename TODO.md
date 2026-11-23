@@ -7,7 +7,7 @@ This is the authoritative active task list. Priorities are ordered by what gets 
 - Development branch: `beta`.
 - Android app: `2.0.0` development version.
 - Bundled Addon Manager: `1.0.2`, owner-authorized maintenance in progress with add-on data preservation required.
-- CI: beta run #159 succeeded for the current `beta` head and uploaded both demo APK artifact sets; physical-device validation is still unconfirmed.
+- Latest successful CI validation: beta run #162 tested commit `cc06c96`; Addon Manager tests, Android navigation policy tests, APK build, signature checks, packaged assets, checksums, and both artifact uploads passed. Physical-device validation remains outstanding.
 - Physical-device validation: not yet confirmed complete.
 - Permanent release signing: paused; required before public releases, not for debug demo testing.
 - Automatic updates: not implemented. The planned source is `main` CI artifacts only; follow the version-code and stable-signing requirements in `AGENTS.md` if this is reintroduced.
@@ -20,7 +20,7 @@ This is the authoritative active task list. Priorities are ordered by what gets 
 - [x] Configure normal pushes to `beta` to build and upload debug-signed demo APKs.
 - [x] Set the Home screen to sensor landscape and add a landscape layout.
 - [x] Add CI checks for APK packaging, extension assets, signatures, and checksums.
-- [x] Confirm the latest beta GitHub Actions run completed successfully, including APK build and artifact upload (run #159).
+- [x] Confirm the latest beta GitHub Actions run completed successfully, including APK build and artifact upload (run #162).
 - [ ] Download the ARM64 demo APK from that successful run.
 - [ ] Install it on a physical phone. Do not uninstall a differently signed existing app if its data must be preserved.
 - [ ] Test first launch, landscape Home, Play, game loading, sign-in, and gameplay.
@@ -38,7 +38,7 @@ Do these after the first installable APK is available, or sooner only when a fin
 - [ ] Review lifecycle handling, delegate cleanup, Back behavior, and Gecko process recovery.
 - [ ] Confirm the exact Gecko profile/runtime sharing behavior between Play and Addon Manager.
 - [ ] Review navigation, redirects, popup handling, external links, HTTPS behavior, and custom URL schemes.
-- [ ] Add focused Kotlin tests for URL routing and host allow-listing.
+- [x] Add focused Kotlin/JVM tests for URL routing and host allow-listing; CI runs them before packaging.
 - [ ] Audit native bridge exposure and prove untrusted pages cannot invoke privileged Android functionality.
 - [ ] Add tests for download filename sanitization and other native file-handling boundaries.
 - [ ] Test storage failure and interrupted-write recovery before changing persistence behavior.

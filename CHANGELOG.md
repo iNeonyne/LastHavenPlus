@@ -15,6 +15,9 @@ This file records notable user-visible changes. It is not the development task l
 - Removed the thin top-edge game loading-progress line while retaining the LH diagnostics badge and diagnostic logging.
 - GitHub Actions produces debug-signed demo APK artifacts for pushes to `beta`.
 
+### Security
+- Restricted in-app navigation to HTTPS Lasthavens hosts and required Gecko internal schemes; reject insecure HTTP, executable/data/file/intent schemes, untrusted blob origins, and lookalike hosts. Added JVM regression tests to CI.
+
 ### Improved
 - Addon Manager installs and updates now write add-on files to a new storage generation before switching library metadata. Interrupted updates leave the previous installed files intact; orphaned generations are cleaned up later.
 - Numbered TOC dependencies are now ordered numerically (Dep1, Dep2, Dep10).

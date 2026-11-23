@@ -22,6 +22,7 @@ Useful links: [Game](https://alt.lasthavens.com/play) · [Repository](https://gi
 - Bundled Addon Manager WebExtension.
 - Shared Gecko runtime/profile design for game and manager.
 - Read-only storage dashboard for shared app/profile data, cache, and available device space.
+- HTTPS-only in-app navigation for Lasthavens pages; external sites open in the system browser.
 - Android integration for fullscreen, JavaScript dialogs, file selection, downloads, popups, and external links.
 
 ## Get a demo build
