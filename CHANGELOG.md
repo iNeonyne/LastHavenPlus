@@ -2,7 +2,7 @@
 
 This file records notable user-visible changes. It is not the development task list; see [TODO.md](TODO.md) for current work. Unreleased entries describe changes present on the development branch and are not release claims.
 
-## [Unreleased] — beta
+## [Unreleased] — development
 
 ### Added
 - Read-only storage dashboard for shared GeckoView/app persistent data, browser/app cache, and available device storage; distinguishes current storage from lifetime downloads.
@@ -32,12 +32,14 @@ This file records notable user-visible changes. It is not the development task l
 - Fixed APK signature verification to use the Android SDK's explicit `apksigner` path.
 - Added early validation of release keystore, alias, and private-key password configuration.
 
-## [2.0.0] — In development
+## [1.0.0] — First release candidate (not yet published)
 
-Not published. Requires physical-device validation before release readiness can be claimed.
+Requires successful CI, physical-device validation, and release sign-off before publication.
 
 - Removes the in-game top loading-progress line while retaining the configurable LH diagnostics badge and diagnostic logging.
 
-## [1.0.0] — Baseline
+- Includes the first packaged Android app baseline with GeckoView, Home, Play, Addon Manager screens, shared runtime design, and bundled Addon Manager.
+
+## [Initial baseline] — Historical development snapshot
 
 - First packaged Android app baseline with GeckoView, Home, Play, Addon Manager screens, shared runtime design, and bundled Addon Manager.
