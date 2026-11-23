@@ -12,6 +12,7 @@ object NavigationPolicy {
 
     fun isGameHost(rawUrl: String): Boolean {
         val uri = parse(rawUrl) ?: return false
+        if (uri.scheme?.lowercase(Locale.ROOT) != "https") return false
         val host = uri.host?.lowercase(Locale.ROOT) ?: return false
         return host == "lasthavens.com" || host.endsWith(".lasthavens.com")
     }
