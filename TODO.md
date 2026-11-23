@@ -13,7 +13,7 @@ All development work stays on `main`, the sole active branch. The former `beta` 
 - Main workflow-dispatch run #198 completed successfully and uploaded artifacts, but it is intentionally ignored by the updater; the latest eligible main push run remains #196.
 - Physical-device validation and owner-only release actions are tracked separately in [MANUAL_CHECKLIST.md](MANUAL_CHECKLIST.md).
 - Main run #196 confirmed the configured GitHub Actions keystore and passwords/alias work and the certificate fingerprint matches the expected permanent release key. No secret replacement is needed.
-- A manual, main-only updater is implemented on `main`. Run #196 published the metadata/checksum artifact and four ABI-specific signed APK artifacts in the previous configuration; the updater verifies their shared run provenance, metadata, checksum, package/version and signing-certificate compatibility before invoking Android's user-confirmed installer. Physical same-certificate upgrade and data-preservation testing remains outstanding.
+- A manual, main-only updater is implemented on `main`. Run #196 published four ABI-specific signed APK artifacts in the previous configuration; the ARM64-only workflow is awaiting verification; the updater verifies their shared run provenance, metadata, checksum, package/version and signing-certificate compatibility before invoking Android's user-confirmed installer. Physical same-certificate upgrade and data-preservation testing remains outstanding.
 - Version flow: main-only SemVer releases with a monotonic workflow-run `versionCode`; see `AGENTS.md`.
 
 ## P0 — Data safety and demo-blocking code
@@ -67,10 +67,10 @@ The owner has authorized necessary manager maintenance only with preservation of
 - [x] Require the permanent release key and exact expected certificate on main/tag builds; missing secrets or fingerprint mismatch fail closed. A main-signed build remains to be verified after consolidation.
 - [x] Replace static Android `versionCode` with the existing workflow's global `GITHUB_RUN_NUMBER`; local builds use a development-only fallback and are never update candidates.
 - [x] Implement the `main`-only update checker; reject beta, tag, PR, manual, failed, cancelled, in-progress, expired, mismatched and incompatible build artifacts.
-- [x] Implement full-APK download for the device's first supported ABI, with universal fallback; no differential updates.
+- [x] Implement full-APK download for ARM64 (`arm64-v8a`) devices only; reject other device architectures; no universal fallback or differential updates.
 - [x] Verify APK size and SHA-256 against metadata and the checksum file from the same main build; reject missing/mismatched checksums and incomplete downloads.
 - [x] Hand the verified APK to Android's package installer with build/version, size and commit information; Android requires user confirmation and the app never silently installs or uninstalls.
-- [x] Add JVM policy tests for main-only runs/artifacts, provenance, expiry, ABI fallback, version ordering, interrupted/incomplete/checksum failures and signer mismatch; add Python tests for metadata generation and validation.
+- [x] Add JVM policy tests for main-only runs/artifacts, provenance, expiry, ARM64-only selection, unsupported devices, version ordering, interrupted/incomplete/checksum failures and signer mismatch; add Python tests for ARM64-only metadata generation and validation.
 - [x] Document and enforce exact signing-certificate, package ID and version compatibility; incompatible candidates are blocked instead of prompting an uninstall.
 - [x] Keep the updater to an Android package replacement only; it does not clear app data, cookies, login/session, GeckoView profile or add-ons. Physical verification remains in `MANUAL_CHECKLIST.md`.
 
