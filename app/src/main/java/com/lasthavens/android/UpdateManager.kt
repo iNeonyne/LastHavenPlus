@@ -227,6 +227,7 @@ internal class UpdateManager(context: Context) {
             val status = connection.responseCode
             if (status !in 200..299) throw IOException("GitHub Release asset download failed (HTTP $status).")
             FileOutputStream(destination).use { output ->
+                var lastProgressPercent = -1
                 connection.inputStream.use { input ->
                     val buffer = ByteArray(DEFAULT_BUFFER_SIZE)
                     var total = 0L
@@ -238,7 +239,11 @@ internal class UpdateManager(context: Context) {
                             "Release asset exceeded its declared size or download limit."
                         }
                         output.write(buffer, 0, count)
-                        onProgress(total, expectedSize)
+                        val progressPercent = ((total * 100) / expectedSize).toInt()
+                        if (progressPercent != lastProgressPercent) {
+                            lastProgressPercent = progressPercent
+                            onProgress(total, expectedSize)
+                        }
                     }
                     output.fd.sync()
                 }
