@@ -2,7 +2,7 @@
 
 A native Android client for [Lasthavens](https://alt.lasthavens.com/play), built with Kotlin and Mozilla GeckoView. It includes a bundled Addon Manager WebExtension so the game and manager can share browser state and installed add-ons.
 
-> **Project status:** main-branch development. The beta history has been merged into main. The first post-merge signed updater build and complete physical-device smoke test remain unverified. This is an unofficial, independent client; it is not endorsed by Lasthavens or Blizzard Entertainment.
+> **Project status:** main-branch development. The updater code and automated policy tests are in place, but the first post-merge main build failed its release-signing check because the configured keystore fingerprint does not match the required certificate. No main update APK artifacts have been published yet. Physical-device smoke testing remains outstanding. This is an unofficial, independent client; it is not endorsed by Lasthavens or Blizzard Entertainment.
 
 ## At a glance
 
@@ -28,15 +28,11 @@ Useful links: [Game](https://alt.lasthavens.com/play) · [Repository](https://gi
 
 ## Get a build
 
+A signed main update APK is not currently available: the latest post-merge main build stopped at the release-certificate check. Once the signing secret is corrected and a successful main run publishes the artifacts:
 1. Open [GitHub Actions](https://github.com/iNeonyne/Lasthavens-Android/actions).
 2. Select the latest successful build running from the `main` branch.
-3. Download the main update APK artifact matching your device ABI (or the universal fallback).
-4. Choose the APK matching your device:
-   - `arm64-v8a`: most modern Android phones.
-   - `armeabi-v7a`: older 32-bit ARM devices.
-   - `x86_64`: x86-64 devices and many emulators.
-   - `universal`: fallback with all supported CPU architectures; largest file.
-5. Install and test it as a development build.
+3. Download the separate `LastHavenPlus-Main-Update-<ABI>` artifact matching your device (or `LastHavenPlus-Main-Update-universal` as fallback).
+4. Install and test it as a development build.
 
 **Important:** Pull-request and manual test APKs may be debug-signed. Do not uninstall an existing installation signed with a different certificate if its app data matters; uninstalling can erase the local app profile. A successful CI build is not proof of device compatibility.
 
@@ -48,7 +44,7 @@ Open the repository in Android Studio with JDK 17 and the Android SDK required b
 ./gradlew assembleRelease
 ```
 
-GitHub Actions runs automated checks on `main`, pull requests, and manual dispatches. Successful `main` builds publish a metadata/checksum artifact and four permanent-key-signed, ABI-specific update APK artifacts; pull-request and manual builds are not update candidates.
+GitHub Actions runs automated checks on `main`, pull requests, and manual dispatches. Successful `main` builds publish a metadata/checksum artifact and four permanent-key-signed, ABI-specific update APK artifacts; pull-request and manual builds are not update candidates. The current signing secret must first be corrected to match the expected release certificate.
 
 ## Versions
 

@@ -9,10 +9,10 @@ All development work stays on `main`, the sole active branch. The former `beta` 
 - Active development branch: `main`.
 - Android app: `2.0.0` development version.
 - Bundled Addon Manager: `1.0.2`.
-- Latest beta CI validation before consolidation: run #179 passed commit `593fec6`. The first post-merge main CI run must be checked for permanent-key signing and main update artifacts before the updater is considered live.
+- First post-consolidation main CI run #193 (commit `08a551c`) passed Addon Manager, metadata-generator, and updater-policy tests, then failed at `Prepare signing key`: the configured GitHub Actions keystore certificate fingerprint does not match the expected permanent release certificate. No main APK build or update artifacts were produced.
 - Physical-device validation and owner-only release actions are tracked separately in [MANUAL_CHECKLIST.md](MANUAL_CHECKLIST.md).
-- Permanent release signing is paused. It is not required for debug demo development.
-- A manual, main-only updater is implemented and now lives on `main`. It selects only successful completed `main` push runs, downloads the metadata/checksum artifact and only the device-matched full APK artifact, verifies run/artifact provenance, metadata, checksums, package/version and signing-certificate compatibility, then invokes Android's user-confirmed package installer. The first post-merge main build must succeed and publish the signed update feed before live operation is confirmed. Physical same-certificate upgrade testing remains outstanding.
+- The GitHub Actions signing secrets are present, but the configured keystore does not match the expected permanent release certificate. Main builds correctly fail closed until the owner replaces the keystore secret with the intended key.
+- A manual, main-only updater is implemented and now lives on `main`. It selects only successful completed `main` push runs, downloads the metadata/checksum artifact and only the device-matched full APK artifact, verifies run/artifact provenance, metadata, checksums, package/version and signing-certificate compatibility, then invokes Android's user-confirmed package installer. The first post-merge main build must pass the permanent-key fingerprint check and publish all five update artifacts before live operation is confirmed. Physical same-certificate upgrade testing remains outstanding.
 - Version flow: main-only SemVer releases with a monotonic workflow-run `versionCode`; see `AGENTS.md`.
 
 ## P0 — Data safety and demo-blocking code
