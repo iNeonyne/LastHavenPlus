@@ -12,7 +12,7 @@ All development work stays on `beta`. Never promote, merge, or push work to `mai
 - Latest recorded successful CI validation: beta run #162 tested commit `cc06c96`; Addon Manager tests, Android navigation policy tests, APK build, signature checks, packaged assets, checksums, and both artifact uploads passed.
 - Physical-device validation and owner-only release actions are tracked separately in [MANUAL_CHECKLIST.md](MANUAL_CHECKLIST.md).
 - Permanent release signing is paused. It is not required for debug demo development.
-- Automatic updates are not implemented. If reintroduced, follow the main-only artifact, monotonic versionCode, and stable-signing requirements in `AGENTS.md`.
+- Automatic updates are back on the roadmap, but are not implemented. They must use successful `main` CI artifacts only, preserve the installed app's data, and require the permanent signing certificate for in-place upgrades.
 - Version flow: approved main promotions use clean stable SemVer; beta restarts from that main version using the next prerelease candidate. See `AGENTS.md`.
 
 ## P0 — Data safety and demo-blocking code
@@ -62,7 +62,16 @@ The owner has authorized necessary manager maintenance only with preservation of
 - [ ] Add CI safeguards ensuring debug-signed demo artifacts cannot be published as public release assets.
 - [ ] Add automated release validation for package ID, version metadata, ABI coverage, signing certificate consistency, and SHA-256 checksums.
 - [ ] Keep release workflows compatible with the versioning and promotion policy in `AGENTS.md`.
-- [ ] If automatic updates are explicitly reintroduced, implement only after the stable signing identity and same-certificate upgrade requirements can be met; use successful `main` CI artifacts only.
+- [ ] Add a dedicated successful-build APK artifact for pushes to `main`; keep beta/demo artifacts separate and never use them as update sources.
+- [ ] Ensure main update APKs are signed with the permanent release key; verify the certificate fingerprint against the expected certificate and fail closed if signing is unavailable or mismatched.
+- [ ] Replace the static Android `versionCode` with an automated, strictly increasing build number that remains compatible with the project's SemVer and main-to-beta version flow.
+- [ ] Implement an update checker that queries GitHub Actions for the latest successful workflow run on `main` only; reject beta runs, failed/in-progress runs, unexpected artifacts, and incompatible app versions.
+- [ ] Implement full-APK download for the device's supported ABI, with a universal APK fallback; do not implement differential/patch updates.
+- [ ] Verify the downloaded APK against the SHA-256 checksum published by the same main workflow before making installation available; reject missing or mismatched checksums and incomplete downloads.
+- [ ] Hand installation to Android's package installer with clear version, size, and source information; never attempt silent installation or uninstall/reinstall.
+- [ ] Add automated tests for main-only update selection, workflow/artifact failures, ABI selection, version-code ordering, checksum mismatch, interrupted downloads, and signing/version compatibility.
+- [ ] Document that an in-place update is supported only when the installed app and downloaded APK share the same signing certificate; do not offer an update that could require uninstalling the app.
+- [ ] Validate through code and tests that the update path does not clear app data, cookies, login/session state, GeckoView profile, or installed add-ons; add physical-device upgrade verification to `MANUAL_CHECKLIST.md`.
 
 ## Not active work
 
@@ -72,5 +81,5 @@ The following are not implementation tasks unless the owner explicitly reopens t
 - Replacing GeckoView without a technical case and migration plan.
 - Analytics, tracking, push notifications, or background services.
 - Differential APK patching.
-- Automatic updating while it remains paused.
+- Automatic updates beyond the defined main-only, checksum-verified, same-certificate in-place update design.
 - Resetting or wiping existing add-on data, or changing its format without a tested migration and rollback path.
