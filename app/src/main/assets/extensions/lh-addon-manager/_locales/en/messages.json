@@ -87,7 +87,16 @@
     "message": "Loader error. The game may start without local addons."
   },
   "importError": {
-    "message": "Could not import the archive. Technical details:"
+    "message": "Could not import the archive. Technical details: {detail}"
+  },
+  "importReading": {
+    "message": "Reading and validating {count} ZIP file(s)…"
+  },
+  "importCancelled": {
+    "message": "ZIP selection was cancelled. No changes were made."
+  },
+  "importFileUnsupported": {
+    "message": "This file provider does not support streaming the selected ZIP. Try saving it to device storage first."
   },
   "libraryLimit": {
     "message": "Library exceeds 384 MB."
