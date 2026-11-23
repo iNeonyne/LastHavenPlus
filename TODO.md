@@ -24,7 +24,7 @@ All development work stays on `main`, the sole active branch. The former `beta` 
 - [ ] Review navigation, redirects, popup handling, external links, HTTPS behavior, and custom URL schemes; fix confirmed defects.
 - [x] Add focused Kotlin/JVM tests for URL routing and host allow-listing; CI runs them before packaging.
 - [ ] Audit native bridge exposure and add automated protections proving untrusted pages cannot invoke privileged Android functionality.
-- [ ] Add automated tests for download filename sanitization and other native file-handling boundaries.
+- [x] Extract download filename sanitization into a pure JVM policy and add regression tests for path separators, reserved/control characters, length limits, empty names, and Unicode filenames. Other native file-handling boundaries remain to be audited.
 - [ ] Add storage-failure and interrupted-write tests without changing persistence behavior unless a safe migration and rollback path are demonstrated.
 - [ ] Add a failure-injection test for Addon Manager metadata commit failure and confirm the prior storage generation remains readable.
 - [ ] Review install/update/remove/backup/restore code paths for data-preservation defects; fix only defects that can be verified through code and automated tests.
