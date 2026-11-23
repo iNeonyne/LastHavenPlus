@@ -95,12 +95,15 @@ class AddonRepository(private val filesDir: File) {
         for (index in 0 until addons.length()) {
             val addon = addons.getJSONObject(index)
             if (addon.getString("folder").equals(folder, ignoreCase = true)) {
+                if (addon.optBoolean("enabled", false) == enabled) return current
                 addon.put("enabled", enabled)
                 found = true
                 break
             }
         }
         require(found) { "Add-on was not found in the native library" }
+        val library = manifest.getJSONObject("library")
+        library.put("revision", library.optString("revision", "native") + "-native-" + UUID.randomUUID().toString().take(8))
 
         val stageDir = File(root, "toggle-" + UUID.randomUUID())
         require(stageDir.mkdir()) { "Could not create add-on update staging directory" }
