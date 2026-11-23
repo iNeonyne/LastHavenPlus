@@ -20,7 +20,7 @@ All development work stays on `main`, the sole active branch. The former `beta` 
 ## P0 — Data safety and demo-blocking code
 
 - [x] Review lifecycle handling, delegate cleanup, Back behavior, and Gecko process recovery; fix confirmed code defects. Fixed delegate cleanup and guarded duplicate process-recovery callbacks in Play and Addon Manager; main CI run #270 passed. Physical-device lifecycle checks remain in MANUAL_CHECKLIST.md.
-- [ ] Trace and document the exact Gecko profile/runtime sharing behavior between Play and Addon Manager.
+- [x] Trace and document the Gecko profile/runtime sharing behavior between Play and Addon Manager in [docs/GECKOVIEW_PROFILE.md](docs/GECKOVIEW_PROFILE.md); same single App-owned runtime, separate Play/Manager sessions.
 - [ ] Review navigation, redirects, popup handling, external links, HTTPS behavior, and custom URL schemes; fix confirmed defects.
 - [x] Add focused Kotlin/JVM tests for URL routing and host allow-listing; CI runs them before packaging.
 - [ ] Audit native bridge exposure and add automated protections proving untrusted pages cannot invoke privileged Android functionality.
