@@ -34,7 +34,7 @@
         <activity
             android:name=".StorageActivity"
             android:exported="false"
-            android:screenOrientation="sensorLandscape" />
+            android:screenOrientation="unspecified" />
 
         <activity
             android:name=".PlayActivity"
