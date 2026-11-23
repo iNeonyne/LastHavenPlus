@@ -14,36 +14,27 @@ on:
       - "settings.gradle.kts"
       - "gradle.properties"
       - "package.json"
-  pull_request:
-    paths:
-      - "app/**"
-      - "scripts/**"
-      - "tests/**"
-      - "gradle/**"
-      - ".github/workflows/**"
-      - "build.gradle.kts"
-      - "settings.gradle.kts"
-      - "gradle.properties"
-      - "package.json"
+  workflow_run:
+    workflows: ["Validate LastHavenPlus"]
+    types: [completed]
   workflow_dispatch:
 
 permissions:
   contents: write
 
 concurrency:
-  group: lasthavenplus-${{ github.ref }}
+  group: lasthavenplus-package-${{ github.event.workflow_run.head_branch || github.ref }}
   cancel-in-progress: true
 
 jobs:
   build:
+    if: github.event_name != 'workflow_run' || (github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'main')
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
         with:
+          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
           fetch-depth: 1
-
-      - name: Guard against direct JavaScript-to-native bridges
-        run: python3 tests/test_native_bridge_guard.py && python3 scripts/check_native_bridge_exposure.py && python3 tests/test_no_gecko.py
 
       - name: Validate release tag and main ancestry
         if: startsWith(github.ref, 'refs/tags/v')
@@ -70,12 +61,6 @@ jobs:
             echo "Release tag must point to a commit already reachable from main."
             exit 1
           }
-
-      - name: Test Addon Manager logic and archive handling
-        run: npm run test:addon-manager
-
-      - name: Test main update metadata generation
-        run: python3 tests/test_update_metadata.py
 
       - uses: actions/setup-java@v6
         with:
@@ -157,13 +142,20 @@ jobs:
           node --check app/src/main/assets/extensions/lh-addon-manager/overlay.js
           node --check app/src/main/assets/extensions/lh-addon-manager/inject.js
 
-      - name: Test Android code and build release APK
+      - name: Validate native WebView loader assets
+        run: |
+          python3 tests/test_no_gecko.py
+          node --check app/src/main/assets/webview-game-bridge.js
+          node --check app/src/main/assets/extensions/lh-addon-manager/overlay.js
+          node --check app/src/main/assets/extensions/lh-addon-manager/inject.js
+
+      - name: Build release APK
         env:
           GITHUB_RUN_NUMBER: ${{ github.run_number }}
           KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
           KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
           KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
-        run: gradle --no-daemon :app:testDebugUnitTest :app:assembleRelease
+        run: gradle --no-daemon :app:assembleRelease
 
       - name: Verify APK signatures
         run: |
