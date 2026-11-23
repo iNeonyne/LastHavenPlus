@@ -33,12 +33,16 @@
           browser.storage.local.get("settings"),
         ]);
         const out = [];
-        for (const { folder } of addons) {
+        for (const { folder, storageFolder } of addons) {
           try {
             const files = {};
             let after = null;
             do {
-              const r = await browser.runtime.sendMessage({ kind: "files", folder, after });
+              const r = await browser.runtime.sendMessage({
+                kind: "files",
+                folder: storageFolder || folder,
+                after,
+              });
               Object.assign(files, r.files);
               after = r.next;
             } while (after);
