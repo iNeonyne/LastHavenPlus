@@ -138,16 +138,16 @@ class GameAddonBridge private constructor(
 
             val instance = GameAddonBridge(webView, repository)
             WebViewCompat.addWebMessageListener(webView, JS_OBJECT_NAME, ALLOWED_ORIGINS, instance.listener)
-            val handlers = try {
-                listOf(
-                    WebViewCompat.addDocumentStartJavaScript(
-                        webView,
-                        overlay + "\n" + inject,
-                        ALLOWED_ORIGINS,
-                    ),
-                    WebViewCompat.addDocumentStartJavaScript(webView, bridge, ALLOWED_ORIGINS),
+            val handlers = ArrayList<androidx.webkit.ScriptHandler>(2)
+            try {
+                handlers += WebViewCompat.addDocumentStartJavaScript(
+                    webView,
+                    overlay + "\n" + inject,
+                    ALLOWED_ORIGINS,
                 )
+                handlers += WebViewCompat.addDocumentStartJavaScript(webView, bridge, ALLOWED_ORIGINS)
             } catch (error: Exception) {
+                handlers.forEach { runCatching { it.remove() } }
                 WebViewCompat.removeWebMessageListener(webView, JS_OBJECT_NAME)
                 throw error
             }
