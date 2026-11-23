@@ -73,7 +73,11 @@ The owner has authorized necessary manager maintenance only with preservation of
 - [x] Document and enforce exact signing-certificate, package ID and version compatibility; incompatible candidates are blocked instead of prompting an uninstall.
 - [x] Keep the updater to an Android package replacement only; it does not clear app data, cookies, login/session, GeckoView profile or add-ons. Physical verification remains in `MANUAL_CHECKLIST.md`.
 
-## Updater verification boundary\n\nThe beta implementation and automated policy/build checks are complete. A live end-to-end update cannot be verified while `main` is intentionally unchanged and does not publish the dedicated signed artifact. After owner-approved promotion, verify the first main workflow run and complete the same-certificate physical-device upgrade checks in `MANUAL_CHECKLIST.md`.\n\n## Not active work
+## Updater verification boundary
+
+The beta implementation and automated policy/build checks are complete. A live end-to-end update cannot be verified while `main` is intentionally unchanged and does not publish the dedicated signed artifact. After owner-approved promotion, verify the first main workflow run and complete the same-certificate physical-device upgrade checks in `MANUAL_CHECKLIST.md`.
+
+## Not active work
 
 The following are not implementation tasks unless the owner explicitly reopens them:
 

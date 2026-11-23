@@ -38,12 +38,8 @@ internal class UpdateManager(context: Context) {
         }
     }
 
-    /** Starts an Android PackageInstaller session; the user must confirm in Android's installer. */
-    fun install(activity: Activity, update: AvailableUpdate) {
-        val apk = update.apkFile
-        check(apk.isFile && apk.length() == update.sizeBytes) {
-            "The verified update file is missing or incomplete. Check for updates again."
-        }
+    /** Prepares a verified APK for Android's installer without blocking the UI thread. */
+    fun install(activity: Activity, update: AvailableUpdate, callback: (Result<Unit>) -> Unit) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O &&
             !appContext.packageManager.canRequestPackageInstalls()
         ) {
@@ -51,14 +47,30 @@ internal class UpdateManager(context: Context) {
                 Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES,
                 Uri.parse("package:${appContext.packageName}"),
             ))
-            throw IllegalStateException("Allow LastHavenPlus to install updates, then check again.")
+            callback(Result.failure(
+                IllegalStateException("Allow LastHavenPlus to install updates, then check again."),
+            ))
+            return
+        }
+        executor.execute {
+            val result = runCatching { installBlocking(update) }
+            mainHandler.post { callback(result) }
+        }
+    }
+
+    private fun installBlocking(update: AvailableUpdate) {
+        val apk = update.apkFile
+        check(apk.isFile && apk.length() == update.sizeBytes) {
+            "The verified update file is missing or incomplete. Check for updates again."
         }
         verifyInstalledCompatibility(apk, update)
         val installer = appContext.packageManager.packageInstaller
         val params = PackageInstaller.SessionParams(PackageInstaller.SessionParams.MODE_FULL_INSTALL).apply {
             setAppPackageName(appContext.packageName)
             setSize(apk.length())
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) setRequireUserAction(PackageInstaller.SessionParams.USER_ACTION_REQUIRED)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                setRequireUserAction(PackageInstaller.SessionParams.USER_ACTION_REQUIRED)
+            }
         }
         val sessionId = installer.createSession(params)
         try {
@@ -135,8 +147,8 @@ internal class UpdateManager(context: Context) {
 
             val apkArtifactName = "${UpdatePolicy.APK_ARTIFACT_PREFIX}${selected.abi}"
             val apkArtifact = runArtifact(run, apkArtifactName, MAX_APK_ARTIFACT_BYTES)
-            val requiredFreeSpace = apkArtifact.optLong("size_in_bytes") + selected.sizeBytes +
-                metadataZip.length() + (if (readyApk.isFile) readyApk.length() else 0L) + MIN_FREE_SPACE_BYTES
+            // The compressed archive and extracted APK coexist briefly in the cache.
+            val requiredFreeSpace = apkArtifact.optLong("size_in_bytes") + selected.sizeBytes + MIN_FREE_SPACE_BYTES
             check(requiredFreeSpace > 0 && appContext.cacheDir.usableSpace >= requiredFreeSpace) {
                 "Not enough free storage to download and verify this update. Free up space and try again."
             }

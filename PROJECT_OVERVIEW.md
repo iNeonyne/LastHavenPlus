@@ -33,7 +33,7 @@ The app and extension have independent versions. Necessary Addon Manager mainten
 
 - Landscape Home layout and orientation are committed on `beta`.
 - The read-only storage dashboard is implemented and included in the current beta build. It reports shared app/profile persistent storage, cache, and available device space; it does not claim game-only storage or lifetime downloaded bytes.
-- GitHub Actions beta run [#178](https://github.com/iNeonyne/Lasthavens-Android/actions/runs/45181907663), for commit `7ac5e4e`, completed successfully. The Addon Manager regression suite, metadata-generator tests, updater-policy tests, APK compilation, signer-consistency check, packaged asset checks, APK package/version validation, ABI naming, SHA-256 checksum generation, and beta artifact uploads passed. Main-only signing and artifact uploads remain untested until promotion.
+- GitHub Actions beta run [#179](https://github.com/iNeonyne/Lasthavens-Android/actions/runs/45183038304), for commit `593fec6`, completed successfully. The Addon Manager regression suite, metadata-generator tests, updater-policy tests, APK compilation, signer-consistency check, packaged asset checks, APK package/version validation, ABI naming, SHA-256 checksum generation, and beta artifact uploads passed. Main-only signing and artifact uploads remain untested until promotion.
 - In-app navigation now permits HTTPS Lasthavens hosts and the required Gecko internal schemes; insecure HTTP, executable/data/file/intent schemes, untrusted blob origins, and lookalike hosts are rejected by the tested policy.
 - The beta build produces debug-signed demo APKs. The workflow is configured to require the permanent signing certificate for main/tag builds and to create a metadata/checksum artifact plus one signed APK artifact per ABI. This path has not been exercised on `main`, which remains unchanged.
 - Physical-device installation and smoke testing remain outstanding. CI success does not establish device compatibility, performance, or gameplay stability.
@@ -42,11 +42,11 @@ The app and extension have independent versions. Necessary Addon Manager mainten
 
 The landscape Home screen has a user-triggered **Check for updates** action. The updater filters the existing GitHub Actions workflow for successful completed `push` runs from `main`, checks artifact provenance and expiry, downloads the metadata/checksum artifact and only the full APK artifact for the device ABI (universal fallback), verifies metadata and SHA-256, then checks Android package ID, version code and exact signing-certificate equality. Installation is handed to Android's package installer and requires user confirmation. The updater does not clear app data, GeckoView profile, cookies, login/session state or add-ons.
 
-The main-only artifact creation path is configured on `beta`, but `main` has not been promoted and does not yet publish that artifact. End-to-end same-certificate upgrade and data-preservation checks remain pending on a physical device.
+The main-only metadata/checksum and per-ABI artifact creation paths are configured on `beta`, but `main` has not been promoted and does not yet publish those artifacts. End-to-end same-certificate upgrade and data-preservation checks remain pending on a physical device.
 
 ## Immediate validation sequence
 
-1. Download the ARM64 demo artifact from run #178 and install it without uninstalling an existing differently signed app if its data must be preserved.
+1. Download the ARM64 demo artifact from run #179 and install it without uninstalling an existing differently signed app if its data must be preserved.
 2. Test first launch, landscape Home, Play, sign-in/gameplay, Home → Play session return, Addon Manager launch, and return to the game.
 3. Test touch, fullscreen, keyboard, network loss/recovery, back navigation, background/resume, and Gecko content-process recovery.
 4. Record device model, RAM, Android/vendor OS version, crashes, memory behavior, touch responsiveness, battery use, and thermals.

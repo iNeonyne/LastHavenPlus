@@ -56,5 +56,6 @@ Do not publish until all applicable checks are complete:
 - [ ] Permanent signing identity and same-certificate upgrade path are verified.
 - [ ] Data/profile preservation is verified across upgrade.
 - [ ] APK package name, version, signing certificate, ABI, and permissions are checked.
-- [ ] SHA-256 checksums are generated and verified.\n- [ ] Main-only updater passes the end-to-end success and blocked/failure cases.
+- [ ] SHA-256 checksums are generated and verified.
+- [ ] Main-only updater passes the end-to-end success and blocked/failure cases.
 - [ ] README and changelog reflect the actual release.

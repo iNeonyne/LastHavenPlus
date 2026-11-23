@@ -23,7 +23,8 @@ Useful links: [Game](https://alt.lasthavens.com/play) · [Repository](https://gi
 - Shared Gecko runtime/profile design for game and manager.
 - Read-only storage dashboard for shared app/profile data, cache, and available device space.
 - HTTPS-only in-app navigation for Lasthavens pages; external sites open in the system browser.
-- Android integration for fullscreen, JavaScript dialogs, file selection, downloads, popups, and external links.\n- User-triggered, main-only APK updater with artifact provenance, SHA-256 and signing-certificate checks, and Android installer handoff.
+- Android integration for fullscreen, JavaScript dialogs, file selection, downloads, popups, and external links.
+- User-triggered, main-only APK updater with artifact provenance, SHA-256 and signing-certificate checks, and Android installer handoff.
 
 ## Get a demo build
 
@@ -64,7 +65,9 @@ The extension version is independent of the Android app version. Check the bundl
 
 The Android app's `versionName` follows `MAJOR.MINOR.PATCH` (Semantic Versioning). Android's numeric `versionCode` is separate and determines whether an APK can replace an installed version. The Android app, bundled Addon Manager, and GeckoView each have independent versions.
 
-The current beta app uses `versionName = 2.0.0`. Android `versionCode` is now taken from the existing workflow's monotonically increasing `GITHUB_RUN_NUMBER`; local builds use a development-only fallback and are never update candidates. Main promotions must use a clean stable SemVer number; after promotion, `beta` restarts from that exact main version and advances as a prerelease candidate.\n\nThe beta branch contains a user-triggered updater. It queries only successful completed `push` runs from `main`, downloads a complete ABI-matched APK (universal fallback), checks artifact/run/commit provenance and metadata, verifies the APK SHA-256, and checks package ID, version code and installed signing certificate before offering Android's user-confirmed package installer. It never silently installs, uninstalls, or clears app data. Debug-signed beta APKs are not accepted as update sources. A debug-signed beta installation cannot be upgraded in place to a permanent-key-signed main build; do not uninstall a data-bearing installation to switch signing identities. Use a separate test device for release-signing validation. The `main` branch has not been changed, so its metadata and signed per-ABI update artifacts are not yet live. No public download link is published until an approved release exists. See [AGENTS.md](AGENTS.md) for the rules agents must follow.
+The current beta app uses `versionName = 2.0.0`. Android `versionCode` is now taken from the existing workflow's monotonically increasing `GITHUB_RUN_NUMBER`; local builds use a development-only fallback and are never update candidates. Main promotions must use a clean stable SemVer number; after promotion, `beta` restarts from that exact main version and advances as a prerelease candidate.
+
+The beta branch contains a user-triggered updater. It queries only successful completed `push` runs from `main`, downloads the metadata/checksum artifact and only the complete APK artifact matching the device ABI (universal fallback), checks artifact/run/commit provenance and metadata, verifies the APK SHA-256, and checks package ID, version code and installed signing certificate before offering Android's user-confirmed package installer. It never silently installs, uninstalls, or clears app data. Debug-signed beta APKs are not accepted as update sources. A debug-signed beta installation cannot be upgraded in place to a permanent-key-signed main build; do not uninstall a data-bearing installation to switch signing identities. Use a separate test device for release-signing validation. The `main` branch has not been changed, so its metadata and signed per-ABI update artifacts are not yet live. No public download link is published until an approved release exists. See [AGENTS.md](AGENTS.md) for the rules agents must follow.
 
 ## Project documents
 

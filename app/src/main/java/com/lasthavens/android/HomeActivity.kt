@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowCompat
@@ -46,10 +47,26 @@ class HomeActivity : AppCompatActivity() {
                             .setMessage(getString(R.string.update_available_message, update.versionName, update.runNumber, size, update.commitSha.take(8)))
                             .setNegativeButton(android.R.string.cancel, null)
                             .setPositiveButton(R.string.update_install) { _, _ ->
-                                runCatching { updateManager.install(this, update) }.onFailure { error ->
-                                    AlertDialog.Builder(this).setTitle(R.string.update_install_title)
-                                        .setMessage(error.message ?: getString(R.string.update_install_failed))
-                                        .setPositiveButton(android.R.string.ok, null).show()
+                                updateButton.isEnabled = false
+                                val installing = AlertDialog.Builder(this)
+                                    .setTitle(R.string.update_installing)
+                                    .setMessage(R.string.update_installing_message)
+                                    .setCancelable(false)
+                                    .create()
+                                installing.show()
+                                updateManager.install(this, update) { installResult ->
+                                    if (isFinishing || isDestroyed) return@install
+                                    if (installing.isShowing) installing.dismiss()
+                                    updateButton.isEnabled = true
+                                    installResult
+                                        .onSuccess {
+                                            Toast.makeText(this, R.string.update_install_handoff, Toast.LENGTH_SHORT).show()
+                                        }
+                                        .onFailure { error ->
+                                            AlertDialog.Builder(this).setTitle(R.string.update_install_title)
+                                                .setMessage(error.message ?: getString(R.string.update_install_failed))
+                                                .setPositiveButton(android.R.string.ok, null).show()
+                                        }
                                 }
                             }.show()
                     }
