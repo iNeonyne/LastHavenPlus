@@ -17,7 +17,7 @@ LastHavenPlus is a focused native Android client for the Lasthavens game. It use
 - **Addon Manager:** bundled WebExtension at `app/src/main/assets/extensions/lh-addon-manager/`.
 - **Shared browser state:** Play and Addon Manager are intended to use the same Gecko runtime/profile so installed add-ons can be used by the game.
 - **Storage dashboard:** read-only measurement of persistent app/shared profile data, cache, and available device space; persistent usage is not isolated to the game.
-- **Build:** GitHub Actions validates the bundled extension and packages ABI-specific APKs plus a universal fallback. Normal branch builds create debug-signed demo artifacts; tagged public releases require permanent release signing.
+- **Build:** GitHub Actions validates the bundled extension and packages one ARM64-only APK. Normal branch builds create debug-signed demo artifacts; tagged public releases require permanent release signing.
 
 ## Version snapshot
 
@@ -33,14 +33,14 @@ The app and extension have independent versions. Necessary Addon Manager mainten
 
 - Landscape Home layout and orientation are committed on `main`.
 - The read-only storage dashboard is implemented and included in the current main build. It reports shared app/profile persistent storage, cache, and available device space; it does not claim game-only storage or lifetime downloaded bytes.
-- Main run [#196](https://github.com/iNeonyne/Lasthavens-Android/actions/runs/45187442263), for commit `ed0c5bb`, passed all automated tests, direct DER release-certificate verification, four release APK builds, signature/package/version checks, checksum generation, metadata creation, and all five main update artifact uploads.
+- Main run [#196](https://github.com/iNeonyne/Lasthavens-Android/actions/runs/45187442263), for commit `ed0c5bb`, passed all automated tests, direct DER release-certificate verification, the previous four-variant release build and artifact uploads. The new ARM64-only pipeline is awaiting CI verification.
 - In-app navigation now permits HTTPS Lasthavens hosts and the required Gecko internal schemes; insecure HTTP, executable/data/file/intent schemes, untrusted blob origins, and lookalike hosts are rejected by the tested policy.
-- Main run #196 verified the permanent signing certificate and published one metadata/checksum artifact plus four per-ABI APK artifacts. The metadata artifact and ARM64 APK artifact were downloaded; the ARM64 APK's actual size and SHA-256 matched the metadata/checksum. Manual-dispatch run #198 also succeeded, but is intentionally ignored by the updater; #196 remains the latest eligible main push run. Physical-device upgrade testing remains outstanding.
+- Main run #196 verified the permanent signing certificate and published one metadata/checksum artifact plus four per-ABI APK artifacts in the previous multi-ABI pipeline. New runs will publish one ARM64 APK artifact. The metadata artifact and ARM64 APK artifact were downloaded; the ARM64 APK's actual size and SHA-256 matched the metadata/checksum. Manual-dispatch run #198 also succeeded, but is intentionally ignored by the updater; #196 remains the latest eligible main push run. Physical-device upgrade testing remains outstanding.
 - Physical-device installation and smoke testing remain outstanding. CI success does not establish device compatibility, performance, or gameplay stability.
 
 ## Automatic updater
 
-The landscape Home screen has a user-triggered **Check for updates** action. The updater filters the existing GitHub Actions workflow for successful completed `push` runs from `main`, checks artifact provenance and expiry, downloads the metadata/checksum artifact and only the full APK artifact for the device ABI (universal fallback), verifies metadata and SHA-256, then checks Android package ID, version code and exact signing-certificate equality. Installation is handed to Android's package installer and requires user confirmation. The updater does not clear app data, GeckoView profile, cookies, login/session state or add-ons.
+The landscape Home screen has a user-triggered **Check for updates** action. The updater filters the existing GitHub Actions workflow for successful completed `push` runs from `main`, checks artifact provenance and expiry, downloads the metadata/checksum artifact and only the ARM64 APK artifact, and only when the device supports `arm64-v8a`, verifies metadata and SHA-256, then checks Android package ID, version code and exact signing-certificate equality. Installation is handed to Android's package installer and requires user confirmation. The updater does not clear app data, GeckoView profile, cookies, login/session state or add-ons.
 
 Main run #196 has published the metadata/checksum and per-ABI artifacts. The first same-certificate in-place update and data-preservation test remains to be completed on a physical device. End-to-end same-certificate upgrade and data-preservation checks remain pending on a physical device.
 
