@@ -60,6 +60,23 @@ The owner has authorized necessary manager maintenance only with preservation of
 - [ ] Evaluate R8/resource shrinking against release builds and extension/runtime regression checks.
 - [ ] Expand automated tests and CI validation when code changes or reproducible reports justify them.
 
+
+## P2 — UI/UX consistency and responsive layouts
+
+- [ ] Make Home orientation-adaptive: support portrait and landscape with layouts that rearrange cleanly for each available screen size; remove the forced-landscape restriction only when both layouts are ready.
+- [ ] Make Addon Manager orientation-adaptive: provide a deliberate portrait layout as well as a landscape layout, with responsive navigation, lists, cards, dialogs, and controls.
+- [ ] Keep Play/gameplay landscape-locked unless a separate product decision changes that requirement; verify transitions between Home, Manager, and Play do not cause awkward orientation jumps.
+- [ ] Audit every screen (Home, Play, Addon Manager, Storage, updater and diagnostics when added) for consistent UI/UX, navigation, hierarchy, spacing, alignment, typography, and interaction feedback.
+- [ ] Establish and apply one coherent visual theme across all screens: reuse the existing dark, frost-blue and gold palette; align backgrounds, surfaces, gradients/overlays, borders, elevation, and text contrast. Avoid unrelated colors or inconsistent styling.
+- [ ] Standardize icons across the app: consistent visual family, stroke/fill treatment, size, alignment, tint, meaning, and accessible descriptions; replace mismatched or unclear icons.
+- [ ] Review backgrounds on every screen and in dialogs/cards: use theme-consistent surfaces and image overlays, maintain legibility over imagery, and avoid visual noise or excessive contrast differences.
+- [ ] Create/reuse shared styles, dimensions, colors, shapes, and drawable resources instead of duplicating screen-specific values; keep day/night behavior coherent if night resources are supported.
+- [ ] Improve buttons, cards, text fields, menus, dialogs, progress/loading states, empty states, error states, and pressed/disabled/focus feedback so components behave and look consistently.
+- [ ] Review portrait, landscape, small phones, large phones, tablets, cutouts, system bars, and edge-to-edge/inset handling; prevent clipped, overlapping, or unreachable content.
+- [ ] Review touch target sizes, spacing, text scaling, contrast, TalkBack labels/order, keyboard/focus navigation, and other accessibility semantics.
+- [ ] Test orientation changes, recreation, fullscreen, keyboard visibility, dialogs, back navigation, background/resume, and navigation between activities; preserve state and avoid layout regressions.
+- [ ] Capture and review screenshots for key screens in portrait and landscape, then fix visual regressions before marking the UI/UX work complete.
+
 ## P3 — Release engineering code and CI
 
 - [x] Add a GitHub Actions release-request workflow that validates `.github/release-request.json`, supports dry-run validation, creates annotated tags with `GITHUB_TOKEN`, and explicitly dispatches the existing signed build workflow; verify the dry-run on GitHub Actions.
