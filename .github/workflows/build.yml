@@ -241,7 +241,7 @@ jobs:
           apks = sorted(root.glob("*.apk"))
           app = pathlib.Path("app/build.gradle.kts").read_text()
           expected_name = re.search(r'val appVersionName = "([^"]+)"', app).group(1)
-          expected_apk = f"LastHavenPlus-{expected_name}-arm64-v8a.apk"
+          expected_apk = "app-arm64-v8a-release.apk"
           if len(apks) != 1 or apks[0].name != expected_apk:
               raise SystemExit(f"Expected exactly one ARM64 APK ({expected_apk}), found {[apk.name for apk in apks]}")
           expected_code = int(os.environ["GITHUB_RUN_NUMBER"])
