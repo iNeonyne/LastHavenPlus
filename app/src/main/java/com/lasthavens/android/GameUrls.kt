@@ -7,12 +7,10 @@ import android.net.Uri
 
 object GameUrls {
     const val GAME_URL = "https://lasthavens.com/play"
-    const val ADDON_MANAGER_PAGE = "manager.html"
-
     /** True for lasthavens.com and any of its subdomains. */
     fun isGameHost(uri: Uri): Boolean = NavigationPolicy.isGameHost(uri.toString())
 
-    /** Keep only approved game and Gecko-internal navigations inside the app. */
+    /** Keep only approved HTTPS game navigations inside the app. */
     fun isInApp(uri: Uri): Boolean = NavigationPolicy.isInApp(uri.toString())
 
     fun openExternal(context: Context, uri: Uri) {
