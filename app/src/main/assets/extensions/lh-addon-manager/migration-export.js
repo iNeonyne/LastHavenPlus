@@ -70,7 +70,7 @@ export async function createMigrationArchive({
         throw new Error(`Unsafe file path in ${addon.folder}`);
       const bytes = asBytes(storedFiles[path]);
       if (bytes.byteLength > LIMITS.file)
-        throw new Error(`A file in ${addon.folder} exceeds the file-size limit");
+        throw new Error(`A file in ${addon.folder} exceeds the file-size limit`);
       addonBytes += bytes.byteLength;
       expandedBytes += bytes.byteLength;
       if (expandedBytes > LIMITS.total)
