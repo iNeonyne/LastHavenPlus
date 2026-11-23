@@ -28,12 +28,13 @@ class NavigationPolicyTest {
     }
 
     @Test
-    fun permitsRequiredGeckoInternalSchemes() {
-        assertTrue(NavigationPolicy.isInApp("about:blank"))
-        assertTrue(NavigationPolicy.isInApp("moz-extension://addon-id/manager.html"))
-        assertTrue(NavigationPolicy.isInApp("resource://android/assets/index.html"))
+    fun permitsOnlyTrustedGameBlobUrls() {
         assertTrue(NavigationPolicy.isInApp("blob:https://alt.lasthavens.com/1234"))
-        assertTrue(NavigationPolicy.isInApp("blob:moz-extension://addon-id/1234"))
+        assertFalse(NavigationPolicy.isInApp("blob:https://attacker.test/1234"))
+        assertFalse(NavigationPolicy.isInApp("blob:data:text/html,hello"))
+        assertFalse(NavigationPolicy.isInApp("about:blank"))
+        assertFalse(NavigationPolicy.isInApp("moz-extension://addon-id/manager.html"))
+        assertFalse(NavigationPolicy.isInApp("resource://android/assets/index.html"))
     }
 
     @Test
