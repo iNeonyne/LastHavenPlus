@@ -5,7 +5,8 @@ import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
 import java.nio.file.Files
-import java.nio.file.StandardCopyOption\nimport java.nio.channels.FileChannel\nimport java.nio.file.StandardOpenOption
+import java.nio.file.StandardCopyOption
+import java.nio.channels.FileChannel\nimport java.nio.file.StandardOpenOption
 import java.security.MessageDigest
 import java.util.UUID
 
