@@ -140,7 +140,10 @@ class MigrationImportActivity : AppCompatActivity() {
                 }
             }
             runOnUiThread {
-                if (isFinishing || isDestroyed) return@runOnUiThread
+                if (isFinishing || isDestroyed) {
+                    result.getOrNull()?.directory?.deleteRecursively()
+                    return@runOnUiThread
+                }
                 choose.isEnabled = true
                 progress.visibility = android.view.View.GONE
                 result.fold(
