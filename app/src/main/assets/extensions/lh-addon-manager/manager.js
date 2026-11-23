@@ -42,7 +42,7 @@ let library = await readLibrary(),
   selectedSources = new Map(),
   errorLog = [],
   progressText = "";
-let session = await browser.storage.session.get(["lastStatus", "seen"]);
+let session = await browser.storage.session.get(["lastStatus", "seen", "gameStorage"]);
 try {
   // Drop stored files that no library entry points to (e.g. after a crash).
   await withLock("lh-library", async () => {
@@ -235,6 +235,7 @@ function render() {
   $("#import").disabled = busy;
   renderDashboard();
   $("#error-panel").hidden = !errorLog.length;
+  renderGameStorage();
   $("#error-text").textContent = errorLog.join("\n\n--------------------\n\n");
   for (const id of ["#scan", "#update-all", "#backup", "#restore"]) $(id).disabled = busy;
   const current =
@@ -346,6 +347,25 @@ $("#grant").onclick = async () => {
   }
   access();
 };
+function renderGameStorage() {
+  const value = $("#game-storage-value");
+  const detail = $("#game-storage-detail");
+  const data = session.gameStorage;
+  if (!data || !Number.isSafeInteger(data.usage) || data.usage < 0) {
+    value.textContent = "—";
+    detail.textContent = t("gameStorageWaiting");
+    return;
+  }
+  value.textContent = formatSize(data.usage);
+  const quota = Number.isSafeInteger(data.quota) && data.quota >= data.usage
+    ? t("gameStorageQuota", { used: formatSize(data.usage), quota: formatSize(data.quota) })
+    : "";
+  detail.textContent = t("gameStorageMeasured", {
+    time: new Date(data.at).toLocaleString(),
+    origin: data.origin || "game site",
+    quota
+  });
+}
 function status() {
   const { lastStatus: s, seen } = session;
   $("#seen").textContent = seen?.length
@@ -387,7 +407,7 @@ $("#import").onchange = (e) => {
 // Actual file requests are observed by the injected overlay; the manager never claims
 // an addon is loaded merely because it was packaged for injection.
 $("#scan").onclick = async () => {
-  session = await browser.storage.session.get(["lastStatus", "seen"]);
+  session = await browser.storage.session.get(["lastStatus", "seen", "gameStorage"]);
   const current = session.lastStatus;
   if (!current) {
     showMessage("scanWaiting");
@@ -483,7 +503,7 @@ $("#play").onclick = () =>
   browser.tabs.create({ url: "https://lasthavens.com/play" });
 browser.storage.onChanged.addListener(async (changes, area) => {
   if (area === "session") {
-    session = await browser.storage.session.get(["lastStatus", "seen"]);
+    session = await browser.storage.session.get(["lastStatus", "seen", "gameStorage"]);
     render();
   }
   if (area === "local" && changes.library && !busy) {
