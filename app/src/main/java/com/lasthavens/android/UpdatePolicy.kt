@@ -15,7 +15,7 @@ internal object UpdatePolicy {
         currentCode > 0 && offeredCode > currentCode
 
     fun isStableVersionName(value: String): Boolean =
-        value.matches(Regex("[0-9]+\\.[0-9]+\\.[0-9]+"))
+        value.matches(Regex("(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)"))
 
     fun isPublishedStableRelease(tag: String, draft: Boolean, prerelease: Boolean): Boolean =
         !draft && !prerelease && tag.startsWith("v") && isStableVersionName(tag.removePrefix("v"))
