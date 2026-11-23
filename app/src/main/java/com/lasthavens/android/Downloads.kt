@@ -93,12 +93,10 @@ object Downloads {
             }
             name = "lasthavens-${System.currentTimeMillis()}.$extension"
         }
-        val safe = name
-            .replace(Regex("[\\\\/:*?\"<>|\\p{Cntrl}]"), "_")
-            .trim()
-            .trimStart('.')
-            .take(120)
-        return safe.ifBlank { "lasthavens-${System.currentTimeMillis()}.bin" }
+        return DownloadFileNamePolicy.sanitize(
+            candidate = name,
+            fallbackName = "lasthavens-${System.currentTimeMillis()}.bin",
+        )
     }
 
     private fun toast(context: Context, text: String) {
