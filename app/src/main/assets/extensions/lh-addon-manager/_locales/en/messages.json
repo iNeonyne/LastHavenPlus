@@ -373,5 +373,15 @@
   },
   "cancel": {
     "message": "Cancel"
+  },
+  "migrationExport": {
+    "message": "Export migration package",
+    "description": "Export add-ons, enabled states, dependencies and manager preferences for the Chromium migration."
+  },
+  "migrationExportProgress": {
+    "message": "Preparing migration export…"
+  },
+  "migrationExportDone": {
+    "message": "Migration package created: {addons} add-ons and {files} files. Keep this file until the native manager confirms import."
   }
 }
