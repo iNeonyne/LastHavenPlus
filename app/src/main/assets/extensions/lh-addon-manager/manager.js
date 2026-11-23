@@ -1,4 +1,4 @@
-import { importZip, exportZip, buildZip, LIMITS } from "./archive.js";
+import { importZip, exportZip, buildZip, LIMITS, readStreamLimited } from "./archive.js";
 import { AddonError } from "./errors.js";
 import {
   mergeAddons,
@@ -363,11 +363,16 @@ function status() {
 }
 $("#import").onchange = (e) => {
   const files = [...e.target.files];
+  if (files.some((file) => file.size > LIMITS.archive)) {
+    showMessage("errorArchiveSize");
+    e.target.value = "";
+    return;
+  }
   action(async () => {
     let imported = 0;
     const duplicates = [];
     for (const file of files) {
-      const result = await addArchive(new Uint8Array(await file.arrayBuffer()));
+      const result = await addArchive(await readStreamLimited(file.stream(), LIMITS.archive, "errorArchiveSize"));
       imported += result.imported;
       duplicates.push(...result.duplicates);
     }
@@ -421,9 +426,14 @@ $("#backup").onclick = () => action(async () => {
 $("#restore").onchange = (e) => {
   const file = e.target.files?.[0];
   if (!file) return;
+  if (file.size > LIMITS.archive) {
+    showMessage("errorArchiveSize");
+    e.target.value = "";
+    return;
+  }
   action(async () => {
     setProgress(t("restoreProgress"));
-    const result = await addArchive(new Uint8Array(await file.arrayBuffer()));
+    const result = await addArchive(await readStreamLimited(file.stream(), LIMITS.archive, "errorArchiveSize"));
     showMessage("restoreDone", { count: result.imported });
   }).finally(() => { e.target.value = ""; });
 };
