@@ -47,7 +47,7 @@ class CreateUpdateMetadataTests(unittest.TestCase):
         self.assertEqual(metadata["workflowRunId"], 123456)
         self.assertEqual(metadata["workflowRunNumber"], 171)
         self.assertEqual(metadata["workflowId"], WORKFLOW_ID)
-        self.assertEqual({entry["abi"] for entry in metadata["apks"]}, set(ABI_VARIANTS))
+        self.assertEqual([entry["abi"] for entry in metadata["apks"]], ["arm64-v8a"])
         raw = (self.dist / "update.json").read_text(encoding="utf-8")
         self.assertTrue(raw.endswith("\n"))
         self.assertEqual(json.loads(raw), metadata)
@@ -67,8 +67,8 @@ class CreateUpdateMetadataTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             create_update_metadata(self.dist, self.gradle_file, self.environment)
 
-    def test_rejects_missing_abi_variant(self):
-        (self.dist / "LastHavenPlus-2.1.0-x86_64.apk").unlink()
+    def test_rejects_missing_arm64_apk(self):
+        (self.dist / "LastHavenPlus-2.1.0-arm64-v8a.apk").unlink()
         with self.assertRaises(ValueError):
             create_update_metadata(self.dist, self.gradle_file, self.environment)
 
