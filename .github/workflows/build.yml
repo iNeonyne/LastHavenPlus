@@ -23,7 +23,7 @@ jobs:
           fetch-depth: 0
 
       - name: Guard against direct JavaScript-to-native bridges
-        run: python3 tests/test_native_bridge_guard.py && python3 scripts/check_native_bridge_exposure.py
+        run: python3 tests/test_native_bridge_guard.py && python3 scripts/check_native_bridge_exposure.py && python3 tests/test_no_gecko.py
 
       - name: Validate release tag and main ancestry
         if: startsWith(github.ref, 'refs/tags/v')
@@ -114,51 +114,29 @@ jobs:
       - name: Validate release metadata
         env:
           GITHUB_RUN_NUMBER: ${{ github.run_number }}
+          GITHUB_REF: ${{ github.ref }}
         run: |
           python3 - <<'PY'
-          import json, os, pathlib, re
+          import os, pathlib, re
           app = pathlib.Path("app/build.gradle.kts").read_text()
-          readme = pathlib.Path("README.md").read_text()
-          props = pathlib.Path("gradle.properties").read_text()
-          manifest = json.loads(pathlib.Path("app/src/main/assets/extensions/lh-addon-manager/manifest.json").read_text())
           version = re.search(r'val appVersionName = "([^"]+)"', app).group(1)
           code = int(os.environ["GITHUB_RUN_NUMBER"])
           if code <= 2:
               raise SystemExit(f"CI versionCode {code} must exceed legacy code 2")
-          engine = re.search(r'^geckoViewVersion=(.+)$', props, re.M).group(1).strip()
-          for value, label in ((version, "app"), (manifest["version"], "Addon Manager"), (engine, "GeckoView")):
-              if f"| `{value}` |" not in readme:
-                  raise SystemExit(f"README current-version table is missing {label} version {value}")
           ref = os.environ.get("GITHUB_REF", "")
           if ref.startswith("refs/tags/v"):
-              tag_version = ref.removeprefix("refs/tags/")
-              if tag_version != f"v{version}" or not re.fullmatch(r"v(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)", tag_version):
-                  raise SystemExit(f"Release tag {ref} must be stable v{version} and match appVersionName")
-          print(f"Build metadata OK: app {version} (versionCode {code}), manager {manifest['version']}, GeckoView {engine}")
+              tag = ref.removeprefix("refs/tags/")
+              if tag != f"v{version}" or not re.fullmatch(r"v(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)", tag):
+                  raise SystemExit(f"Release tag {tag} must be stable and match appVersionName {version}")
+          print(f"Build metadata OK: app {version} (versionCode {code}); Android System WebView is device-provided.")
           PY
 
-      - name: Validate bundled Addon Manager
+      - name: Validate native WebView loader assets
         run: |
-          EXT="app/src/main/assets/extensions/lh-addon-manager"
-          python3 - "$EXT" <<'PY'
-          import json, pathlib, sys
-          root = pathlib.Path(sys.argv[1])
-          files = list(root.rglob("*.json"))
-          for path in files:
-              json.loads(path.read_text(encoding="utf-8"))
-          if not (root / "manifest.json").is_file():
-              raise SystemExit("Addon Manager manifest.json is missing")
-          if not (root / "_locales" / "en" / "messages.json").is_file():
-              raise SystemExit("English extension locale is missing")
-          manifest = json.loads((root / "manifest.json").read_text(encoding="utf-8"))
-          notes = root / f"README-{manifest['version']}.txt"
-          if not notes.is_file():
-              raise SystemExit(f"Version-specific Addon Manager release notes are missing: {notes.name}")
-          print(f"Validated {len(files)} JSON files and {notes.name}")
-          PY
-          while IFS= read -r -d '' file; do
-            node --input-type=module --check < "$file"
-          done < <(find "$EXT" -type f -name '*.js' -print0)
+          python3 tests/test_no_gecko.py
+          node --check app/src/main/assets/webview-game-bridge.js
+          node --check app/src/main/assets/extensions/lh-addon-manager/overlay.js
+          node --check app/src/main/assets/extensions/lh-addon-manager/inject.js
 
       - name: Build release APKs
         env:
@@ -220,14 +198,24 @@ jobs:
               with zipfile.ZipFile(apk) as archive:
                   contents = set(archive.namelist())
               required = {
-                  "assets/extensions/lh-addon-manager/manifest.json",
-                  "assets/extensions/lh-addon-manager/_locales/en/messages.json",
+                  "assets/webview-game-bridge.js",
+                  "assets/extensions/lh-addon-manager/overlay.js",
+                  "assets/extensions/lh-addon-manager/inject.js",
               }
-              required.add(f"lib/{variant}/libxul.so")
               missing = sorted(required - contents)
               if missing:
                   raise SystemExit(f"{apk.name} is missing: " + ", ".join(missing))
-              print(f"Verified {apk.name} ({apk.stat().st_size:,} bytes)")
+              forbidden = sorted(
+                  path for path in contents
+                  if path.endswith("/libxul.so") or "org/mozilla/geckoview" in path.lower()
+                  or path.startswith("assets/extensions/lh-addon-manager/") and path not in {
+                      "assets/extensions/lh-addon-manager/overlay.js",
+                      "assets/extensions/lh-addon-manager/inject.js",
+                  }
+              )
+              if forbidden:
+                  raise SystemExit(f"{apk.name} still packages Gecko/extension runtime assets: " + ", ".join(forbidden[:20]))
+              print(f"Verified Gecko-free {apk.name} ({apk.stat().st_size:,} bytes)")
 
           missing_variants = sorted(expected - found)
           if missing_variants:
