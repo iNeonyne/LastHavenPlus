@@ -122,7 +122,7 @@ class MigrationArchiveReaderTest {
     @Test
     fun rejectsChecksumMismatchAndRemovesPartialStaging() {
         val fixture = fixture(checksumOverride = "0".repeat(64))
-        val root = createTempDirectory("lh-migration-invalid").toFile()
+        val root = Files.createTempDirectory("lh-migration-invalid").toFile()
         try {
             try {
                 MigrationArchiveReader.stage(
