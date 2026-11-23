@@ -28,5 +28,8 @@ class HomeActivity : AppCompatActivity() {
         findViewById<android.view.View>(R.id.btnManager).setOnClickListener {
             startActivity(Intent(this, ManagerActivity::class.java))
         }
+        findViewById<android.view.View>(R.id.btnStorage).setOnClickListener {
+            startActivity(Intent(this, StorageActivity::class.java))
+        }
     }
 }
