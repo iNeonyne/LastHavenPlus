@@ -6,6 +6,7 @@ import android.content.Intent
 import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Bundle
+import android.os.Build
 import android.os.Environment
 import android.view.View
 import android.view.WindowManager
@@ -16,6 +17,7 @@ import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.widget.ProgressBar
+import android.widget.Button
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AlertDialog
@@ -39,6 +41,7 @@ class PlayActivity : AppCompatActivity() {
 
     private lateinit var webView: WebView
     private lateinit var progress: ProgressBar
+    private lateinit var diagnosticsButton: Button
     private var fileChooserCallback: android.webkit.ValueCallback<Array<Uri>>? = null
     private var pageStarted = false
     private var addonBridge: GameAddonBridge? = null
@@ -51,6 +54,8 @@ class PlayActivity : AppCompatActivity() {
         applySystemBarPadding(findViewById(R.id.webGameRoot))
         webView = findViewById(R.id.gameWebView)
         progress = findViewById(R.id.gameProgress)
+        diagnosticsButton = findViewById(R.id.gameDiagnostics)
+        diagnosticsButton.setOnClickListener { runBrowserDiagnostics() }
 
         configureWebView()
         onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
@@ -210,6 +215,100 @@ class PlayActivity : AppCompatActivity() {
                 Toast.makeText(this, R.string.download_failed, Toast.LENGTH_LONG).show()
             }
         }
+    }
+
+
+    /**
+     * Collects browser capabilities from the live game origin without changing game settings.
+     * The report helps distinguish site-side browser detection from missing WebView features.
+     */
+    private fun runBrowserDiagnostics() {
+        val script = """
+            (() => {
+              const result = {
+                secureContext: window.isSecureContext === true,
+                webAssembly: typeof WebAssembly !== "undefined" &&
+                  WebAssembly.validate(new Uint8Array([0,97,115,109,1,0,0,0])),
+                workers: typeof Worker === "function",
+                sharedArrayBuffer: typeof SharedArrayBuffer === "function",
+                crossOriginIsolated: window.crossOriginIsolated === true,
+                offscreenCanvas: typeof OffscreenCanvas === "function",
+                hardwareConcurrency: navigator.hardwareConcurrency || null,
+                userAgent: navigator.userAgent || "unavailable",
+                webgl2: false,
+                webgl2Renderer: "unavailable",
+                webgl1: false
+              };
+              try {
+                const canvas = document.createElement("canvas");
+                const gl2 = canvas.getContext("webgl2");
+                result.webgl2 = !!gl2;
+                if (gl2) {
+                  const debug = gl2.getExtension("WEBGL_debug_renderer_info");
+                  result.webgl2Renderer = debug
+                    ? gl2.getParameter(debug.UNMASKED_RENDERER_WEBGL)
+                    : gl2.getParameter(gl2.RENDERER);
+                }
+                result.webgl1 = !!(canvas.getContext("webgl") || canvas.getContext("experimental-webgl"));
+              } catch (_) {}
+              return JSON.stringify(result);
+            })();
+        """.trimIndent()
+        webView.evaluateJavascript(script) { encoded ->
+            val report = runCatching {
+                val json = org.json.JSONTokener(encoded).nextValue() as String
+                org.json.JSONObject(json)
+            }.getOrNull()
+            if (report == null) {
+                showDiagnosticsDialog("Could not read the browser capability report.")
+                return@evaluateJavascript
+            }
+            val provider = WebView.getCurrentWebViewPackage()
+            val lines = listOf(
+                "Android: ${Build.VERSION.RELEASE} (API ${Build.VERSION.SDK_INT})",
+                "WebView provider: ${provider?.packageName ?: "unknown"} ${provider?.versionName ?: ""}".trim(),
+                "WebGL 2: ${yesNo(report.optBoolean("webgl2"))}",
+                "WebGL 2 renderer: ${report.optString("webgl2Renderer", "unknown")}",
+                "WebGL 1: ${yesNo(report.optBoolean("webgl1"))}",
+                "WebAssembly: ${yesNo(report.optBoolean("webAssembly"))}",
+                "Web Workers: ${yesNo(report.optBoolean("workers"))}",
+                "SharedArrayBuffer: ${yesNo(report.optBoolean("sharedArrayBuffer"))}",
+                "Cross-origin isolated: ${yesNo(report.optBoolean("crossOriginIsolated"))}",
+                "OffscreenCanvas: ${yesNo(report.optBoolean("offscreenCanvas"))}",
+                "Secure context: ${yesNo(report.optBoolean("secureContext"))}",
+                "CPU threads reported: ${report.optString("hardwareConcurrency", "unknown")}",
+                "WebKit messaging: ${yesNo(androidx.webkit.WebViewFeature.isFeatureSupported(androidx.webkit.WebViewFeature.WEB_MESSAGE_LISTENER))}",
+                "Document-start scripts: ${yesNo(androidx.webkit.WebViewFeature.isFeatureSupported(androidx.webkit.WebViewFeature.DOCUMENT_START_SCRIPT))}",
+                "ArrayBuffer bridge: ${yesNo(androidx.webkit.WebViewFeature.isFeatureSupported(androidx.webkit.WebViewFeature.WEB_MESSAGE_ARRAY_BUFFER))}",
+            )
+            val text = lines.joinToString("\n") +
+                "\n\nUser agent: " + report.optString("userAgent", "unknown")
+            showDiagnosticsDialog(text)
+        }
+    }
+
+    private fun yesNo(value: Boolean) = if (value) "Available" else "Unavailable"
+
+    private fun showDiagnosticsDialog(report: String) {
+        AlertDialog.Builder(this)
+            .setTitle(R.string.game_diagnostics_title)
+            .setMessage(report)
+            .setNeutralButton(R.string.game_diagnostics_copy) { _, _ ->
+                val clipboard = getSystemService(Context.CLIPBOARD_SERVICE) as android.content.ClipboardManager
+                clipboard.setPrimaryClip(android.content.ClipData.newPlainText("LastHavenPlus browser diagnostics", report))
+                Toast.makeText(this, R.string.game_diagnostics_copied, Toast.LENGTH_SHORT).show()
+            }
+            .setPositiveButton(R.string.game_diagnostics_chrome) { _, _ ->
+                val chrome = Intent(Intent.ACTION_VIEW, Uri.parse(GameUrls.GAME_URL))
+                    .setPackage("com.android.chrome")
+                try {
+                    startActivity(chrome)
+                } catch (_: android.content.ActivityNotFoundException) {
+                    GameUrls.openExternal(this, Uri.parse(GameUrls.GAME_URL))
+                }
+            }
+            .setNegativeButton(android.R.string.cancel, null)
+            .show()
     }
 
     private fun requestPersistentGameStorage() {

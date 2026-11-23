@@ -42,6 +42,12 @@
     <string name="leave_reload">Reload</string>
     <string name="leave_stay">Keep playing</string>
 
+    <string name="game_diagnostics_button">Browser check</string>
+    <string name="game_diagnostics_title">Browser compatibility report</string>
+    <string name="game_diagnostics_copy">Copy report</string>
+    <string name="game_diagnostics_chrome">Open in Chrome</string>
+    <string name="game_diagnostics_copied">Diagnostics copied</string>
+
     <string name="game_without_addons">Add-on support is unavailable; starting the game without add-ons.</string>
     <string name="game_load_failed">The game could not load. Check your connection and try again.</string>
     <string name="download_saved">Saved to Downloads/Lasthavens/%1$s</string>

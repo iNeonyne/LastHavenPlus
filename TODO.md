@@ -11,6 +11,7 @@
 - [x] Register origin-restricted document-start loader scripts and WebMessageListener before loading the game.
 - [x] Add a read-only native game bridge with bounded 512 KB binary chunks.
 - [x] Filter disabled add-ons and preserve dependency-first order in the payload.
+- [x] Add an in-game browser diagnostics report for WebGL, WebAssembly, workers, isolation, renderer and AndroidX WebKit features, with copy and Chrome fallback actions.
 - [ ] Verify required AndroidX WebKit features on supported providers and fail with a clear compatibility message.
 - [ ] Verify live-game WebGL, WebAssembly, workers, SharedArrayBuffer/isolation, input, fullscreen and renderer recovery.
 - [ ] Verify live-game `em-pthread`, `WebVfsStoreIo`, manifest, XHR/Fetch, range and `blocks.idx` hooks.
