@@ -77,7 +77,9 @@ class HomeActivity : AppCompatActivity() {
             }
         }
 
-        updateManager.checkAndDownload(::showStage) { result ->
+        updateManager.checkAndDownload({ progress ->
+            showStage(progress.stage, progress.downloadedBytes, progress.totalBytes)
+        }) { result ->
             if (isFinishing || isDestroyed) return@checkAndDownload
             if (progressDialog.isShowing) progressDialog.dismiss()
             updateButton.isEnabled = true
