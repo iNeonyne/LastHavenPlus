@@ -50,7 +50,7 @@ sealed class UpdateCheckResult {
  */
 object AppUpdater {
     private const val RELEASE_API =
-        "https://api.github.com/repos/iNeonyne/Lasthavens-Android/releases/latest"
+        "https://api.github.com/repos/iNeonyne/LastHavenPlus/releases/latest"
     private const val APK_ASSET_NAME = "lasthavenlauncher-arm64.apk"
     private const val MANIFEST_ASSET_NAME = "lasthavenlauncher-update.json"
     private const val MAX_APK_BYTES = 500L * 1024L * 1024L
@@ -199,6 +199,13 @@ object AppUpdater {
                 UpdateCheckResult.Failed(error.message ?: "Unable to check for updates")
             }
 
+            when (result) {
+                is UpdateCheckResult.Available -> Diagnostics.info(appContext, "Updater", "Update available: ${result.update.version}")
+                is UpdateCheckResult.Failed -> Diagnostics.warn(appContext, "Updater", "Update check failed: ${result.message}")
+                UpdateCheckResult.NoUpdate -> Diagnostics.info(appContext, "Updater", "No update available")
+            }
+            result.onSuccess { Diagnostics.info(appContext, "Updater", "Update download and validation succeeded") }
+                .onFailure { Diagnostics.error(appContext, "Updater", "Update download failed: ${it.message}") }
             mainHandler.post { callback(result) }
         }
     }
