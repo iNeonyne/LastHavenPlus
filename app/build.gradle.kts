@@ -1,7 +1,7 @@
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.plugin.compose")
-    id("com.cefrium")
+    id("com.cefrium") version "0.21.0"
 }
 
 android {
