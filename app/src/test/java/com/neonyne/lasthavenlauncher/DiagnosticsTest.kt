@@ -8,16 +8,18 @@ class DiagnosticsTest {
     @Test
     fun redactsAuthorizationCookiesTokensAndSensitiveQueryParameters() {
         val sanitized = Diagnostics.sanitize(
-            "Authorization: Bearer abc123 cookie=crumbs token=xyz " +
-                "https://example.invalid/play?session=private&view=game",
+            "Authorization: Bearer abc123 cookie=crumbs token=xyz access_token=hidden " +
+                "https://example.invalid/play?session_id=private&view=game",
         )
 
         assertTrue(sanitized.contains("Authorization: [REDACTED]"))
         assertTrue(sanitized.contains("cookie=[REDACTED]"))
         assertTrue(sanitized.contains("token=[REDACTED]"))
-        assertTrue(sanitized.contains("session=[REDACTED]"))
+        assertTrue(sanitized.contains("access_token=[REDACTED]"))
+        assertTrue(sanitized.contains("session_id=[REDACTED]"))
         assertFalse(sanitized.contains("abc123"))
         assertFalse(sanitized.contains("crumbs"))
+        assertFalse(sanitized.contains("hidden"))
         assertFalse(sanitized.contains("private"))
     }
 }
