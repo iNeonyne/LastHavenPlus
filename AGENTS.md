@@ -90,7 +90,7 @@ Agents may work in parallel only on disjoint files/surfaces. The main integrator
 
 ### P3 — Release
 - [x] Create and securely back up the release signing key
-- [ ] Build release APK/AAB for arm64 only
+- [x] Build signed release APK for arm64 only
 - [ ] Verify same-key in-place update preserves game data
 
 ## Documentation protocol
