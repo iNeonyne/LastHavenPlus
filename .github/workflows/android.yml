@@ -145,7 +145,7 @@ jobs:
           keytool -list -keystore "$RUNNER_TEMP/lasthavenplus-release.jks" \
             -storepass "$ANDROID_KEYSTORE_PASSWORD" -alias lasthavenplus >/dev/null
 
-      - name: Build debug and signed optimized release APKs
+      - name: Build signed optimized release APK and run unit tests
         env:
           ANDROID_KEYSTORE_PATH: ${{ runner.temp }}/lasthavenplus-release.jks
           ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
@@ -153,7 +153,7 @@ jobs:
           APP_VERSION_NAME: ${{ steps.version.outputs.name }}
           APP_VERSION_CODE: ${{ steps.version.outputs.code }}
         run: |
-          gradle assembleDebug assembleRelease testDebugUnitTest --no-daemon --stacktrace \
+          gradle assembleRelease testDebugUnitTest --no-daemon --stacktrace \
             -PappVersionName="$APP_VERSION_NAME" -PappVersionCode="$APP_VERSION_CODE"
 
       - name: Verify signing certificate, ABI and report APK sizes
@@ -161,10 +161,9 @@ jobs:
         run: |
           set -euo pipefail
           trap 'status=$?; echo "::error::Release verification failed at workflow line $LINENO (exit $status)"; exit "$status"' ERR
-          DEBUG_APK="app/build/outputs/apk/debug/app-debug.apk"
           RELEASE_APK="app/build/outputs/apk/release/app-release.apk"
           EXPECTED_CERT="b3bbf7520e77dfc384a60b1eee6c5f205b978f9b453849e2be523f642018d263"
-          for apk in "$DEBUG_APK" "$RELEASE_APK"; do
+          for apk in "$RELEASE_APK"; do
             echo "Checking APK exists: $apk"
             if [[ ! -f "$apk" ]]; then
               echo "::error::Expected APK was not produced: $apk"
@@ -208,10 +207,7 @@ jobs:
           fi
           python3 - <<'PY'
           import os, zipfile
-          apks = [
-              "app/build/outputs/apk/debug/app-debug.apk",
-              "app/build/outputs/apk/release/app-release.apk",
-          ]
+          apks = ["app/build/outputs/apk/release/app-release.apk"]
           summary = ["| APK | File size | DEX payload |", "|---|---:|---:|"]
           for apk in apks:
               with zipfile.ZipFile(apk) as archive:
@@ -226,14 +222,6 @@ jobs:
           with open(os.environ["GITHUB_STEP_SUMMARY"], "a", encoding="utf-8") as report:
               report.write("\n## APK size report\n\n" + "\n".join(summary) + "\n")
           PY
-
-      - name: Upload debug APK
-        uses: actions/upload-artifact@v4
-        with:
-          name: lasthavenlauncher-debug-arm64
-          path: app/build/outputs/apk/debug/app-debug.apk
-          if-no-files-found: error
-          retention-days: 14
 
       - name: Upload signed release APK
         uses: actions/upload-artifact@v4
