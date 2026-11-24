@@ -476,3 +476,11 @@ Entry format:
 - **Why:** The repository owner explicitly authorized pull requests and requested that the policy be changed consistently.
 - **Preserved:** `beta` remains the active development/integration/testing branch; `main` remains stable. Promotion to `main` and publication still require explicit owner approval. Historical log entries are retained as history and are superseded by this entry.
 - **Verification:** Documentation-only changes. No application source, build configuration, release signing, `main` or release assets changed. No build or tests were run.
+
+## 2026-11-25 — Add pull-request CI validation
+
+- **Role:** Chaty / CI orchestration
+- **Files:** `.github/workflows/android.yml`, `README.md`, `AGENTS.md`, `AGENT_WORK.md`, `STATUS.md`
+- **Change:** Added a `pull_request` trigger for PRs targeting `beta` and a dedicated read-only validation job. It builds the unsigned release variant and runs unit tests without signing secrets or publishing APKs. The full signed build and release-artifact checks remain on branch/tag events.
+- **Why:** Documentation allowing PRs is incomplete unless CI validates them. The PR path must not expose signing secrets or create release artifacts.
+- **Not yet verified:** The workflow change has not completed a GitHub Actions run. Do not claim PR CI is operational until the run is inspected.
