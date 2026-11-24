@@ -95,7 +95,7 @@ Read [AGENTS.md](AGENTS.md) and [AGENT_WORK.md](AGENT_WORK.md) before working on
 
 - **`beta`:** active development, integration and testing branch.
 - **`main`:** stable release branch.
-- **No pull requests:** work is assigned by issue and kept in separate scopes. Parallel contributors must not work on the same issue concurrently.
+- **Pull requests are allowed:** contributors work on dedicated branches and open PRs targeting `beta`. Parallel contributors must work on separate issues with non-overlapping file scopes.
 - **Integration:** contributors hand completed work and verification evidence to Chaty. Chaty alone reviews, integrates and pushes directly to `beta`.
 - **Promotion:** `beta` is promoted to `main` only after release gates pass and the repository owner explicitly approves. Publishing a release requires explicit approval.
 
