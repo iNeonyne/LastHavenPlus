@@ -3,6 +3,7 @@ package com.neonyne.lasthavenlauncher
 import android.content.SharedPreferences
 import android.content.Intent
 import android.net.Uri
+import android.provider.Settings
 import android.util.Log
 import android.view.WindowManager
 import android.webkit.ValueCallback
@@ -53,6 +54,8 @@ private const val KEY_GAME_URL = "game_url"
 private const val TAG = "LastHavenLauncher"
 
 class MainActivity : ComponentActivity() {
+    private var pendingUpdateUri: Uri? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -67,14 +70,35 @@ class MainActivity : ComponentActivity() {
                 onExit = { finish() },
                 onCheckUpdates = { callback -> AppUpdater.checkForUpdate(this, callback) },
                 onDownloadUpdate = { update, callback -> AppUpdater.downloadUpdate(this, update, callback) },
-                onInstallUpdate = { uri ->
-                    val intent = Intent(Intent.ACTION_VIEW).apply {
-                        setDataAndType(uri, "application/vnd.android.package-archive")
-                        addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                    }
-                    startActivity(intent)
-                },
+                onInstallUpdate = { uri -> installUpdate(uri) },
             )
+        }
+    }
+
+    private fun installUpdate(uri: Uri) {
+        if (!packageManager.canRequestPackageInstalls()) {
+            pendingUpdateUri = uri
+            startActivity(
+                Intent(
+                    Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES,
+                    Uri.parse("package:$packageName"),
+                ),
+            )
+            return
+        }
+
+        startActivity(Intent(Intent.ACTION_VIEW).apply {
+            setDataAndType(uri, "application/vnd.android.package-archive")
+            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+        })
+    }
+
+    override fun onResume() {
+        super.onResume()
+        val uri = pendingUpdateUri
+        if (uri != null && packageManager.canRequestPackageInstalls()) {
+            pendingUpdateUri = null
+            installUpdate(uri)
         }
     }
 
