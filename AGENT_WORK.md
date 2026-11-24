@@ -50,7 +50,7 @@ Scope:
 - Update `docs/GECKOVIEW_MIGRATION.md` only; no production source, Gradle or manifest changes.
 - Verify current stable GeckoView artifact/version and official Mozilla API documentation.
 - Document runtime/session/view lifecycle, profile persistence and Cefrium data portability risks, navigation/crash/permission/prompt/media/fullscreen/file delegates, target game API requirements, ARM64/AAR packaging, APK-size measurement and CI/device test plan.
-- Clearly distinguish WoW addon ZIP/`.toc` packages from Gecko WebExtensions.
+- Keep the future addon manager out of scope until the owner provides its new specification.
 
 Acceptance: official references and date/version evidence are recorded; unresolved questions and an ordered migration plan are clear. Chaty reviews the decision record before #21 starts.
 
@@ -95,18 +95,14 @@ Ploy provides Chaty:
 
 Ploy stops after handing off. Chaty reviews the full diff, reruns or verifies required checks, integrates accepted work directly into `beta`, updates central trackers and only then advances the assignment queue.
 
-## Easy work queued for Ploy
-
-After #9 and #11, Ploy may take #6's straightforward, non-engine settings work only after Chaty has integrated #21 and #22. The initial isolated part is editable HTTPS game URL preference validation/persistence with unit tests; do not implement Gecko profile clearing, cache deletion, version reporting or other engine-specific controls until the pinned GeckoView API is reviewed. No addon-manager work until the owner specification arrives.
-
 
 ## Ploy task queue after current easy work
 
 1. #9 — ACTIVE: small menu accessibility follow-up.
 2. #11 — diagnostics redaction/rotation/failure-path unit tests; next after #9 integration.
-3. #6 — small, isolated editable HTTPS game URL validation/persistence task after the GeckoView/home navigation contract is available. Do not implement profile/cache clearing or Gecko-specific controls before the exact pinned API is verified.
-4. #20 — GeckoView documentation/research update after Chaty confirms clean beta baseline; documentation-only.
-5. #22 — home screen after #21 integration.
+3. #20 — GeckoView documentation/research update after Chaty confirms clean beta baseline; documentation-only.
+4. #22 — home screen after Chaty integrates #21.
+5. #6 — small, isolated editable HTTPS game URL validation/persistence task after #21/#22 define the navigation contract. Do not implement profile/cache clearing or Gecko-specific controls before the exact pinned API is verified.
 6. #23 — blocked until owner supplies addon-manager requirements.
 
 Every task must append progress and interruption checkpoints to `WORK_LOG.md`. Ploy never integrates or pushes to beta.
