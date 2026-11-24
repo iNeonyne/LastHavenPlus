@@ -116,7 +116,7 @@ fun AddonManagerDialog(context: Context, onDismiss: () -> Unit) {
                 modifier = Modifier.heightIn(max = 480.dp).verticalScroll(rememberScrollState()),
                 verticalArrangement = Arrangement.spacedBy(10.dp),
             ) {
-                Text("Import and manage WoW 3.3.5a addon ZIP packages stored on this device.")
+                Text("Import and manage WoW 3.3.5a addon ZIP packages stored on this device. Export saves the original ZIP package, including any other addon folders it contains.")
                 Text("Local enable/disable switches do not load addons into the game yet.")
                 Button(
                     onClick = { importLauncher.launch(arrayOf("*/*")) },
@@ -175,8 +175,8 @@ fun AddonManagerDialog(context: Context, onDismiss: () -> Unit) {
                                     }
                                     TextButton(
                                         enabled = !busy,
-                                        onClick = { exportTargetId = addon.id; exportLauncher.launch("${addon.folderName}.zip") },
-                                    ) { Text("Export") }
+                                        onClick = { exportTargetId = addon.id; exportLauncher.launch(addon.archiveName) },
+                                    ) { Text("Export ZIP package") }
                                     TextButton(
                                         enabled = !busy,
                                         onClick = { removeTarget = addon },
