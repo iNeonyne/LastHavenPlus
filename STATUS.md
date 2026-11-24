@@ -6,25 +6,26 @@
 
 ## Snapshot
 
-The stable v1.0.0 release is published. The checked-in beta still uses Cefrium and opens the game directly on startup. The owner has approved replacing Cefrium with Mozilla GeckoView and adding a home screen with Play and Settings. The legacy addon manager has been removed; a replacement is blocked until the owner supplies a new specification.
+The stable v1.0.0 release is published. Beta still uses Cefrium and opens the game directly on startup. The approved target is GeckoView plus a home screen with Play and Settings. The previous addon manager has been removed; replacement work is blocked pending the owner's new specification.
 
-The previous source baseline failed compilation in the now-deleted `AddonManagerDialog.kt`. The manager and its app entry points have since been removed. A new beta CI run #268 is pending on the current source after the removal; do not treat the old compile error as resolved until that run completes. Unit tests and signed APK/ABI verification remain unverified.
+- **`beta` HEAD:** `524de3c70747f5da9d67d3e589b3aa3487d51120`.
+- **`main` (stable):** `6211cf389b8d9f6ef98aa7818f47643bfdaf2053`.
+- **Latest beta CI:** [run #278](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45496963845), ID `45496963845`, on the current beta HEAD; pending at last inspection.
+- **Post-removal run #268:** [cancelled](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45496604607); it produced no useful build/test evidence.
+- **Previous source failure:** [run #247](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45493653394) failed Kotlin compilation in `AddonManagerDialog.kt`. That source file and its app entry point have since been removed. Do not treat the blocker as fixed until a new build completes.
+- **Latest successful beta CI run found:** [#179](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45183038304), commit `593fec6b048790cbc30a7fbadf571b749069abea`; historical only.
+- **Published release:** [v1.0.0](https://github.com/iNeonyne/LastHavenPlus/releases/tag/v1.0.0), with the signed ARM64 APK and update manifest. It does not verify current beta.
+- **Current task ownership:** Ploy #9 (easy menu accessibility), then #11 diagnostics tests; Chaty #4 build/updater tests and #21 engine migration after #20 research. #23 is blocked pending owner instructions.
 
-- **`main` (stable):** `6211cf389b8d9f6ef98aa7818f47643bfdaf2053`
-- **Latest source baseline audited:** `c00740a77e54ff4e26d69512959fb8feb0487a51`.
-- **Documentation/roadmap preparation commits:** `afc84aeb60ba7e3c57cce1b6c509f730f322b8fe` (README), `acc70a3163701502ce4017d14e76cca05993934c` (AGENTS), `92352c49a97bf92f7dc970a76816be670ecdd508` (AGENT_WORK), `262e134e6547339034083765fd69f736cc0e6cdb` (STATUS), `ffafa6d8af80a36b75efe1a09e29d7e45c2f510c` and `688db4d17bfceeba42f4990faac187cf76b329a9` (ISSUES), and `2d9c71fc09dd18dc9debf803195c6ad5e3b064f0` (CHANGELOG). These are documentation/index changes only; no app/build source changed.
-- **Latest source-build result inspected:** [#247](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45493653394), run ID `45493653394`, failed on source baseline `c00740a77e54ff4e26d69512959fb8feb0487a51`.
-- **Documentation-head CI:** [#253](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45495673227) was queued on the documentation-only head `2d9c71fc09dd18dc9debf803195c6ad5e3b064f0` at the time of this status update; it is not recorded as a successful build.
-- **Latest successful beta CI run found:** [#179](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45183038304), commit `593fec6b048790cbc30a7fbadf571b749069abea`; historical and not evidence for current beta.
-- **Published release:** [v1.0.0](https://github.com/iNeonyne/LastHavenPlus/releases/tag/v1.0.0), with `lasthavenplus-arm64.apk` and `lasthavenplus-update.json`. This does not verify the new beta architecture.
+Documentation, agent references and the removal work are committed directly to `beta`. No GeckoView production dependency/source has been added. No main promotion, tag or release was performed.
 
 ## Current implementation inspected
 
 | Area | Current state | Verification boundary |
 |---|---|---|
 | Application identity | `com.neonyne.lasthavenlauncher` configured | Preserve unchanged; current beta artifact signing verification skipped in run #247 |
-| Release signing | CI restores the established keystore; expected certificate SHA-256 `b3bbf7520e77dfc384a60b1eee6c5f205b978f9b453849e2be523f642018d263` | Run #247 failed before APK signing verification |
-| CPU architecture | `abiFilters += "arm64-v8a"` configured | Actual APK ABI verification skipped in run #247 |
+| Release signing | CI restores the established keystore; expected certificate SHA-256 `b3bbf7520e77dfc384a60b1eee6c5f205b978f9b453849e2be523f642018d263` | Run #247 failed before APK signing verification; post-removal run #278 is pending |
+| CPU architecture | `abiFilters += "arm64-v8a"` configured | Actual APK ABI verification skipped in run #247; current run #278 pending |
 | Build wrapper | Gradle Wrapper present, pinned to 9.7.1 with SHA-256 | Wrapper setup/validation step passed in run #247; no replacement wrapper or toolchain change needed |
 | Browser engine | Cefrium SDK/Compose/plugin 0.21.0 currently configured; Chromium `156.0.8078.96` | Runtime behavior on physical hardware unverified; this engine is scheduled for removal under #21 |
 | Game launch | `MainActivity` directly creates the Cefrium Compose view and loads the configured LastHaven URL on app launch | Source inspected; no physical ARM64 gameplay evidence |
@@ -38,7 +39,7 @@ The previous source baseline failed compilation in the now-deleted `AddonManager
 | Differential updater | Patch eligibility checks installed base/version/digest; reconstructs/verifies APK and has full APK fallback | Current-beta tests and physical compatible-update flow unverified |
 | Addon manager | Legacy ZIP addon manager source and UI removed from beta on 2026-11-25 at the owner's request | No addon manager implementation is currently present. Replacement is blocked pending the owner's new specification; do not recreate the old design. |
 
-## Latest CI failure — run #247
+## Previous CI failure before addon manager removal — run #247
 
 - Wrapper setup/validation, JDK 25, Android SDK 37, version metadata and signing-key restore passed.
 - Kotlin compilation failed with the same two source errors:
@@ -46,7 +47,7 @@ The previous source baseline failed compilation in the now-deleted `AddonManager
 - Unit-test task failed before tests could run; the report upload step found no XML results.
 - Signing-certificate verification, ARM64 ABI verification, APK upload and differential package steps were skipped.
 - Job ID: `138798442495`.
-- Ploy retains exclusive ownership of #13 until she hands off a task-branch commit. Chaty must not edit #13's files concurrently.
+- The previous #13 compile errors belonged to the deleted addon manager. Ploy's active task is now #9 menu accessibility; Chaty must not edit her menu files concurrently.
 
 ## GeckoView decision and risks
 
@@ -63,8 +64,8 @@ The previous source baseline failed compilation in the now-deleted `AddonManager
 | Issue | Internal owner | Order / status |
 |---|---|---|
 | [#9](https://github.com/iNeonyne/LastHavenPlus/issues/9) | Ploy | Active — small exit-menu accessibility follow-up |
-| [#4](https://github.com/iNeonyne/LastHavenPlus/issues/4) | Chaty | Active — clean build and updater tests; #13 currently blocks CI |
-| [#11](https://github.com/iNeonyne/LastHavenPlus/issues/11) | Ploy | Queued after #13 |
+| [#4](https://github.com/iNeonyne/LastHavenPlus/issues/4) | Chaty | Active — verify post-removal build and updater tests |
+| [#11](https://github.com/iNeonyne/LastHavenPlus/issues/11) | Ploy | Queued after #9 |
 | [#8](https://github.com/iNeonyne/LastHavenPlus/issues/8) | — | Superseded; old manager removed, future spec tracked by #23 |
 | [#20](https://github.com/iNeonyne/LastHavenPlus/issues/20) | Ploy | Queued after #8; docs-only GeckoView technical decision record |
 | [#21](https://github.com/iNeonyne/LastHavenPlus/issues/21) | Chaty | Queued after clean #4 baseline and reviewed #20; replace Cefrium |
@@ -76,7 +77,7 @@ Ploy is an internal repository agent and is not assigned through GitHub's accoun
 
 ## Release blockers
 
-1. Fix #13 and obtain a clean current-beta CI run; unit tests must actually execute and report.
+1. Obtain a clean current-beta CI run after addon manager removal; unit tests must actually execute and report. Ploy's current small task is #9.
 2. Complete GeckoView research #20 and implementation #21 without speculative changes to Gradle/AGP/JDK/SDK, application ID, signing identity or ABI target.
 3. Verify persistent Gecko profile behavior and decide how to preserve legacy Cefrium profile data; do not delete old data as part of migration.
 4. Complete the Play/Settings home flow. Addon manager rebuild remains blocked until the owner supplies a new specification.
