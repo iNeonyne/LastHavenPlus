@@ -13,7 +13,7 @@ object Diagnostics {
     private const val LOG_FILE = "lasthavenplus.log"
 
     private val secretPattern = Regex(
-        "(?i)(password|passwd|token|authorization|cookie|session|secret|api[_-]?key)(\\s*[=:]\\s*)([^&\\s,;]+)",
+        "(?i)((?:password|passwd|token|authorization|cookie|session|secret|api[_-]?key)(\\s*[=:]\\s*))(?:bearer\\s+)?([^&\\s,;]+)",
     )
     private val querySecretPattern = Regex(
         "(?i)([?&](?:token|session|auth|key|code|password|secret)=)[^&#\\s]+",
@@ -30,7 +30,7 @@ object Diagnostics {
                 previous.delete()
                 file.renameTo(previous)
             }
-            val safeMessage = redact(message).take(4_000)
+            val safeMessage = sanitize(message).take(4_000)
             val timestamp = SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS", Locale.US).format(Date())
             file.appendText("$timestamp $level/$tag: $safeMessage\n")
         }
@@ -53,7 +53,7 @@ object Diagnostics {
         File(directory, "$LOG_FILE.1").delete()
     }
 
-    private fun redact(value: String): String =
-        value.replace(secretPattern) { match -> "${match.groupValues[1]}${match.groupValues[2]}[REDACTED]" }
+    internal fun sanitize(value: String): String =
+        value.replace(secretPattern) { match -> "${match.groupValues[1]}[REDACTED]" }
             .replace(querySecretPattern) { match -> "${match.groupValues[1]}[REDACTED]" }
 }
