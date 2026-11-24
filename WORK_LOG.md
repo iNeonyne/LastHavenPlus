@@ -9,7 +9,7 @@
 - Record failures and skipped checks explicitly. Never write “passed” unless the command/run output proves it.
 - At task end, record the exact handoff commit, changed files, tests, known limitations and next action.
 - If interrupted, leave a final checkpoint stating the last completed action and the first safe next action. Do not amend or rewrite earlier checkpoints; append a correction if needed.
-- Chaty alone integrates task commits directly into `beta`. No PRs. Never push to `main` or publish without explicit owner approval.
+- Task work is submitted through PRs targeting `beta`. Chaty alone reviews and merges accepted PRs; contributors must not push directly to `beta`. Never push to `main` or publish without explicit owner approval.
 - Do not use TickTick. GitHub Issues and `ISSUES.md` are the source of truth.
 
 ## Current restart point — 2026-11-25
@@ -173,3 +173,11 @@
 - **Current boundaries:** GeckoView 160 is present in beta source. Home-screen/navigation work is assigned to Ploy under #22. Addon-manager work remains on owner hold. TickTick is supplementary; GitHub Issues and `ISSUES.md` are authoritative.
 - **Not done:** No app source changed, no issue was closed, no release was published and `main` was not modified.
 - **Next safe action:** Verify the CI optimization run and review the #22 implementation when Ploy hands it off. Keep physical ARM64 testing explicitly unverified until performed.
+
+
+## 2026-11-25 — Update integration workflow to allow pull requests
+
+- **Branch:** `beta`.
+- **Change:** Replaced the active no-PR policy with PR-based task integration. Contributors use dedicated branches and open PRs targeting `beta`; Chaty alone reviews and merges accepted work. `beta` remains the active integration branch and `main` remains stable.
+- **Scope:** Updated the active workflow instructions in README, AGENTS, AGENT_WORK, STATUS, ISSUES and this work log. Historical entries remain intact as an append-only record and are superseded by this entry.
+- **Safety:** No application source, release configuration, `main` branch or release assets changed. PRs do not authorize promotion to `main`; explicit owner approval remains required.
