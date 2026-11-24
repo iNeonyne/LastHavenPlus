@@ -53,7 +53,7 @@ References:
 
 ## Named agent assignments
 
-Read [AGENT_WORK.md](AGENT_WORK.md) before starting delegated work. It defines Ploy (repository-only coding agent) and Chaty (main orchestrator), task order, file ownership, handoff rules and integration boundaries. Ploy creates a dedicated task branch and PR targeting `beta`; she must not push directly to `beta` or `main`. Chaty reviews the actual PR diff, verifies it and updates `ISSUES.md`, `STATUS.md` and `CHANGELOG-AGENTS.md`, then may merge accepted work into `beta`. `main` remains stable; promote `beta` into `main` only after beta verification and the user's explicit approval.
+Read [AGENT_WORK.md](AGENT_WORK.md) before starting delegated work. It defines task order, exclusive file ownership and handoff rules. Contributors may push only to their task branches and must provide Chaty the exact commit SHA and verification report. Chaty alone reviews and integrates accepted commits directly into `beta`. No pull requests. `main` remains stable; promote `beta` into `main` only after all release gates pass and the user explicitly approves.
 
 ## Parallel agent roles
 
