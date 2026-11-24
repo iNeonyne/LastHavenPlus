@@ -231,7 +231,7 @@ jobs:
       - name: Upload signed release APK
         uses: actions/upload-artifact@v4
         with:
-          name: lasthavenlauncher-release-signed-arm64
+          name: lasthavenplus-release-signed-arm64
           path: app/build/outputs/apk/release/app-release.apk
           if-no-files-found: error
           retention-days: 30
@@ -249,8 +249,8 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y bsdiff
           mkdir -p release-assets
-          cp app/build/outputs/apk/release/app-release.apk release-assets/lasthavenlauncher-arm64.apk
-          TARGET_APK="release-assets/lasthavenlauncher-arm64.apk"
+          cp app/build/outputs/apk/release/app-release.apk release-assets/lasthavenplus-arm64.apk
+          TARGET_APK="release-assets/lasthavenplus-arm64.apk"
           TARGET_SHA="$(sha256sum "$TARGET_APK" | awk '{print $1}')"
           TARGET_SIZE="$(stat -c '%s' "$TARGET_APK")"
           PATCH_JSON="null"
@@ -262,8 +262,8 @@ jobs:
 
           if [[ -n "$PREVIOUS_RELEASE" ]]; then
             PREVIOUS_TAG="$(jq -r '.tag_name' <<< "$PREVIOUS_RELEASE")"
-            PREVIOUS_APK_URL="$(jq -r '.assets[]? | select(.name == "lasthavenlauncher-arm64.apk") | .browser_download_url' <<< "$PREVIOUS_RELEASE" | head -n 1)"
-            PREVIOUS_MANIFEST_URL="$(jq -r '.assets[]? | select(.name == "lasthavenlauncher-update.json") | .browser_download_url' <<< "$PREVIOUS_RELEASE" | head -n 1)"
+            PREVIOUS_APK_URL="$(jq -r '.assets[]? | select(.name == "lasthavenplus-arm64.apk") | .browser_download_url' <<< "$PREVIOUS_RELEASE" | head -n 1)"
+            PREVIOUS_MANIFEST_URL="$(jq -r '.assets[]? | select(.name == "lasthavenplus-update.json") | .browser_download_url' <<< "$PREVIOUS_RELEASE" | head -n 1)"
 
             if [[ -n "$PREVIOUS_APK_URL" && "$PREVIOUS_APK_URL" != "null" && -n "$PREVIOUS_MANIFEST_URL" && "$PREVIOUS_MANIFEST_URL" != "null" ]]; then
               curl --fail --location --silent --show-error "$PREVIOUS_APK_URL" -o "$RUNNER_TEMP/previous.apk"
@@ -277,7 +277,7 @@ jobs:
                 BASE_CERT_OUTPUT="$("$ANDROID_HOME/build-tools/37.0.0/apksigner" verify --print-certs "$RUNNER_TEMP/previous.apk")"
                 BASE_CERT_DIGEST="$(printf '%s\n' "$BASE_CERT_OUTPUT" | awk '/certificate SHA-256 digest:/ {sub(/^.*certificate SHA-256 digest: /, ""); print tolower($0); exit}')"
                 if [[ "$BASE_CERT_DIGEST" == "b3bbf7520e77dfc384a60b1eee6c5f205b978f9b453849e2be523f642018d263" ]]; then
-                  PATCH_NAME="lasthavenlauncher-arm64-${PREVIOUS_TAG}-to-${RELEASE_TAG}.bsdiff"
+                  PATCH_NAME="lasthavenplus-arm64-${PREVIOUS_TAG}-to-${RELEASE_TAG}.bsdiff"
                   if bsdiff "$RUNNER_TEMP/previous.apk" "$TARGET_APK" "$RUNNER_TEMP/update.bsdiff" &&
                     bspatch "$RUNNER_TEMP/previous.apk" "$RUNNER_TEMP/reconstructed.apk" "$RUNNER_TEMP/update.bsdiff" &&
                     [[ "$(sha256sum "$RUNNER_TEMP/reconstructed.apk" | awk '{print $1}')" == "$TARGET_SHA" ]]; then
@@ -319,8 +319,8 @@ jobs:
             --arg apkSha "$TARGET_SHA" \
             --argjson apkSize "$TARGET_SIZE" \
             --argjson patch "$PATCH_JSON" \
-            '{schemaVersion:1, version:$version, versionCode:$versionCode, apk:{name:"lasthavenlauncher-arm64.apk", sha256:$apkSha, size:$apkSize}, patch:$patch}' \
-            > release-assets/lasthavenlauncher-update.json
+            '{schemaVersion:1, version:$version, versionCode:$versionCode, apk:{name:"lasthavenplus-arm64.apk", sha256:$apkSha, size:$apkSize}, patch:$patch}' \
+            > release-assets/lasthavenplus-update.json
 
       - name: Publish signed release and update assets
         if: steps.version.outputs.is_release == 'true'
