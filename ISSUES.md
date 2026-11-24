@@ -1,7 +1,7 @@
 # Project issues and task tracker — LastHavenPlus
 
 **Repository backlog:** this file is the consolidated, version-controlled task tracker. Update its checklists and status in the same commit as meaningful implementation work.
-**Discussion and history:** each task links to its GitHub Issue. GitHub Issues remain useful for discussion and external notifications, but TickTick is no longer part of this project's workflow.
+**Source of truth:** GitHub Issues and this version-controlled `ISSUES.md` backlog are the project task records. Keep their scope, state and acceptance criteria aligned.
 
 ## Backlog overview
 
@@ -36,7 +36,7 @@ Priority guide: P0 = core/release blocker or data/security risk; P1 = important 
 
 Lifecycle: Needs triage → Ready → Active → Review → Done; Blocked and Deferred are explicit side states. An issue is not Ready just because it is open. One active owner per issue. Owner, exact subtask, permitted files, branch and dependencies must be recorded in `STATUS.md` before editing. Ploy only works on the assignment in `AGENT_WORK.md`; Chaty owns issue creation, triage and central tracking.
 
-Close only when every acceptance criterion is met and evidence is recorded. If a PR only partially addresses an issue, reference it without auto-closing. Record blockers and decisions on the GitHub issue as well as the repository status. Never claim physical-device verification from CI alone.
+Close only when every acceptance criterion is met and evidence is recorded. If an integrated task commit only partially addresses an issue, keep it open and record the remaining work. Record blockers and decisions on the GitHub issue as well as the repository status. Never claim physical-device verification from CI alone.
 
 ---
 
@@ -49,12 +49,14 @@ Close only when every acceptance criterion is met and evidence is recorded. If a
 Harden the existing build and updater without replacing the current update architecture.
 
 ## Build reliability
-- [ ] Add the Gradle Wrapper (wrapper scripts, wrapper JAR, and pinned Gradle 9.7.1 distribution URL).
-- [ ] Pin and verify the official Gradle 9.7.1 distribution SHA-256; do not invent or copy an unverified checksum.
-- [ ] Ensure the wrapper JAR is the official Gradle wrapper JAR and commit executable permissions for `gradlew`.
-- [ ] Update GitHub Actions to build and test with `./gradlew` rather than installing a separate Gradle distribution.
+- [x] Add the Gradle Wrapper (wrapper scripts, wrapper JAR, and pinned Gradle 9.7.1 distribution URL) — present on beta.
+- [x] Pin the Gradle 9.7.1 distribution SHA-256 in wrapper properties; wrapper validation passed in CI run #232.
+- [x] Commit wrapper JAR and executable `gradlew`; CI wrapper validation passed in run #232.
+- [x] Update GitHub Actions to invoke `./gradlew`; run #232 reached the Gradle build through the wrapper.
 - [ ] Keep the existing JDK, AGP, SDK, Cefrium, signing key, application ID, and arm64-only configuration unless a verified compatibility issue requires a change.
-- [x] Verify debug and signed release builds in CI (run #85).
+- [ ] Verify current beta debug and signed release builds in CI. Run #232 failed Kotlin compilation before APK/signing/ABI verification; historical run #85 is not current-source evidence.
+
+**Beta audit update (2026-11-25):** The Gradle Wrapper is present and pinned to Gradle 9.7.1 with a distribution SHA-256; wrapper validation passed in run #232. The current beta build fails compilation in #13 at `AddonManagerDialog.kt:166` and `:171`, so unit tests and APK/signature/ABI verification did not run. Keep #4 open for updater edge-case tests and a clean current-beta CI run.
 
 ## Updater and differential-patch tests
 
@@ -70,17 +72,17 @@ Harden the existing build and updater without replacing the current update archi
 
 ## CI verification
 - [ ] Verify release APK package identity in CI.
-- [x] Verify arm64-v8a-only native libraries and established signing certificate in CI (run #85).
+- [ ] Verify ARM64-only native libraries and established signing certificate for current beta. Run #232 restored the keystore but skipped APK checks.
 - [ ] Publish APK size information and checksum results in the workflow summary.
 
 ## Constraints
 - Do not create a second updater.
 - Do not change the application ID or release signing key.
 - Do not add background downloads or automatic installation.
-- Follow AGENTS.md: claim work in STATUS, document meaningful changes in STATUS and CHANGELOG-AGENTS.md, and integrate directly into main through the main orchestrator.
+- Follow AGENTS.md: claim work in STATUS, document meaningful changes in STATUS and CHANGELOG-AGENTS.md, and integrate directly into beta through Chaty. No pull requests.
 
 ## Acceptance criteria
-A clean checkout can build with the committed wrapper; updater edge cases are covered by automated tests; CI verifies the signed arm64 release and reports artifact sizes.
+A clean checkout builds through the committed, pinned wrapper; updater edge cases are covered by passing automated tests; current beta CI verifies the signed ARM64 release, package identity and artifact sizes.
 
 ## Roadmap
 - **Target:** v1.0.0 release gate.
@@ -558,13 +560,13 @@ Allow users to preserve launcher preferences across reinstallations or device ch
 
 # LastHavenPlus release roadmap
 
-This roadmap defines what belongs in shared `beta` and when work may be promoted to stable `main`. A commit or successful build alone does not make a release.
+This roadmap defines what belongs in shared `beta` and when work may be promoted to stable `main`. A commit or successful build alone does not make a release. Current beta must pass its own build and verification gates.
 
 ## Branch model
 
 - **`main` — stable release branch.** Contains approved stable releases and explicitly approved hotfixes only. No routine feature development.
-- **`beta` — integration and release-candidate branch.** Chaty pushes orchestrator changes here. Ploy contributes through reviewed PRs targeting `beta`.
-- Ploy creates task branches from the latest `beta`; each PR targets `beta`. Chaty reviews the full diff and may merge accepted PRs into `beta`.
+- **`beta` — integration and release-candidate branch.** Chaty pushes orchestrator changes here. Contributors hand Chaty task-branch commits; Chaty alone integrates directly into `beta`. No pull requests.
+- Contributors create task branches from latest `beta` when needed and hand Chaty the exact commit SHA. Chaty reviews and integrates accepted commits directly into `beta`.
 - Features must be complete, tested and documented before being considered release-ready.
 - No automatic merges, tags, releases or beta-to-main promotion.
 
@@ -581,7 +583,7 @@ This roadmap defines what belongs in shared `beta` and when work may be promoted
 **Promotion target:** `main`, only after the release gate below passes.
 
 Planned scope:
-- [ ] #4 Build reliability and updater tests: reproducible Gradle Wrapper, checksum verification, CI and updater failure/recovery coverage.
+- [x] #4 Gradle Wrapper, pinned distribution checksum, executable script and CI wrapper use are implemented; [ ] updater edge-case tests and a clean current-beta CI run remain.
 - [ ] #8 Complete local ZIP addon manager: secure archive validation, import/storage/replacement rollback/export tests and documented limitations. No unfinished game integration.
 - [ ] #6 Complete essential settings/storage behavior supported by verified Cefrium APIs; preserve the persistent game profile.
 - [ ] #15 Complete updater recovery: staged downloads, checksum/signature validation, delta-to-full fallback and safe failure cleanup. Installation remains user-confirmed.
@@ -600,9 +602,9 @@ Planned scope:
 - [ ] Finish remaining #9 navigation/accessibility and physical-device verification.
 - [ ] Review user feedback and beta regressions before committing to stable scope.
 
-## When do we release from main?
+## When may beta be promoted to main?
 
-Promote a specific beta commit to `main` only when all applicable gates are satisfied:
+Promote a specific `beta` commit to `main` only when all applicable gates are satisfied and the user explicitly approves:
 
 1. **Scope freeze:** release checklist complete; unfinished features removed or deferred; no unresolved critical/high-severity issue.
 2. **CI:** required build, unit tests, lint/static checks where configured, and release workflow checks pass on the exact candidate commit.
@@ -613,7 +615,7 @@ Promote a specific beta commit to `main` only when all applicable gates are sati
 7. **Owner approval:** Chaty presents the candidate commit, artifacts, evidence and risks. **The user explicitly approves promotion** before beta is merged/promoted into main.
 8. **Publish separately:** after promotion, create stable tag/release and publish only the verified canonical artifact, with matching changelog. Publishing also requires explicit user authorization; promotion alone does not publish.
 
-There is no fixed calendar release date. **The next stable main release happens when these gates pass and the user approves it**, not merely when a version number or feature list is reached.
+There is no fixed calendar release date. **The next stable main release happens only when these gates pass and the user explicitly approves promotion.**
 
 ## Branch and release policy
 
