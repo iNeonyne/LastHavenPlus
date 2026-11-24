@@ -17,6 +17,16 @@ Entry format:
 
 ---
 
+## 2026-11-24 — Correct Android 37 SDK package name
+
+- **Role:** QA / CI
+- **Files:** `.github/workflows/android.yml`, `STATUS.md`
+- **Change:** Install `platforms;android-37.0`; the Android SDK repository publishes API 37 under that minor-version package name.
+- **Why:** CI could not find `platforms;android-37` even though AGP and Cefrium require compileSdk 37.
+- **Verified:** Android SDK package list and CI failure log identify the correct package name. Build retry pending.
+- **Do not redo:** Do not request `platforms;android-37`; use `android-37.0`.
+- **Follow-ups:** Verify SDK install, Gradle resolution and APK build.
+
 ## 2026-11-24 — Fix Android SDK setup in CI
 
 - **Role:** QA / CI
