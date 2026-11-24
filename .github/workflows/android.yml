@@ -50,8 +50,7 @@ jobs:
             exit 1
           fi
           tag="v$RELEASE_VERSION"
-          existing_release="$(gh api "repos/$GITHUB_REPOSITORY/releases/tags/$tag" 2>/dev/null || true)"
-          if [[ -n "$existing_release" ]]; then
+          if existing_release="$(gh api "repos/$GITHUB_REPOSITORY/releases/tags/$tag" 2>/dev/null)"; then
             is_draft="$(jq -r '.draft' <<< "$existing_release")"
             release_id="$(jq -r '.id' <<< "$existing_release")"
             if [[ "$is_draft" != "true" ]]; then
@@ -60,6 +59,8 @@ jobs:
             fi
             echo "Replacing existing unpublished draft release $tag (release $release_id)."
             gh api --method DELETE "repos/$GITHUB_REPOSITORY/releases/$release_id" >/dev/null
+          else
+            echo "No existing GitHub release for $tag; proceeding."
           fi
           if gh api "repos/$GITHUB_REPOSITORY/git/ref/tags/$tag" >/dev/null 2>&1; then
             gh api --method PATCH "repos/$GITHUB_REPOSITORY/git/refs/tags/$tag" -f "sha=$GITHUB_SHA" -F "force=true" >/dev/null
