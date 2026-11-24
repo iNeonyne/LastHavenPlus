@@ -83,3 +83,11 @@
 - **Action:** Updated `AGENTS.md` and `AGENT_WORK.md` to require an append-only `WORK_LOG.md` checkpoint after every meaningful inspection, change, test, commit, handoff or interruption. Each entry must include exact commit, paths, commands/results, limitations and next safe action.
 - **Reason:** Ensure another agent can resume safely after an unexpected stop without relying on chat history.
 - **Next safe action:** Check the current beta head and CI. No tests are claimed from cancelled runs.
+
+
+### 2026-11-25 — Finalize agent continuity rules
+
+- **Files:** `AGENTS.md`, `AGENT_WORK.md`, `WORK_LOG.md`.
+- **Changes:** Added explicit pre-task reading of the restart journal and GeckoView reference; made per-step logging mandatory after inspections, edits, tests, commits, handoffs and interruptions; removed the last obsolete instruction to reuse the deleted addon manager; finalized Ploy's sequence as #9 → #11 → #20, then #22 after #21, followed by the small #6 URL-settings task. #23 remains blocked pending owner requirements.
+- **Commits:** `32e6a33921f5d26d91589ea49592baf180537ecc` (AGENTS), `6119d686e25ce883abc41148b428cc13e54b578c` (AGENT_WORK).
+- **Next safe action:** inspect the latest beta CI run for the post-removal source. Current docs-only commits do not prove app compilation. No GeckoView implementation has begun.
