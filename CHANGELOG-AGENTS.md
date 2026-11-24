@@ -1,3 +1,13 @@
+## 2026-11-24 — Track storage, network usage and diagnostics work
+
+- **Role:** Main orchestrator / Android / documentation
+- **Files:** GitHub issues #6, #10, #11; TickTick project; `STATUS.md`, `README.md`
+- **Change:** Expanded #6 to cover installed APK and Cefrium profile/cache size reporting; created #10 for local network usage reporting and #11 for privacy-conscious app/updater logs. Synchronized all seven repository issues (#4–#11, with #5 closed) into the LastHavenPlus TickTick project and refreshed stale repository links.
+- **Why:** Make storage, data consumption and troubleshooting visible while keeping the GitHub issue checklist canonical and mirrored in TickTick.
+- **Verified:** GitHub issue writes succeeded; TickTick returned successful updates for the five existing open tasks and created tasks for #5, #10 and #11. Code implementation and tests are not yet verified.
+- **Do not redo:** Do not create duplicate issues/tasks; do not mark physical-device verification as passed; do not upload usage data or logs automatically.
+- **Follow-ups:** Implement settings/storage and local network counters, add bounded redacted diagnostics, run CI, update issue checklists and close only issues whose acceptance criteria are met.
+
 ## 2026-11-24 — Rename product branding to LastHavenPlus
 
 - **Role:** Main orchestrator / Android / documentation
