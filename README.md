@@ -32,7 +32,7 @@ Official references:
 - [Cefrium Releases](https://cefrium.com/releases/)
 - [Cefrium API reference](https://cefrium.com/docs/)
 
-## Build
+## Build locally
 
 Install JDK 25, Android SDK 37 and Gradle 9.7.1, then run:
 
@@ -41,18 +41,25 @@ gradle assembleDebug
 gradle testDebugUnitTest
 ```
 
+The Gradle Wrapper is not yet committed. Adding the wrapper and switching CI/local build instructions to `./gradlew` is tracked in [issue #4](https://github.com/iNeonyne/Lasthavens-Android/issues/4).
+
 Debug APK: `app/build/outputs/apk/debug/app-debug.apk`
 
-GitHub Actions builds the debug APK and publishes it as a workflow artifact. A release keystore is intentionally not stored in this repository. Configure and securely back up the release signing key before distributing the first release build; never commit it.
+GitHub Actions builds ARM64 debug and signed release variants. Release signing uses repository secrets; the private keystore is never stored in the repository. See [STATUS.md](STATUS.md) for the latest verification state.
 
-## Priorities
+## Work tracking
 
-| Priority | Deliverable |
+**GitHub Issues are the single source of truth for all unfinished work.** Use the issue checklists for scope and acceptance criteria. [Open issues](https://github.com/iNeonyne/Lasthavens-Android/issues).
+
+| Priority | Tracked work |
 |---|---|
-| P0 | Minimal app, Cefrium integrated, LastHaven loads on arm64 |
-| P1 | Fullscreen gameplay, touch/audio, lifecycle, persistent storage, retry handling |
-| P2 | Minimal settings, verified compatibility, measured performance, APK size |
-| P3 | Release APK, stable signing, update/data-preservation verification |
+| P0.1 | [Build reproducibility, updater tests and CI verification](https://github.com/iNeonyne/Lasthavens-Android/issues/4) |
+| P0.2 | [Physical-device gameplay, persistence and update verification](https://github.com/iNeonyne/Lasthavens-Android/issues/5) |
+| P2 | [Minimal settings and safe storage controls](https://github.com/iNeonyne/Lasthavens-Android/issues/6) |
+| P3 | [Measure runtime performance and APK-size improvements](https://github.com/iNeonyne/Lasthavens-Android/issues/7) |
+| Deferred | [Addon manager — only after the core launcher is stable](https://github.com/iNeonyne/Lasthavens-Android/issues/8) |
+
+P0/P1 gameplay reliability work is the priority. Do not start optional settings, performance tuning or the addon manager ahead of a verified playable core.
 
 ## In-app updater
 
@@ -68,10 +75,12 @@ GitHub Actions builds the debug APK and publishes it as a workflow artifact. A r
 
 - Cookies, IndexedDB, LocalStorage and Cache Storage are game data and must persist.
 - Never clear browser data automatically.
-- “Clear game cache” may clear only HTTP and code caches.
+- “Clear game cache” may clear only HTTP and code caches, and only after the pinned Cefrium API is verified.
 - “Clear game data” must be a separate destructive action with confirmation.
 - APK updates must use the same application ID and release signing key.
 
 ## Agent workflow
 
-Read [AGENTS.md](AGENTS.md) before editing. Keep [STATUS.md](STATUS.md) current and append every meaningful change to [CHANGELOG-AGENTS.md](CHANGELOG-AGENTS.md). Claim a file or work area before editing it. Keep the workflow lean and prioritize a playable build.
+Read [AGENTS.md](AGENTS.md) before editing. Keep [STATUS.md](STATUS.md) limited to current progress, active ownership, evidence and blockers. Append every meaningful change to [CHANGELOG-AGENTS.md](CHANGELOG-AGENTS.md).
+
+Use GitHub Issues for task scope and checklists; do not maintain a second TODO list in repository documentation. Claim an issue and work area before editing. Keep the workflow lean, prioritize a playable game, and have the main orchestrator integrate and push directly to `main` without pull requests.
