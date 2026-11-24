@@ -1,3 +1,13 @@
+## 2026-11-24 — Define Ploy and Chaty agent assignments
+
+- **Role:** Chaty / main orchestrator
+- **Files:** `AGENT_WORK.md`, `AGENTS.md`, `STATUS.md`, `CHANGELOG-AGENTS.md`
+- **Change:** Added named agent responsibilities and a sequential delegation plan. Ploy's first task is issue #13 accessibility semantics, followed by #11 diagnostics tests and then #8 addon repository tests after review and explicit approval. Chaty retains integration, CI/release coordination, central tracking and the remaining project work. Added isolation, handoff and no-direct-main-push rules for Ploy.
+- **Why:** Enable useful parallel implementation despite Ploy's repository-only visibility and prevent duplicate or conflicting work.
+- **Verified:** Assignment file created on main; central agent instructions and active-work status updated. No application source code changed and no build/tests were run.
+- **Do not redo:** Ploy must not start queued tasks before Chaty accepts the prior handoff. Ploy must not modify central tracking or push to main.
+- **Follow-ups:** Give Ploy the contents of `AGENT_WORK.md` and repository access; Chaty reviews each isolated handoff before assigning the next task.
+
 ## 2026-11-24 — Rewrite README for the current v1.0.0 project state
 
 - **Role:** Main integrator / documentation
