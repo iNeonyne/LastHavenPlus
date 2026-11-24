@@ -202,25 +202,27 @@ jobs:
                 BASE_CERT_DIGEST="$(printf '%s\n' "$BASE_CERT_OUTPUT" | awk -F': ' '/certificate SHA-256 digest:/ {print tolower($2); exit}')"
                 if [[ "$BASE_CERT_DIGEST" == "b3bbf7520e77dfc384a60b1eee6c5f205b978f9b453849e2be523f642018d263" ]]; then
                   PATCH_NAME="lasthavenlauncher-arm64-${PREVIOUS_TAG}-to-${GITHUB_REF_NAME}.bsdiff"
-                  bsdiff "$RUNNER_TEMP/previous.apk" "$TARGET_APK" "$RUNNER_TEMP/update.bsdiff"
-                  bspatch "$RUNNER_TEMP/previous.apk" "$RUNNER_TEMP/reconstructed.apk" "$RUNNER_TEMP/update.bsdiff"
-                  REBUILT_SHA="$(sha256sum "$RUNNER_TEMP/reconstructed.apk" | awk '{print $1}')"
-                  test "$REBUILT_SHA" = "$TARGET_SHA"
-                  PATCH_SIZE="$(stat -c '%s' "$RUNNER_TEMP/update.bsdiff")"
-                  if (( PATCH_SIZE * 10 < TARGET_SIZE * 9 )); then
-                    cp "$RUNNER_TEMP/update.bsdiff" "release-assets/$PATCH_NAME"
-                    PATCH_SHA="$(sha256sum "release-assets/$PATCH_NAME" | awk '{print $1}')"
-                    PATCH_JSON="$(jq -n \
-                      --arg name "$PATCH_NAME" \
-                      --arg fromVersion "$BASE_VERSION" \
-                      --arg fromSha256 "$BASE_SHA" \
-                      --arg sha256 "$PATCH_SHA" \
-                      --argjson fromVersionCode "$BASE_VERSION_CODE" \
-                      --argjson size "$PATCH_SIZE" \
-                      '{name:$name, fromVersion:$fromVersion, fromVersionCode:$fromVersionCode, fromSha256:$fromSha256, sha256:$sha256, size:$size}')"
-                    echo "Differential patch: $PATCH_SIZE bytes versus $TARGET_SIZE-byte full APK."
+                  if bsdiff "$RUNNER_TEMP/previous.apk" "$TARGET_APK" "$RUNNER_TEMP/update.bsdiff" &&
+                    bspatch "$RUNNER_TEMP/previous.apk" "$RUNNER_TEMP/reconstructed.apk" "$RUNNER_TEMP/update.bsdiff" &&
+                    [[ "$(sha256sum "$RUNNER_TEMP/reconstructed.apk" | awk '{print $1}')" == "$TARGET_SHA" ]]; then
+                    PATCH_SIZE="$(stat -c '%s' "$RUNNER_TEMP/update.bsdiff")"
+                    if (( PATCH_SIZE * 10 < TARGET_SIZE * 9 )); then
+                      cp "$RUNNER_TEMP/update.bsdiff" "release-assets/$PATCH_NAME"
+                      PATCH_SHA="$(sha256sum "release-assets/$PATCH_NAME" | awk '{print $1}')"
+                      PATCH_JSON="$(jq -n \
+                        --arg name "$PATCH_NAME" \
+                        --arg fromVersion "$BASE_VERSION" \
+                        --arg fromSha256 "$BASE_SHA" \
+                        --arg sha256 "$PATCH_SHA" \
+                        --argjson fromVersionCode "$BASE_VERSION_CODE" \
+                        --argjson size "$PATCH_SIZE" \
+                        '{name:$name, fromVersion:$fromVersion, fromVersionCode:$fromVersionCode, fromSha256:$fromSha256, sha256:$sha256, size:$size}')"
+                      echo "Differential patch: $PATCH_SIZE bytes versus $TARGET_SIZE-byte full APK."
+                    else
+                      echo "Differential patch is not at least 10% smaller; publishing full APK only."
+                    fi
                   else
-                    echo "Differential patch is not at least 10% smaller; publishing full APK only."
+                    echo "Patch generation/reconstruction failed; publishing full APK only."
                   fi
                 else
                   echo "Previous release signing certificate differs; skipping differential patch."
