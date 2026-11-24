@@ -9,7 +9,7 @@
         android:hardwareAccelerated="true"
         android:label="@string/app_name"
         android:supportsRtl="true"
-        android:theme="@style/Theme.LastHavenLauncher"
+        android:theme="@style/Theme.LastHavenPlus"
         android:usesCleartextTraffic="false">
         <activity
             android:name=".MainActivity"
