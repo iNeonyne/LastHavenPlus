@@ -536,54 +536,77 @@ Allow users to preserve launcher preferences across reinstallations or device ch
 
 ---
 
-## Issue 18 — Roadmap — v1.0.0 released, v1.1.0 addon manager, v1.2.0 improvements
+## Issue 18 — Roadmap — stable v1.0.0, beta development and controlled main promotion
 
 **GitHub:** https://github.com/iNeonyne/LastHavenPlus/issues/18
 **State:** open
 
 # LastHavenPlus release roadmap
 
-This is the source of truth for release scope. v1.0.0 has been published; remaining verification and follow-up work is tracked separately. A release is not complete merely because code is merged.
+This roadmap defines what belongs in shared `beta` and when work may be promoted to stable `main`. A commit or successful build alone does not make a release.
 
-## v1.0.0 — Published
-**Status: Published**
-- Published on 2026-11-24.
+## Branch model
+
+- **`main` — stable release branch.** Contains approved stable releases and explicitly approved hotfixes only. No routine feature development.
+- **`beta` — integration and release-candidate branch.** Chaty pushes orchestrator changes here. Ploy contributes through reviewed PRs targeting `beta`.
+- Ploy creates task branches from the latest `beta`; each PR targets `beta`. Chaty reviews the full diff and may merge accepted PRs into `beta`.
+- Features must be complete, tested and documented before being considered release-ready.
+- No automatic merges, tags, releases or beta-to-main promotion.
+
+## v1.0.0 — Stable release already published
+
+**Status: Published 2026-11-24**
+
 - Canonical assets: `lasthavenplus-arm64.apk` and `lasthavenplus-update.json`.
-- The release is complete as a published milestone. Any outstanding physical-device or follow-up checks must not be represented as a blocker to the already-published release; track them as follow-up work.
+- Do not rewrite this release. Follow-up work belongs in beta and a later stable version.
 
-## v1.1.0 — Local ZIP addon import
-**Goal:** deliver a safe, usable addon manager whose first version imports addon ZIP files selected by the user.
+## Next stable release — v1.1.0
+
+**Development branch:** `beta`  
+**Promotion target:** `main`, only after the release gate below passes.
 
 Planned scope:
-- [ ] #8 Build the addon manager around local ZIP import: Android file picker, archive inspection/validation, compatibility review, explicit install, installed-addon management, and rollback/recovery.
-- [ ] v1.1.0 does **not** include an online addon catalog, browse/search, repository management, automatic downloads or background installs. Consider browsing in a later release.
-- [ ] #6 Complete essential settings and safe storage controls needed to configure and support addon management (editable HTTPS game URL, explicit Apply, verified version info, safe cache/data handling only where Cefrium APIs support it).
-- [ ] #15 Harden updater recovery: staged downloads, checksum/signature validation, delta-to-full fallback, interruption/error recovery, and no unverified install.
-- [ ] Re-run relevant physical arm64 regression checks for ZIP import, game launch, persistence and updater behavior.
-- [ ] Do not ship the addon manager until archive validation, interrupted-operation recovery and rollback tests pass.
+- [ ] #4 Build reliability and updater tests: reproducible Gradle Wrapper, checksum verification, CI and updater failure/recovery coverage.
+- [ ] #8 Complete local ZIP addon manager: secure archive validation, import/storage/replacement rollback/export tests and documented limitations. No unfinished game integration.
+- [ ] #6 Complete essential settings/storage behavior supported by verified Cefrium APIs; preserve the persistent game profile.
+- [ ] #15 Complete updater recovery: staged downloads, checksum/signature validation, delta-to-full fallback and safe failure cleanup. Installation remains user-confirmed.
+- [ ] #11 Complete diagnostics privacy/redaction/rotation test coverage.
+- [ ] #13 Complete accessibility semantics; physical TalkBack verification must not be claimed from CI.
+- [ ] Run regression checks for game launch, persistence, updater and addon flows on physical ARM64 hardware.
+- [ ] Defer any feature that cannot meet acceptance criteria; do not ship partial implementations.
 
-## v1.2.0 — Reliability, accessibility and convenience
-**Goal:** complete secondary improvements after the addon manager is stable.
-- [ ] #12 Show safe, actionable Cefrium load-error categories with a generic fallback.
-- [ ] #13 Complete accessible names and TalkBack focus/spoken-label verification.
-- [ ] #14 Add on-demand DNS/HTTPS connection diagnostics and response-time reporting; do not claim this proves game-server health.
-- [ ] #16 Add System/Auto, Portrait and Landscape gameplay choices plus a Keep screen awake while playing toggle with correct lifecycle cleanup.
-- [ ] #17 Export/import a versioned backup of allowlisted non-sensitive launcher settings; never include credentials, cookies, Cefrium profile/cache or game data.
-- [ ] #7 Record reproducible performance/APK-size baselines and implement only measured, safe optimizations.
-- [ ] #9 Complete accessibility and physical-device navigation verification.
-- [ ] #11 Complete diagnostics CI coverage and verify runtime-version reporting only through a supported Cefrium API.
-- [ ] Review feedback and reliability issues from v1.0.0/v1.1.0 before expanding scope.
+## Later beta backlog — candidates for v1.2.0 or later
+
+- [ ] #12 Safe, actionable Cefrium load-error categories using verified public API fields.
+- [ ] #14 On-demand DNS/HTTPS diagnostics; do not imply this proves game-server or gameplay health.
+- [ ] #16 Orientation and keep-awake preferences with lifecycle cleanup.
+- [ ] #17 Versioned backup/restore of allowlisted non-sensitive launcher settings only.
+- [ ] #7 Reproducible performance/APK-size baselines; optimize only from measurements.
+- [ ] Finish remaining #9 navigation/accessibility and physical-device verification.
+- [ ] Review user feedback and beta regressions before committing to stable scope.
+
+## When do we release from main?
+
+Promote a specific beta commit to `main` only when all applicable gates are satisfied:
+
+1. **Scope freeze:** release checklist complete; unfinished features removed or deferred; no unresolved critical/high-severity issue.
+2. **CI:** required build, unit tests, lint/static checks where configured, and release workflow checks pass on the exact candidate commit.
+3. **Artifact integrity:** one canonical signed ARM64 APK; package ID, signing certificate, version metadata, ABI contents and updater manifest/checksums verified. Never publish a debug APK.
+4. **Regression:** game launch/navigation, persistent Cefrium profile, manual updater and included addon flows tested. No user data is cleared or reset.
+5. **Physical-device gate:** applicable gameplay, persistence, install/update and recovery checks pass on a real ARM64 Android device. If a device-only requirement cannot be tested, explicitly defer it from release rather than mark it passed.
+6. **Beta soak:** candidate exercised long enough to catch obvious regressions; record exact commit, build, results and known limitations in STATUS.
+7. **Owner approval:** Chaty presents the candidate commit, artifacts, evidence and risks. **The user explicitly approves promotion** before beta is merged/promoted into main.
+8. **Publish separately:** after promotion, create stable tag/release and publish only the verified canonical artifact, with matching changelog. Publishing also requires explicit user authorization; promotion alone does not publish.
+
+There is no fixed calendar release date. **The next stable main release happens when these gates pass and the user approves it**, not merely when a version number or feature list is reached.
 
 ## Branch and release policy
-- `main` is the stable release branch; `beta` is the shared integration and testing branch.
-- Chaty pushes orchestrator changes directly to `beta`; Ploy submits task branches through PRs targeting `beta`.
-- Chaty reviews and may merge accepted Ploy PRs into `beta` after required checks pass.
-- Promote `beta` into `main` only after beta verification and the user's explicit approval.
+
 - arm64-v8a only; preserve application ID and established signing key.
 - Manual, user-confirmed update installation; no background or silent installation.
-- Keep the existing game and Cefrium profile data intact across updates.
-- Addon ZIPs must be validated before installation; failed or interrupted operations must leave existing addon/game state recoverable.
-- Every release must pass CI, signed artifact/package checks, one-APK asset verification, and applicable physical-device tests.
-- If a feature cannot be completed and verified, move it out of the release scope rather than shipping a partial implementation.
+- Preserve existing game and Cefrium profile data across updates.
+- Addon ZIPs must be validated before installation; failed/interrupted operations must leave existing addon/game state recoverable.
+- Every stable release must pass applicable CI, signed artifact/package checks, one-APK asset verification and physical-device tests.
+- If a feature cannot be completed and verified, defer it; never ship a half-implemented feature.
 
 ---
