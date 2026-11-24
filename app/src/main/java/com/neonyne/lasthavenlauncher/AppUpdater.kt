@@ -173,7 +173,8 @@ object AppUpdater {
                                 it.baseVersion == currentVersion &&
                                     it.baseVersionCode == packageInfo.longVersionCode
                             }
-                        }
+                            }
+                        }.getOrNull()
 
                         UpdateCheckResult.Available(
                             AppUpdateInfo(
