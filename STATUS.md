@@ -20,8 +20,8 @@
 | Persistent storage request | Implemented, unverified | Calls `navigator.storage.persist()` after the first completed document load |
 | Browser profile | Default persistent | Cefrium default profile stores cookies, LocalStorage, IndexedDB, service workers and cache in app-private `app_cefrium`; not the Android cache directory |
 | Remote debugging | Debug builds only | `Cefrium.setRemoteDebuggingEnabled` enabled from Application.onCreate before first browser creation |
-| CI build | **Passing** | Run #15, commit `3d4e1a0`; build, unit-test task, ABI verification and artifact upload all succeeded |
-| Debug APK artifact | Available | `lasthavenlauncher-debug-arm64`, run #15; artifact expires 2026-12-08 |
+| CI build | **Passing** | Run #32, commit `0c4393c`; build, unit-test task, ABI verification and artifact upload succeeded |
+| Debug APK | Measured | 229,073,631 bytes (218.4 MiB); artifact downloaded and inspected from run #32 |
 | Device test | Not run | No connected arm64 device/emulator available to this run |
 | Release signing | Not configured | Release key must be generated/backed up before first distributed release |
 
@@ -34,6 +34,14 @@
 - Uses an app-private temporary file and a non-exported AndroidX FileProvider; no external storage permission or background service.
 - Android package installer enforces package identity/signature. A distributed release must use the same application ID and signing key as the installed app.
 - No published GitHub Releases currently exist; updater cannot return a real update until the first signed release and matching asset are published.
+
+## APK size audit
+
+- Baseline from CI run #32: APK is 229,073,631 bytes (218.4 MiB).
+- Largest compressed entry: `lib/arm64-v8a/libcef.so`, 92.84 MiB (201.94 MiB uncompressed).
+- DEX payload: 22 DEX files totaling approximately 115 MiB; this is the main candidate for R8 code shrinking.
+- Chromium data files include `icudtl.dat` (8.85 MiB) and `resources.pak` (1.23 MiB); do not strip or replace engine assets without Cefrium-specific compatibility evidence.
+- The archive downloaded from Actions is not the APK size; use the APK's own file size for comparisons.
 
 ## Cefrium API findings
 
@@ -64,7 +72,7 @@ The web fetch of the game URL returns only “Loading... Please enable JavaScrip
 
 | Owner | Surface | State |
 |---|---|---|
-| Main integrator | GitHub Releases updater: version check, optional APK download, SHA-256 verification and Android installer handoff | Implemented; CI pending |
+| Main integrator | APK size audit and safe R8 / resource shrinking trial; own `app/build.gradle.kts`, CI workflow, status and changelog | Active |
 
 ## Blockers
 
@@ -76,14 +84,14 @@ The web fetch of the game URL returns only “Loading... Please enable JavaScrip
 
 ## Performance log
 
-No performance changes have been made. Establish baseline numbers after gameplay loads.
+No runtime performance changes have been made. APK size baseline is measured; establish gameplay and runtime baselines after gameplay loads.
 
 | Metric | Baseline | Optimized |
 |---|---:|---:|
 | Cold start to first paint | Not measured | — |
 | FPS / frame pacing | Not measured | — |
 | PSS / native memory | Not measured | — |
-| APK download size | Not measured | — |
+| APK download size | 229,073,631 bytes (218.4 MiB) | — |
 | Rendering latency | Not measured | — |
 
 ## Next actions
