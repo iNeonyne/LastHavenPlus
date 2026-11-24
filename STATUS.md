@@ -15,19 +15,24 @@
 | Chromium revision | Documented | 156.0.8078.96, CEF branch 8078 |
 | Maven registry | Configured | Codeberg mirror `https://codeberg.org/api/packages/cefrium/maven` |
 | ABI | Configured | arm64-v8a only |
-| Game page | Not tested in app | Web URL responds with JS-required page; requires real browser execution |
-| CI build | Running | CI setup correction: platform-tools explicit; Android API 37 is published as `platforms;android-37.0`, not `android-37`. Workflow updated; build pending |
+| Immersive host | Implemented, unverified | Fullscreen flags, landscape sensor orientation, screen stays awake |
+| Loading / retry | Implemented, unverified | Compose loading state, main-frame load error and renderer termination retry |
+| Persistent storage request | Implemented, unverified | Calls `navigator.storage.persist()` after the first completed document load |
+| Browser profile | Default persistent | Cefrium default profile stores cookies, LocalStorage, IndexedDB, service workers and cache in app-private `app_cefrium`; not the Android cache directory |
+| Remote debugging | Debug builds only | `Cefrium.setRemoteDebuggingEnabled` enabled from Application.onCreate before first browser creation |
+| CI build | Pending | API 37 package corrected to `platforms;android-37.0`; Gradle build pending |
 | Device test | Not run | No connected arm64 device/emulator available to this run |
 | Release signing | Not configured | Release key must be generated/backed up before first distributed release |
 
 ## Cefrium API findings
 
-- Official quickstart documents `CefriumView`, `rememberCefriumViewState` and `rememberCefriumNavigator` in package `com.cefrium.compose`.
-- Official docs call this the **Compose API**. The classic Android View API is `CefriumBrowser.createWithSurface(activity)`; the project uses the requested `CefriumView` API.
-- Cefrium 0.21.0 is the current release and tracks Chromium 156.0.8078.96.
-- Required toolchain: JDK 25, Gradle 9.7.1, AGP 9.4, compileSdk 37, minSdk 29 and 4 GB Gradle heap.
-- SDK manifest contributes its multiprocess services and permissions via manifest merge; do not duplicate those service declarations.
-- Cefrium API is pre-1.0 and may change between releases.
+- Current release: Cefrium 0.21.0, Chromium 156.0.8078.96, CEF branch 8078.
+- Official quickstart requires JDK 25, Gradle 9.7.1, AGP 9.4, compileSdk 37, minSdk 29 and a 4 GB Gradle heap.
+- `CefriumView` is the Compose API. The classic Android View API is `CefriumBrowser.createWithSurface(activity)`; this project uses `CefriumView`.
+- `CefriumViewState.rendererTermination` reports renderer death; `CefriumNavigationClient.onLoadError` reports main-frame load errors.
+- `CefriumProfile.getDefault()` is persistent. Its data lives under Cefrium's private `app_cefrium` directory, not Android's cache directory.
+- `CefriumBrowser.clearCache()` / `CefriumNavigator.clearCache()` clears HTTP cache. No documented public code-cache-only clearing API has been confirmed yet.
+- Cefrium's API is pre-1.0 and may change between releases.
 
 ## Web capability verification
 
@@ -56,7 +61,7 @@ The web fetch of the game URL returns only “Loading... Please enable JavaScrip
 |---|---|---|
 | No physical arm64 test device attached to this session | Cannot verify gameplay, GPU, audio or persistence | Install CI APK on target phone and run checklist |
 | Release signing key not configured | No stable release APK can be shipped yet | Generate/backup key and configure CI secrets before release |
-| Cefrium Compose error callback and profile/cache controls need API-level validation | Retry and clear-cache features not implemented yet | Inspect pinned 0.21.0 API docs before implementation |
+| Code cache clear API not confirmed | Cannot yet implement the requested HTTP + code-cache-only clear action | Inspect pinned SDK API; do not delete engine directories manually |
 
 ## Performance log
 
@@ -75,5 +80,5 @@ No performance changes have been made. Establish baseline numbers after gameplay
 1. Confirm the GitHub Actions debug build passes; fix any build errors.
 2. Install the arm64 APK on a physical phone and confirm LastHaven loads.
 3. Run the web capability checklist in Cefrium and Chrome on the same phone.
-4. Implement retry, persistent storage request and lifecycle handling based on verified Cefrium APIs.
-5. Add settings only after the playable path is reliable.
+4. Confirm persistent storage result and app update/data retention.
+5. Add minimal settings after the playable path is reliable; preserve the cache/data distinction.

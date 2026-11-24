@@ -1,4 +1,4 @@
-# AGENTS.md — LastHavenLauncher
+# LastHavenLauncher
 
 Instructions for every human or AI agent working in this repository.
 
@@ -34,17 +34,15 @@ Do not recreate, modify or develop the game. Do not add System WebView, GeckoVie
 
 **Terminology:** Official Cefrium docs describe `CefriumView` as the Compose API. The classic Android View integration is `CefriumBrowser.createWithSurface(activity)`. Use the Compose `CefriumView` requested by this project unless an API-level blocker is found; do not silently switch rendering APIs.
 
-Official build requirements for Cefrium 0.21.0:
-- JDK 25
-- Gradle 9.7.1
-- AGP 9.4.0
+Official build requirements:
+- JDK 25, Gradle 9.7.1, AGP 9.4.0
 - compileSdk 37, minSdk 29
-- Gradle heap 4 GB
+- 4 GB Gradle heap
 - AGP 9 built-in Kotlin support; do not apply `org.jetbrains.kotlin.android`
-- Apply the Compose compiler Gradle plugin at the matching stable Kotlin version
-- Use legacy JNI library packaging as required by Cefrium's quickstart
+- Compose compiler Gradle plugin at a matching stable Kotlin version
+- Legacy JNI library packaging
 
-The Codeberg Maven registry mirrors the current and previous releases only. Keep Cefrium pinned to a specific version; check the official releases page before updating it. Update SDK, Compose wrapper and Gradle plugin together.
+The Codeberg Maven registry mirrors the current and previous releases only. Keep Cefrium pinned; check the official releases page before updating it. Update SDK, Compose wrapper and Gradle plugin together.
 
 References:
 - https://cefrium.com/quickstart/
@@ -74,17 +72,17 @@ Agents may work in parallel only on disjoint files/surfaces. The main integrator
 - [ ] Install and load LastHaven on a physical arm64 device
 
 ### P1 — Gameplay reliability
+- [x] Main-frame load failure and renderer termination retry UI
+- [x] Request persistent web storage after initial page load
 - [ ] Confirm fullscreen behavior and touch input
 - [ ] Verify audio and autoplay after a user gesture
 - [ ] Verify cookies, IndexedDB, LocalStorage and Cache Storage persist
-- [ ] Request persistent web storage on a valid page-load path
-- [ ] Handle main-frame load failures and renderer termination with retry
 - [ ] Verify lifecycle pause/resume and session restoration
 
 ### P2 — Settings and measurement
 - [ ] Game URL
 - [ ] Fullscreen and orientation
-- [ ] Clear HTTP/code cache only
+- [ ] Clear HTTP/code cache only (code-cache API still to verify)
 - [ ] Confirmed clear-game-data action
 - [ ] Reload, engine information and app version
 - [ ] Run WebGL2, WebAssembly, WASM threads/SAB, WebSockets and audio checks in Cefrium; compare with Chrome on the same phone
@@ -99,10 +97,10 @@ Agents may work in parallel only on disjoint files/surfaces. The main integrator
 
 When starting work:
 1. Read this file, STATUS and the last 5–10 changelog entries.
-2. Claim the file/work area in STATUS.
-3. Make the smallest useful change.
+2. Claim a slice under STATUS → Active work.
+3. Implement the smallest useful change.
 4. Build/test where possible.
-5. Update STATUS, append CHANGELOG-AGENTS, and unclaim the work.
+5. Update STATUS, append CHANGELOG-AGENTS, and unclaim when done.
 
 Append changelog entries with date, role, files, change, reason, verification, do-not-redo notes and follow-ups. A failed experiment is still worth recording.
 
