@@ -70,7 +70,7 @@ A signed release build requires the established project keystore and credentials
 
 ### CI evidence
 
-The latest verified successful Android build and unit-test task is [Actions run #308](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45503025246), for commit `82590635e77c7abfedcaa6fd1fa4ad8c3b5de469`. Its release APK contained only `arm64-v8a` and matched the established release signing certificate.
+The latest verified successful Android build and unit-test task is [Actions run #310](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45508671565), for commit `91e21d4bde0a26b8d7cbfd9697615f32c2f57d21`. The signed release build passed signing-certificate and ARM64-only ABI verification. This run predates the new PR-only validation job.
 
 That run predates the current beta HEAD. The six later commits changed workflow/documentation files rather than application source; the subsequent CI workflow optimization has not yet been independently verified. Check [GitHub Actions](https://github.com/iNeonyne/LastHavenPlus/actions) and [STATUS.md](STATUS.md) for the latest evidence. CI does not replace physical-device testing.
 
