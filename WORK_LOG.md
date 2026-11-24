@@ -10,7 +10,7 @@
 - At task end, record the exact handoff commit, changed files, tests, known limitations and next action.
 - If interrupted, leave a final checkpoint stating the last completed action and the first safe next action. Do not amend or rewrite earlier checkpoints; append a correction if needed.
 - Task work is submitted through PRs targeting `beta`. Chaty alone reviews and merges accepted PRs; contributors must not push directly to `beta`. Never push to `main` or publish without explicit owner approval.
-- Do not use TickTick. GitHub Issues and `ISSUES.md` are the source of truth.
+- TickTick may be used as a supplementary personal task tracker. GitHub Issues and `ISSUES.md` remain the project sources of truth.
 
 ## Current restart point — 2026-11-25
 
@@ -181,3 +181,10 @@
 - **Change:** Replaced the active no-PR policy with PR-based task integration. Contributors use dedicated branches and open PRs targeting `beta`; Chaty alone reviews and merges accepted work. `beta` remains the active integration branch and `main` remains stable.
 - **Scope:** Updated the active workflow instructions in README, AGENTS, AGENT_WORK, STATUS, ISSUES and this work log. Historical entries remain intact as an append-only record and are superseded by this entry.
 - **Safety:** No application source, release configuration, `main` branch or release assets changed. PRs do not authorize promotion to `main`; explicit owner approval remains required.
+
+## 2026-11-25 — Add PR validation to Android CI
+
+- **Branch:** `beta`.
+- **Change:** Added a `pull_request` trigger for PRs targeting `beta`. The PR-only job uses read-only repository permissions, builds the unsigned release variant and runs unit tests without loading signing secrets or uploading APKs. The existing branch/tag pipeline retains signed release and artifact verification.
+- **Verification:** Workflow source updated. A successful Actions run has not yet been inspected; no CI pass is claimed.
+- **Safety:** No application source, app ID, release signing identity, `main` or published release changed.
