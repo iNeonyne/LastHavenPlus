@@ -20,11 +20,11 @@
 | Persistent storage request | Implemented, unverified | Calls `navigator.storage.persist()` after the first completed document load |
 | Browser profile | Default persistent | Cefrium default profile stores cookies, LocalStorage, IndexedDB, service workers and cache in app-private `app_cefrium`; not the Android cache directory |
 | Remote debugging | Debug builds only | `Cefrium.setRemoteDebuggingEnabled` enabled from Application.onCreate before first browser creation |
-| Previous CI build | **Passing** | Run #32, commit `0c4393c`; debug build, unit-test task, ABI verification and artifact upload succeeded |
+| Latest CI build | Build + tests passed; release verification failed | Run #79, commit `694634d`; the BSDIFF unit test now compiles. The next CI step fails during signing/ABI verification; exact failing check is being isolated |
 | Debug APK baseline | Measured | 229,073,631 bytes (218.4 MiB); actual APK extracted from run #32 artifact |
 | R8 / resource shrinking | Configured; validation pending | Enabled only on release variant; CI builds debug and signed release APKs |
 | Device test | Not run | No connected arm64 device/emulator available to this run |
-| Release signing | Configured; CI validation pending | Existing `lasthavenplus` key is restored from GitHub secrets and its SHA-256 fingerprint is pinned in CI and the updater |
+| Release signing | Configured; verification pending | Existing `lasthavenplus` key restores successfully in run #79; CI signing-certificate and ABI verification still needs a passing result |
 
 ## Work tracking
 
@@ -89,14 +89,14 @@ The web fetch of the game URL returns only “Loading... Please enable JavaScrip
 
 | Owner | Surface | State |
 |---|---|---|
-| Main integrator | Signed release pipeline and BSDIFF differential updater; own updater, Gradle signing config, CI workflow, tests and release docs | In progress; preserve existing release certificate and full-APK fallback |
+| Main integrator | Issue #4 — BSDIFF test, release verification and updater CI; owns updater test, CI workflow and related status/changelog | In progress; temp-directory deprecation fixed; isolate signing/ABI verification failure |
 
 ## Blockers
 
 | Blocker | Impact | Next action |
 |---|---|---|
 | No physical arm64 test device attached to this session | Cannot verify gameplay, GPU, audio or persistence | Install CI APK on target phone and run checklist |
-| Signed updater path not yet CI-validated | No production release should be tagged until build/test passes | Check main CI, then create a test release tag only after the signed APK fingerprint and patch reconstruction are verified |
+| CI release verification step fails after a successful build | No production release should be tagged until package ABI and signing checks pass | Add explicit diagnostic output to identify the failing check, fix it, and rerun CI |
 | Code cache clear API not confirmed | Cannot yet implement the requested HTTP + code-cache-only clear action | Inspect pinned SDK API; do not delete engine directories manually |
 
 ## Performance log
