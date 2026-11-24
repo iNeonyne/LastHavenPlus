@@ -1,34 +1,39 @@
-# Project issues and task tracker — LastHavenPlus
+# Project backlog — LastHavenPlus
 
-**Repository backlog:** this file is the consolidated, version-controlled task tracker. Update its checklists and status in the same commit as meaningful implementation work.
-**Source of truth:** GitHub Issues and this version-controlled `ISSUES.md` backlog are the project task records. Keep their scope, state and acceptance criteria aligned.
+**Source of truth:** GitHub Issues and this version-controlled backlog. Keep issue scope, status and acceptance criteria aligned. Do not close an issue because documentation changed.
 
-## Backlog overview
+## Current priorities
 
-**Top priority:** replace Cefrium with Mozilla GeckoView (#20 decision, #21 implementation). #4 is limited to establishing a clean current-beta build baseline; unrelated work is paused. Ploy's #9/#11 tasks resume after the engine migration is underway.
+1. **P0 — GeckoView verification and release baseline:** GeckoView 160 is now the engine in beta. CI run #308 passed the Android release build and unit-test task for commit `82590635e77c7abfedcaa6fd1fa4ad8c3b5de469`; this is not a physical-device result and is not the latest beta HEAD.
+2. **P1 — Home screen and navigation (#22):** Ploy owns the home screen, Play/Settings entry points and Reload/Home/Return to game flow. Chaty must not edit the assigned UI files concurrently.
+3. **P0.2 — Physical ARM64 verification (#5):** gameplay, profile persistence, media, navigation and update installation remain unverified until tested on real ARM64 hardware.
+4. **Build reproducibility/updater tests (#4):** Gradle Wrapper is present and pinned. Continue the missing updater edge-case coverage and verify current CI/workflow behavior.
+5. **Deferred:** addon-manager work (#23) remains on hold until the owner supplies a new written specification.
 
-| ID | Priority / title | State |
-|---|---|---|
-| [#4](#issue-4) | P0.1 — Improve build reproducibility and updater test coverage | open |
-| [#5](#issue-5) | P0.2 — Verify LastHaven gameplay and update behavior on a physical arm64 device | open |
-| [#6](#issue-6) | P2 — Add minimal launcher settings and safe storage controls | open |
-| [#7](#issue-7) | P3 — Measure runtime performance and evaluate APK size improvements | open |
-| [#8](#issue-8) | Superseded — legacy addon manager removed; future scope waits for owner spec (#23) | open |
-| [#9](#issue-9) | P2 — Add a compact game navigation and exit menu | paused |
-| [#10](#issue-10) | P2 — Track game network data usage | open |
-| [#11](#issue-11) | P2 — Add privacy-conscious app and updater logs | paused |
-| [#12](#issue-12) | P2 — Surface actionable GeckoView load-error details | open |
-| [#13](#issue-13) | Superseded by #9 — old AddonManager compile/accessibility task; pending CI confirmation | open |
-| [#14](#issue-14) | P2 — Add connection diagnostics | open |
-| [#15](#issue-15) | P2 — Make updater recovery safer | open |
-| [#16](#issue-16) | P2 — Add gameplay orientation and keep-awake settings | open |
-| [#17](#issue-17) | P2 — Back up and restore launcher settings | open |
-| [#18](#issue-18) | Roadmap — GeckoView migration, home screen and addon manager | open |
-| [#19](https://github.com/iNeonyne/LastHavenPlus/issues/19) | P1 — Add an opt-in beta release channel to the updater | open |
-| [#20](https://github.com/iNeonyne/LastHavenPlus/issues/20) | P0 — Verify GeckoView migration decision and stable artifact | active |
-| [#21](https://github.com/iNeonyne/LastHavenPlus/issues/21) | P0 — Replace Cefrium with Mozilla GeckoView | next |
-| [#22](https://github.com/iNeonyne/LastHavenPlus/issues/22) | P1 — Add the home screen with Play and Settings | open |
-| [#23](https://github.com/iNeonyne/LastHavenPlus/issues/23) | Deferred — Firefox WebExtension addon manager (owner hold) | deferred |
+## Backlog index
+
+| Issue | Priority | Summary | Current state |
+|---|---:|---|---|
+| [#4](#issue-4) | P0.1 | Build reproducibility and updater test coverage | Open; wrapper verified, more updater tests and current CI evidence required |
+| [#5](#issue-5) | P0.2 | Physical ARM64 gameplay and update verification | Open; not yet performed |
+| [#6](#issue-6) | P2 | Settings and safe storage controls | Open; implementation exists, device verification remains |
+| [#7](#issue-7) | P3 | Runtime performance and APK size | Open; measure before optimizing |
+| [#8](#issue-8) | — | Legacy addon manager | Superseded; do not restore |
+| [#9](#issue-9) | P2 | Navigation menu accessibility | Paused pending final #22 UI |
+| [#10](#issue-10) | P2 | Network data usage | Implemented in source; device verification remains |
+| [#11](#issue-11) | P2 | Privacy-conscious diagnostics | Paused; further tests remain |
+| [#12](#issue-12) | P2 | GeckoView load-error details | Open |
+| [#13](#issue-13) | — | Legacy addon-manager compile/accessibility work | Superseded |
+| [#14](#issue-14) | P2 | Connection diagnostics | Open |
+| [#15](#issue-15) | P2 | Updater recovery | Open |
+| [#16](#issue-16) | P2 | Gameplay orientation and keep-awake settings | Open |
+| [#17](#issue-17) | P2 | Settings backup and restore | Open |
+| [#18](#issue-18) | Roadmap | GeckoView migration and launcher shell | Open; umbrella/roadmap |
+| [#19](#issue-19) | P1 | Opt-in beta release channel | Open |
+| [#20](#issue-20) | P0 | GeckoView technical decision | Research recorded; compatibility verification tracked with #21 |
+| [#21](#issue-21) | P0 | Replace Cefrium with GeckoView | Source migration implemented; physical runtime checks remain |
+| [#22](#issue-22) | P1 | Home screen and Play/Settings navigation | Active — Ploy |
+| [#23](#issue-23) | Deferred | Addon manager replacement | Owner hold; no work authorized |
 
 ---
 
@@ -47,6 +52,8 @@ Close only when every acceptance criterion is met and evidence is recorded. If a
 ---
 
 ## Issue 4 — P0.1 — Improve build reproducibility and updater test coverage
+
+**Current audit (2026-11-25):** The Gradle Wrapper is present and pinned to Gradle 9.7.1 with a distribution SHA-256. Successful CI run [#308](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45503025246) ran `assembleRelease` and `testDebugUnitTest` for commit `82590635e77c7abfedcaa6fd1fa4ad8c3b5de469`; the signed APK was ARM64-only and matched the established signing certificate. This evidence does not apply to later workflow commits. The workflow optimization run still needs inspection. Keep the issue open for remaining updater edge-case tests and current CI verification.
 
 **GitHub:** https://github.com/iNeonyne/LastHavenPlus/issues/4
 **State:** open
@@ -577,6 +584,9 @@ The next major beta change replaces Cefrium with Mozilla GeckoView and adds a ho
 
 ## Issue 20 — P0 — Verify GeckoView migration decision and stable artifact
 
+**Current audit (2026-11-25):** GeckoView 160 ARM64 artifact/API research is recorded in `docs/GECKOVIEW_MIGRATION.md`. The engine is now integrated in beta. Remaining build/runtime and physical-device checks are tracked under #21 and #5; do not describe the research decision alone as proof of game compatibility.
+
+
 **GitHub:** https://github.com/iNeonyne/LastHavenPlus/issues/20  
 **Internal owner:** Ploy, queued after #9 and #11.
 
@@ -585,6 +595,9 @@ Docs-only research. Verify current stable GeckoView coordinates/version through 
 ---
 
 ## Issue 21 — P0 — Replace Cefrium with Mozilla GeckoView
+
+**Current audit (2026-11-25):** The beta source now uses GeckoView 160 and no Cefrium production integration. CI run #308 passed the release build and unit-test task for its tested commit. Physical ARM64 gameplay, Gecko profile persistence, permissions/media and update behavior remain unverified. Do not close this issue based on CI alone.
+
 
 **GitHub:** https://github.com/iNeonyne/LastHavenPlus/issues/21  
 **Internal owner:** Chaty, queued after #4 is clean and #20 is reviewed.
@@ -595,6 +608,9 @@ Replace Cefrium plugin/dependencies/repository/runtime with one verified stable 
 
 ## Issue 22 — P1 — Add the LastHavenPlus home screen with Play and Settings
 
+**Current assignment:** Ploy owns the home screen and navigation implementation. Required destinations are app home, settings and the existing game; the game menu must provide Reload, Home and Return to game. Home returns to the launcher home screen, and Return to game should preserve the existing GeckoSession. Chaty must not edit Ploy's assigned UI files concurrently.
+
+
 **GitHub:** https://github.com/iNeonyne/LastHavenPlus/issues/22  
 **Internal owner:** Ploy, queued after #21 integration.
 
@@ -603,6 +619,9 @@ Fresh launch shows a simple branded home screen with Play and Settings. Do not l
 ---
 
 ## Issue 23 — P1 — Rebuild addon manager after owner specification
+
+**Owner hold:** Do not research, design, implement, test or assign addon-manager work until the owner supplies a new written specification. WoW addon ZIP/`.toc` packages must not be conflated with Firefox WebExtensions or game injection.
+
 
 **GitHub:** https://github.com/iNeonyne/LastHavenPlus/issues/23  
 **Internal owner:** Chaty for intake/planning; implementation owner not assigned yet.
