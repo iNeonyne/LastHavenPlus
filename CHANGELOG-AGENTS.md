@@ -1,3 +1,13 @@
+## 2026-11-24 — Allow Ploy to submit pull requests
+
+- **Role:** Chaty / project coordination
+- **Files:** `AGENTS.md`, `AGENT_WORK.md`, `STATUS.md`, `CHANGELOG-AGENTS.md`
+- **Change:** Replaced the user-push handoff with a PR workflow. Ploy may create a dedicated branch, push assignment commits and open a PR, but may not push to `main` or edit central tracking files. Chaty reviews the PR diff and CI, maintains task tracking, and merges only after the user explicitly approves.
+- **Why:** Let Ploy hand off completed work directly for review while preserving a protected, orchestrated `main` branch and the user's final merge decision.
+- **Verified:** Repository instructions and status documentation updated. This is a process change only; no branch protection or GitHub repository settings were changed.
+- **Do not redo:** Do not restore the manual user-push workflow. Do not merge Ploy's PRs without explicit user approval.
+- **Follow-ups:** Use this workflow for Ploy's current #13 assignment; review the PR and CI before requesting merge approval.
+
 ## 2026-11-24 — Expand BSDIFF failure-path tests
 
 - **Role:** Chaty / updater QA
