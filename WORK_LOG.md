@@ -163,3 +163,13 @@
 - **Verification:** official Android Gradle Plugin API docs confirm `compileSdkMinor` / `minorApiLevel` configuration; run #302 logs confirm GeckoView's explicit 37.2 minimum. New run #304 (ID `45502893050`) was pending at the last check on commit `b0d1b154e5eb49c8ef72909e2ba2f4b8fdbddf3d`.
 - **Not verified:** whether `platforms;android-37.2` resolves on GitHub runners; Kotlin compile, unit tests, signed APK, signer, ARM64-only payload, GeckoView runtime/profile persistence and physical ARM64 gameplay.
 - **Next safe action:** inspect run #304. If green through compilation/tests/signing/ABI, proceed with #22 home screen and navigation as a separate UI task, preserving the same GeckoSession while moving between screens. Do not promote `beta` to `main` or publish a release.
+
+## 2026-11-25 — Documentation reconciliation
+
+- **Branch:** `beta`
+- **Starting verified repository snapshot:** `cf1629ef1312daf3ed4cd7a07d41aff4123f462c` (backlog refresh commit; documentation updates only since the README cleanup).
+- **Files updated:** README, agent instructions and assignments, issue index, release changelog and GeckoView migration notes. STATUS is being refreshed as the final audit snapshot.
+- **Audit evidence:** Successful Android CI run #308 tested commit `82590635e77c7abfedcaa6fd1fa4ad8c3b5de469`. It ran `assembleRelease` and `testDebugUnitTest`; its release APK was ARM64-only and matched the established release signing certificate. Do not treat it as verification of subsequent workflow changes or physical hardware behavior.
+- **Current boundaries:** GeckoView 160 is present in beta source. Home-screen/navigation work is assigned to Ploy under #22. Addon-manager work remains on owner hold. TickTick is supplementary; GitHub Issues and `ISSUES.md` are authoritative.
+- **Not done:** No app source changed, no issue was closed, no release was published and `main` was not modified.
+- **Next safe action:** Verify the CI optimization run and review the #22 implementation when Ploy hands it off. Keep physical ARM64 testing explicitly unverified until performed.
