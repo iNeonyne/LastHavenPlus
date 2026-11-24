@@ -4,7 +4,7 @@ This file is the working agreement for the two active coding agents. The reposit
 
 ## Agent identities
 
-- **Ploy** — repository-only coding agent. She can read and edit repository files but cannot inspect GitHub Issues, Pull Requests, Actions, releases or secrets. This file and `ISSUES.md` are her task brief.
+- **Ploy** — repository-only coding agent. She can read and edit repository files but cannot inspect GitHub Issues, Actions, releases or secrets. This file and `ISSUES.md` are her task brief.
 - **Chaty** — main orchestrator. Owns project coordination, issue/status accuracy, review, integration, CI/release coordination and direct pushes to `beta`. `main` is the stable release branch.
 
 ## Rules for both agents
@@ -18,8 +18,8 @@ This file is the working agreement for the two active coding agents. The reposit
 - **Exclusive task ownership:** only one agent may actively own a GitHub issue/task at a time. Never work on the same issue in parallel, even on different branches. Record owner, scope and files in STATUS before starting. The other agent must wait for explicit handoff and updated trackers.
 - Keep work on separate branches/worktrees and avoid simultaneous edits to the same files.
 - **`main` is stable; `beta` is the shared integration/testing branch.** Chaty pushes orchestrator work directly to `beta`.
-- Ploy creates a dedicated feature branch from the latest `beta`, pushes her task commits and opens a PR with **base branch `beta`** when her assignment is ready. She must never push directly to `beta` or `main`.
-- After Ploy opens a PR targeting `beta`, Chaty inspects the complete diff, runs or verifies relevant checks, requests fixes as needed, updates `ISSUES.md`, `STATUS.md` and `CHANGELOG-AGENTS.md`, and may merge the PR into `beta` once it passes review and required checks.
+- Ploy creates a dedicated task branch from the latest `beta` and pushes only to that task branch. On completion she hands Chaty the branch name, exact commit SHA, changed files, test commands/results and limitations. She must never push directly to `beta` or `main`.
+- Chaty inspects the complete task-branch diff, runs or verifies relevant checks, requests corrections as needed, updates `ISSUES.md`, `STATUS.md` and `CHANGELOG-AGENTS.md`, and alone cherry-picks/integrates accepted commits directly into `beta`. **No pull requests are used.**
 - Do not merge `beta` into `main` until beta build/features have been verified and the user explicitly approves the promotion. No automatic merges, tags or releases.
 - Report exact tests and results. Device-only checks must remain marked pending until performed on physical ARM64 hardware.
 - Chaty alone updates the central project status and changelog after reviewing/integrating Ploy's work.
@@ -32,11 +32,11 @@ This file is the working agreement for the two active coding agents. The reposit
 - A task is not ready merely because it exists. Chaty must define a testable outcome, bounded scope, non-goals, acceptance criteria, verification plan and dependencies before assignment.
 - One issue, one active owner. Record the exact files and subtask. Do not split one issue across agents unless the split is explicit and has non-overlapping files and acceptance criteria.
 - If you discover adjacent work, report it to Chaty. Do not silently broaden the issue or start a second task.
-- PRs must reference their issue. Use `Closes #N` only when all acceptance criteria are satisfied; otherwise use `Refs #N`.
+- Every task-branch handoff must identify its GitHub issue and exact commit SHA. Chaty records the integration commit and closes an issue only when all acceptance criteria are satisfied.
 
 ## Ploy — assigned work
 
-Ploy is the exclusive owner of her active delegated issue. Work in the following order, one issue at a time; move to the next only after Chaty reviews, accepts and integrates the previous PR into `beta`. Chaty must not work on the same issue or its implementation/tests while Ploy owns it.
+Ploy is the exclusive owner of her active delegated issue. Work in the following order, one issue at a time; move to the next only after Chaty reviews, accepts and integrates the previous task commit into `beta`. Chaty must not work on the same issue or its implementation/tests while Ploy owns it.
 
 ### P1 — Issue #13: accessibility semantics
 
@@ -55,7 +55,7 @@ Acceptance:
 - Relevant automated checks pass.
 - TalkBack and focus-order verification are explicitly left pending; Ploy cannot claim physical-device verification.
 
-File ownership while this task is active: Compose UI files required for semantics and their directly related tests. Do not modify `STATUS.md`, `ISSUES.md`, `CHANGELOG-AGENTS.md` or `AGENTS.md`; Chaty handles central tracking. When finished, push the task branch and open a PR targeting `beta`; include the PR link in the handoff report for Chaty to review.
+File ownership while this task is active: Compose UI files required for semantics and their directly related tests. Do not modify `STATUS.md`, `ISSUES.md`, `CHANGELOG-AGENTS.md` or `AGENTS.md`; Chaty handles central tracking. When finished, push only the task branch and provide Chaty its exact commit SHA and the required handoff report. Chaty alone integrates it into `beta`.
 
 ### P2 — Issue #11: diagnostics test coverage
 
@@ -73,7 +73,7 @@ Acceptance:
 - Tests are deterministic and do not require network access or a physical device.
 - Any discovered production defect is fixed within the diagnostics files only and documented in the handoff.
 
-File ownership while active: diagnostics logger and its unit tests only. Push the completed task branch and open a PR targeting `beta`; Chaty then reviews and updates tracking.
+File ownership while active: diagnostics logger and its unit tests only. Push only the completed task branch and provide Chaty the exact commit SHA and handoff report; Chaty alone integrates into `beta`.
 
 ### P3 — Issue #8: addon repository tests
 
@@ -118,7 +118,7 @@ At the end of each assignment, Ploy provides:
 - Known limitations and anything not verified.
 - Any follow-up decision needed from Chaty.
 
-Ploy stops after opening the PR and waits for Chaty's review and merge into `beta`. She does not start the next task automatically.
+Ploy stops after handing off the task-branch commit and waits for Chaty's review and direct integration into `beta`. She does not start the next task automatically.
 
 
 ### Ploy — queued after current sequence
@@ -142,4 +142,4 @@ Acceptance:
 - Destructive actions are absent unless supported by a verified Cefrium API and have separate explicit confirmation.
 - No placeholder/inert controls; tests and limitations are documented. Physical-device-only verification remains pending until performed.
 
-File ownership: settings Compose/state/persistence files and directly related tests only. Do not modify updater implementation/channel control, central trackers or release workflows. Create a feature branch from latest `beta`, open a PR targeting `beta`, then stop for Chaty's review.
+File ownership: settings Compose/state/persistence files and directly related tests only. Do not modify updater implementation/channel control, central trackers or release workflows. Create a task branch from latest `beta`, push only to that branch, provide Chaty the exact commit SHA and handoff report, then stop for Chaty's review and integration.
