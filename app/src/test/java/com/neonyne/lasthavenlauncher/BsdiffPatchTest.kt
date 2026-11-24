@@ -6,11 +6,12 @@ import org.junit.Assert.assertEquals
 import org.junit.Test
 import java.io.ByteArrayOutputStream
 import java.io.File
+import java.nio.file.Files
 
 class BsdiffPatchTest {
     @Test
     fun reconstructsExactOutputFromBsdiff40Patch() {
-        val directory = createTempDir(prefix = "bsdiff-test")
+        val directory = Files.createTempDirectory("bsdiff-test").toFile()
         try {
             val oldBytes = "abcXYZ".toByteArray(Charsets.UTF_8)
             val expected = "abc123XYZ!".toByteArray(Charsets.UTF_8)
