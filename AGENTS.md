@@ -6,7 +6,7 @@ Instructions for every human or AI agent working in this repository.
 
 Ship the simplest reliable Android app that opens the existing LastHaven WotLK private server and lets the user play. The approved target engine is Mozilla GeckoView; the checked-in beta still uses Cefrium until issue #21 is completed.
 
-Default URL: `https://alt.lasthavens.com/play`
+Default URL: `https://lasthavens.com/play`
 
 Do not recreate, modify or develop the game. Replace Cefrium with GeckoView only through the reviewed migration in issues #20/#21. Do not add Android System WebView, keep a second/fallback browser engine, or add general-purpose browser features.
 

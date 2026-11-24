@@ -105,7 +105,7 @@ Verify the actual launcher experience on physical Android hardware before treati
 
 ## Device verification checklist
 - [ ] Install and cold-start the release APK on a physical arm64 device.
-- [ ] Confirm GeckoView starts and loads https://alt.lasthavens.com/play.
+- [ ] Confirm GeckoView starts and loads https://lasthavens.com/play.
 - [ ] Verify login and a representative gameplay session.
 - [ ] Verify WebGL/WebGL2 and WebAssembly functionality.
 - [ ] Verify touch input, fullscreen behavior, and orientation behavior.
@@ -148,7 +148,7 @@ The core game flow and same-key in-place update are verified on real arm64 hardw
 Add essential launcher settings and safe storage visibility after the core game flow is verified on a physical arm64 device. The current settings popup is usage-focused and incomplete; the next pass prioritizes working functionality, clarity and task flow rather than visual redesign.
 
 ## Scope
-- [ ] Editable game URL, defaulting to https://alt.lasthavens.com/play.
+- [ ] Editable game URL, defaulting to https://lasthavens.com/play.
   - Validate that the value is an absolute HTTPS URL with a non-empty host; reject unsupported schemes and malformed input with an inline explanation.
   - Keep the currently saved URL if validation fails; use the default only when no valid saved value exists.
   - Apply a valid change on explicit Save/Apply by navigating the game surface to the new URL; do not silently reload while the user is typing or merely opening settings.

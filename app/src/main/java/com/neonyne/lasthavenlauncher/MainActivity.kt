@@ -48,7 +48,7 @@ import com.cefrium.compose.CefriumView
 import com.cefrium.compose.rememberCefriumNavigator
 import com.cefrium.compose.rememberCefriumViewState
 
-private const val DEFAULT_GAME_URL = "https://alt.lasthavens.com/play"
+private const val DEFAULT_GAME_URL = "https://lasthavens.com/play"
 private const val PREFERENCES_NAME = "launcher_settings"
 private const val KEY_GAME_URL = "game_url"
 private const val TAG = "LastHavenLauncher"
