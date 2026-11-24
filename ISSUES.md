@@ -42,6 +42,8 @@ Harden the existing build and updater without replacing the current update archi
 - [x] Verify debug and signed release builds in CI (run #85).
 
 ## Updater and differential-patch tests
+
+**Chaty progress (2026-11-24):** Added three BSDIFF failure-path tests for truncated headers, unsupported patch magic and output-size-limit enforcement. CI run for commit `29dd5aa` is still running; these tests are not marked complete until the run passes. The prior CI run exposed three pre-existing `AddonArchiveInspectorTest` failures that also need diagnosis because they block the shared unit-test task.
 - [ ] Add tests for malformed or unsupported update manifests.
 - [ ] Test invalid release version tags and version-code handling.
 - [ ] Test incorrect APK and patch SHA-256 values.
