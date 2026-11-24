@@ -4,7 +4,7 @@ The repository owner makes final product and release decisions. Chaty is the mai
 
 ## Roles
 
-- **Chaty:** owns intake, issue triage, task assignment, central documentation, review, CI/release coordination and integration. Chaty alone pushes accepted commits directly to `beta`.
+- **Chaty:** owns intake, issue triage, task assignment, central documentation, review, CI/release coordination and integration. Chaty alone reviews and merges accepted PRs into `beta`.
 - **Ploy:** implements only the task assigned below. Ploy does not edit central trackers, create or manage GitHub issues, integrate into `beta`, or push to `main`.
 
 ## Shared workflow
