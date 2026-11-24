@@ -18,7 +18,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
-import androidx.compose.material3.Divider
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
@@ -126,7 +126,7 @@ fun AddonManagerDialog(context: Context, onDismiss: () -> Unit) {
 
                 if (busy) LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
                 message?.let { Text(it) }
-                Divider()
+                HorizontalDivider()
                 if (addons.isEmpty()) {
                     Text("No addons imported.")
                 } else {
