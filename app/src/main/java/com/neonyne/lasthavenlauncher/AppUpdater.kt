@@ -216,11 +216,12 @@ object AppUpdater {
                     installedInfo.longVersionCode == patch.baseVersionCode
 
                 if (canUsePatch) {
+                    val delta = patch ?: error("Differential patch metadata is missing")
                     val baseApk = File(appContext.applicationInfo.sourceDir)
                     check(baseApk.isFile && baseApk.canRead()) {
                         "Installed APK is not accessible; choose the full APK instead"
                     }
-                    check(sha256(baseApk).equals(patch!!.baseSha256, true)) {
+                    check(sha256(baseApk).equals(delta.baseSha256, true)) {
                         "Installed APK does not match this patch; choose the full APK instead"
                     }
 
@@ -228,9 +229,9 @@ object AppUpdater {
                     patchFile.delete()
                     try {
                         downloadToFile(
-                            patch.downloadUrl,
-                            patch.sha256,
-                            patch.size,
+                            delta.downloadUrl,
+                            delta.sha256,
+                            delta.size,
                             MAX_PATCH_BYTES,
                             patchFile,
                         )
