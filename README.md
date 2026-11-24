@@ -41,7 +41,7 @@ gradle assembleDebug
 gradle testDebugUnitTest
 ```
 
-The Gradle Wrapper is not yet committed. Adding the wrapper and switching CI/local build instructions to `./gradlew` is tracked in [issue #4](https://github.com/iNeonyne/Lasthavens-Android/issues/4).
+The Gradle Wrapper is not yet committed. Adding the wrapper and switching CI/local build instructions to `./gradlew` is tracked in [issue #4](https://github.com/iNeonyne/LastHavenPlus/issues/4).
 
 Debug APK: `app/build/outputs/apk/debug/app-debug.apk`
 
@@ -49,15 +49,17 @@ GitHub Actions builds ARM64 debug and signed release variants. Release signing u
 
 ## Work tracking
 
-**GitHub Issues are the single source of truth for all unfinished work.** Use the issue checklists for scope and acceptance criteria. [Open issues](https://github.com/iNeonyne/Lasthavens-Android/issues).
+**GitHub Issues are the single source of truth for all unfinished work.** Use the issue checklists for scope and acceptance criteria. [Open issues](https://github.com/iNeonyne/LastHavenPlus/issues).
 
 | Priority | Tracked work |
 |---|---|
-| P0.1 | [Build reproducibility, updater tests and CI verification](https://github.com/iNeonyne/Lasthavens-Android/issues/4) |
-| P0.2 | [Physical-device gameplay, persistence and update verification](https://github.com/iNeonyne/Lasthavens-Android/issues/5) |
-| P2 | [Minimal settings and safe storage controls](https://github.com/iNeonyne/Lasthavens-Android/issues/6) |
-| P3 | [Measure runtime performance and APK-size improvements](https://github.com/iNeonyne/Lasthavens-Android/issues/7) |
-| Deferred | [Addon manager — only after the core launcher is stable](https://github.com/iNeonyne/Lasthavens-Android/issues/8) |
+| P0.1 | [Build reproducibility, updater tests and CI verification](https://github.com/iNeonyne/LastHavenPlus/issues/4) |
+| P0.2 | [Physical-device gameplay, persistence and update verification](https://github.com/iNeonyne/LastHavenPlus/issues/5) |
+| P2 | [Minimal settings and safe storage controls](https://github.com/iNeonyne/LastHavenPlus/issues/6) |
+| P3 | [Measure runtime performance and APK-size improvements](https://github.com/iNeonyne/LastHavenPlus/issues/7) |
+| P2 | [Network data usage](https://github.com/iNeonyne/LastHavenPlus/issues/10) |
+| P2 | [App and updater diagnostics logs](https://github.com/iNeonyne/LastHavenPlus/issues/11) |
+| Deferred | [Addon manager — only after the core launcher is stable](https://github.com/iNeonyne/LastHavenPlus/issues/8) |
 
 P0/P1 gameplay reliability work is the priority. Do not start optional settings, performance tuning or the addon manager ahead of a verified playable core.
 
