@@ -1,3 +1,13 @@
+## 2026-11-24 — Research browser addon integration and gate game injection
+
+- **Role:** Main integrator / Cefrium / architecture
+- **Files:** `STATUS.md`, `CHANGELOG-AGENTS.md`, GitHub issue #8
+- **Change:** Inspected the Android/Cefrium host and current addon-manager issue. Official Lasthavens documentation states that the browser game provides its own curated AddOn Library and that user-supplied addon folders are supported by the Windows desktop app, not the browser version. The published terms prohibit modified clients beyond the in-game AddOn Library and prohibit copying or reverse-engineering the web client. Cefrium 0.21.0 does expose public document-start script and resource-interception APIs, but these APIs do not establish game compatibility or permission to inject into the client. Re-scoped #8 to a secure local ZIP library and explicitly gated any game injection on operator authorization or a supported API.
+- **Why:** Avoid building or shipping a loader that modifies a protected game client, violates the operator's published rules, or reports addons as enabled when the browser game cannot load them.
+- **Verified:** Official Lasthavens browser guide, Windows desktop addon guide and terms reviewed; Cefrium 0.21.0 public API and release notes reviewed. No live game manifest, OPFS layout or worker implementation was independently verified.
+- **Do not redo:** Do not assume a native `Interface/AddOns` directory exists in the browser client. Do not treat `addDocumentStartJavaScript` or `setResourceInterceptor` as proof that the supplied Chrome-extension injection design is supported.
+- **Follow-ups:** Obtain explicit operator authorization or a documented addon integration contract. In parallel, implement and test the local ZIP archive/library features without altering Cefrium's game profile or client runtime.
+
 ## 2026-11-24 — Add usage settings and privacy-conscious diagnostics
 
 - **Role:** Main orchestrator / Android
