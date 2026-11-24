@@ -31,7 +31,7 @@
 - **Starting beta commit:** `8d624ccf9dc85be1428e352c2fe9c22dfdc69310`.
 - **Approved work:** add repo-local GeckoView agent references and durable work log; remove legacy addon manager code/UI; revise assignments so Ploy gets small, non-overlapping tasks; preserve the user's future addon-manager requirements as a hard gate.
 - **No main/release action:** none.
-- **Next safe action:** finish docs/issues updates, verify no stale addon-manager code references remain, inspect latest beta CI and record actual result.
+- **Next safe action:** verify post-removal source references and inspect the latest beta CI result; update status after the final documentation commit.
 
 ### Checkpoint template
 
@@ -60,3 +60,9 @@
 - **Result:** source removal committed; build/test result not yet known. No app build is claimed successful. No GeckoView production code/dependency has been added.
 - **Unverified / risks:** whether app compiles after removing manager; whether any unsearched dangling references remain; exact stable GeckoView version and build compatibility; all physical-device/browser-profile behavior.
 - **Next safe action:** check run #268 and inspect all remaining source references; fix only actual compile issues. Ploy's active easy task is #9 menu accessibility, followed by #11 diagnostics tests. #23 remains blocked pending owner requirements.
+
+### 2026-11-25 — CI observation after manager removal
+
+- **Workflow:** beta CI run #268, ID `45496604607`, on `810cecdec2c2d795acc81331272f0751efa3b579`.
+- **Result:** run was cancelled by newer pushes before useful build/test evidence was produced. It does not establish that the app compiles after the manager removal.
+- **Follow-up:** wait for the latest beta push's CI run; record the exact run/commit and inspect job logs before updating implementation status.
