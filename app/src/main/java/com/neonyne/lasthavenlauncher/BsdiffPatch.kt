@@ -113,8 +113,11 @@ internal object BsdiffPatch {
 
                             require(newPosition == newSize) { "Reconstructed APK has an invalid size" }
                             require(control.read() == -1) { "Unexpected trailing control data" }
+                            controlBytes.skipRemaining()
                             require(diff.read() == -1) { "Unexpected trailing difference data" }
+                            diffBytes.skipRemaining()
                             require(extra.read() == -1) { "Unexpected trailing extra data" }
+                            extraBytes.skipRemaining()
                             output.fd.sync()
                         }
                     }
@@ -178,6 +181,18 @@ internal object BsdiffPatch {
             val count = source.read(buffer, offset, minOf(length.toLong(), remaining).toInt())
             if (count > 0) remaining -= count
             return count
+        }
+
+        fun skipRemaining() {
+            while (remaining > 0) {
+                val skipped = source.skip(remaining)
+                if (skipped > 0) {
+                    remaining -= skipped
+                } else {
+                    if (source.read() < 0) throw IllegalArgumentException("Truncated differential patch")
+                    remaining--
+                }
+            }
         }
 
         override fun close() = Unit
