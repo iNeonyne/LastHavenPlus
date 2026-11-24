@@ -51,8 +51,8 @@ sealed class UpdateCheckResult {
 object AppUpdater {
     private const val RELEASE_API =
         "https://api.github.com/repos/iNeonyne/LastHavenPlus/releases/latest"
-    private const val APK_ASSET_NAME = "lasthavenlauncher-arm64.apk"
-    private const val MANIFEST_ASSET_NAME = "lasthavenlauncher-update.json"
+    private const val APK_ASSET_NAME = "lasthavenplus-arm64.apk"
+    private const val MANIFEST_ASSET_NAME = "lasthavenplus-update.json"
     private const val MAX_APK_BYTES = 500L * 1024L * 1024L
     private const val MAX_PATCH_BYTES = 500L * 1024L * 1024L
     private const val RELEASE_CERT_SHA256 =
@@ -218,7 +218,7 @@ object AppUpdater {
         executor.execute {
             val result = runCatching {
                 val updateDirectory = File(appContext.filesDir, "updates").apply { mkdirs() }
-                val finalApk = File(updateDirectory, APK_ASSET_NAME)
+                val finalApk = File(updateDirectory, "LastHavenPlus-update.apk")
                 val temporaryApk = File(updateDirectory, "update.apk.part")
                 temporaryApk.delete()
 
