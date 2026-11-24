@@ -25,6 +25,16 @@
 | Device test | Not run | No connected arm64 device/emulator available to this run |
 | Release signing | Not configured | Release key must be generated/backed up before first distributed release |
 
+## App updater
+
+- Checks the latest **published stable GitHub Release** on launcher start; a manual check is also available from the exit dialog.
+- Never downloads automatically. The user must select **Download update**, then Android presents its package installer.
+- Expected release tag: `vMAJOR.MINOR.PATCH`; expected asset: `lasthavenlauncher-arm64.apk`.
+- Requires GitHub's release asset `sha256:` digest; the downloaded APK is SHA-256 verified before the installer is opened.
+- Uses an app-private temporary file and a non-exported AndroidX FileProvider; no external storage permission or background service.
+- Android package installer enforces package identity/signature. A distributed release must use the same application ID and signing key as the installed app.
+- No published GitHub Releases currently exist; updater cannot return a real update until the first signed release and matching asset are published.
+
 ## Cefrium API findings
 
 - Current release: Cefrium 0.21.0, Chromium 156.0.8078.96, CEF branch 8078.
@@ -54,7 +64,7 @@ The web fetch of the game URL returns only “Loading... Please enable JavaScrip
 
 | Owner | Surface | State |
 |---|---|---|
-| Main integrator | GitHub Releases updater: version check, APK download and Android install handoff | Active |
+| Main integrator | GitHub Releases updater: version check, optional APK download, SHA-256 verification and Android installer handoff | Implemented; CI pending |
 
 ## Blockers
 
