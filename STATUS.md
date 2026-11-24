@@ -30,11 +30,11 @@
 
 GitHub Issues are the canonical backlog. Do not copy open task checklists into this file. Update issue checklists as work is completed; use this document only for current state, active ownership, evidence and blockers.
 
-- [#4 — Build reproducibility, updater tests and CI verification](https://github.com/iNeonyne/Lasthavens-Android/issues/4)
-- [#5 — Physical-device gameplay, persistence and update verification](https://github.com/iNeonyne/Lasthavens-Android/issues/5)
-- [#6 — Minimal settings and safe storage controls](https://github.com/iNeonyne/Lasthavens-Android/issues/6)
-- [#7 — Performance and APK-size measurements](https://github.com/iNeonyne/Lasthavens-Android/issues/7)
-- [#8 — Deferred addon manager](https://github.com/iNeonyne/Lasthavens-Android/issues/8)
+- [#4 — Build reproducibility, updater tests and CI verification](https://github.com/iNeonyne/LastHavenPlus/issues/4)
+- [#5 — Physical-device gameplay, persistence and update verification](https://github.com/iNeonyne/LastHavenPlus/issues/5)
+- [#6 — Minimal settings and safe storage controls](https://github.com/iNeonyne/LastHavenPlus/issues/6)
+- [#7 — Performance and APK-size measurements](https://github.com/iNeonyne/LastHavenPlus/issues/7)
+- [#8 — Deferred addon manager](https://github.com/iNeonyne/LastHavenPlus/issues/8)
 
 ## App updater
 
@@ -89,7 +89,10 @@ The web fetch of the game URL returns only “Loading... Please enable JavaScrip
 
 | Owner | Surface | State |
 |---|---|---|
-| Main integrator | Issue #4 — wrapper, updater edge-case tests and release/update validation | In progress; build/test, ARM64 and signing verification now pass in CI; release-to-release delta and device install remain unverified |
+| Main integrator | Issue #6 — settings, storage reporting and safe controls | Claimed; inspect Android/Cefrium storage boundaries before implementation |
+| Main integrator | Issue #10 — network usage reporting | Claimed; use local Android per-UID counters, no telemetry |
+| Main integrator | Issue #11 — local diagnostics and export | Claimed; redact sensitive data and keep logs bounded |
+
 
 ## Blockers
 
@@ -113,8 +116,8 @@ No runtime performance changes have been made. APK size baseline is measured; es
 
 ## Next actions
 
-1. Complete [#4 — build reproducibility, updater tests and CI verification](https://github.com/iNeonyne/Lasthavens-Android/issues/4).
-2. Complete [#5 — physical-device gameplay, persistence and update verification](https://github.com/iNeonyne/Lasthavens-Android/issues/5).
-3. Start [#6 — minimal settings and safe storage controls](https://github.com/iNeonyne/Lasthavens-Android/issues/6) only after the core game path is verified.
-4. Defer [#7 — performance and APK-size measurements](https://github.com/iNeonyne/Lasthavens-Android/issues/7) until a repeatable gameplay baseline exists.
-5. Keep [#8 — addon manager](https://github.com/iNeonyne/Lasthavens-Android/issues/8) deferred until the core launcher is stable.
+1. Complete [#4 — build reproducibility, updater tests and CI verification](https://github.com/iNeonyne/LastHavenPlus/issues/4).
+2. Complete [#5 — physical-device gameplay, persistence and update verification](https://github.com/iNeonyne/LastHavenPlus/issues/5).
+3. Start [#6 — minimal settings and safe storage controls](https://github.com/iNeonyne/LastHavenPlus/issues/6) only after the core game path is verified.
+4. Defer [#7 — performance and APK-size measurements](https://github.com/iNeonyne/LastHavenPlus/issues/7) until a repeatable gameplay baseline exists.
+5. Keep [#8 — addon manager](https://github.com/iNeonyne/LastHavenPlus/issues/8) deferred until the core launcher is stable.
