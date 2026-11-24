@@ -1,3 +1,13 @@
+## 2026-11-24 — Add usage settings and privacy-conscious diagnostics
+
+- **Role:** Main orchestrator / Android
+- **Files:** `MainActivity.kt`, `AppUsageMeter.kt`, `SettingsDialogs.kt`, `Diagnostics.kt`, `DiagnosticsTest.kt`, `LastHavenApplication.kt`, `AppUpdater.kt`, `README.md`, `CHANGELOG.md`, `STATUS.md`
+- **Change:** Added an exit-menu Settings & usage dialog showing installed APK size, Cefrium profile size when present, app/code cache size and local per-UID received/sent data since boot and app-session start. Added bounded rotating diagnostic logs, common credential/session redaction, app/Cefrium/updater event logging, a log viewer and explicit share/clear actions. Back now opens the exit menu with Return to game, Reload, Settings, logs, update check and Leave. Updated the updater API endpoint to the renamed LastHavenPlus repository and drafted user-facing v1.0.0 notes.
+- **Why:** Expose storage/network use and make troubleshooting possible without telemetry, automatic uploads or weakening the existing game profile/update protections.
+- **Verified:** GitHub commits created on main; issue checklists and TickTick comments updated. Added a unit test for credential/query redaction. The current GitHub commit-status query returned no status records, so compilation and tests are not yet verified; physical-device behavior is also unverified.
+- **Do not redo:** Network counters are app-UID totals (game + updater), not game-only; Android counters reset at reboot. Do not claim exact profile size if the Cefrium directory is unavailable. Do not clear Cefrium profile data or publish the release draft before verification/approval.
+- **Follow-ups:** Check the next CI run; validate profile directory path, byte counters and menu/session behavior on arm64 hardware; complete remaining settings controls and updater/logging tests; close issues only when their acceptance criteria are met.
+
 ## 2026-11-24 — Track storage, network usage and diagnostics work
 
 - **Role:** Main orchestrator / Android / documentation
