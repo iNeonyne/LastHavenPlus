@@ -20,11 +20,11 @@
 | Persistent storage request | Implemented, unverified | Calls `navigator.storage.persist()` after the first completed document load |
 | Browser profile | Default persistent | Cefrium default profile stores cookies, LocalStorage, IndexedDB, service workers and cache in app-private `app_cefrium`; not the Android cache directory |
 | Remote debugging | Debug builds only | `Cefrium.setRemoteDebuggingEnabled` enabled from Application.onCreate before first browser creation |
-| Latest CI build | Build + tests passed; release verification failed | Run #79, commit `694634d`; the BSDIFF unit test now compiles. The next CI step fails during signing/ABI verification; exact failing check is being isolated |
+| Latest CI build | Build + tests passed; release verification failed | Run #82, commit `cd0b5d3`; build/tests pass and both APKs contain arm64-v8a only. The release signer matches the pinned key; the CI parser incorrectly split the V2 Signer output at its first colon. Parser fix pending CI |
 | Debug APK baseline | Measured | 229,073,631 bytes (218.4 MiB); actual APK extracted from run #32 artifact |
 | R8 / resource shrinking | Configured; validation pending | Enabled only on release variant; CI builds debug and signed release APKs |
 | Device test | Not run | No connected arm64 device/emulator available to this run |
-| Release signing | Configured; verification pending | Existing `lasthavenplus` key restores successfully in run #79; CI signing-certificate and ABI verification still needs a passing result |
+| Release signing | Configured; verification pending | Existing `lasthavenplus` key restores successfully in run #79; Run #82 printed the expected certificate fingerprint; CI parser fix and a passing verification rerun are pending |
 
 ## Work tracking
 
@@ -96,7 +96,7 @@ The web fetch of the game URL returns only “Loading... Please enable JavaScrip
 | Blocker | Impact | Next action |
 |---|---|---|
 | No physical arm64 test device attached to this session | Cannot verify gameplay, GPU, audio or persistence | Install CI APK on target phone and run checklist |
-| CI release verification step fails after a successful build | No production release should be tagged until package ABI and signing checks pass | Add explicit diagnostic output to identify the failing check, fix it, and rerun CI |
+| CI certificate parser uses the first colon in the V2 Signer output | It falsely reports a certificate mismatch and would suppress delta generation | Extract the value after the literal `certificate SHA-256 digest: ` label in both signing checks, then rerun CI |
 | Code cache clear API not confirmed | Cannot yet implement the requested HTTP + code-cache-only clear action | Inspect pinned SDK API; do not delete engine directories manually |
 
 ## Performance log
