@@ -401,3 +401,14 @@ Entry format:
 - **Verified:** Current beta HEAD is `a9d9b272a004a9a4dcc49fed0067f414ba3601cf`. CI run #297 (ID `45498642232`) is in progress; environment setup, wrapper validation and signing-key restore passed, but the build/test step has not completed. No successful build or GeckoView compatibility is claimed.
 - **Do not redo:** Do not add GeckoView until the exact stable artifact/API/toolchain compatibility is verified. Do not change application ID, signing identity, ABI target or update consent. Do not work on addon manager #23.
 - **Follow-ups:** Finish #20 research, then begin #21 production migration immediately after the baseline build is confirmed.
+
+
+## 2026-11-25 — Start GeckoView technical investigation
+
+- **Role:** Chaty / GeckoView migration owner
+- **Files:** `docs/GECKOVIEW_MIGRATION.md`, `STATUS.md`, `WORK_LOG.md`
+- **Change:** Inspected the complete beta source tree and recorded every remaining Cefrium integration point across Gradle settings, app dependencies, Application initialization and MainActivity Compose hosting. Began stable artifact investigation without changing production dependencies.
+- **Why:** Establish an accurate, bounded removal plan and avoid speculative engine/API changes.
+- **Verified:** The current app's direct Cefrium source usage is in `LastHavenApplication.kt` and `MainActivity.kt`; the plugin/dependencies are in `app/build.gradle.kts`; Cefrium repository declarations are in `settings.gradle.kts`. Mozilla's official quick start requires Java 17 source/target compatibility. A 160.0.20261116130455 artifact is a candidate, but POM/AAR details are not yet verified.
+- **Do not redo:** Do not copy Cefrium APIs or profile data into GeckoView. Do not change JDK/Gradle/AGP/SDK, application ID, signing identity or ABI filter without evidence.
+- **Follow-ups:** Verify candidate artifact POM/AAR and API surface, inspect #297 build result, then begin the engine implementation.

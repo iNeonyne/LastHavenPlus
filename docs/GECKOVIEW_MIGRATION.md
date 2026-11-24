@@ -103,3 +103,26 @@ GeckoView supports browser WebExtensions/content-script mechanisms. These are no
 ## Research log
 
 - 2026-11-25: Checked Mozilla's current GeckoView consumer quick start, architecture guide, API index, `GeckoSession` and `GeckoView` Javadocs, site permissions guide and official Maven repository entry point. Confirmed Runtime/Session/View architecture, stable/beta/nightly channels, Mozilla Maven host, Java 17 compile-compatibility guidance and delegate-based permission/content/navigation responsibilities. Exact stable artifact/version and compatibility with the current LastHavenPlus build remain unverified.
+
+## Current beta source inventory — 2026-11-25
+
+The current `beta` tree was inspected at commit `3b5787752940b42bbf31a8cab361446b06918a2b`. The Cefrium integration surface is small but crosses application initialization, Compose hosting and dependency resolution:
+
+- `app/build.gradle.kts`: applies `com.cefrium` plugin version `0.21.0`; declares `com.cefrium:cefrium-sdk:0.21.0` and `com.cefrium:cefrium-compose:0.21.0`.
+- `settings.gradle.kts`: declares the Codeberg Cefrium Maven repository in plugin management and dependency resolution, scoped to `com.cefrium`.
+- `LastHavenApplication.kt`: imports `com.cefrium.Cefrium` and configures remote debugging only for debuggable builds.
+- `MainActivity.kt`: imports Cefrium browser/navigation/error and Compose APIs; creates remembered Cefrium view state/navigator, hosts `CefriumView`, handles load/renderer errors, reloads and requests `navigator.storage.persist()` after the first completed load.
+- The app currently opens the game immediately at `https://lasthavens.com/play`. Home screen/navigation is deliberately separate in #22.
+
+No other app source file in the recursive beta tree imports Cefrium. The migration must remove the plugin, repository entries, dependencies, application initialization and all MainActivity engine-specific APIs. It must retain the current game URL, error/retry behavior, diagnostics, updater callbacks, settings, app-wide usage meter and user-confirmed installer flow.
+
+## Stable artifact investigation — 2026-11-25
+
+- Mozilla's current consumer quick start confirms three channels (Stable, Beta and Nightly), the Mozilla Maven host `https://maven.mozilla.org/maven2/`, and Java 17 source/target compatibility flags because GeckoView uses Java 17 APIs. This is official guidance; the existing CI currently uses JDK 25, Gradle 9.7.1, AGP 9.4.0 and SDK 37. Do not change the toolchain without a compatibility build.
+- A Maven index currently lists `org.mozilla.geckoview:geckoview:160.0.20261116130455` and an architecture-specific `org.mozilla.geckoview:geckoview-arm64-v8a:160.0.20261116130455`, both attributed to Mozilla's repository and MPL 2.0. This is a **candidate only**, not yet approved for pinning: the direct Maven POM endpoint could not be parsed by the available retrieval path, so dependency metadata, exact native payload, artifact sizes and any transitive/native packaging relationship still require confirmation.
+- Do not assume the generic `geckoview` artifact is safe for this ARM64-only app or that selecting the arm64-named artifact automatically prevents other ABIs from being packaged. Inspect the actual POM/AAR and final APK contents before accepting either.
+- Candidate version is not yet written into production Gradle files. No GeckoView dependency has been added.
+
+## Migration start boundary
+
+The first implementation pass should introduce the GeckoView runtime/session host while preserving the current single-screen game-first behavior. Do not mix in the new home screen, navigation redesign or optional features. Keep Cefrium profile files untouched. The existing Cefrium persistence request uses page JavaScript; GeckoView profile persistence must be established through its own documented profile/session lifecycle, not by copying Cefrium data or assuming the same JS request is sufficient.

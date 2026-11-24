@@ -125,3 +125,16 @@
 - **Research started:** Mozilla's official GeckoView quick-start confirms stable/beta/nightly channels, Mozilla Maven repository and Java 17 source/target compatibility flags. Third-party Maven indexing surfaced a candidate 160.x version, but the exact stable artifact has not yet been verified directly against Mozilla Maven; do not pin it yet.
 - **Constraints:** No production dependency/source changes yet. Preserve Gradle 9.7.1, AGP 9.4.0, JDK 25, SDK 37, package ID, signing identity and arm64-v8a-only target until compatibility evidence supports a change. Keep the old Cefrium profile untouched.
 - **Next safe action:** Monitor run #297 to completion and inspect logs; finish official stable artifact/API verification for #20; then begin #21.
+
+
+### 2026-11-25 — Start #20 source inventory and GeckoView artifact investigation
+
+- **Issue/task:** #20 P0 technical decision for #21.
+- **Branch and starting commit:** `beta`, `3b5787752940b42bbf31a8cab361446b06918a2b`.
+- **Files inspected:** recursive beta Git tree; `settings.gradle.kts`, `build.gradle.kts`, `gradle.properties`, `app/build.gradle.kts`, `LastHavenApplication.kt`, `MainActivity.kt`, Android manifest, CI workflow and Mozilla GeckoView quick start.
+- **Files changed:** `docs/GECKOVIEW_MIGRATION.md`, `STATUS.md`, `CHANGELOG-AGENTS.md`, `WORK_LOG.md`.
+- **Action:** Recorded the exact Cefrium integration surface and the migration boundary. Identified a candidate GeckoView 160.0.20261116130455 generic artifact and ARM64-specific artifact from a Maven index; did not pin or add either because direct POM/AAR metadata/native contents remain unverified.
+- **Checks:** Recursive tree inspection confirms only `MainActivity.kt` and `LastHavenApplication.kt` have direct Cefrium source usage; Gradle plugin/dependencies are in `app/build.gradle.kts`; Cefrium repository scopes are in `settings.gradle.kts`. Mozilla's official quick start confirms Java 17 source/target flags and Maven repository configuration.
+- **CI:** Run #297 (ID `45498642232`) remains in progress at the last check. Its release build step emitted many R8 warnings from Chromium resource classes; no completion status or successful test result is available yet. Run #298 is pending behind it.
+- **Limitations:** No GeckoView production code/dependency added. Stable artifact coordinates, POM, native AAR contents, exact API compatibility and final APK size remain unverified. Physical ARM64 game behavior remains unverified.
+- **Next safe action:** Complete #20 artifact/API verification and obtain the #297 baseline result; then start #21 with only the current game-view behavior, leaving home-screen redesign for #22.

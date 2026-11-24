@@ -8,7 +8,7 @@
 
 The stable v1.0.0 release is published. Beta still uses Cefrium and opens the game directly on startup. **The top priority is replacing Cefrium with Mozilla GeckoView.** Issue #20's exact stable-artifact/API decision is active under Chaty; issue #21 is next for production integration. The new home screen with Play and Settings follows after the engine is integrated. The previous addon manager has been removed. The owner supplied a Firefox WebExtension specification, then explicitly placed addon-manager work on hold. No extension implementation has started; do not schedule or assign it until the owner resumes it.
 
-- **Current `beta` HEAD:** `3c127cb7a6b01d3769744d3094b6dd18e365ea44`.
+- **Latest inspected source checkpoint:** `3c127cb7a6b01d3769744d3094b6dd18e365ea44`; subsequent commits in this workstream update only status/research documentation.
 
 - **`main` (stable):** `6211cf389b8d9f6ef98aa7818f47643bfdaf2053`.
 - **Latest CI:** [run #297](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45498642232), ID `45498642232`, on current HEAD `a9d9b272a004a9a4dcc49fed0067f414ba3601cf`; build/test step is in progress. JDK 25, Android SDK 37, Gradle Wrapper validation, version metadata and signing-key restore completed successfully; no build/test result yet.
@@ -55,7 +55,7 @@ Documentation, agent references and the removal work are committed directly to `
 - **Decision:** replace Cefrium with Mozilla GeckoView as the one embedded engine; do not add System WebView or keep a Cefrium fallback.
 - Mozilla documents a process-scoped `GeckoRuntime`, per-site `GeckoSession` and Android `GeckoView`; app delegates handle navigation/content events, permissions, prompts and media. See the official [quick start](https://firefox-source-docs.mozilla.org/mobile/android/geckoview/consumer/geckoview-quick-start.html), [architecture](https://firefox-source-docs.mozilla.org/mobile/android/geckoview/contributor/geckoview-architecture.html), [WebExtensions](https://firefox-source-docs.mozilla.org/mobile/android/geckoview/consumer/web-extensions.html) and [permissions](https://firefox-source-docs.mozilla.org/mobile/android/geckoview/consumer/permissions.html) docs.
 - The official quick start documents Java 17 compile compatibility and Mozilla's Maven repository. Current project CI uses JDK 25, Gradle 9.7.1, AGP 9.4.0 and SDK 37. Do not change any toolchain version until the #20 compatibility review validates the impact.
-- The exact stable GeckoView artifact/version is not yet pinned. #20 must verify current official Mozilla Maven availability at implementation time; do not pin Beta/Nightly or rely solely on a third-party listing.
+- The exact stable GeckoView artifact/version is not yet approved for pinning. Research surfaced candidate `160.0.20261116130455` for generic and ARM64-specific artifacts, but Maven POM/dependency/native-payload verification remains incomplete. See `docs/GECKOVIEW_MIGRATION.md`; do not pin the candidate yet.
 - GeckoView has its own persistent profile/session lifecycle. No transparent Cefrium-to-Gecko profile migration has been established. Keep old profile files untouched and warn that the user may need to sign in again.
 - WoW addon ZIPs and `.toc` packages are not Gecko WebExtensions. GeckoView's WebExtension APIs do not, by themselves, provide game addon loading.
 - ARM64 packaging, native library size, signed APK size, memory use, WebGL/WebAssembly, WebSockets, touch, fullscreen, audio, browser storage, permissions and crash recovery all need validation on the new engine.
