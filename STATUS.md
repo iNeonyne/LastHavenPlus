@@ -91,6 +91,6 @@ Do not promote `beta` to `main`, create a release tag or publish a release witho
 ## Next actions
 
 1. Inspect the Actions run for the CI optimization commits; compare elapsed time with run #308 without weakening gates.
-2. Wait for Ploy's #22 handoff, review the exact diff and tests, then integrate directly into `beta`.
+2. Review Ploy's #22 PR, inspect the exact diff and tests, and merge it into `beta` only after required checks pass.
 3. Arrange real ARM64 device testing and record the device, Android version, tested commit, APK SHA-256 and individual results.
 4. Update this file with the exact latest verified commit and CI run after new evidence exists.
