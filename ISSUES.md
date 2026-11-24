@@ -26,7 +26,7 @@
 | [#20](https://github.com/iNeonyne/LastHavenPlus/issues/20) | P1 — Prepare the GeckoView migration technical decision record | open |
 | [#21](https://github.com/iNeonyne/LastHavenPlus/issues/21) | P1 — Replace Cefrium with Mozilla GeckoView | open |
 | [#22](https://github.com/iNeonyne/LastHavenPlus/issues/22) | P1 — Add the home screen with Play and Settings | open |
-| [#23](https://github.com/iNeonyne/LastHavenPlus/issues/23) | P1 — Move the existing ZIP addon manager into Settings | open |
+| [#23](https://github.com/iNeonyne/LastHavenPlus/issues/23) | P1 — Rebuild addon manager after owner specification | open |
 
 ---
 
@@ -643,11 +643,30 @@ Fresh launch shows a simple branded home screen with Play and Settings. Do not l
 
 ---
 
-## Issue 23 — P1 — Move the existing ZIP addon manager into Settings
+## Issue 23 — P1 — Rebuild addon manager after owner specification
 
 **GitHub:** https://github.com/iNeonyne/LastHavenPlus/issues/23  
-**Internal owner:** Ploy, queued after #22 integration.
+**Internal owner:** Chaty for intake/planning; implementation owner not assigned yet.
+**State:** BLOCKED — awaiting the project owner's written requirements.
 
-Reuse the existing `AddonArchiveInspector.kt`, `AddonLibraryRepository.kt` and `AddonManagerDialog.kt`. Add the manager under Settings without resetting or renaming `filesDir/addon-library`. Keep importing/enabling as local library state only; never claim in-game loading. Do not implement game injection or convert WoW addon ZIPs into Gecko WebExtensions.
+The previous addon manager implementation has been removed at the owner's request. Do not restore, port or recreate the old ZIP inspector/repository/dialog design based on previous issue text.
 
+### Removed from beta
+- `AddonArchiveInspector.kt`
+- `AddonLibraryRepository.kt`
+- `AddonManagerDialog.kt`
+- `AddonArchiveInspectorTest.kt`
+- Addon manager entry/state in `MainActivity.kt`
+
+### Next step
+Wait for the owner to provide a new addon-manager specification. Then Chaty will translate it into a fresh design, data model, security boundary, implementation stages and acceptance tests before assigning work.
+
+### Constraints until then
+- No addon manager code, UI, storage schema, migrations, background work or injection hooks.
+- Do not delete unrelated user app data or assume an old package library should be migrated.
+- Do not conflate WoW addon packages with Gecko WebExtensions.
+- No game injection or runtime modification without a separately documented, explicitly approved integration contract.
+- No parallel implementation before the new scope is approved.
+
+---
 ---
