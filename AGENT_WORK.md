@@ -14,6 +14,7 @@ The repository owner makes final product and release decisions. Chaty is the mai
 - Parallel work is allowed only for different issues with non-overlapping file scopes. Never work on the same issue concurrently.
 - Ploy works from a dedicated task branch based on current `beta`, then opens a PR targeting `beta` and hands Chaty the PR link, exact head commit SHA, changed files, test results and limitations.
 - Chaty alone reviews and merges accepted PRs into `beta`; contributors must not merge their own PRs or push directly to `beta`.
+- PR CI for `beta` builds the unsigned release variant and runs unit tests; it does not use signing secrets or publish APKs. Chaty must still verify the full signed build and release gates on the resulting beta commit.
 - Promote to `main` or publish a release only after release gates pass and the owner explicitly approves.
 - GitHub Issues and `ISSUES.md` are the source of truth. TickTick may be used as a supplementary task tracker.
 - Physical-device behavior remains unverified until tested on real ARM64 hardware.
