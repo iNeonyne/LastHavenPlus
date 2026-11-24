@@ -8,6 +8,7 @@ import java.io.FileOutputStream
 import java.io.InputStream
 import java.io.OutputStream
 import java.util.UUID
+import java.util.Locale
 
 data class AddonLibraryItem(
     val id: String,
@@ -59,9 +60,9 @@ class AddonLibraryRepository(context: Context) {
             copyBounded(input, stagedFile, AddonArchiveInspector.MAX_ARCHIVE_BYTES)
             val inspection = AddonArchiveInspector.inspect(stagedFile, safeDisplayName(displayName))
             val existing = readIndex()
-            val folderNames = inspection.addons.map { it.folderName.lowercase() }.toSet()
+            val folderNames = inspection.addons.map { it.folderName.lowercase(Locale.ROOT) }.toSet()
             val conflicts = existing
-                .filter { it.folderName.lowercase() in folderNames }
+                .filter { it.folderName.lowercase(Locale.ROOT) in folderNames }
                 .map { it.folderName }
                 .distinct()
             if (conflicts.isNotEmpty()) {
@@ -127,8 +128,8 @@ class AddonLibraryRepository(context: Context) {
         existing: List<AddonLibraryItem>,
         replaceExisting: Boolean,
     ): AddonImportResult.Imported {
-        val incomingFolders = inspection.addons.map { it.folderName.lowercase() }.toSet()
-        val conflicts = existing.filter { it.folderName.lowercase() in incomingFolders }
+        val incomingFolders = inspection.addons.map { it.folderName.lowercase(Locale.ROOT) }.toSet()
+        val conflicts = existing.filter { it.folderName.lowercase(Locale.ROOT) in incomingFolders }
         if (conflicts.isNotEmpty() && !replaceExisting) {
             return AddonImportResult.Imported(0, 0)
         }
@@ -152,7 +153,7 @@ class AddonLibraryRepository(context: Context) {
         }
 
         val retained = if (replaceExisting) {
-            existing.filterNot { it.folderName.lowercase() in incomingFolders }
+            existing.filterNot { it.folderName.lowercase(Locale.ROOT) in incomingFolders }
         } else {
             existing
         }
