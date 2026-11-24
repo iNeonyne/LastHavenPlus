@@ -32,12 +32,12 @@ The application ID and established release signing identity are part of update c
 
 - The current beta implementation opens the LastHaven game directly when the app starts. The new home screen is planned under [issue #22](https://github.com/iNeonyne/LastHavenPlus/issues/22); it is not implemented yet.
 - The current game view uses a persistent app-private Cefrium profile. Runtime persistence on physical ARM64 hardware remains unverified.
-- The app has an exit/navigation menu, settings and usage information, diagnostics, update actions and a local ZIP addon manager.
+- The app has an exit/navigation menu, settings and usage information, diagnostics and manual update actions. The legacy addon manager has been removed pending a new owner-provided specification.
 - Storage information distinguishes installed APK size, browser profile directory size and app cache size.
 - Network counters report app-wide bytes received and sent, including game and updater traffic; they are not game-only counters.
 - Diagnostic logs are bounded and stored locally, with redaction and explicit user-initiated sharing.
 - The updater checks stable releases and offers explicit manual download/install choices. It supports a compatible differential patch and a full APK fallback. It does not automatically download or install updates.
-- The existing ZIP addon manager imports, inspects, stores, exports and removes WoW addon packages. Its local enabled flag is only library metadata; **the manager does not currently load or inject addons into the game**.
+- **Addon manager:** no addon manager implementation is currently included in beta. The previous ZIP manager has been removed at the owner's request. Do not rebuild or add addon functionality until the owner provides a new specification.
 
 ## Approved architecture change
 
@@ -45,10 +45,10 @@ The next major beta change replaces Cefrium with **Mozilla GeckoView** and intro
 
 - GeckoView becomes the sole embedded browser engine; no Android System WebView or Cefrium fallback is planned. The current source remains Cefrium-based until [issue #21](https://github.com/iNeonyne/LastHavenPlus/issues/21) is implemented and verified.
 - The app opens to a home screen with a prominent **Play** button and a **Settings** entry. The game is loaded only after Play is selected ([issue #22](https://github.com/iNeonyne/LastHavenPlus/issues/22)).
-- The current ZIP addon manager is reused and placed under Settings ([issue #23](https://github.com/iNeonyne/LastHavenPlus/issues/23)); its archive and repository code should not be rewritten without a demonstrated defect.
+- The future addon manager will be designed from a new owner-provided specification ([issue #23](https://github.com/iNeonyne/LastHavenPlus/issues/23)); do not reuse or recreate the deleted implementation.
 - A WoW addon ZIP / `.toc` package is not a Gecko WebExtension. Moving to GeckoView does not itself provide game addon loading. Any future game integration requires a separately documented, operator-approved contract and physical-device verification.
 
-See [issue #18](https://github.com/iNeonyne/LastHavenPlus/issues/18) for the staged plan and [issue #20](https://github.com/iNeonyne/LastHavenPlus/issues/20) for the GeckoView research/decision record.
+See [issue #18](https://github.com/iNeonyne/LastHavenPlus/issues/18) for the staged plan and [issue #20](https://github.com/iNeonyne/LastHavenPlus/issues/20) for the GeckoView research/decision record. Agent-ready GeckoView references are maintained in [`docs/GECKOVIEW_MIGRATION.md`](docs/GECKOVIEW_MIGRATION.md); the append-only interruption/restart journal is [`WORK_LOG.md`](WORK_LOG.md).
 
 ### Browser profile transition
 
