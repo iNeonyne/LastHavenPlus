@@ -1,3 +1,13 @@
+## 2026-11-25 — Restrict release tags to stable main
+
+- **Role:** Chaty / CI orchestration
+- **Files:** `.github/workflows/android.yml`, `gradle/README.md`, `ISSUES.md`, GitHub issue #4
+- **Change:** Manual release-tag creation now requires the selected ref to be `main`; pushed version tags are rejected unless their commit is contained in stable `main`. Updated the Gradle wrapper reference and marked the verified wrapper setup work complete in issue #4.
+- **Why:** Prevent a manual dispatch or tag push from producing a release candidate from unpromoted beta code, and keep build instructions aligned with the committed wrapper.
+- **Verified:** Workflow source inspected after the change; no release dispatch, tag creation or publication was performed. Current beta compilation remains blocked by the #13 source error.
+- **Do not redo:** Do not loosen the stable-main release gate or create release tags from beta.
+- **Follow-ups:** Confirm a normal beta CI run accepts the workflow syntax; complete #13 compile fix and #4 updater tests.
+
 **Workflow history note (2026-11-25):** Earlier entries mentioning PRs or TickTick describe superseded historical practices only. Current policy is no PRs and no TickTick; GitHub Issues and `ISSUES.md` are the task sources of truth. Chaty alone integrates commits directly into `beta`.
 
 ## 2026-11-25 — Audit beta workflow and correct project documentation
