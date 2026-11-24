@@ -390,3 +390,14 @@ Entry format:
 - **Verified:** Issue #23 remains open and is marked deferred in the repository backlog; the old Android addon manager remains removed. No extension files or dependencies were added.
 - **Do not redo:** Do not continue addon-manager work based on the earlier specification without explicit owner authorization to resume.
 - **Follow-ups:** Focus on the existing Android launcher build, accessibility, diagnostics and GeckoView migration tasks.
+
+
+## 2026-11-25 — Make Cefrium replacement the top project priority
+
+- **Role:** Chaty / main orchestrator
+- **Files:** `AGENT_WORK.md`, `STATUS.md`, `ISSUES.md`, GitHub issues #20 and #21
+- **Change:** Promoted GeckoView decision #20 and Cefrium replacement #21 to P0. Chaty now owns the complete GeckoView workstream. Ploy's smaller #9 accessibility and #11 diagnostics tasks are paused; #22 follows engine integration. The current #4 CI run is treated only as the minimum clean-build prerequisite, not as a reason to delay migration with unrelated updater work.
+- **Why:** The owner explicitly set replacing Cefrium as the top project priority.
+- **Verified:** Current beta HEAD is `a9d9b272a004a9a4dcc49fed0067f414ba3601cf`. CI run #297 (ID `45498642232`) is in progress; environment setup, wrapper validation and signing-key restore passed, but the build/test step has not completed. No successful build or GeckoView compatibility is claimed.
+- **Do not redo:** Do not add GeckoView until the exact stable artifact/API/toolchain compatibility is verified. Do not change application ID, signing identity, ABI target or update consent. Do not work on addon manager #23.
+- **Follow-ups:** Finish #20 research, then begin #21 production migration immediately after the baseline build is confirmed.

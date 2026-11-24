@@ -5,6 +5,8 @@
 
 ## Backlog overview
 
+**Top priority:** replace Cefrium with Mozilla GeckoView (#20 decision, #21 implementation). #4 is limited to establishing a clean current-beta build baseline; unrelated work is paused. Ploy's #9/#11 tasks resume after the engine migration is underway.
+
 | ID | Priority / title | State |
 |---|---|---|
 | [#4](#issue-4) | P0.1 — Improve build reproducibility and updater test coverage | open |
@@ -12,9 +14,9 @@
 | [#6](#issue-6) | P2 — Add minimal launcher settings and safe storage controls | open |
 | [#7](#issue-7) | P3 — Measure runtime performance and evaluate APK size improvements | open |
 | [#8](#issue-8) | Superseded — legacy addon manager removed; future scope waits for owner spec (#23) | open |
-| [#9](#issue-9) | P2 — Add a compact game navigation and exit menu | open |
+| [#9](#issue-9) | P2 — Add a compact game navigation and exit menu | paused |
 | [#10](#issue-10) | P2 — Track game network data usage | open |
-| [#11](#issue-11) | P2 — Add privacy-conscious app and updater logs | open |
+| [#11](#issue-11) | P2 — Add privacy-conscious app and updater logs | paused |
 | [#12](#issue-12) | P2 — Surface actionable GeckoView load-error details | open |
 | [#13](#issue-13) | Superseded by #9 — old AddonManager compile/accessibility task; pending CI confirmation | open |
 | [#14](#issue-14) | P2 — Add connection diagnostics | open |
@@ -23,8 +25,8 @@
 | [#17](#issue-17) | P2 — Back up and restore launcher settings | open |
 | [#18](#issue-18) | Roadmap — GeckoView migration, home screen and addon manager | open |
 | [#19](https://github.com/iNeonyne/LastHavenPlus/issues/19) | P1 — Add an opt-in beta release channel to the updater | open |
-| [#20](https://github.com/iNeonyne/LastHavenPlus/issues/20) | P1 — Prepare the GeckoView migration technical decision record | open |
-| [#21](https://github.com/iNeonyne/LastHavenPlus/issues/21) | P1 — Replace Cefrium with Mozilla GeckoView | open |
+| [#20](https://github.com/iNeonyne/LastHavenPlus/issues/20) | P0 — Verify GeckoView migration decision and stable artifact | active |
+| [#21](https://github.com/iNeonyne/LastHavenPlus/issues/21) | P0 — Replace Cefrium with Mozilla GeckoView | next |
 | [#22](https://github.com/iNeonyne/LastHavenPlus/issues/22) | P1 — Add the home screen with Play and Settings | open |
 | [#23](https://github.com/iNeonyne/LastHavenPlus/issues/23) | Deferred — Firefox WebExtension addon manager (owner hold) | deferred |
 
@@ -573,7 +575,7 @@ The next major beta change replaces Cefrium with Mozilla GeckoView and adds a ho
 
 **Dependency:** #4. Coordinate with #6; Chaty owns the updater channel control and Ploy must not duplicate it.
 
-## Issue 20 — P1 — Prepare the GeckoView migration technical decision record
+## Issue 20 — P0 — Verify GeckoView migration decision and stable artifact
 
 **GitHub:** https://github.com/iNeonyne/LastHavenPlus/issues/20  
 **Internal owner:** Ploy, queued after #9 and #11.
@@ -582,7 +584,7 @@ Docs-only research. Verify current stable GeckoView coordinates/version through 
 
 ---
 
-## Issue 21 — P1 — Replace Cefrium with Mozilla GeckoView
+## Issue 21 — P0 — Replace Cefrium with Mozilla GeckoView
 
 **GitHub:** https://github.com/iNeonyne/LastHavenPlus/issues/21  
 **Internal owner:** Chaty, queued after #4 is clean and #20 is reviewed.

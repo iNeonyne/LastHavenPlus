@@ -2,21 +2,21 @@
 
 **Last updated:** 2026-11-25  
 **Active branch:** `beta`  
-**Phase:** Restore the current beta build, then execute the approved GeckoView and home-screen transition.
+**Phase:** P0 — Replace Cefrium with Mozilla GeckoView. The baseline CI run is a prerequisite gate; GeckoView technical decision #20 is active.
 
 ## Snapshot
 
-The stable v1.0.0 release is published. Beta still uses Cefrium and opens the game directly on startup. The approved target is GeckoView plus a home screen with Play and Settings. The previous addon manager has been removed. The owner supplied a Firefox WebExtension specification, then explicitly placed addon-manager work on hold. No extension implementation has started; do not schedule or assign it until the owner resumes it.
+The stable v1.0.0 release is published. Beta still uses Cefrium and opens the game directly on startup. **The top priority is replacing Cefrium with Mozilla GeckoView.** Issue #20's exact stable-artifact/API decision is active under Chaty; issue #21 is next for production integration. The new home screen with Play and Settings follows after the engine is integrated. The previous addon manager has been removed. The owner supplied a Firefox WebExtension specification, then explicitly placed addon-manager work on hold. No extension implementation has started; do not schedule or assign it until the owner resumes it.
 
-- **Latest verified `beta` HEAD before this hold update:** `5f3fbe619aed796b80979919bbe9a710d6ef1370`.
+- **Current `beta` HEAD:** `a9d9b272a004a9a4dcc49fed0067f414ba3601cf`.
 
 - **`main` (stable):** `6211cf389b8d9f6ef98aa7818f47643bfdaf2053`.
-- **Latest CI noted for the URL change:** [run #295](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45498271033), ID `45498271033`, on commit `bf5dec75e2933b1181917e73dbba4489485965e4`; pending at last inspection. This documentation-only hold update has no CI result yet.
+- **Latest CI:** [run #297](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45498642232), ID `45498642232`, on current HEAD `a9d9b272a004a9a4dcc49fed0067f414ba3601cf`; build/test step is in progress. JDK 25, Android SDK 37, Gradle Wrapper validation, version metadata and signing-key restore completed successfully; no build/test result yet.
 - **Build evidence:** no successful build or test is claimed for the current documentation-only head.
 - **Previous source failure:** [run #247](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45493653394) failed Kotlin compilation in `AddonManagerDialog.kt`. That source file and its app entry point have since been removed. Do not treat the blocker as fixed until a new build completes.
 - **Latest successful beta CI run found:** [#179](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45183038304), commit `593fec6b048790cbc30a7fbadf571b749069abea`; historical only.
 - **Published release:** [v1.0.0](https://github.com/iNeonyne/LastHavenPlus/releases/tag/v1.0.0), with the signed ARM64 APK and update manifest. It does not verify current beta.
-- **Current task ownership:** Ploy #9 (easy menu accessibility), then #11 diagnostics tests; Chaty #4 build/updater tests and #21 engine migration after #20 research. Addon manager #23 is deferred by explicit owner request; no implementation is authorized until resumed.
+- **Current task ownership:** Chaty owns #20 GeckoView technical decision and #21 Cefrium replacement. Chaty is also monitoring #4 only as the minimum clean-build prerequisite; run #297 is currently in progress. Ploy's #9 and #11 tasks are paused so the team can focus on the engine migration. #22 follows #21. Addon manager #23 remains on hold.
 
 Documentation, agent references and the removal work are committed directly to `beta`. No GeckoView production dependency/source has been added. No main promotion, tag or release was performed.
 
@@ -64,17 +64,17 @@ Documentation, agent references and the removal work are committed directly to `
 
 | Issue | Internal owner | Order / status |
 |---|---|---|
-| [#9](https://github.com/iNeonyne/LastHavenPlus/issues/9) | Ploy | Active — small exit-menu accessibility follow-up |
+| [#9](https://github.com/iNeonyne/LastHavenPlus/issues/9) | Ploy | Paused — menu accessibility follow-up |
 | [#4](https://github.com/iNeonyne/LastHavenPlus/issues/4) | Chaty | Active — verify post-removal build and updater tests |
-| [#11](https://github.com/iNeonyne/LastHavenPlus/issues/11) | Ploy | Queued after #9 |
+| [#11](https://github.com/iNeonyne/LastHavenPlus/issues/11) | Ploy | Paused — diagnostics tests |
 | [#8](https://github.com/iNeonyne/LastHavenPlus/issues/8) | — | Superseded; old manager removed, future spec tracked by #23 |
-| [#20](https://github.com/iNeonyne/LastHavenPlus/issues/20) | Ploy | Queued after #8; docs-only GeckoView technical decision record |
-| [#21](https://github.com/iNeonyne/LastHavenPlus/issues/21) | Chaty | Queued after clean #4 baseline and reviewed #20; replace Cefrium |
+| [#20](https://github.com/iNeonyne/LastHavenPlus/issues/20) | Chaty | ACTIVE — P0 stable-artifact/API decision record |
+| [#21](https://github.com/iNeonyne/LastHavenPlus/issues/21) | Chaty | NEXT — P0 replace Cefrium with GeckoView immediately after #20/baseline gates |
 | [#22](https://github.com/iNeonyne/LastHavenPlus/issues/22) | Ploy | Queued after #21 integration; home screen / Play / Settings navigation |
 | [#23](https://github.com/iNeonyne/LastHavenPlus/issues/23) | Unassigned | Blocked pending owner addon-manager specification |
 | [#19](https://github.com/iNeonyne/LastHavenPlus/issues/19) | Chaty | Deferred until engine and home/navigation migration is stable |
 
-Ploy is an internal repository agent and is not assigned through GitHub's account assignee field; this file is the authoritative internal work order. One active owner per issue/task remains mandatory.
+Ploy is an internal repository agent and is not assigned through GitHub's account assignee field; this file is the authoritative internal work order. Chaty currently owns the GeckoView workstream. Ploy's unrelated tasks are paused to avoid delaying the top priority. One active owner per issue/task remains mandatory.
 
 ## Release blockers
 

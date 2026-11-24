@@ -113,3 +113,15 @@
 - **Tests:** Documentation-only change; no application or extension tests run.
 - **Limitations:** The old Android addon manager remains removed. The supplied Firefox extension specification is retained as context only; no extension source was added.
 - **Next safe action:** Continue the non-addon project priorities (#4, #9, #11, #20, #21, #22). Do not touch #23 until explicit resume instruction.
+
+
+### 2026-11-25 — Reprioritize project around Cefrium replacement
+
+- **Issue/task:** #20 technical decision, #21 engine migration, #4 minimum build baseline.
+- **Branch and starting commit:** `beta`, `a9d9b272a004a9a4dcc49fed0067f414ba3601cf`.
+- **Files inspected:** `README.md`, `AGENTS.md`, `STATUS.md`, `ISSUES.md`, `CHANGELOG-AGENTS.md`, `AGENT_WORK.md`, `docs/GECKOVIEW_MIGRATION.md`, `app/build.gradle.kts`, GitHub issues #4/#20/#21, current beta Actions run #297.
+- **Action:** Promoted #20 and #21 to P0 and updated their GitHub titles/scopes. Chaty owns #20 and #21. Ploy's #9/#11 work is paused. #4 is limited to verifying a clean post-removal baseline; unrelated updater enhancements are deferred until GeckoView is underway.
+- **CI evidence:** Run #297, ID `45498642232`, commit `a9d9b272a004a9a4dcc49fed0067f414ba3601cf`; JDK 25, Android SDK 37, Wrapper validation, version metadata and signing-key restore completed. The signed release build/unit-test step was still in progress at the last inspection. No pass is claimed.
+- **Research started:** Mozilla's official GeckoView quick-start confirms stable/beta/nightly channels, Mozilla Maven repository and Java 17 source/target compatibility flags. Third-party Maven indexing surfaced a candidate 160.x version, but the exact stable artifact has not yet been verified directly against Mozilla Maven; do not pin it yet.
+- **Constraints:** No production dependency/source changes yet. Preserve Gradle 9.7.1, AGP 9.4.0, JDK 25, SDK 37, package ID, signing identity and arm64-v8a-only target until compatibility evidence supports a change. Keep the old Cefrium profile untouched.
+- **Next safe action:** Monitor run #297 to completion and inspect logs; finish official stable artifact/API verification for #20; then begin #21.

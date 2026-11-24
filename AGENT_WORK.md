@@ -19,11 +19,11 @@ This file is the execution order and file-ownership contract for the two project
 - The previous addon manager implementation has been removed. Issue #23 (Firefox WebExtension addon manager) is explicitly on hold by the owner. Do not research, design, implement, test, assign, or otherwise spend project effort on addon-manager work until the owner explicitly resumes it. Keep WoW addon packages distinct from Gecko WebExtensions.
 - Physical-device testing remains unverified until performed on real ARM64 hardware.
 
-## Ploy — exclusive assignment sequence
+## Ploy — paused while GeckoView is the top priority
 
-Work one issue at a time. Stop after each task-branch handoff and wait for Chaty's review and integration before starting the next item.
+Ploy's smaller tasks #9 (menu accessibility) and #11 (diagnostics tests) are paused. Do not edit their files or begin another task until Chaty reactivates the queue. The current top-priority work is owned by Chaty; no concurrent agent is assigned to the same GeckoView issues.
 
-### ACTIVE — #9 navigation menu accessibility (easy task)
+### PAUSED — #9 navigation menu accessibility (easy task)
 **Goal:** Finish the small accessibility follow-up for the existing exit/navigation menu.
 
 Scope:
@@ -36,15 +36,15 @@ File boundary: `MainActivity.kt` menu semantics and directly related UI tests on
 
 Acceptance: menu actions have clear, non-duplicated accessible names; relevant automated checks pass. Physical TalkBack/focus-order verification remains pending until a real ARM64 device is tested.
 
-### QUEUED — #11 diagnostics tests
+### PAUSED — #11 diagnostics tests
 Start only after #9 is integrated into `beta`.
 
 Scope: tests for redaction formats, bounded log size/rotation and safe failure-path logging. Do not change the logging architecture or collect additional sensitive data unless a reproducible test exposes a specific defect.
 
 File boundary: diagnostics logger and its unit tests only. Do not touch engine migration or screen navigation.
 
-### QUEUED — #20 GeckoView technical decision record
-Start after #11 is integrated and Chaty confirms the beta build baseline. The initial reference guide already exists at `docs/GECKOVIEW_MIGRATION.md`; Ploy verifies and expands it with exact stable-version/API/toolchain evidence, documentation only.
+### NOT ASSIGNED — #20 GeckoView technical decision record
+Chaty owns this P0 research decision as part of the engine migration workstream. Ploy must not research or edit the same document concurrently.
 
 Scope:
 - Update `docs/GECKOVIEW_MIGRATION.md` only; no production source, Gradle or manifest changes.
@@ -68,13 +68,18 @@ Do not start this task until the owner provides a new written specification. The
 
 ## Chaty — active and queued
 
-### ACTIVE — #4 build reliability and updater tests
-- Restore a clean current beta CI build and complete updater edge-case tests.
+### ACTIVE — #4 build baseline gate (limited)
+- Monitor the current post-removal beta CI run and inspect its build/test result.
+- Resolve only confirmed baseline blockers needed to establish a reproducible starting point for GeckoView.
 - Keep the committed Gradle Wrapper; do not change Gradle/JDK/AGP/SDK/signing identity speculatively.
-- The previous compile blocker was inside the deleted addon manager. Check the latest post-removal CI before identifying any current compile blocker; do not edit Ploy's #9 menu files while she owns that task.
+- Do not let unrelated updater enhancements delay the engine migration; defer remaining updater test expansion until after the GeckoView replacement is stable.
 
-### QUEUED — #21 replace Cefrium with GeckoView
-Start after #4 is at a clean, verified baseline and #20 is reviewed.
+### ACTIVE — #20 GeckoView technical decision record
+- Chaty owns immediate verification of the stable GeckoView artifact, exact coordinates, API surface, Java/toolchain compatibility, ARM64 payload, licenses and size impact.
+- Do not add the dependency until the official artifact and current build compatibility are verified.
+
+### NEXT — #21 replace Cefrium with GeckoView
+Begin production integration immediately after #20's exact stable-artifact/API decision and the current beta baseline build are verified.
 
 Scope: replace Cefrium plugin/dependencies/repository/runtime with one verified stable GeckoView version; implement process-scoped GeckoRuntime, managed GeckoSession and GeckoView host; safe delegates; persistent profile; remove all Cefrium production references.
 
@@ -96,16 +101,16 @@ Ploy provides Chaty:
 Ploy stops after handing off. Chaty reviews the full diff, reruns or verifies required checks, integrates accepted work directly into `beta`, updates central trackers and only then advances the assignment queue.
 
 
-## Ploy task queue after current easy work
+## Ploy task queue while GeckoView is top priority
 
-1. #9 — ACTIVE: small menu accessibility follow-up.
-2. #11 — diagnostics redaction/rotation/failure-path unit tests; next after #9 integration.
-3. #20 — GeckoView documentation/research update after Chaty confirms clean beta baseline; documentation-only.
-4. #22 — home screen after Chaty integrates #21.
-5. #6 — small, isolated editable HTTPS game URL validation/persistence task after #21/#22 define the navigation contract. Do not implement profile/cache clearing or Gecko-specific controls before the exact pinned API is verified.
-6. #23 — blocked until owner supplies addon-manager requirements.
+1. #9 — PAUSED: small menu accessibility follow-up.
+2. #11 — PAUSED: diagnostics redaction/rotation/failure-path unit tests.
+3. #20 — Chaty owns the technical decision record; no parallel Ploy work.
+4. #22 — queued after Chaty integrates #21.
+5. #6 — queued after #21/#22 define the navigation contract.
+6. #23 — on hold at the owner's explicit request.
 
-Every task must append progress and interruption checkpoints to `WORK_LOG.md`. Ploy never integrates or pushes to beta.
+Every task must append progress and interruption checkpoints to `WORK_LOG.md`. Ploy never integrates or pushes to beta. Chaty owns the GeckoView migration as the top priority; Ploy remains paused until a non-overlapping task is explicitly reactivated.
 
 
 ## DEFERRED — #23 Firefox WebExtension addon manager
