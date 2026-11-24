@@ -1,4 +1,4 @@
-# LastHavenLauncher
+# LastHavenPlus
 
 A minimal Android launcher for the existing **LastHaven WotLK private server**. The game is already developed; this app only embeds the browser engine and opens it.
 
