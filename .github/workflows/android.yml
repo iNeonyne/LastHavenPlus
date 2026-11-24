@@ -97,11 +97,19 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          trap 'status=$?; echo "::error::Release verification failed at workflow line $LINENO (exit $status)"; exit "$status"' ERR
           DEBUG_APK="app/build/outputs/apk/debug/app-debug.apk"
           RELEASE_APK="app/build/outputs/apk/release/app-release.apk"
           EXPECTED_CERT="b3bbf7520e77dfc384a60b1eee6c5f205b978f9b453849e2be523f642018d263"
           for apk in "$DEBUG_APK" "$RELEASE_APK"; do
-            test -f "$apk"
+            echo "Checking APK exists: $apk"
+            if [[ ! -f "$apk" ]]; then
+              echo "::error::Expected APK was not produced: $apk"
+              ls -lah app/build/outputs/apk/{debug,release}/ || true
+              exit 1
+            fi
+            ls -lh "$apk"
+            echo "Checking native ABI contents: $apk"
             python3 - "$apk" <<'PY'
           import sys, zipfile
           apk = sys.argv[1]
@@ -111,17 +119,28 @@ jobs:
                   for name in archive.namelist()
                   if name.startswith("lib/") and name.endswith(".so") and len(name.split("/")) > 2
               }
+              print(f"{apk}: packaged ABIs = {sorted(abis)}")
               if abis != {"arm64-v8a"}:
                   raise SystemExit(f"{apk}: expected arm64-v8a only, got {sorted(abis)}")
           PY
           done
           APKSIGNER="$ANDROID_HOME/build-tools/37.0.0/apksigner"
+          echo "Checking apksigner executable: $APKSIGNER"
+          if [[ ! -x "$APKSIGNER" ]]; then
+            echo "::error::apksigner is missing or not executable"
+            ls -lah "$ANDROID_HOME/build-tools/" || true
+            exit 1
+          fi
+          echo "Verifying release APK signature"
           "$APKSIGNER" verify --verbose "$RELEASE_APK"
+          echo "Reading release certificate fingerprint"
           CERT_OUTPUT="$("$APKSIGNER" verify --print-certs "$RELEASE_APK")"
           echo "$CERT_OUTPUT"
           CERT_DIGEST="$(printf '%s\n' "$CERT_OUTPUT" | awk -F': ' '/certificate SHA-256 digest:/ {print tolower($2); exit}')"
+          echo "Actual release certificate SHA-256: ${CERT_DIGEST:-<missing>}"
+          echo "Expected release certificate SHA-256: $EXPECTED_CERT"
           if [[ "$CERT_DIGEST" != "$EXPECTED_CERT" ]]; then
-            echo "Release APK certificate does not match the established LastHaven release key." >&2
+            echo "::error::Release APK certificate does not match the established LastHaven release key."
             exit 1
           fi
           python3 - <<'PY'
