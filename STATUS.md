@@ -66,7 +66,7 @@ v1.0.0 was published on 2026-11-24. Physical-device gameplay, persistence and sa
 
 ## App updater
 
-- Checks the latest **published stable GitHub Release** on launcher start; a manual check is also available from the exit dialog.
+- Currently checks the latest **published stable GitHub Release** on launcher start; a manual check is also available from the exit dialog. #19 will add an opt-in Beta channel for published prereleases; Stable remains the default.
 - Never downloads automatically. The user explicitly chooses **Download smaller update** or **Download full APK instead**, then Android presents its package installer.
 - Expected release tag: `vMAJOR.MINOR.PATCH`; canonical assets: signed `lasthavenplus-arm64.apk`, `lasthavenplus-update.json`, and an optional `*.bsdiff` patch. Legacy-named APK and manifest aliases are retained for older updater clients.
 - The app checks manifest and GitHub asset digests, installed base APK SHA-256, reconstructed APK SHA-256, package ID, versionCode and the pinned LastHaven release certificate before installer handoff.
@@ -118,6 +118,9 @@ The web fetch of the game URL returns only “Loading... Please enable JavaScrip
 | Owner | Issue / surface | State |
 |---|---|---|
 | Chaty | #4 — build reliability and updater test coverage | In progress. Added three malformed BSDIFF tests; CI run #45474077737 is pending. Previous run #45473637053 failed on three addon archive tests; diagnosis required. Gradle Wrapper and isolated updater-manifest/download tests remain outstanding. |
+
+| Chaty (queued next) | #19 — opt-in beta updater channel | Starts only after #4 is handed off; stable remains default; prereleases only in Beta mode; no auto-download/install. |
+| Ploy (queued after #8) | #6 — functionality-first settings and safe storage | Starts only after #13, #11 and #8 are accepted/integrated; no visual redesign; Chaty owns #19 updater-channel control. |
 
 Delegated ownership and task order are defined in [AGENT_WORK.md](AGENT_WORK.md). Exclusive ownership is mandatory: no issue/task may be worked by both agents concurrently. Ploy owns #13 now, then #11, then #8 repository tests, sequentially. Chaty currently owns only #4 implementation; overlapping Chaty work is paused until explicit handoff. Ploy opens PRs targeting `beta`; Chaty reviews and may merge accepted work into `beta`. Promote `beta` to `main` only after the roadmap release gates pass and the user explicitly approves.
 
