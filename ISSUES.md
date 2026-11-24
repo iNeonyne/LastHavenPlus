@@ -574,8 +574,11 @@ Planned scope:
 - [ ] #11 Complete diagnostics CI coverage and verify runtime-version reporting only through a supported Cefrium API.
 - [ ] Review feedback and reliability issues from v1.0.0/v1.1.0 before expanding scope.
 
-## Release policy
-- Direct-to-main; the main orchestrator alone integrates and pushes.
+## Branch and release policy
+- `main` is the stable release branch; `beta` is the shared integration and testing branch.
+- Chaty pushes orchestrator changes directly to `beta`; Ploy submits task branches through PRs targeting `beta`.
+- Chaty reviews and may merge accepted Ploy PRs into `beta` after required checks pass.
+- Promote `beta` into `main` only after beta verification and the user's explicit approval.
 - arm64-v8a only; preserve application ID and established signing key.
 - Manual, user-confirmed update installation; no background or silent installation.
 - Keep the existing game and Cefrium profile data intact across updates.
