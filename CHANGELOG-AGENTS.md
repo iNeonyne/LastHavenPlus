@@ -1,3 +1,13 @@
+## 2026-11-25 — Optimize routine Android CI
+
+- **Role:** Chaty / CI orchestration
+- **Files:** `.github/workflows/android.yml`
+- **Change:** Markdown-only pushes to `main` and `beta` no longer start Android builds; branch builds use a shallow checkout while version-tag builds retain full history for stable-main ancestry validation; Gradle is no longer forced into `--no-daemon` mode.
+- **Why:** Avoid spending runner time compiling unchanged Android code for documentation edits and reduce unnecessary repository checkout work without weakening build, unit-test, signing, ABI or release verification.
+- **Verified:** Workflow change committed to `beta` as `54b947279a783c6c382210e65045edd02bd5ee73`. The workflow file itself still triggers CI. Awaiting that run to validate the revised workflow and measure the actual result.
+- **Do not redo:** Do not skip CI for Kotlin, resources, Gradle, wrapper, Android manifest, workflow or other build-affecting changes. Do not remove unit tests, signing checks, ABI checks or release-tag ancestry validation.
+- **Follow-ups:** Inspect the CI run for this commit; compare duration against run #308 and update `STATUS.md` with the exact evidence.
+
 ## 2026-11-25 — Remove legacy addon manager and add durable agent references
 
 - **Role:** Chaty / main orchestrator
