@@ -4,14 +4,7 @@ LastHavenPlus is an Android launcher for the existing LastHaven Wrath of the Lic
 
 - **Game:** [alt.lasthavens.com/play](https://alt.lasthavens.com/play)
 - **Latest release:** [v1.0.0](https://github.com/iNeonyne/LastHavenPlus/releases/tag/v1.0.0)
-- **Project backlog:** [ISSUES.md](ISSUES.md)
-- **Current project status:** [STATUS.md](STATUS.md)
-
-## Development and releases
-
-- `main` is the stable release branch; `beta` is the integration and release-candidate branch.
-- Stable releases are promoted to `main` only after the release gates in [ISSUES.md](ISSUES.md) pass and the repository owner explicitly approves.
-- Ploy contributes through task PRs targeting `beta`; Chaty reviews and integrates accepted work. Agents never work on the same issue concurrently.
+- **Bug reports and feature requests:** [GitHub Issues](https://github.com/iNeonyne/LastHavenPlus/issues)
 
 ## Compatibility
 
@@ -64,7 +57,7 @@ gradle assembleRelease
 gradle testDebugUnitTest
 ```
 
-Release signing requires the established project keystore and credentials. GitHub Actions restores these from repository secrets; the private keystore must not be committed. For local unsigned development builds, use the appropriate debug build task when needed.
+Release signing requires the established project keystore and credentials. GitHub Actions restores these from repository secrets; the private keystore must not be committed.
 
 The CI workflow builds the signed, optimized ARM64 release APK and runs the unit test task. See [Actions](https://github.com/iNeonyne/LastHavenPlus/actions) for the latest run. Build reproducibility and wrapper setup are tracked in [issue #4](https://github.com/iNeonyne/LastHavenPlus/issues/4).
 
@@ -80,16 +73,3 @@ The CI workflow builds the signed, optimized ARM64 release APK and runs the unit
 - Game data is not cleared during startup, update or recovery.
 - Network counters and diagnostic logs stay on-device. Logs are shared only through the user's explicit action.
 - Do not manually delete Cefrium profile files or change the app's signing identity when updating.
-
-## Project workflow
-
-Read [AGENTS.md](AGENTS.md) before making changes.
-
-- [ISSUES.md](ISSUES.md) is the consolidated, version-controlled project backlog. Update it as work progresses.
-- [GitHub Issues](https://github.com/iNeonyne/LastHavenPlus/issues) remain available for discussion and issue history.
-- [STATUS.md](STATUS.md) records current implementation state, verification and blockers.
-- [CHANGELOG-AGENTS.md](CHANGELOG-AGENTS.md) records meaningful implementation changes.
-- Work is integrated directly into main by the main orchestrator; this repository does not use pull requests.
-- TickTick is not used for this project.
-
-Keep documentation aligned with verified code and CI results. Mark device-only behavior as unverified until tested on physical ARM64 hardware.
