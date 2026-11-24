@@ -22,7 +22,7 @@ Do not recreate, modify or develop the game. Do not add System WebView, GeckoVie
 8. **Stable app identity.** Do not change `applicationId` (`com.neonyne.lasthavenlauncher`) or the established release signing key.
 9. **Storage safety.** Never clear cookies, IndexedDB, LocalStorage or Cache Storage except through a confirmed “Clear game data” action.
 10. **No speculative optimization.** Every performance change needs before/after measurements in STATUS.
-11. **Lean coordination.** Parallelize independent tasks only; agents must own disjoint files/surfaces. The main orchestrator alone integrates changes and pushes commits directly to `main`. Do not use pull requests.
+11. **Lean coordination.** Parallelize independent tasks only; agents must own disjoint files/surfaces. For Ploy's delegated work, the user pushes her completed changes; Chaty reviews the pushed diff and updates the task tracker. Do not use pull requests. Chaty owns any separate orchestrator commits.
 
 ## Current engine decision
 
@@ -53,7 +53,7 @@ References:
 
 ## Named agent assignments
 
-Read [AGENT_WORK.md](AGENT_WORK.md) before starting delegated work. It defines Ploy (repository-only coding agent) and Chaty (main orchestrator), task order, file ownership, handoff rules and integration boundaries. Ploy must not push to `main`; Chaty reviews and integrates all delegated changes.
+Read [AGENT_WORK.md](AGENT_WORK.md) before starting delegated work. It defines Ploy (repository-only coding agent) and Chaty (main orchestrator), task order, file ownership, handoff rules and integration boundaries. The user pushes Ploy's completed changes to the repository. Chaty reviews the pushed diff, verifies it and updates `ISSUES.md`, `STATUS.md` and `CHANGELOG-AGENTS.md`; do not assume a handoff is present before it is pushed. Ploy must not push directly to `main`.
 
 ## Parallel agent roles
 
@@ -71,7 +71,7 @@ Agents may work in parallel only on disjoint files/surfaces. Each agent must ide
 
 1. Find the existing issue that matches the task. Create a new issue only when no existing issue covers it.
 2. Read its goal, checklist, dependencies, constraints and acceptance criteria.
-3. Claim the issue and file/work area in STATUS before making changes.
+3. Claim the issue and file/work area in STATUS before making changes. For Ploy's delegated tasks, Chaty maintains central status; Ploy must not edit central tracking files.
 4. Keep `ISSUES.md` accurate as work is completed. It is the consolidated repository backlog; update task checklists and status alongside implementation changes. GitHub Issues are linked discussion records.
 5. Run the relevant build/tests and record what was actually verified. Do not mark device-only behavior as passed based on CI.
 6. Update STATUS and append a changelog entry.
