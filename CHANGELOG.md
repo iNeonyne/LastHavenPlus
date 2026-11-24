@@ -1,26 +1,30 @@
-# LastHavenPlus release changelog
+# Release changelog
 
-## v1.0.0 — Draft for review (not published)
+## v1.0.0 — stable release notes
 
-### Features
-- Launch the existing LastHaven WotLK game in the pinned Cefrium/Chromium engine.
-- Add a Settings & usage view with installed APK size, Cefrium profile storage (when available), and app cache size.
-- Show app network bytes received and sent, including current-session and since-device-boot totals where Android supports them.
-- Add local app, Cefrium lifecycle and updater diagnostic events with a log viewer and explicit share action.
+These notes describe the original v1.0.0 release on the stable `main` branch. They are historical release notes; beta has since migrated from Cefrium to GeckoView.
 
-### Updates and reliability
-- Check for stable GitHub Releases and let the user choose whether to download an update.
-- Offer a smaller differential update when the installed base APK matches, with a full signed APK fallback.
-- Verify downloaded/reconstructed APK checksums, package identity, version and the established release signing certificate before handing off to Android's installer.
-- Keep the product limited to arm64-v8a and preserve the existing application ID and signing identity.
+### Launcher and game
+- Launch the existing LastHaven Wrath of the Lich King browser game.
+- Preserve the existing application ID and release signing identity for in-place Android updates.
+- Package ARM64 (`arm64-v8a`) only.
 
-### Privacy and storage
+### Settings and diagnostics
+- Show installed APK size, browser/profile data when available and app cache usage.
+- Show app-wide received and sent network bytes. These counters include game and updater traffic; they are not game-only measurements.
+- Provide local diagnostic events, a log viewer and explicit user-initiated sharing.
+
+### Updates
+- Check stable GitHub Releases and let the user choose whether to download an update.
+- Offer a differential update when the installed base APK matches, with a full APK fallback.
+- Validate downloaded/reconstructed APK checksums, package identity, version and established signing certificate before handing installation to Android.
+- Never download or install updates automatically.
+
+### Privacy and limitations
 - Keep diagnostics and usage measurements on-device; no analytics or automatic log uploads.
-- Redact common credentials and session-related values from diagnostic messages, including full Cookie/Set-Cookie headers and JSON credential fields; unit tests cover key/value, header, JSON and URL-query cases.
-- Preserve the Cefrium game profile across normal launches and updates.
+- Redact common credentials and session-related values from diagnostic messages.
+- Physical-device gameplay, GPU, audio, persistence and in-place update verification are separate from CI build success.
 
-### Notes and limitations
-- Network counters are per-app UID totals (game plus updater), not game-only measurements; Android resets them on reboot.
-- Cefrium profile size is shown only when its profile directory is present and readable.
-- Physical-device gameplay, GPU, audio, persistence and in-place update verification remain separate release-readiness checks. Do not treat CI success as device verification.
-- This is a release-notes draft. Do not publish until the signed release build and required verification are reviewed and approved.
+## Current development
+
+For the current GeckoView implementation, beta verification and outstanding work, see [README.md](README.md) and [STATUS.md](STATUS.md). This changelog does not imply that beta is released or approved for promotion.
