@@ -2,101 +2,92 @@
 
 **Last updated:** 2026-11-25  
 **Active branch:** `beta`  
-**Phase:** P0 — Restore a clean beta build, then verify the playable core
+**Phase:** Restore the current beta build, then execute the approved GeckoView and home-screen transition.
 
 ## Snapshot
 
-The stable `v1.0.0` release is published from the stable line. The current `beta` source is not buildable at its latest commit: GitHub Actions run #232 fails Kotlin compilation in `AddonManagerDialog.kt`. The unit-test task did not run and no test-report artifact was produced. Do not treat the published APK or an older successful beta run as verification of the current beta source.
+The stable v1.0.0 release is published. The checked-in beta still uses Cefrium and opens the game directly on startup. The owner has approved a major architecture change: replace Cefrium with Mozilla GeckoView, add a simple home screen with Play and Settings, and reuse the existing ZIP addon manager from Settings. These are planned tasks, not implemented features.
+
+The current beta head is not buildable: GitHub Actions run #247 failed Kotlin compilation in `AddonManagerDialog.kt`. Unit tests did not run, no test report was produced, and signed APK/signing/ABI checks were skipped. Restore a clean beta baseline before changing the engine.
 
 - **`main` (stable):** `6211cf389b8d9f6ef98aa7818f47643bfdaf2053`
-- **`beta` audit head before this status refresh:** `6db0eb9613b86d0d2a62bd78d95fa7f09fb432c4` (documentation/workflow-only commits since the failed source build)
-- **Latest fully inspected source-build failure:** [run #232](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45484304840), failed on source commit `4b4a77293a14648974c78a49824a84a33e2a3e19`. Later documentation-only pushes triggered replacement CI runs; they do not change the source failure described below.
-- **Latest successful beta CI run found:** [run #179](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45183038304), commit `593fec6b048790cbc30a7fbadf571b749069abea`. This used an earlier workflow/source snapshot and does **not** verify current beta.
-- **Latest verified CI commit:** `593fec6b048790cbc30a7fbadf571b749069abea` (run #179; historical only).
-- **Current release:** [v1.0.0](https://github.com/iNeonyne/LastHavenPlus/releases/tag/v1.0.0), with one `lasthavenplus-arm64.apk` and `lasthavenplus-update.json`. Its existence does not prove current beta readiness.
+- **Latest audited `beta` commit:** `c00740a77e54ff4e26d69512959fb8feb0487a51`
+- **Latest beta CI run:** [#247](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45493653394), run ID `45493653394`, failed on commit `c00740a77e54ff4e26d69512959fb8feb0487a51`.
+- **Latest successful beta CI run found:** [#179](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45183038304), commit `593fec6b048790cbc30a7fbadf571b749069abea`; historical and not evidence for current beta.
+- **Published release:** [v1.0.0](https://github.com/iNeonyne/LastHavenPlus/releases/tag/v1.0.0), with `lasthavenplus-arm64.apk` and `lasthavenplus-update.json`. This does not verify the new beta architecture.
 
-## Verification status
+## Current implementation inspected
 
-| Area | Status | Evidence / limitations |
+| Area | Current state | Verification boundary |
 |---|---|---|
-| Application identity | Implemented; configuration inspected | `applicationId = com.neonyne.lasthavenlauncher`; preserve it |
-| Release signing identity | Configured; current beta artifact unverified | CI expects certificate SHA-256 `b3bbf7520e77dfc384a60b1eee6c5f205b978f9b453849e2be523f642018d263`; run #232 restored the keystore but compilation failed before APK signing verification |
-| ARM64-only packaging | Configured; current beta artifact unverified | `abiFilters += "arm64-v8a"`; workflow checks APK native libraries after build, but run #232 skipped that check |
-| Gradle Wrapper | Implemented and wrapper-validation step passed | `gradlew` is executable; wrapper pins Gradle 9.7.1 and distribution SHA-256 `acd53f1edaf02f1a8ff99879f8a34b302661a057d9b063ae9e35b552f804d20a`; no toolchain change needed |
-| Cefrium engine | Configured; runtime unverified | SDK, Compose wrapper and plugin pinned to 0.21.0; Chromium 156.0.8078.96 |
-| Game launch | Implemented; device unverified | `CefriumView` loads the configured LastHaven URL; no physical ARM64 gameplay test recorded |
-| Browser profile persistence | Default persistent profile path used; persistence unverified | No custom ephemeral profile is configured; source requests `navigator.storage.persist()`; actual cookies/LocalStorage/IndexedDB/service-worker retention needs device testing |
-| Exit menu/navigation | Implemented; device unverified | Back opens menu with Return, Reload, Settings & usage, Diagnostics, Addon manager, update check and Exit |
-| Settings/storage measurements | Implemented; device unverified | Reports installed APK bytes, Cefrium profile directory size when present, and app/code cache size; this is a usage screen, not yet a full preferences surface |
-| Network usage | Implemented; device unverified | Android per-UID RX/TX since boot and app-session baseline; includes game and updater traffic, not game-only |
-| Diagnostics | Implemented; test/runtime verification incomplete | Bounded local rotating log, viewer/share/clear UI and redaction patterns exist; current CI never reached tests |
-| Updater | Implemented in source; CI/runtime unverified | Stable release startup/manual checks, explicit download choices, digest and package/version/signing checks, Android installer handoff; no automatic download/install |
-| Differential update | Implemented in source; compatibility unverified | Patch offered only for matching base version/versionCode and installed APK digest; reconstructed APK digest and signing identity checked; full APK remains selectable fallback |
-| ZIP addon manager | Local package management implemented; game integration absent | ZIP inspection, metadata, local library, import/export/remove and local enabled flags; no extraction into or injection into the game runtime |
-| Physical-device gameplay | Not verified | No evidence of testing on ARM64 hardware |
-| Release readiness | Blocked | Current beta build fails; current signed APK/ABI checks skipped; device and update-path checks remain outstanding |
+| Application identity | `com.neonyne.lasthavenlauncher` configured | Preserve unchanged; current beta artifact signing verification skipped in run #247 |
+| Release signing | CI restores the established keystore; expected certificate SHA-256 `b3bbf7520e77dfc384a60b1eee6c5f205b978f9b453849e2be523f642018d263` | Run #247 failed before APK signing verification |
+| CPU architecture | `abiFilters += "arm64-v8a"` configured | Actual APK ABI verification skipped in run #247 |
+| Build wrapper | Gradle Wrapper present, pinned to 9.7.1 with SHA-256 | Wrapper setup/validation step passed in run #247; no replacement wrapper or toolchain change needed |
+| Browser engine | Cefrium SDK/Compose/plugin 0.21.0 currently configured; Chromium `156.0.8078.96` | Runtime behavior on physical hardware unverified; this engine is scheduled for removal under #21 |
+| Game launch | `MainActivity` directly creates the Cefrium Compose view and loads the configured LastHaven URL on app launch | Source inspected; no physical ARM64 gameplay evidence |
+| App shell | Current app is game-first and applies immersive mode/keep-screen-on from Activity startup; manifest declares `sensorLandscape` | Home screen and gameplay-only window/orientation behavior are not implemented |
+| Browser profile | Current Cefrium default persistent app-private profile is used; source requests `navigator.storage.persist()` | Cookies/LocalStorage/IndexedDB/service-worker persistence across force-stop/restart is unverified on device |
+| Exit/navigation | Back opens the current compact exit menu; Return/Reload/Settings/Diagnostics/Addon manager/update/Exit paths exist | Source inspected; physical navigation and TalkBack checks unverified |
+| Settings/usage | APK size, Cefrium profile directory size and app/code cache size displayed separately | Source inspected; physical-device values and GeckoView profile measurement not yet verified |
+| Network usage | Android per-UID RX/TX counters and app-session baseline | Includes game and updater traffic; physical-device readings unverified |
+| Diagnostics | Bounded local rotating log, viewer/share/clear and redaction logic exist | Unit tests have not run on current beta; physical logging/redaction behavior unverified |
+| Updater | Stable startup/manual checks, explicit download choices, digest/package/version/signature validation and Android installer handoff exist in source | CI and runtime verification pending; no automatic download/install is intended |
+| Differential updater | Patch eligibility checks installed base/version/digest; reconstructs/verifies APK and has full APK fallback | Current-beta tests and physical compatible-update flow unverified |
+| ZIP addon manager | `AddonArchiveInspector.kt`, `AddonLibraryRepository.kt` and `AddonManagerDialog.kt` exist; imports/inspects/stores/exports/removes WoW addon packages with local enabled flags | Local package library only; no game injection/loading; archive/repository tests not verified by current CI |
 
-## Current CI failure
+## Latest CI failure — run #247
 
-Run #232 — commit `4b4a77293a14648974c78a49824a84a33e2a3e19`:
-
-- Wrapper setup and wrapper validation: passed.
-- JDK 25, Android SDK 37, version metadata and signing-key restore: passed.
-- `compileDebugKotlin` and `compileReleaseKotlin`: failed.
-- Errors:
+- Wrapper setup/validation, JDK 25, Android SDK 37, version metadata and signing-key restore passed.
+- Kotlin compilation failed with the same two source errors:
   - `AddonManagerDialog.kt:166:77` — unresolved reference `contentDescription`.
-  - `AddonManagerDialog.kt:171:45` — `Switch` has no parameter named `contentDescription`.
-- Unit tests: not run.
-- Unit-test reports: none found; no report artifact uploaded.
-- Signing-certificate verification, ABI verification and release APK artifact upload: skipped.
-- Differential package generation and release publication: skipped.
+  - `AddonManagerDialog.kt:171:45` — Material3 `Switch` has no parameter named `contentDescription`.
+- Unit-test task failed before tests could run; the report upload step found no XML results.
+- Signing-certificate verification, ARM64 ABI verification, APK upload and differential package steps were skipped.
+- Job ID: `138798442495`.
+- Ploy retains exclusive ownership of #13 until she hands off a task-branch commit. Chaty must not edit #13's files concurrently.
 
-The compile error is in the active #13 accessibility-semantics scope. Keep exclusive ownership: the current owner must correct and hand off that task; Chaty reviews and integrates the resulting commit. Do not have two agents work on #13 concurrently.
+## GeckoView decision and risks
 
-## Release workflow finding
+- **Decision:** replace Cefrium with Mozilla GeckoView as the one embedded engine; do not add System WebView or keep a Cefrium fallback.
+- Mozilla documents a process-scoped `GeckoRuntime`, per-site `GeckoSession` and Android `GeckoView`; app delegates handle navigation/content events, permissions, prompts and media. See the official [quick start](https://firefox-source-docs.mozilla.org/mobile/android/geckoview/consumer/geckoview-quick-start.html), [architecture](https://firefox-source-docs.mozilla.org/mobile/android/geckoview/contributor/geckoview-architecture.html), [WebExtensions](https://firefox-source-docs.mozilla.org/mobile/android/geckoview/consumer/web-extensions.html) and [permissions](https://firefox-source-docs.mozilla.org/mobile/android/geckoview/consumer/permissions.html) docs.
+- The official quick start documents Java 17 compile compatibility and Mozilla's Maven repository. Current project CI uses JDK 25, Gradle 9.7.1, AGP 9.4.0 and SDK 37. Do not change any toolchain version until the #20 compatibility review validates the impact.
+- The exact stable GeckoView artifact/version is not yet pinned. #20 must verify current official Mozilla Maven availability at implementation time; do not pin Beta/Nightly or rely solely on a third-party listing.
+- GeckoView has its own persistent profile/session lifecycle. No transparent Cefrium-to-Gecko profile migration has been established. Keep old profile files untouched and warn that the user may need to sign in again.
+- WoW addon ZIPs and `.toc` packages are not Gecko WebExtensions. GeckoView's WebExtension APIs do not, by themselves, provide game addon loading.
+- ARM64 packaging, native library size, signed APK size, memory use, WebGL/WebAssembly, WebSockets, touch, fullscreen, audio, browser storage, permissions and crash recovery all need validation on the new engine.
 
-**Corrected on beta.** `.github/workflows/android.yml` now restricts manual release-tag creation to `main` and rejects pushed version tags unless their commit is already contained in stable `main`. The workflow was not dispatched for a release; no tag or release was created.
+## Planned work — GitHub issues
 
-## Tests and artifacts
+| Issue | Internal owner | Order / status |
+|---|---|---|
+| [#13](https://github.com/iNeonyne/LastHavenPlus/issues/13) | Ploy | Active — fix compile/accessibility blocker |
+| [#4](https://github.com/iNeonyne/LastHavenPlus/issues/4) | Chaty | Active — clean build and updater tests; #13 currently blocks CI |
+| [#11](https://github.com/iNeonyne/LastHavenPlus/issues/11) | Ploy | Queued after #13 |
+| [#8](https://github.com/iNeonyne/LastHavenPlus/issues/8) | Ploy | Queued after #11; repository tests only |
+| [#20](https://github.com/iNeonyne/LastHavenPlus/issues/20) | Ploy | Queued after #8; docs-only GeckoView technical decision record |
+| [#21](https://github.com/iNeonyne/LastHavenPlus/issues/21) | Chaty | Queued after clean #4 baseline and reviewed #20; replace Cefrium |
+| [#22](https://github.com/iNeonyne/LastHavenPlus/issues/22) | Ploy | Queued after #21 integration; home screen / Play / Settings navigation |
+| [#23](https://github.com/iNeonyne/LastHavenPlus/issues/23) | Ploy | Queued after #22; place existing addon manager under Settings |
+| [#19](https://github.com/iNeonyne/LastHavenPlus/issues/19) | Chaty | Deferred until engine and home/navigation migration is stable |
 
-- The latest CI attempt did not execute unit tests because Kotlin compilation failed first.
-- Existing test source includes BSDIFF patch tests, ZIP archive-inspector tests and diagnostics redaction tests. Their presence is not evidence that they pass on current beta.
-- Run #232 has zero artifacts.
-- Older successful run #179 uploaded demo APK artifacts under its former workflow; those artifacts are not release evidence for current beta.
-- The published v1.0.0 release has exactly one APK asset plus its update manifest; no debug APK is listed as a release asset.
+Ploy is an internal repository agent and is not assigned through GitHub's account assignee field; this file is the authoritative internal work order. One active owner per issue/task remains mandatory.
 
 ## Release blockers
 
-1. Fix the current Kotlin compilation errors in the exclusively owned #13 task and rerun beta CI.
-2. Obtain a clean current-beta signed release build, unit-test reports, ARM64 ABI verification and signing-certificate verification.
-3. Add and pass updater tests for malformed manifests, version/versionCode handling, digest mismatch, incompatible base APK, interrupted downloads and patch failure/fallback.
-4. Restrict manual release-tag creation to `main`.
-5. Perform physical ARM64 testing for game launch, gameplay, profile persistence, orientation/audio/GPU behavior and same-key update installation.
-6. Verify differential update behavior between two compatible signed releases on a physical ARM64 device.
-7. Keep addon injection explicitly out of scope until the operator-approved runtime integration contract is established; local ZIP package management must not be described as game integration.
+1. Fix #13 and obtain a clean current-beta CI run; unit tests must actually execute and report.
+2. Complete GeckoView research #20 and implementation #21 without speculative changes to Gradle/AGP/JDK/SDK, application ID, signing identity or ABI target.
+3. Verify persistent Gecko profile behavior and decide how to preserve legacy Cefrium profile data; do not delete old data as part of migration.
+4. Complete the Play/Settings home flow and integrate the existing addon manager under Settings without resetting its local package store.
+5. Pass unit tests, release signing-certificate verification, ARM64 ABI verification and one-canonical-APK artifact checks on the exact candidate commit.
+6. Perform physical ARM64 gameplay verification: WebGL/WebAssembly, WebSockets, touch, fullscreen, audio, login, permissions, lifecycle, profile persistence and same-key update installation.
+7. Keep addon injection out of the release scope unless the exact operator-approved contract is separately documented and physical-device verified.
 
 ## Branch and integration workflow
 
 - `beta` is the active development, integration and testing branch.
 - `main` is the stable release branch.
-- Contributors may work in parallel only on separate issues with disjoint file ownership. Never work on the same issue concurrently.
-- Contributors hand Chaty a task-branch commit SHA and verification report. Chaty alone reviews, integrates and pushes commits directly to `beta`. No pull requests.
-- Promote `beta` to `main` only after release gates pass and the user explicitly approves.
-- Do not create tags, publish releases, or change application ID/signing identity during routine development.
-
-## Active work and handoff
-
-| Owner | Issue | Scope / boundary |
-|---|---|---|
-| Chaty | #4 | Build reproducibility and updater test coverage; wrapper is already present, so focus on remaining tests and current CI evidence |
-| Ploy | #13 | Accessibility semantics; exclusive owner until task handoff. The current compiler errors are within this scope. No task branch or handoff commit is visible in GitHub yet |
-| Ploy (queued) | #11, then #8 | Sequential only after each prior task is accepted and integrated into beta |
-| Chaty (queued) | #19 | Beta updater channel; only after #4 handoff |
-
-## Next actions
-
-1. Correct the #13 Compose semantics compile error under its single-owner assignment; hand off the task-branch commit to Chaty.
-2. Chaty reviews and integrates the fix directly into beta, then verifies a new CI run.
-3. Update #4 acceptance tracking: wrapper setup is complete; updater edge-case coverage and current successful CI evidence remain open.
-4. Keep the `main`-only release-tag guard in place; verify its behavior in a normal CI run without dispatching a release.
-5. Keep physical-device and differential-update checks open until actual ARM64 hardware verification is recorded.
+- Contributors work on separate task branches and never push to `beta` or `main`.
+- Chaty alone reviews, integrates and pushes accepted work directly into `beta`. No pull requests.
+- Promote beta to main only after all release gates pass and the user explicitly approves.
+- Do not create tags, publish releases, or change the application ID/signing identity during routine development.
