@@ -32,6 +32,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import java.util.Locale
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -130,9 +131,9 @@ fun AddonManagerDialog(context: Context, onDismiss: () -> Unit) {
                 if (addons.isEmpty()) {
                     Text("No addons imported.")
                 } else {
-                    val knownFolders = addons.map { it.folderName.lowercase() }.toSet()
+                    val knownFolders = addons.map { it.folderName.lowercase(Locale.ROOT) }.toSet()
                     addons.forEach { addon ->
-                        val missing = addon.dependencies.filter { it.lowercase() !in knownFolders }
+                        val missing = addon.dependencies.filter { it.lowercase(Locale.ROOT) !in knownFolders }
                         Card(modifier = Modifier.fillMaxWidth()) {
                             Column(
                                 modifier = Modifier.padding(12.dp),
