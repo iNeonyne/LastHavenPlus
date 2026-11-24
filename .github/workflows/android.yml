@@ -96,10 +96,11 @@ jobs:
       - name: Install Android 37 platform
         run: sdkmanager "platforms;android-37.0" "build-tools;37.0.0"
 
-      - name: Set up Gradle 9.7.1
+      - name: Set up Gradle Wrapper
         uses: gradle/actions/setup-gradle@v4
         with:
-          gradle-version: "9.7.1"
+          gradle-version: wrapper
+          validate-wrappers: true
 
       - name: Resolve version metadata
         id: version
@@ -166,7 +167,7 @@ jobs:
           APP_VERSION_NAME: ${{ steps.version.outputs.name }}
           APP_VERSION_CODE: ${{ steps.version.outputs.code }}
         run: |
-          gradle assembleRelease testDebugUnitTest --no-daemon --stacktrace \
+          ./gradlew assembleRelease testDebugUnitTest --no-daemon --stacktrace \
             -PappVersionName="$APP_VERSION_NAME" -PappVersionCode="$APP_VERSION_CODE"
 
       - name: Upload unit-test reports
