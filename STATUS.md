@@ -36,7 +36,7 @@ The latest inspected source baseline is not buildable: GitHub Actions run #247 f
 | Diagnostics | Bounded local rotating log, viewer/share/clear and redaction logic exist | Unit tests have not run on current beta; physical logging/redaction behavior unverified |
 | Updater | Stable startup/manual checks, explicit download choices, digest/package/version/signature validation and Android installer handoff exist in source | CI and runtime verification pending; no automatic download/install is intended |
 | Differential updater | Patch eligibility checks installed base/version/digest; reconstructs/verifies APK and has full APK fallback | Current-beta tests and physical compatible-update flow unverified |
-| ZIP addon manager | `AddonArchiveInspector.kt`, `AddonLibraryRepository.kt` and `AddonManagerDialog.kt` exist; imports/inspects/stores/exports/removes WoW addon packages with local enabled flags | Local package library only; no game injection/loading; archive/repository tests not verified by current CI |
+| Addon manager | Legacy ZIP addon manager source and UI removed from beta on 2026-11-25 at the owner's request | No addon manager implementation is currently present. Replacement is blocked pending the owner's new specification; do not recreate the old design. |
 
 ## Latest CI failure — run #247
 
@@ -80,7 +80,7 @@ Ploy is an internal repository agent and is not assigned through GitHub's accoun
 1. Fix #13 and obtain a clean current-beta CI run; unit tests must actually execute and report.
 2. Complete GeckoView research #20 and implementation #21 without speculative changes to Gradle/AGP/JDK/SDK, application ID, signing identity or ABI target.
 3. Verify persistent Gecko profile behavior and decide how to preserve legacy Cefrium profile data; do not delete old data as part of migration.
-4. Complete the Play/Settings home flow and integrate the existing addon manager under Settings without resetting its local package store.
+4. Complete the Play/Settings home flow. Addon manager rebuild remains blocked until the owner supplies a new specification.
 5. Pass unit tests, release signing-certificate verification, ARM64 ABI verification and one-canonical-APK artifact checks on the exact candidate commit.
 6. Perform physical ARM64 gameplay verification: WebGL/WebAssembly, WebSockets, touch, fullscreen, audio, login, permissions, lifecycle, profile persistence and same-key update installation.
 7. Keep addon injection out of the release scope unless the exact operator-approved contract is separately documented and physical-device verified.
@@ -93,3 +93,7 @@ Ploy is an internal repository agent and is not assigned through GitHub's accoun
 - Chaty alone reviews, integrates and pushes accepted work directly into `beta`. No pull requests.
 - Promote beta to main only after all release gates pass and the user explicitly approves.
 - Do not create tags, publish releases, or change the application ID/signing identity during routine development.
+
+## Addon manager removal (2026-11-25)
+
+At the owner's request, removed `AddonArchiveInspector.kt`, `AddonLibraryRepository.kt`, `AddonManagerDialog.kt`, `AddonArchiveInspectorTest.kt`, and the Addon manager entry/state from `MainActivity.kt`. No user app-private data was targeted or deleted by these repository commits. The replacement design is intentionally unspecified and must not be recreated until the owner provides instructions. Issue #23 now tracks the future rebuild requirement.
