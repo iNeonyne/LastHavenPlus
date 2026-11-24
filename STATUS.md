@@ -54,7 +54,7 @@ The web fetch of the game URL returns only “Loading... Please enable JavaScrip
 
 | Owner | Surface | State |
 |---|---|---|
-| Main integrator | CI verification and status reconciliation | Complete |
+| Main integrator | GitHub Releases updater: version check, APK download and Android install handoff | Active |
 
 ## Blockers
 
