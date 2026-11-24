@@ -54,6 +54,13 @@ GitHub Actions builds the debug APK and publishes it as a workflow artifact. A r
 | P2 | Minimal settings, verified compatibility, measured performance, APK size |
 | P3 | Release APK, stable signing, update/data-preservation verification |
 
+## In-app updater
+
+- The launcher checks the latest stable GitHub Release on startup and also offers a manual check from the exit dialog.
+- It never downloads automatically. Select **Download update** to fetch the APK; Android handles the final install confirmation.
+- Releases must use a `vMAJOR.MINOR.PATCH` tag and include `lasthavenlauncher-arm64.apk` with GitHub's SHA-256 asset digest.
+- Release APKs must be signed with the same key and application ID as the installed app. Configure and back up the release signing key before publishing.
+
 ## Storage policy
 
 - Cookies, IndexedDB, LocalStorage and Cache Storage are game data and must persist.
