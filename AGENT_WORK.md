@@ -18,7 +18,7 @@ This file is the working agreement for the two active coding agents. The reposit
 - **Exclusive task ownership:** only one agent may actively own a GitHub issue/task at a time. Never work on the same issue in parallel, even on different branches. Record owner, scope and files in STATUS before starting. The other agent must wait for explicit handoff and updated trackers.
 - Keep work on separate branches/worktrees and avoid simultaneous edits to the same files.
 - **`main` is stable; `beta` is the shared integration/testing branch.** Chaty pushes orchestrator work directly to `beta`.
-- Ploy creates a dedicated task branch from the latest `beta` and pushes only to that task branch. On completion she hands Chaty the branch name, exact commit SHA, changed files, test commands/results and limitations. She must never push directly to `beta` or `main`.
+- Ploy creates a dedicated task branch from the latest `beta` and pushes only to that task branch. The task branch must be visible in the repository before work is reported as handed off. On completion she hands Chaty the branch name, exact commit SHA, changed files, test commands/results and limitations. She must never push directly to `beta` or `main`.
 - Chaty inspects the complete task-branch diff, runs or verifies relevant checks, requests corrections as needed, updates `ISSUES.md`, `STATUS.md` and `CHANGELOG-AGENTS.md`, and alone cherry-picks/integrates accepted commits directly into `beta`. **No pull requests are used.**
 - Do not merge `beta` into `main` until beta build/features have been verified and the user explicitly approves the promotion. No automatic merges, tags or releases.
 - Report exact tests and results. Device-only checks must remain marked pending until performed on physical ARM64 hardware.
@@ -96,7 +96,7 @@ Acceptance:
 - Existing archive inspector tests remain passing.
 - No claim is made that addons are loaded by the game.
 
-File ownership while active: `AddonLibraryRepository.kt` and repository-focused tests only, unless Chaty approves a narrowly scoped supporting change. Push the completed task branch and open a PR targeting `beta`; Chaty then reviews and updates tracking.
+File ownership while active: `AddonLibraryRepository.kt` and repository-focused tests only, unless Chaty approves a narrowly scoped supporting change. Push only the completed task branch and provide Chaty the exact commit SHA and handoff report; Chaty alone reviews and integrates directly into `beta`.
 
 ## Chaty — assigned work
 
