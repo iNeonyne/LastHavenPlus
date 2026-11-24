@@ -1,8 +1,9 @@
-name: Android build
+name: Android build and signed releases
 
 on:
   push:
     branches: [main]
+    tags: ["v*"]
   workflow_dispatch:
 
 concurrency:
@@ -10,7 +11,7 @@ concurrency:
   cancel-in-progress: true
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   build:
@@ -24,7 +25,7 @@ jobs:
         uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: '25'
+          java-version: "25"
 
       - name: Set up Android SDK
         uses: android-actions/setup-android@v3
@@ -37,51 +38,107 @@ jobs:
       - name: Set up Gradle 9.7.1
         uses: gradle/actions/setup-gradle@v4
         with:
-          gradle-version: '9.7.1'
+          gradle-version: "9.7.1"
 
-      - name: Build debug and optimized release APKs
-        run: gradle assembleDebug assembleRelease testDebugUnitTest --no-daemon --stacktrace
-
-      - name: Verify ABI and report APK sizes
+      - name: Resolve version metadata
+        id: version
+        shell: bash
         run: |
-          python3 - <<'PY'
-          import os
-          import zipfile
+          if [[ "$GITHUB_REF" == refs/tags/v* ]]; then
+            version="${GITHUB_REF_NAME#v}"
+            if [[ ! "$version" =~ ^([0-9]+)\.([0-9]+)\.([0-9]+)$ ]]; then
+              echo "Release tags must use vMAJOR.MINOR.PATCH (without prerelease suffixes)." >&2
+              exit 1
+            fi
+            major="${BASH_REMATCH[1]}"
+            minor="${BASH_REMATCH[2]}"
+            patch="${BASH_REMATCH[3]}"
+            if (( major > 999 || minor > 999 || patch > 999 )); then
+              echo "Each semantic version component must be 999 or lower." >&2
+              exit 1
+            fi
+            version_code=$((major * 1000000 + minor * 1000 + patch))
+          else
+            version="0.1.0"
+            version_code="1"
+          fi
+          echo "name=$version" >> "$GITHUB_OUTPUT"
+          echo "code=$version_code" >> "$GITHUB_OUTPUT"
+          echo "Building version $version (versionCode $version_code)"
 
+      - name: Restore release signing key
+        shell: bash
+        env:
+          ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: |
+          test -n "$ANDROID_KEYSTORE_BASE64" || { echo "Missing ANDROID_KEYSTORE_BASE64 secret" >&2; exit 1; }
+          test -n "$ANDROID_KEYSTORE_PASSWORD" || { echo "Missing ANDROID_KEYSTORE_PASSWORD secret" >&2; exit 1; }
+          test -n "$ANDROID_KEY_PASSWORD" || { echo "Missing ANDROID_KEY_PASSWORD secret" >&2; exit 1; }
+          echo "ANDROID_KEYSTORE_PATH=$RUNNER_TEMP/lasthavenplus-release.jks" >> "$GITHUB_ENV"
+          printf '%s' "$ANDROID_KEYSTORE_BASE64" | base64 --decode > "$RUNNER_TEMP/lasthavenplus-release.jks"
+          chmod 600 "$RUNNER_TEMP/lasthavenplus-release.jks"
+          keytool -list -keystore "$RUNNER_TEMP/lasthavenplus-release.jks" \
+            -storepass "$ANDROID_KEYSTORE_PASSWORD" -alias lasthavenplus >/dev/null
+
+      - name: Build debug and signed optimized release APKs
+        env:
+          ANDROID_KEYSTORE_PATH: ${{ runner.temp }}/lasthavenplus-release.jks
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+          APP_VERSION_NAME: ${{ steps.version.outputs.name }}
+          APP_VERSION_CODE: ${{ steps.version.outputs.code }}
+        run: |
+          gradle assembleDebug assembleRelease testDebugUnitTest --no-daemon --stacktrace \
+            -PappVersionName="$APP_VERSION_NAME" -PappVersionCode="$APP_VERSION_CODE"
+
+      - name: Verify signing certificate, ABI and report APK sizes
+        shell: bash
+        run: |
+          set -euo pipefail
+          DEBUG_APK="app/build/outputs/apk/debug/app-debug.apk"
+          RELEASE_APK="app/build/outputs/apk/release/app-release.apk"
+          EXPECTED_CERT="b3bbf7520e77dfc384a60b1eee6c5f205b978f9b453849e2be523f642018d263"
+          for apk in "$DEBUG_APK" "$RELEASE_APK"; do
+            test -f "$apk"
+            python3 - "$apk" <<'PY'
+          import sys, zipfile
+          apk = sys.argv[1]
+          with zipfile.ZipFile(apk) as archive:
+              abis = {
+                  name.split("/")[1]
+                  for name in archive.namelist()
+                  if name.startswith("lib/") and name.endswith(".so") and len(name.split("/")) > 2
+              }
+              if abis != {"arm64-v8a"}:
+                  raise SystemExit(f"{apk}: expected arm64-v8a only, got {sorted(abis)}")
+          PY
+          done
+          apksigner verify --verbose "$RELEASE_APK"
+          CERT_OUTPUT="$(apksigner verify --print-certs "$RELEASE_APK")"
+          echo "$CERT_OUTPUT"
+          CERT_DIGEST="$(printf '%s\n' "$CERT_OUTPUT" | awk -F': ' '/certificate SHA-256 digest:/ {print tolower($2); exit}')"
+          if [[ "$CERT_DIGEST" != "$EXPECTED_CERT" ]]; then
+            echo "Release APK certificate does not match the established LastHaven release key." >&2
+            exit 1
+          fi
+          python3 - <<'PY'
+          import os, zipfile
           apks = [
               "app/build/outputs/apk/debug/app-debug.apk",
-              "app/build/outputs/apk/release/app-release-unsigned.apk",
+              "app/build/outputs/apk/release/app-release.apk",
           ]
-          summary = ["| APK | File size | ARM64 native libraries |", "|---|---:|---:|"]
+          summary = ["| APK | File size | DEX payload |", "|---|---:|---:|"]
           for apk in apks:
-              if not os.path.isfile(apk):
-                  raise SystemExit(f"Missing expected APK: {apk}")
               with zipfile.ZipFile(apk) as archive:
-                  native = {
-                      name.split("/")[1]
-                      for name in archive.namelist()
-                      if name.startswith("lib/") and name.endswith(".so") and len(name.split("/")) > 2
-                  }
-                  unexpected = native - {"arm64-v8a"}
-                  if unexpected:
-                      raise SystemExit(f"{apk}: unexpected native ABIs: {sorted(unexpected)}")
-                  if "arm64-v8a" not in native:
-                      raise SystemExit(f"{apk}: no arm64-v8a native libraries found")
-                  entries = sorted(
-                      ((item.compress_size, item.filename) for item in archive.infolist()),
-                      reverse=True,
-                  )
                   dex_bytes = sum(
                       item.compress_size for item in archive.infolist()
                       if item.filename.endswith(".dex")
                   )
-                  largest = ", ".join(f"{name} ({size / 1024 / 1024:.1f} MiB)" for size, name in entries[:3])
               size = os.path.getsize(apk)
-              print(f"{apk}: {size:,} bytes ({size / 1024 / 1024:.1f} MiB)")
-              print(f"  DEX total: {dex_bytes / 1024 / 1024:.1f} MiB")
-              print(f"  Largest entries: {largest}")
               summary.append(
-                  f"| {os.path.basename(os.path.dirname(apk))} | {size:,} bytes ({size / 1024 / 1024:.1f} MiB) | {', '.join(sorted(native))} |"
+                  f"| {os.path.basename(os.path.dirname(apk))} | {size:,} bytes ({size / 1024 / 1024:.1f} MiB) | {dex_bytes / 1024 / 1024:.1f} MiB |"
               )
           with open(os.environ["GITHUB_STEP_SUMMARY"], "a", encoding="utf-8") as report:
               report.write("\n## APK size report\n\n" + "\n".join(summary) + "\n")
@@ -95,10 +152,102 @@ jobs:
           if-no-files-found: error
           retention-days: 14
 
-      - name: Upload optimized release candidate (unsigned)
+      - name: Upload signed release APK
         uses: actions/upload-artifact@v4
         with:
-          name: lasthavenlauncher-release-unsigned-arm64
-          path: app/build/outputs/apk/release/app-release-unsigned.apk
+          name: lasthavenlauncher-release-signed-arm64
+          path: app/build/outputs/apk/release/app-release.apk
           if-no-files-found: error
-          retention-days: 14
+          retention-days: 30
+
+      - name: Generate and verify differential release package
+        if: startsWith(github.ref, 'refs/tags/v')
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_VERSION: ${{ steps.version.outputs.name }}
+          RELEASE_VERSION_CODE: ${{ steps.version.outputs.code }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install -y bsdiff
+          mkdir -p release-assets
+          cp app/build/outputs/apk/release/app-release.apk release-assets/lasthavenlauncher-arm64.apk
+          TARGET_APK="release-assets/lasthavenlauncher-arm64.apk"
+          TARGET_SHA="$(sha256sum "$TARGET_APK" | awk '{print $1}')"
+          TARGET_SIZE="$(stat -c '%s' "$TARGET_APK")"
+          PATCH_JSON="null"
+
+          gh api "repos/$GITHUB_REPOSITORY/releases?per_page=100" > "$RUNNER_TEMP/releases.json"
+          PREVIOUS_RELEASE="$(jq -c --arg current "$GITHUB_REF_NAME" \
+            '[.[] | select(.draft == false and .prerelease == false and .tag_name != $current)][0] // empty' \
+            "$RUNNER_TEMP/releases.json")"
+
+          if [[ -n "$PREVIOUS_RELEASE" ]]; then
+            PREVIOUS_TAG="$(jq -r '.tag_name' <<< "$PREVIOUS_RELEASE")"
+            PREVIOUS_APK_URL="$(jq -r '.assets[]? | select(.name == "lasthavenlauncher-arm64.apk") | .browser_download_url' <<< "$PREVIOUS_RELEASE" | head -n 1)"
+            PREVIOUS_MANIFEST_URL="$(jq -r '.assets[]? | select(.name == "lasthavenlauncher-update.json") | .browser_download_url' <<< "$PREVIOUS_RELEASE" | head -n 1)"
+
+            if [[ -n "$PREVIOUS_APK_URL" && "$PREVIOUS_APK_URL" != "null" && -n "$PREVIOUS_MANIFEST_URL" && "$PREVIOUS_MANIFEST_URL" != "null" ]]; then
+              curl --fail --location --silent --show-error "$PREVIOUS_APK_URL" -o "$RUNNER_TEMP/previous.apk"
+              curl --fail --location --silent --show-error "$PREVIOUS_MANIFEST_URL" -o "$RUNNER_TEMP/previous-manifest.json"
+              BASE_VERSION="$(jq -r '.version' "$RUNNER_TEMP/previous-manifest.json")"
+              BASE_VERSION_CODE="$(jq -r '.versionCode' "$RUNNER_TEMP/previous-manifest.json")"
+              BASE_EXPECTED_SHA="$(jq -r '.apk.sha256' "$RUNNER_TEMP/previous-manifest.json")"
+              BASE_SHA="$(sha256sum "$RUNNER_TEMP/previous.apk" | awk '{print $1}')"
+
+              if [[ "$BASE_SHA" == "$BASE_EXPECTED_SHA" ]]; then
+                BASE_CERT_OUTPUT="$(apksigner verify --print-certs "$RUNNER_TEMP/previous.apk")"
+                BASE_CERT_DIGEST="$(printf '%s\n' "$BASE_CERT_OUTPUT" | awk -F': ' '/certificate SHA-256 digest:/ {print tolower($2); exit}')"
+                if [[ "$BASE_CERT_DIGEST" == "b3bbf7520e77dfc384a60b1eee6c5f205b978f9b453849e2be523f642018d263" ]]; then
+                  PATCH_NAME="lasthavenlauncher-arm64-${PREVIOUS_TAG}-to-${GITHUB_REF_NAME}.bsdiff"
+                  bsdiff "$RUNNER_TEMP/previous.apk" "$TARGET_APK" "$RUNNER_TEMP/update.bsdiff"
+                  bspatch "$RUNNER_TEMP/previous.apk" "$RUNNER_TEMP/reconstructed.apk" "$RUNNER_TEMP/update.bsdiff"
+                  REBUILT_SHA="$(sha256sum "$RUNNER_TEMP/reconstructed.apk" | awk '{print $1}')"
+                  test "$REBUILT_SHA" = "$TARGET_SHA"
+                  PATCH_SIZE="$(stat -c '%s' "$RUNNER_TEMP/update.bsdiff")"
+                  if (( PATCH_SIZE * 10 < TARGET_SIZE * 9 )); then
+                    cp "$RUNNER_TEMP/update.bsdiff" "release-assets/$PATCH_NAME"
+                    PATCH_SHA="$(sha256sum "release-assets/$PATCH_NAME" | awk '{print $1}')"
+                    PATCH_JSON="$(jq -n \
+                      --arg name "$PATCH_NAME" \
+                      --arg fromVersion "$BASE_VERSION" \
+                      --arg fromSha256 "$BASE_SHA" \
+                      --arg sha256 "$PATCH_SHA" \
+                      --argjson fromVersionCode "$BASE_VERSION_CODE" \
+                      --argjson size "$PATCH_SIZE" \
+                      '{name:$name, fromVersion:$fromVersion, fromVersionCode:$fromVersionCode, fromSha256:$fromSha256, sha256:$sha256, size:$size}')"
+                    echo "Differential patch: $PATCH_SIZE bytes versus $TARGET_SIZE-byte full APK."
+                  else
+                    echo "Differential patch is not at least 10% smaller; publishing full APK only."
+                  fi
+                else
+                  echo "Previous release signing certificate differs; skipping differential patch."
+                fi
+              else
+                echo "Previous release APK does not match its manifest digest; skipping differential patch."
+              fi
+            else
+              echo "Previous release has no compatible APK + manifest; publishing full APK only."
+            fi
+          else
+            echo "No previous stable release; publishing full APK only."
+          fi
+
+          jq -n \
+            --arg version "$RELEASE_VERSION" \
+            --argjson versionCode "$RELEASE_VERSION_CODE" \
+            --arg apkSha "$TARGET_SHA" \
+            --argjson apkSize "$TARGET_SIZE" \
+            --argjson patch "$PATCH_JSON" \
+            '{schemaVersion:1, version:$version, versionCode:$versionCode, apk:{name:"lasthavenlauncher-arm64.apk", sha256:$apkSha, size:$apkSize}, patch:$patch}' \
+            > release-assets/lasthavenlauncher-update.json
+
+      - name: Publish signed release and update assets
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_name }}
+          generate_release_notes: true
+          files: release-assets/*
+          fail_on_unmatched_files: true
