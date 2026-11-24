@@ -1,3 +1,13 @@
+## 2026-11-24 — Rename product branding to LastHavenPlus
+
+- **Role:** Main orchestrator / Android / documentation
+- **Files:** `settings.gradle.kts`, `app/src/main/res/values/strings.xml`, `app/src/main/res/values/styles.xml`, `app/src/main/AndroidManifest.xml`, `README.md`, `AGENTS.md`, `STATUS.md`, `.github/workflows/android.yml`
+- **Change:** Renamed the Gradle root project, launcher display name, Android theme resource and documentation/workflow branding to LastHavenPlus.
+- **Why:** Align the app's visible identity and project documentation with the approved product name.
+- **Verified:** Source updates committed directly to main. Application ID `com.neonyne.lasthavenlauncher`, namespace, release signing key, updater asset filenames and version identity were intentionally preserved for installed-app update compatibility. Build verification is pending.
+- **Do not redo:** Do not change the application ID or signing certificate as part of branding. The GitHub repository slug remains `Lasthavens-Android` until renamed through repository settings; existing issue/release links currently remain valid.
+- **Follow-ups:** Rename the GitHub repository to `LastHavenPlus` in repository settings when an admin-capable GitHub action is available; verify the redirect and update documentation links if needed. Run CI after branding changes.
+
 ## 2026-11-24 — Fix release certificate parsing and pass signed ARM64 CI
 
 - **Role:** Main orchestrator / Android / CI
