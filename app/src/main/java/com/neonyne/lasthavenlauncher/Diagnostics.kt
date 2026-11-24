@@ -12,8 +12,14 @@ object Diagnostics {
     private const val MAX_READ_CHARS = 80 * 1024
     private const val LOG_FILE = "lasthavenplus.log"
 
+    private val secretHeaderPattern = Regex(
+        "(?im)(\\b(?:authorization|cookie|set-cookie)\\s*:\\s*)[^\\r\\n]+",
+    )
     private val secretPattern = Regex(
         "(?i)((?:access[_-]?token|refresh[_-]?token|password|passwd|authorization|set-cookie|cookie|session(?:[_-]?id)?|token|secret|api[_-]?key)(\\s*[=:]\\s*))(?:bearer\\s+)?([^&\\s,;]+)",
+    )
+    private val jsonSecretPattern = Regex(
+        """(?i)(["']?(?:access[_-]?token|refresh[_-]?token|password|passwd|authorization|set-cookie|cookie|session(?:[_-]?id)?|token|secret|api[_-]?key)["']\\s*:\\s*["']?)([^"'&\\s,;}]+)""",
     )
     private val querySecretPattern = Regex(
         "(?i)([?&](?:access[_-]?token|refresh[_-]?token|token|session(?:[_-]?id)?|auth|api[_-]?key|key|code|password|secret)=)[^&#\\s]+",
@@ -56,6 +62,8 @@ object Diagnostics {
     }
 
     internal fun sanitize(value: String): String =
-        value.replace(secretPattern) { match -> "${match.groupValues[1]}[REDACTED]" }
+        value.replace(secretHeaderPattern) { match -> "${match.groupValues[1]}[REDACTED]" }
+            .replace(secretPattern) { match -> "${match.groupValues[1]}[REDACTED]" }
+            .replace(jsonSecretPattern) { match -> "${match.groupValues[1]}[REDACTED]" }
             .replace(querySecretPattern) { match -> "${match.groupValues[1]}[REDACTED]" }
 }
