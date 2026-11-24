@@ -14,7 +14,7 @@ Do not recreate, modify or develop the game. Do not add System WebView, GeckoVie
 
 1. **Read STATUS and the latest changelog entries before editing.**
 2. **Work from a GitHub Issue.** Every planned task must have an issue with scope and acceptance criteria. Check existing open issues before creating another; do not recreate tasks already tracked.
-3. **Claim ownership.** Before editing, claim the issue and add your role and file/work area under STATUS → Active work. One owner per file or Gradle block at a time.
+3. **Claim exclusive ownership.** Before editing, claim the issue, exact subtask and files under STATUS → Active work. Only one agent may own an issue/task at a time. The other agent must not implement, edit or independently investigate that same task until explicit handoff and tracker update. Separate subtasks on one broad issue require documented non-overlapping scope and files.
 4. **Document every meaningful change.** Update STATUS and append to CHANGELOG-AGENTS.md, including research failures and unverified assumptions.
 5. **Research Cefrium APIs first.** Never guess engine API names. Use official docs and samples. Record uncertain APIs as blockers.
 6. **Game first.** Get LastHaven loading and verify the core game flow before optional settings, theming, addon management or performance work.
@@ -65,7 +65,7 @@ Read [AGENT_WORK.md](AGENT_WORK.md) before starting delegated work. It defines P
 | QA | Build, arm64 device/emulator, web capability checks | Unmeasured performance changes |
 | Performance | Profiling and measured improvements after compatibility checks | Speculative flag lists |
 
-Agents may work in parallel only on disjoint files/surfaces. Each agent must identify the issue it is working on and claim its files in STATUS before editing. Chaty reviews Ploy's PRs and integrates accepted work into `beta`; `main` is updated only through an approved beta promotion.
+Agents may work in parallel only on different issues with disjoint files/surfaces. Never assign the same issue/task to both agents concurrently. Each agent must claim its issue and exact subtask in STATUS before editing. Handoff requires the previous owner to stop and STATUS/AGENT_WORK to be updated. Chaty reviews Ploy's PRs and integrates accepted work into `beta`; `main` is updated only through an approved beta promotion.
 
 ## Issue workflow
 
