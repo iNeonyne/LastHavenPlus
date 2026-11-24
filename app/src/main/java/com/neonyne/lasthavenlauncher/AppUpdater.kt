@@ -138,6 +138,9 @@ object AppUpdater {
                         }
 
                         val versionCode = manifest.getLong("versionCode")
+                        check(versionCode == latestVersionCode) {
+                            "Update manifest versionCode does not match the release tag"
+                        }
                         check(versionCode > packageInfo.longVersionCode) {
                             "Update versionCode is not newer than the installed app"
                         }
