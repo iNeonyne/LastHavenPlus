@@ -115,8 +115,9 @@ jobs:
                   raise SystemExit(f"{apk}: expected arm64-v8a only, got {sorted(abis)}")
           PY
           done
-          apksigner verify --verbose "$RELEASE_APK"
-          CERT_OUTPUT="$(apksigner verify --print-certs "$RELEASE_APK")"
+          APKSIGNER="$ANDROID_HOME/build-tools/37.0.0/apksigner"
+          "$APKSIGNER" verify --verbose "$RELEASE_APK"
+          CERT_OUTPUT="$("$APKSIGNER" verify --print-certs "$RELEASE_APK")"
           echo "$CERT_OUTPUT"
           CERT_DIGEST="$(printf '%s\n' "$CERT_OUTPUT" | awk -F': ' '/certificate SHA-256 digest:/ {print tolower($2); exit}')"
           if [[ "$CERT_DIGEST" != "$EXPECTED_CERT" ]]; then
@@ -197,7 +198,7 @@ jobs:
               BASE_SHA="$(sha256sum "$RUNNER_TEMP/previous.apk" | awk '{print $1}')"
 
               if [[ "$BASE_SHA" == "$BASE_EXPECTED_SHA" ]]; then
-                BASE_CERT_OUTPUT="$(apksigner verify --print-certs "$RUNNER_TEMP/previous.apk")"
+                BASE_CERT_OUTPUT="$("$ANDROID_HOME/build-tools/37.0.0/apksigner" verify --print-certs "$RUNNER_TEMP/previous.apk")"
                 BASE_CERT_DIGEST="$(printf '%s\n' "$BASE_CERT_OUTPUT" | awk -F': ' '/certificate SHA-256 digest:/ {print tolower($2); exit}')"
                 if [[ "$BASE_CERT_DIGEST" == "b3bbf7520e77dfc384a60b1eee6c5f205b978f9b453849e2be523f642018d263" ]]; then
                   PATCH_NAME="lasthavenlauncher-arm64-${PREVIOUS_TAG}-to-${GITHUB_REF_NAME}.bsdiff"
