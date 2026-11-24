@@ -1,3 +1,13 @@
+## 2026-11-24 — Add signed differential APK updates
+
+- **Role:** Main integrator / Android / CI
+- **Files:** `AppUpdater.kt`, `BsdiffPatch.kt`, `BsdiffPatchTest.kt`, `MainActivity.kt`, `app/build.gradle.kts`, `.github/workflows/android.yml`, `README.md`, `STATUS.md`, `CHANGELOG-AGENTS.md`
+- **Change:** Wired the existing `lasthavenplus` release keystore secrets into release builds and pinned the known LastHaven certificate SHA-256 in CI and the app. Added a streaming BSDIFF40 patch applier, a reconstruction unit test, an update manifest contract, and tag-triggered CI that signs the ARM64 APK, generates a patch against the immediately previous compatible signed release, reconstructs it with `bspatch` to prove byte-for-byte equality, and publishes the patch only when it is at least 10% smaller than the full APK. The app offers separate user-initiated smaller/full downloads, verifies the base APK, patch, reconstructed APK, package identity, versionCode and signer, and then hands the APK to Android's installer.
+- **Why:** Keep the 200+ MiB Cefrium payload out of downloads when it is unchanged while retaining a complete signed APK fallback. Android still receives a complete APK for installation; the patch only reduces the network transfer.
+- **Verified:** Source and CI pipeline committed. BSDIFF unit test, signed build, certificate verification, release asset generation and on-device update flow are pending the next CI run and physical-device test. No release was tagged or published by this change.
+- **Do not redo:** Never embed the private signing key in the APK or repository. Keep the existing signing certificate and application ID. Never auto-download or auto-install. Do not remove the full APK fallback or clear Cefrium/game profile data during updates.
+- **Follow-ups:** Check CI compilation/unit test and verify the expected signing fingerprint. First signed stable release is full APK only; validate patch generation on the next release and test same-key in-place installation on an arm64 device.
+
 ## 2026-11-24 — Enable release-only R8 and resource shrinking
 
 - **Role:** Main integrator / build optimization
