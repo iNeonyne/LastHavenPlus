@@ -105,16 +105,16 @@ The web fetch of the game URL returns only “Loading... Please enable JavaScrip
 |---|---|---|
 | Chaty | #4 — build reliability and updater test coverage | In progress. Added three malformed BSDIFF tests; CI run #45474077737 is pending. Previous run #45473637053 failed on three addon archive tests; diagnosis required. Gradle Wrapper and isolated updater-manifest/download tests remain outstanding. |
 
-Delegated ownership and task order are defined in [AGENT_WORK.md](AGENT_WORK.md). Ploy's first assignment is #13 (accessibility semantics); #11 diagnostics tests and #8 addon repository tests are queued sequentially after review. The user will push Ploy's completed work. Chaty reviews the pushed diff, verifies it and updates the repository task tracker; Chaty owns all other issues, CI, release coordination and central documentation.
+Delegated ownership and task order are defined in [AGENT_WORK.md](AGENT_WORK.md). Ploy's first assignment is #13 (accessibility semantics); #11 diagnostics tests and #8 addon repository tests are queued sequentially after review. Ploy opens a PR for completed work. Chaty reviews the PR diff, verifies it and updates the repository task tracker; merge requires explicit user approval. Chaty owns all other issues, CI, release coordination and central documentation.
 
 | Owner | Surface | State |
 |---|---|---|
 | Main integrator | Issues #6 and #9 — settings, usage panel and exit menu | Initial implementation committed; CI/device verification pending; remaining settings/cache actions not implemented |
 | Main integrator | Issue #10 — network usage reporting | Per-UID RX/TX counters implemented; explicitly app-wide (game + updater); device verification pending |
 | Main integrator | Issue #11 — local diagnostics and export | Local rotating logs, redaction, viewer/share and unit test committed; CI verification pending |
-| Ploy (assigned; awaiting handoff) | Issue #13 — accessibility semantics | First delegated task; repository-only changes on isolated work area. User pushes completed work; Chaty reviews the pushed diff and updates tracking. |
-| Ploy (queued) | Issue #11 — diagnostics test coverage | Starts only after #13 review and acceptance. User pushes; Chaty reviews and updates tracking. |
-| Ploy (queued) | Issue #8 — addon repository tests | Starts only after #11 acceptance and explicit Chaty go-ahead; no runtime injection. User pushes; Chaty reviews and updates tracking. |
+| Ploy (assigned; awaiting handoff) | Issue #13 — accessibility semantics | First delegated task; repository-only changes on an isolated branch. Ploy opens a PR; Chaty reviews and updates tracking. |
+| Ploy (queued) | Issue #11 — diagnostics test coverage | Starts only after #13 PR is reviewed and accepted. Ploy opens a PR; Chaty reviews and updates tracking. |
+| Ploy (queued) | Issue #8 — addon repository tests | Starts only after #11 PR is reviewed and accepted and Chaty explicitly unblocks it; no runtime injection. Ploy opens a PR; Chaty reviews and updates tracking. |
 | Chaty | Issues #4–#17 and integration | Main orchestrator; owns CI, issue tracking, review/integration and all non-delegated implementation. |
 | Main integrator | Issue #8 — local ZIP addon manager | ZIP inspection/TOC parsing, app-private package library, local enable/disable state, export/remove and Compose UI committed. CI verification pending. Operator permission confirmed; exact authorized runtime scope/API still pending. |
 
