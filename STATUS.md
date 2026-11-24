@@ -78,6 +78,10 @@ Run #308 is the latest successful run inspected, not a build of the current docu
 
 Chaty must not edit Ploy's assigned #22 UI files while Ploy owns the task. Any ownership change requires an explicit handoff and an update to this table and `AGENT_WORK.md`.
 
+## Pull request validation
+
+PRs targeting `beta` now have a dedicated CI job that builds the unsigned release variant and runs unit tests with read-only permissions. It does not access signing secrets or publish APKs. The normal branch pipeline remains responsible for signed release, certificate, ARM64 ABI and artifact verification. The new workflow has not yet completed a CI run; do not claim it is verified until Actions reports a result.
+
 ## Release blockers
 
 1. Complete and review the #22 home/navigation implementation and its automated checks.
