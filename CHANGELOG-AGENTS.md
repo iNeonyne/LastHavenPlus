@@ -1,3 +1,13 @@
+## 2026-11-24 — Expand BSDIFF failure-path tests
+
+- **Role:** Chaty / updater QA
+- **Files:** `app/src/test/java/com/neonyne/lasthavenlauncher/BsdiffPatchTest.kt`, `ISSUES.md`, `STATUS.md`, `CHANGELOG-AGENTS.md`
+- **Change:** Added tests that assert truncated BSDIFF headers, unsupported patch magic and declared output sizes above the configured limit are rejected, and that a stale/partial output file is removed on failure. Recorded the active #4 work and CI blocker in the task tracker.
+- **Why:** Increase confidence that malformed differential updates cannot leave a candidate APK output behind.
+- **Verified:** Commit `29dd5aa` triggered CI run #45474077737; at documentation update time the build/test step was still running. A preceding run failed three `AddonArchiveInspectorTest` cases (`parsesWowTocMetadataAndArchiveFingerprint`, `rejectsCaseInsensitiveDuplicatePaths`, `rejectsArchivesWithoutTocFiles`); these unrelated test failures block the common unit-test task and require diagnosis. No passing result is claimed.
+- **Do not redo:** Do not mark the BSDIFF test requirement complete until CI passes. The tests are not a substitute for manifest validation, patch corruption/truncation coverage or interrupted-download tests.
+- **Follow-ups:** Inspect the latest CI report, diagnose the three existing addon archive test failures, then add pure unit coverage for updater manifest/version validation and failed-download handling. Continue Gradle Wrapper work only with the official wrapper JAR and verified distribution checksum.
+
 ## 2026-11-24 — Clarify Ploy handoff and review workflow
 
 - **Role:** Chaty / project coordination
