@@ -1,5 +1,15 @@
 # Agent changelog — LastHavenLauncher
 
+## 2026-11-24 — Keep Android CI lean
+
+- **Role:** Architecture / CI
+- **Files:** `.github/workflows/android.yml`
+- **Change:** Removed pull-request-triggered builds to match the direct-to-main workflow and added concurrency cancellation so only the newest main build continues.
+- **Why:** Avoid duplicate Gradle/Cefrium downloads and unnecessary CI runs while iterating.
+- **Verified:** Workflow definition committed; next push run will exercise the concurrency policy.
+- **Do not redo:** Do not add PR triggers unless the project workflow changes.
+- **Follow-ups:** Monitor the current main build.
+
 Append-only. Newest entries at the top. Every meaningful code, Gradle, build, research or documentation change must be recorded.
 
 Entry format:
