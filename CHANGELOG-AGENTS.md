@@ -1,3 +1,5 @@
+**Workflow history note (2026-11-25):** Earlier entries mentioning PRs or TickTick describe superseded historical practices only. Current policy is no PRs and no TickTick; GitHub Issues and `ISSUES.md` are the task sources of truth. Chaty alone integrates commits directly into `beta`.
+
 ## 2026-11-25 — Audit beta workflow and correct project documentation
 
 - **Role:** Chaty / main orchestrator
