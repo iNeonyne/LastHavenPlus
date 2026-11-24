@@ -62,7 +62,9 @@ internal object BsdiffPatch {
                             val addLength = readOffset(control.stream)
                             val copyLength = readOffset(control.stream)
                             val seekAdjustment = readOffset(control.stream)
-                            require(addLength >= 0 && copyLength >= 0) {
+                            require(addLength >= 0 && copyLength >= 0 &&
+                                (addLength > 0 || copyLength > 0)
+                            ) {
                                 "Invalid differential patch control data"
                             }
                             require(addLength <= newSize - newPosition) {
