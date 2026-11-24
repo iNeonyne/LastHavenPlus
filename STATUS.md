@@ -35,7 +35,7 @@ v1.0.0 was published on 2026-11-24. Physical-device gameplay, persistence and sa
 
 ## Agent contribution workflow
 
-Ploy submits each completed assignment from a dedicated feature branch through a pull request. Ploy must not push directly to `main` or edit central tracking files. Chaty reviews the full diff, verifies relevant CI/tests and maintains the repository trackers. **No PR is merged until the user explicitly approves it.** Chaty may continue making separate orchestrator commits directly to `main`.
+Ploy submits each completed assignment from a dedicated feature branch through a pull request targeting `main`. Ploy must not push directly to `main` or edit central tracking files. Chaty reviews the full diff, verifies relevant CI/tests and maintains the repository trackers. **No PR is merged until the user explicitly approves it.** Chaty may continue making separate orchestrator commits directly to `main`.
 
 ## Work tracking
 
@@ -105,7 +105,7 @@ The web fetch of the game URL returns only “Loading... Please enable JavaScrip
 |---|---|---|
 | Chaty | #4 — build reliability and updater test coverage | In progress. Added three malformed BSDIFF tests; CI run #45474077737 is pending. Previous run #45473637053 failed on three addon archive tests; diagnosis required. Gradle Wrapper and isolated updater-manifest/download tests remain outstanding. |
 
-Delegated ownership and task order are defined in [AGENT_WORK.md](AGENT_WORK.md). Ploy's first assignment is #13 (accessibility semantics); #11 diagnostics tests and #8 addon repository tests are queued sequentially after review. Ploy opens a PR for completed work. Chaty reviews the PR diff, verifies it and updates the repository task tracker; merge requires explicit user approval. Chaty owns all other issues, CI, release coordination and central documentation.
+Delegated ownership and task order are defined in [AGENT_WORK.md](AGENT_WORK.md). Ploy's first assignment is #13 (accessibility semantics); #11 diagnostics tests and #8 addon repository tests are queued sequentially after review. Ploy opens a PR targeting `main` for completed work. Chaty reviews the PR diff, verifies it and updates the repository task tracker; merge requires explicit user approval. Chaty owns all other issues, CI, release coordination and central documentation.
 
 | Owner | Surface | State |
 |---|---|---|
