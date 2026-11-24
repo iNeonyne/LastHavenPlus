@@ -12,7 +12,7 @@ The latest inspected source baseline is not buildable: GitHub Actions run #247 f
 
 - **`main` (stable):** `6211cf389b8d9f6ef98aa7818f47643bfdaf2053`
 - **Latest source baseline audited:** `c00740a77e54ff4e26d69512959fb8feb0487a51`.
-- **Documentation/roadmap preparation committed to `beta` through:** `2d9c71fc09dd18dc9debf803195c6ad5e3b064f0` (README, AGENTS, AGENT_WORK, STATUS, ISSUES and CHANGELOG-only changes; no app/build source modified).
+- **Documentation/roadmap preparation commits:** `afc84aeb60ba7e3c57cce1b6c509f730f322b8fe` (README), `acc70a3163701502ce4017d14e76cca05993934c` (AGENTS), `92352c49a97bf92f7dc970a76816be670ecdd508` (AGENT_WORK), `262e134e6547339034083765fd69f736cc0e6cdb` (STATUS), `ffafa6d8af80a36b75efe1a09e29d7e45c2f510c` and `688db4d17bfceeba42f4990faac187cf76b329a9` (ISSUES), and `2d9c71fc09dd18dc9debf803195c6ad5e3b064f0` (CHANGELOG). These are documentation/index changes only; no app/build source changed.
 - **Latest source-build result inspected:** [#247](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45493653394), run ID `45493653394`, failed on source baseline `c00740a77e54ff4e26d69512959fb8feb0487a51`.
 - **Documentation-head CI:** [#253](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45495673227) was queued on the documentation-only head `2d9c71fc09dd18dc9debf803195c6ad5e3b064f0` at the time of this status update; it is not recorded as a successful build.
 - **Latest successful beta CI run found:** [#179](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45183038304), commit `593fec6b048790cbc30a7fbadf571b749069abea`; historical and not evidence for current beta.
