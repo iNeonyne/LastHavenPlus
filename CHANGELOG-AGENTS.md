@@ -1,3 +1,13 @@
+## 2026-11-24 — Harden addon ZIP validation and package commits
+
+- **Role:** Main integrator / Android / QA
+- **Files:** `AddonArchiveInspector.kt`, `AddonLibraryRepository.kt`, `AddonManagerDialog.kt`, `AddonArchiveInspectorTest.kt`
+- **Change:** Added ZIP64 end-record locator rejection, CRC validation for directory entries, duplicate addon-folder detection, merged required-dependency directives, locale-independent addon folder comparisons, atomic package staging, and index backup recovery. Corrected export wording to make clear that exporting one item writes its original source ZIP, which may contain multiple addon folders. Added tests for symbolic-link entries, CRC corruption and ZIP64 locators.
+- **Why:** Close archive-validation and interrupted-write edge cases before considering the manager complete.
+- **Verified:** Changes are committed to main. CI is queued/pending; no compile or test pass is claimed yet.
+- **Do not redo:** Keep package storage separate from Cefrium profile; do not extract ZIP paths; do not treat local enabled flags as game activation.
+- **Follow-ups:** Wait for CI, resolve failures, add repository storage/rollback tests, then validate the file picker and export flow on physical arm64 hardware.
+
 ## 2026-11-24 — Implement first local addon manager milestone
 
 - **Role:** Main integrator / Android
