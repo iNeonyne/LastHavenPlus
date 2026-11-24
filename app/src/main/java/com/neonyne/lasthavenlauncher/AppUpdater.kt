@@ -133,7 +133,7 @@ object AppUpdater {
                             }
                         }
 
-                        val versionCode = target.getLong("versionCode")
+                        val versionCode = manifest.getLong("versionCode")
                         check(versionCode > packageInfo.longVersionCode) {
                             "Update versionCode is not newer than the installed app"
                         }
