@@ -60,7 +60,7 @@ Harden the existing build and updater without replacing the current update archi
 - [ ] Keep the existing JDK, AGP, SDK, Cefrium, signing key, application ID, and arm64-only configuration unless a verified compatibility issue requires a change.
 - [ ] Verify current beta debug and signed release builds in CI. Run #232 failed Kotlin compilation before APK/signing/ABI verification; historical run #85 is not current-source evidence.
 
-**Beta audit update (2026-11-25):** The Gradle Wrapper is present and pinned to Gradle 9.7.1 with a distribution SHA-256; wrapper validation passed in run #247. The current beta build fails compilation in #13 at `AddonManagerDialog.kt:166` and `:171`, so unit tests and APK/signature/ABI verification did not run. Keep #4 open for updater edge-case tests and a clean current-beta CI run.
+**Beta audit update (2026-11-25):** The Gradle Wrapper is present and pinned to Gradle 9.7.1 with a distribution SHA-256; wrapper validation passed in run #247. Run #247 failed compilation in the legacy `AddonManagerDialog.kt`, which has since been removed. Post-removal run #268 was cancelled by newer pushes and provided no build/test evidence. Current beta run #278 is pending. Keep #4 open for a clean current-beta build and updater edge-case tests.
 
 ## Updater and differential-patch tests
 
@@ -576,7 +576,7 @@ The next major beta change replaces Cefrium with Mozilla GeckoView and adds a ho
 ## Issue 20 — P1 — Prepare the GeckoView migration technical decision record
 
 **GitHub:** https://github.com/iNeonyne/LastHavenPlus/issues/20  
-**Internal owner:** Ploy, queued after #13, #11 and #8.
+**Internal owner:** Ploy, queued after #9 and #11.
 
 Docs-only research. Verify current stable GeckoView coordinates/version through Mozilla's official Maven repository and official Javadocs; document Java compatibility, runtime/session/view lifecycle, persistent profile behavior, required delegates, ARM64/native packaging, APK size, game Web APIs and the Cefrium profile transition risk. Deliver `docs/GECKOVIEW_MIGRATION.md`. Do not change source/build files. WoW addon ZIP packages are not Gecko WebExtensions.
 
