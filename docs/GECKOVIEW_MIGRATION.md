@@ -96,7 +96,7 @@ WoW 3.3.5a addon ZIP/`.toc` packages are not Firefox WebExtensions. GeckoView's 
 
 The latest verified successful Android build and unit-test task is [run #310](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45508671565), for commit `91e21d4bde0a26b8d7cbfd9697615f32c2f57d21`. Its signed release build passed signing-certificate and ARM64-only ABI verification.
 
-Run #308 predates the latest beta HEAD. The subsequent commits through the current documentation cleanup changed documentation/workflow configuration rather than application source. The CI optimization change still requires its own workflow run verification. Check [GitHub Actions](https://github.com/iNeonyne/LastHavenPlus/actions) and `STATUS.md` before making a newer build claim.
+Run #310 predates the latest beta HEAD and the new PR-only validation job. It verifies the source/build state at its own commit only. The workflow update has a push-triggered verification run in progress, but PR-specific behavior remains unverified until an actual PR triggers it. Check [GitHub Actions](https://github.com/iNeonyne/LastHavenPlus/actions) and `STATUS.md` before making a newer build claim.
 
 Remaining release-readiness work includes:
 1. Verify the latest workflow optimization run and retain all build, test, signing and ABI gates.
