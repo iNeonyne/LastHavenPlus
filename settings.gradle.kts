@@ -1,5 +1,8 @@
 pluginManagement {
     repositories {
+        maven("https://codeberg.org/api/packages/cefrium/maven") {
+            content { includeGroup("com.cefrium") }
+        }
         google()
         mavenCentral()
         gradlePluginPortal()
@@ -11,6 +14,9 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
+        maven("https://codeberg.org/api/packages/cefrium/maven") {
+            content { includeGroup("com.cefrium") }
+        }
     }
 }
 
