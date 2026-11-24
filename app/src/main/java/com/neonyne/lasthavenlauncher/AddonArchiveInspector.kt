@@ -223,7 +223,7 @@ object AddonArchiveInspector {
             ?.mapNotNull { it.trim().toIntOrNull() }
             ?.distinct()
             .orEmpty()
-        val dependencies = splitDependencies(directives["dependencies"] ?: directives["requiredeps"])
+        val dependencies = (splitDependencies(directives["dependencies"]) + splitDependencies(directives["requiredeps"])).distinct()
         val optionalDependencies = splitDependencies(directives["optionaldeps"])
 
         return AddonTocMetadata(
