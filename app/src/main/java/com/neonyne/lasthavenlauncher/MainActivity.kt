@@ -118,13 +118,6 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    if (showSettingsDialog) {
-        SettingsDialog(context, usageMeter) { showSettingsDialog = false }
-    }
-
-    if (showDiagnosticsDialog) {
-        DiagnosticsDialog(context) { showDiagnosticsDialog = false }
-    }
 }
 
 @OptIn(CefriumExperimental::class)
@@ -388,5 +381,13 @@ private fun LastHavenApp(
                 }
             },
         )
+    }
+
+    if (showSettingsDialog) {
+        SettingsDialog(context, usageMeter) { showSettingsDialog = false }
+    }
+
+    if (showDiagnosticsDialog) {
+        DiagnosticsDialog(context) { showDiagnosticsDialog = false }
     }
 }
