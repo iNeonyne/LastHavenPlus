@@ -24,7 +24,7 @@
 | Exit menu | Implemented; device verification pending | Back opens menu with Return to game, Reload, Settings & usage, logs, update check and Leave |
 | Browser profile | Default persistent | Cefrium default profile stores cookies, LocalStorage, IndexedDB, service workers and cache in app-private `app_cefrium`; not the Android cache directory |
 | Remote debugging | Debug builds only | `Cefrium.setRemoteDebuggingEnabled` enabled from Application.onCreate before first browser creation |
-| Latest CI build | **Passing** | Run #85, commit `74353df`; debug and signed release builds, BSDIFF unit test, ARM64-only ABI checks, pinned release certificate verification, APK size report and artifact uploads all succeeded |
+| Latest CI build | Pending | The LastHavenPlus 1.0.0 re-release workflow is queued; no result is claimed until its current commit completes. |
 | Debug APK baseline | Measured | 229,073,631 bytes (218.4 MiB); actual APK extracted from run #32 artifact |
 | R8 / resource shrinking | Configured; validation pending | Enabled only on release variant; CI builds debug and signed release APKs |
 | Device test | Not run | No connected arm64 device/emulator available to this run |
@@ -47,11 +47,11 @@ GitHub Issues are the canonical backlog. Do not copy open task checklists into t
 
 - Checks the latest **published stable GitHub Release** on launcher start; a manual check is also available from the exit dialog.
 - Never downloads automatically. The user explicitly chooses **Download smaller update** or **Download full APK instead**, then Android presents its package installer.
-- Expected release tag: `vMAJOR.MINOR.PATCH`; assets: signed `lasthavenlauncher-arm64.apk`, `lasthavenlauncher-update.json`, and an optional `*.bsdiff` patch.
+- Expected release tag: `vMAJOR.MINOR.PATCH`; canonical assets: signed `lasthavenplus-arm64.apk`, `lasthavenplus-update.json`, and an optional `*.bsdiff` patch. Legacy-named APK and manifest aliases are retained for older updater clients.
 - The app checks manifest and GitHub asset digests, installed base APK SHA-256, reconstructed APK SHA-256, package ID, versionCode and the pinned LastHaven release certificate before installer handoff.
 - Uses an app-private temporary file and a non-exported AndroidX FileProvider; no external storage permission or background service.
 - Differential patches reconstruct the complete signed APK byte-for-byte; the app does not repackage or re-sign it. Full APK remains the fallback.
-- CI now restores the existing `lasthavenplus` signing key from `ANDROID_KEYSTORE_BASE64`, `ANDROID_KEYSTORE_PASSWORD` and `ANDROID_KEY_PASSWORD`; it verifies the expected certificate SHA-256 before continuing.
+- CI restores the established `lasthavenplus` signing key from `ANDROID_KEYSTORE_BASE64`, `ANDROID_KEYSTORE_PASSWORD` and `ANDROID_KEY_PASSWORD`; it verifies the expected certificate SHA-256 before continuing.
 - Stable tags `vMAJOR.MINOR.PATCH` build signed ARM64 APKs, generate a manifest, and publish a BSDIFF40 patch from the immediately previous compatible release only when the patch is at least 10% smaller than the full APK.
 - The full signed APK is always published as fallback. Differential downloads are offered only for the exact base version/versionCode; the app checks the installed APK hash, reconstructs the signed APK in a streaming file-based patcher, verifies the target SHA-256, package ID, versionCode and pinned signing certificate, then opens Android's installer.
 - No published GitHub Releases currently exist, so the first stable release will contain the full APK only. Later releases can include a patch if the previous release and generated patch meet compatibility/size checks.
