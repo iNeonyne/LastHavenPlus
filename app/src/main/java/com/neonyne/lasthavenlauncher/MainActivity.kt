@@ -227,7 +227,7 @@ private fun LastHavenApp(
             title = { Text("Update available") },
             text = {
                 Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Text("LastHaven Launcher \${update.version} is available.")
+                    Text("LastHaven Launcher ${update.version} is available.")
                     Text(update.releaseNotes, maxLines = 8)
                     if (isDownloadingUpdate) {
                         LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
