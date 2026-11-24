@@ -1,3 +1,13 @@
+## 2026-11-24 — Record first successful arm64 CI build
+
+- **Role:** Main integrator / QA
+- **Files:** `STATUS.md`, `CHANGELOG-AGENTS.md`
+- **Change:** Recorded successful GitHub Actions run #15 for commit `3d4e1a0`, including the Android build, unit-test task, APK ABI verification and debug artifact upload. Updated the remaining P0 blocker to physical-device gameplay validation.
+- **Why:** Keep project status evidence-based and distinguish a successful CI build from verified in-game compatibility.
+- **Verified:** All nine workflow steps completed successfully; artifact `lasthavenlauncher-debug-arm64` is available until 2026-12-08.
+- **Do not redo:** Do not mark LastHaven gameplay, GPU, audio or storage persistence as verified based on CI alone.
+- **Follow-ups:** Install the artifact on a physical arm64 phone and run the P0/P1 device checklist.
+
 # Agent changelog — LastHavenLauncher
 
 ## 2026-11-24 — Keep Android CI lean
