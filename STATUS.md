@@ -33,6 +33,15 @@ v1.0.0 was published on 2026-11-24. Physical-device gameplay, persistence and sa
 | Device test | Not run | No connected arm64 device/emulator available to this run |
 | Release signing | Configured; verification pending | Existing `lasthavenplus` key restores successfully in run #79; Run #82 printed the expected certificate fingerprint; CI parser fix and a passing verification rerun are pending |
 
+## Issue management rules
+
+- GitHub Issues are the canonical task/discussion/ownership records; `ISSUES.md` is the linked project index and roadmap checklist.
+- Chaty owns duplicate checks, issue creation, triage, priority, milestones, labels, assignments and closure. Ploy only works on her explicitly assigned issue.
+- Search open and closed issues before creating a new one. Every accepted task needs bounded scope, testable acceptance criteria, verification and dependencies.
+- One active owner per issue. Record exact scope/files/branch here before work starts. No overlapping implementation or investigation by Chaty and Ploy.
+- Use explicit lifecycle states: Needs triage, Ready, Active, Blocked, Review, Done, Deferred/Not planned, Duplicate.
+- Close only with acceptance evidence; keep partial work open. Link PRs with `Closes #N` only when the whole issue is satisfied.
+
 ## Branch and agent workflow
 
 - **`main` — stable release branch.** Do not use it for routine development.
