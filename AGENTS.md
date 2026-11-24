@@ -22,7 +22,7 @@ Do not recreate, modify or develop the game. Do not add System WebView, GeckoVie
 8. **Stable app identity.** Do not change `applicationId` (`com.neonyne.lasthavenlauncher`) or the established release signing key.
 9. **Storage safety.** Never clear cookies, IndexedDB, LocalStorage or Cache Storage except through a confirmed “Clear game data” action.
 10. **No speculative optimization.** Every performance change needs before/after measurements in STATUS.
-11. **Lean coordination.** Parallelize independent tasks only; agents must own disjoint files/surfaces. For Ploy's delegated work, the user pushes her completed changes; Chaty reviews the pushed diff and updates the task tracker. Do not use pull requests. Chaty owns any separate orchestrator commits.
+11. **Lean coordination.** Parallelize independent tasks only; agents must own disjoint files/surfaces. Ploy may create a dedicated feature branch, push her task commits and open a pull request for each completed assignment. Ploy must never push directly to `main`. Chaty reviews the PR, checks scope and CI, requests fixes when needed, and updates the task tracker. Do not merge automatically; merge only after the user explicitly approves the PR. Chaty owns separate orchestrator commits directly on `main`.
 
 ## Current engine decision
 
@@ -53,7 +53,7 @@ References:
 
 ## Named agent assignments
 
-Read [AGENT_WORK.md](AGENT_WORK.md) before starting delegated work. It defines Ploy (repository-only coding agent) and Chaty (main orchestrator), task order, file ownership, handoff rules and integration boundaries. The user pushes Ploy's completed changes to the repository. Chaty reviews the pushed diff, verifies it and updates `ISSUES.md`, `STATUS.md` and `CHANGELOG-AGENTS.md`; do not assume a handoff is present before it is pushed. Ploy must not push directly to `main`.
+Read [AGENT_WORK.md](AGENT_WORK.md) before starting delegated work. It defines Ploy (repository-only coding agent) and Chaty (main orchestrator), task order, file ownership, handoff rules and integration boundaries. Ploy creates a dedicated branch and pull request for each completed assignment; she must not push directly to `main`. Chaty reviews the actual PR diff, verifies it and updates `ISSUES.md`, `STATUS.md` and `CHANGELOG-AGENTS.md`. Chaty may merge only after the user explicitly approves the PR.
 
 ## Parallel agent roles
 
@@ -71,11 +71,11 @@ Agents may work in parallel only on disjoint files/surfaces. Each agent must ide
 
 1. Find the existing issue that matches the task. Create a new issue only when no existing issue covers it.
 2. Read its goal, checklist, dependencies, constraints and acceptance criteria.
-3. Claim the issue and file/work area in STATUS before making changes. For Ploy's delegated tasks, Chaty maintains central status; Ploy must not edit central tracking files.
+3. Claim the issue and file/work area in STATUS before making changes. For Ploy's delegated tasks, Chaty maintains central status; Ploy must not edit central tracking files. Ploy records the issue number and PR link in her handoff.
 4. Keep `ISSUES.md` accurate as work is completed. It is the consolidated repository backlog; update task checklists and status alongside implementation changes. GitHub Issues are linked discussion records.
 5. Run the relevant build/tests and record what was actually verified. Do not mark device-only behavior as passed based on CI.
 6. Update STATUS and append a changelog entry.
-7. The main orchestrator integrates and pushes directly to `main`; no pull request workflow.
+7. Ploy submits work through a pull request from a dedicated branch. Chaty reviews and verifies it, then waits for explicit user approval before merging. Chaty may continue making separate orchestrator commits directly to `main`.
 8. Close an issue only when its acceptance criteria are met. If blocked, leave it open and document the blocker in STATUS and the issue.
 
 **Tracking links**
