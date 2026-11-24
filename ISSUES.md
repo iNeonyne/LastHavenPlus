@@ -22,6 +22,7 @@
 | [#16](#issue-16) | P2 — Add gameplay orientation and keep-awake settings | open |
 | [#17](#issue-17) | P2 — Back up and restore launcher settings | open |
 | [#18](#issue-18) | Roadmap — v1.0.0 released, v1.1.0 addon manager, v1.2.0 improvements | open |
+| [#19](https://github.com/iNeonyne/LastHavenPlus/issues/19) | P1 — Add an opt-in beta release channel to the updater | open |
 
 ---
 
@@ -138,7 +139,7 @@ The core game flow and same-key in-place update are verified on real arm64 hardw
 **State:** open
 
 ## Goal
-Add essential launcher settings and safe storage visibility after the core game flow is verified on a physical arm64 device.
+Add essential launcher settings and safe storage visibility after the core game flow is verified on a physical arm64 device. The current settings popup is usage-focused and incomplete; the next pass prioritizes working functionality, clarity and task flow rather than visual redesign.
 
 ## Scope
 - [ ] Editable game URL, defaulting to https://alt.lasthavens.com/play.
@@ -624,3 +625,22 @@ There is no fixed calendar release date. **The next stable main release happens 
 - If a feature cannot be completed and verified, defer it; never ship a half-implemented feature.
 
 ---
+
+
+## Issue 19 — P1 — Add an opt-in beta release channel to the updater
+
+**GitHub:** https://github.com/iNeonyne/LastHavenPlus/issues/19
+**Owner:** Chaty, queued immediately after #4 is handed off.
+**Goal:** Let users explicitly opt into published beta/prerelease builds while keeping Stable as the default.
+
+- [ ] Persist Stable/Beta channel selection; existing and new installs default to Stable.
+- [ ] Stable checks published non-prerelease releases only; Beta checks published prereleases only.
+- [ ] Never use branch builds, Actions artifacts or unpublished drafts.
+- [ ] Reuse all existing manifest, APK digest, package identity, signing certificate and delta/full fallback validation.
+- [ ] Clearly identify beta updates and selected channel; channel switching never downloads or installs.
+- [ ] Never offer a downgrade; handle empty/paginated API results and malformed release metadata safely.
+- [ ] Add deterministic tests for filtering, pagination, no-downgrade and channel persistence.
+
+**Non-goals:** no auto-download/install, no change to stable release publishing, no UI redesign.
+
+**Dependency:** #4. Coordinate with #6; Chaty owns the updater channel control and Ploy must not duplicate it.
