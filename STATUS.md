@@ -34,7 +34,10 @@
 - Requires GitHub's release asset `sha256:` digest; the downloaded APK is SHA-256 verified before the installer is opened.
 - Uses an app-private temporary file and a non-exported AndroidX FileProvider; no external storage permission or background service.
 - Android package installer enforces package identity/signature. A distributed release must use the same application ID and signing key as the installed app.
-- No published GitHub Releases currently exist; updater cannot return a real update until the first signed release and matching asset are published.
+- CI now restores the existing `lasthavenplus` signing key from `ANDROID_KEYSTORE_BASE64`, `ANDROID_KEYSTORE_PASSWORD` and `ANDROID_KEY_PASSWORD`; it verifies the expected certificate SHA-256 before continuing.
+- Stable tags `vMAJOR.MINOR.PATCH` build signed ARM64 APKs, generate a manifest, and publish a BSDIFF40 patch from the immediately previous compatible release only when the patch is at least 10% smaller than the full APK.
+- The full signed APK is always published as fallback. Differential downloads are offered only for the exact base version/versionCode; the app checks the installed APK hash, reconstructs the signed APK in a streaming file-based patcher, verifies the target SHA-256, package ID, versionCode and pinned signing certificate, then opens Android's installer.
+- No published GitHub Releases currently exist, so the first stable release will contain the full APK only. Later releases can include a patch if the previous release and generated patch meet compatibility/size checks.
 
 ## APK size audit
 
@@ -83,7 +86,7 @@ The web fetch of the game URL returns only “Loading... Please enable JavaScrip
 | Blocker | Impact | Next action |
 |---|---|---|
 | No physical arm64 test device attached to this session | Cannot verify gameplay, GPU, audio or persistence | Install CI APK on target phone and run checklist |
-| Release signing key not configured | No stable release APK can be shipped yet | Generate/backup key and configure CI secrets before release |
+| Signed updater path not yet CI-validated | No production release should be tagged until build/test passes | Check main CI, then create a test release tag only after the signed APK fingerprint and patch reconstruction are verified |
 | Code cache clear API not confirmed | Cannot yet implement the requested HTTP + code-cache-only clear action | Inspect pinned SDK API; do not delete engine directories manually |
 
 ## Performance log
@@ -103,4 +106,5 @@ No runtime performance changes have been made. APK size baseline is measured; es
 1. Install the arm64 CI APK on a physical phone and confirm LastHaven loads.
 2. Run the web capability checklist in Cefrium and Chrome on the same phone.
 3. Confirm persistent storage result and app update/data retention.
+4. Verify the signed build and BSDIFF unit test in CI; publish the first signed release (full APK only), then test one subsequent release's delta generation and on-device installation.
 4. Add minimal settings after the playable path is reliable; preserve the cache/data distinction.
