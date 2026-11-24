@@ -2,7 +2,7 @@ name: LastHavenPlus Android build and signed releases
 
 on:
   push:
-    branches: [main]
+    branches: [main, beta]
     tags: ["v*"]
   workflow_dispatch:
     inputs:
@@ -168,6 +168,17 @@ jobs:
         run: |
           gradle assembleRelease testDebugUnitTest --no-daemon --stacktrace \
             -PappVersionName="$APP_VERSION_NAME" -PappVersionCode="$APP_VERSION_CODE"
+
+      - name: Upload unit-test reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: unit-test-reports-${{ github.run_number }}
+          path: |
+            app/build/test-results/testDebugUnitTest/*.xml
+            app/build/reports/tests/testDebugUnitTest/
+          if-no-files-found: ignore
+          retention-days: 14
 
       - name: Verify signing certificate, ABI and report APK sizes
         shell: bash
