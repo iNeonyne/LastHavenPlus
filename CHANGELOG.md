@@ -1,6 +1,6 @@
 # LastHavenPlus release changelog
 
-## v1.0.0 — Draft for review (not published)
+## v1.0.0 — 2026-11-24
 
 ### Features
 - Launch the existing LastHaven WotLK game in the pinned Cefrium/Chromium engine.
@@ -22,5 +22,5 @@
 ### Notes and limitations
 - Network counters are per-app UID totals (game plus updater), not game-only measurements; Android resets them on reboot.
 - Cefrium profile size is shown only when its profile directory is present and readable.
-- Physical-device gameplay, GPU, audio, persistence and in-place update verification remain separate release-readiness checks. Do not treat CI success as device verification.
-- This is a release-notes draft. Do not publish until the signed release build and required verification are reviewed and approved.
+- Physical-device gameplay, GPU, audio, persistence and in-place update verification remain separate checks. Do not treat CI success as device verification.
+- The local ZIP addon manager organizes packages but does not inject addons into the game.
