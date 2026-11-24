@@ -4,6 +4,11 @@ on:
   push:
     branches: [main, beta]
     tags: ["v*"]
+    # Documentation-only edits do not need an Android build. Workflow/config/source
+    # changes still run the complete verification pipeline.
+    paths-ignore:
+      - "*.md"
+      - "**/*.md"
   workflow_dispatch:
     inputs:
       release_version:
@@ -81,7 +86,8 @@ jobs:
         uses: actions/checkout@v4
         with:
           ref: ${{ needs.create_tag.outputs.tag_ref || github.ref }}
-          fetch-depth: 0
+          # Full history is only needed to validate release-tag ancestry.
+          fetch-depth: ${{ startsWith(github.ref, 'refs/tags/v') && '0' || '1' }}
 
       - name: Set up JDK 25
         uses: actions/setup-java@v4
@@ -94,7 +100,7 @@ jobs:
         with:
           packages: platform-tools
 
-      - name: Install Android 37 platform
+      - name: Install Android 37.2 platform
         run: sdkmanager "platforms;android-37.2" "build-tools;37.0.0"
 
       - name: Set up Gradle Wrapper
@@ -179,7 +185,7 @@ jobs:
           APP_VERSION_NAME: ${{ steps.version.outputs.name }}
           APP_VERSION_CODE: ${{ steps.version.outputs.code }}
         run: |
-          ./gradlew assembleRelease testDebugUnitTest --no-daemon --stacktrace \
+          ./gradlew assembleRelease testDebugUnitTest --stacktrace \
             -PappVersionName="$APP_VERSION_NAME" -PappVersionCode="$APP_VERSION_CODE"
 
       - name: Upload unit-test reports
