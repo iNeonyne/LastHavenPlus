@@ -20,7 +20,7 @@
 | Persistent storage request | Implemented, unverified | Calls `navigator.storage.persist()` after the first completed document load |
 | Browser profile | Default persistent | Cefrium default profile stores cookies, LocalStorage, IndexedDB, service workers and cache in app-private `app_cefrium`; not the Android cache directory |
 | Remote debugging | Debug builds only | `Cefrium.setRemoteDebuggingEnabled` enabled from Application.onCreate before first browser creation |
-| Latest CI build | Build + tests passed; release verification failed | Run #82, commit `cd0b5d3`; build/tests pass and both APKs contain arm64-v8a only. The release signer matches the pinned key; the CI parser incorrectly split the V2 Signer output at its first colon. Parser fix pending CI |
+| Latest CI build | **Passing** | Run #85, commit `74353df`; debug and signed release builds, BSDIFF unit test, ARM64-only ABI checks, pinned release certificate verification, APK size report and artifact uploads all succeeded |
 | Debug APK baseline | Measured | 229,073,631 bytes (218.4 MiB); actual APK extracted from run #32 artifact |
 | R8 / resource shrinking | Configured; validation pending | Enabled only on release variant; CI builds debug and signed release APKs |
 | Device test | Not run | No connected arm64 device/emulator available to this run |
@@ -89,14 +89,14 @@ The web fetch of the game URL returns only “Loading... Please enable JavaScrip
 
 | Owner | Surface | State |
 |---|---|---|
-| Main integrator | Issue #4 — BSDIFF test, release verification and updater CI; owns updater test, CI workflow and related status/changelog | In progress; temp-directory deprecation fixed; isolate signing/ABI verification failure |
+| Main integrator | Issue #4 — wrapper, updater edge-case tests and release/update validation | In progress; build/test, ARM64 and signing verification now pass in CI; release-to-release delta and device install remain unverified |
 
 ## Blockers
 
 | Blocker | Impact | Next action |
 |---|---|---|
 | No physical arm64 test device attached to this session | Cannot verify gameplay, GPU, audio or persistence | Install CI APK on target phone and run checklist |
-| CI certificate parser uses the first colon in the V2 Signer output | It falsely reports a certificate mismatch and would suppress delta generation | Extract the value after the literal `certificate SHA-256 digest: ` label in both signing checks, then rerun CI |
+| No published stable GitHub Release exists yet | The updater has no production release manifest or APK to discover; the delta path has not been exercised between real releases | Finish the remaining #4 work, then publish a controlled first release and test the next release's delta on a physical arm64 device |
 | Code cache clear API not confirmed | Cannot yet implement the requested HTTP + code-cache-only clear action | Inspect pinned SDK API; do not delete engine directories manually |
 
 ## Performance log
