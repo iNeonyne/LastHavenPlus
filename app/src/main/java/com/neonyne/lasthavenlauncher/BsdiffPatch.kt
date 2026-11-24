@@ -205,6 +205,7 @@ internal object BsdiffPatch {
         }
 
         override fun read(buffer: ByteArray, offset: Int, length: Int): Int {
+            if (length == 0) return 0
             if (remaining <= 0) return -1
             val count = source.read(buffer, offset, minOf(length.toLong(), remaining).toInt())
             if (count > 0) remaining -= count
