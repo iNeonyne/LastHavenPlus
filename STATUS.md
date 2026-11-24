@@ -14,14 +14,15 @@
 | Cefrium dependency | Pinned | SDK / Compose / plugin 0.21.0 |
 | Chromium revision | Documented | 156.0.8078.96, CEF branch 8078 |
 | Maven registry | Configured | Codeberg mirror `https://codeberg.org/api/packages/cefrium/maven` |
-| ABI | Verified in CI | APK contains arm64-v8a and no x86, x86_64 or armeabi-v7a libraries |
+| ABI | Verified in CI | Previous CI APK contains arm64-v8a and no x86, x86_64 or armeabi-v7a libraries; new debug/release checks pending |
 | Immersive host | Implemented, unverified | Fullscreen flags, landscape sensor orientation, screen stays awake |
 | Loading / retry | Implemented, unverified | Compose loading state, main-frame load error and renderer termination retry |
 | Persistent storage request | Implemented, unverified | Calls `navigator.storage.persist()` after the first completed document load |
 | Browser profile | Default persistent | Cefrium default profile stores cookies, LocalStorage, IndexedDB, service workers and cache in app-private `app_cefrium`; not the Android cache directory |
 | Remote debugging | Debug builds only | `Cefrium.setRemoteDebuggingEnabled` enabled from Application.onCreate before first browser creation |
-| CI build | **Passing** | Run #32, commit `0c4393c`; build, unit-test task, ABI verification and artifact upload succeeded |
-| Debug APK | Measured | 229,073,631 bytes (218.4 MiB); artifact downloaded and inspected from run #32 |
+| Previous CI build | **Passing** | Run #32, commit `0c4393c`; debug build, unit-test task, ABI verification and artifact upload succeeded |
+| Debug APK baseline | Measured | 229,073,631 bytes (218.4 MiB); actual APK extracted from run #32 artifact |
+| R8 / resource shrinking | Configured; validation pending | Enabled only on release variant; CI now builds both debug and unsigned release APKs |
 | Device test | Not run | No connected arm64 device/emulator available to this run |
 | Release signing | Not configured | Release key must be generated/backed up before first distributed release |
 
@@ -41,6 +42,8 @@
 - Largest compressed entry: `lib/arm64-v8a/libcef.so`, 92.84 MiB (201.94 MiB uncompressed).
 - DEX payload: 22 DEX files totaling approximately 115 MiB; this is the main candidate for R8 code shrinking.
 - Chromium data files include `icudtl.dat` (8.85 MiB) and `resources.pak` (1.23 MiB); do not strip or replace engine assets without Cefrium-specific compatibility evidence.
+- Release-only R8 minification and resource shrinking are now enabled. A CI build produces an unsigned optimized release candidate and reports its exact APK size and DEX total alongside the debug APK; no optimized result is recorded until that job completes.
+- The release candidate is unsigned because no release keystore is configured; it is for size analysis only and is not installable/distributable as a production update.
 - The archive downloaded from Actions is not the APK size; use the APK's own file size for comparisons.
 
 ## Cefrium API findings
@@ -51,6 +54,7 @@
 - `CefriumViewState.rendererTermination` reports renderer death; `CefriumNavigationClient.onLoadError` reports main-frame load errors.
 - `CefriumProfile.getDefault()` is persistent. Its data lives under Cefrium's private `app_cefrium` directory, not Android's cache directory.
 - `CefriumBrowser.clearCache()` / `CefriumNavigator.clearCache()` clears HTTP cache. No documented public code-cache-only clearing API has been confirmed yet.
+- Cefrium's current guide recommends R8 and says the AAR includes consumer rules for engine-required code; the minified app still needs physical-device testing.
 - Cefrium's API is pre-1.0 and may change between releases.
 
 ## Web capability verification
@@ -72,7 +76,7 @@ The web fetch of the game URL returns only “Loading... Please enable JavaScrip
 
 | Owner | Surface | State |
 |---|---|---|
-| Main integrator | APK size audit and safe R8 / resource shrinking trial; own `app/build.gradle.kts`, CI workflow, status and changelog | Active |
+| Main integrator | APK size audit and safe R8 / resource shrinking trial; own `app/build.gradle.kts`, CI workflow, status and changelog | Implementation committed; CI validation pending |
 
 ## Blockers
 
@@ -91,7 +95,7 @@ No runtime performance changes have been made. APK size baseline is measured; es
 | Cold start to first paint | Not measured | — |
 | FPS / frame pacing | Not measured | — |
 | PSS / native memory | Not measured | — |
-| APK download size | 229,073,631 bytes (218.4 MiB) | — |
+| APK download size | 229,073,631 bytes (218.4 MiB) | Pending CI release candidate |
 | Rendering latency | Not measured | — |
 
 ## Next actions
