@@ -523,7 +523,7 @@ Allow users to preserve launcher preferences across reinstallations or device ch
 The next major beta change replaces Cefrium with Mozilla GeckoView and adds a home screen with Play and Settings. The previous addon manager has been removed; a replacement is blocked pending a new owner specification. Current beta source still uses Cefrium.
 
 ### Phase 0 — Restore beta baseline
-- [ ] #9 Finish the exit-menu accessibility follow-up (Ploy); #13's old AddonManager compile blocker was removed with the legacy manager and remains pending post-removal CI confirmation.
+- [ ] #9 Finish the exit-menu accessibility follow-up (Ploy); The previous AddonManager compile blocker was removed with the legacy manager; post-removal CI is still unverified.
 - [ ] #4 Restore clean CI and complete updater edge-case tests. Keep application ID, signing identity and arm64-v8a configuration unchanged.
 
 ### Phase 1 — GeckoView engine migration
