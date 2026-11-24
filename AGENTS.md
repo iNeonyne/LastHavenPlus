@@ -12,10 +12,10 @@ The active embedded browser engine in `beta` is Mozilla GeckoView 160. Do not ad
 
 - **`beta` is the active development, integration and testing branch.**
 - **`main` is the stable release branch.**
-- Do not use pull requests. Integrate accepted work directly into `beta`.
+- Pull requests are the normal integration path for task work. Open PRs against `beta`; do not target `main` for routine development.
 - Parallel agents may work on separate issues only when their file scopes do not overlap. Never let two agents work on the same issue concurrently.
-- Contributors complete their assigned work and hand Chaty the exact commit, changed files, test evidence and remaining limitations.
-- **Chaty is the sole orchestrator and integrator.** Chaty reviews completed work, resolves conflicts, integrates and pushes commits directly to `beta`, and coordinates verification and release readiness.
+- Contributors work on dedicated task branches, open PRs targeting `beta`, and provide Chaty the PR link, exact head commit, changed files, test evidence and remaining limitations.
+- **Chaty is the sole orchestrator and integrator.** Chaty reviews PR diffs and CI, resolves conflicts, requests changes, and merges accepted PRs into `beta`. Chaty coordinates verification and release readiness; no other agent may merge or push directly to `beta`.
 - Promote `beta` to `main` only after all release gates pass and the owner explicitly approves. Publishing a release or creating a release tag also requires explicit approval.
 - Never develop routinely on `main`, force-push shared branches or bypass required checks.
 
