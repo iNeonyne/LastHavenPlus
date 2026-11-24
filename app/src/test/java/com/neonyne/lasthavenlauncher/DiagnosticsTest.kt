@@ -22,4 +22,30 @@ class DiagnosticsTest {
         assertFalse(sanitized.contains("hidden"))
         assertFalse(sanitized.contains("private"))
     }
+
+    @Test
+    fun redactsCompleteCookieHeaders() {
+        val sanitized = Diagnostics.sanitize(
+            "Cookie: session=first-secret; auth=second-secret\\n" +
+                "Set-Cookie: refresh=third-secret; HttpOnly",
+        )
+
+        assertTrue(sanitized.contains("Cookie: [REDACTED]"))
+        assertTrue(sanitized.contains("Set-Cookie: [REDACTED]"))
+        assertFalse(sanitized.contains("first-secret"))
+        assertFalse(sanitized.contains("second-secret"))
+        assertFalse(sanitized.contains("third-secret"))
+    }
+
+    @Test
+    fun redactsJsonCredentialFields() {
+        val sanitized = Diagnostics.sanitize(
+            """{"access_token":"json-secret","session_id":"session-secret"}""",
+        )
+
+        assertTrue(sanitized.contains("access_token"))
+        assertTrue(sanitized.contains("session_id"))
+        assertFalse(sanitized.contains("json-secret"))
+        assertFalse(sanitized.contains("session-secret"))
+    }
 }
