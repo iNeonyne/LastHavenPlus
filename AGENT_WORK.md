@@ -71,7 +71,7 @@ Do not start this task until the owner provides a new written specification. The
 ### ACTIVE — #4 build reliability and updater tests
 - Restore a clean current beta CI build and complete updater edge-case tests.
 - Keep the committed Gradle Wrapper; do not change Gradle/JDK/AGP/SDK/signing identity speculatively.
-- Current compile blocker is tracked under Ploy's #13 assignment; do not edit the same UI files while she owns #13.
+- The previous compile blocker was inside the deleted addon manager. Check the latest post-removal CI before identifying any current compile blocker; do not edit Ploy's #9 menu files while she owns that task.
 
 ### QUEUED — #21 replace Cefrium with GeckoView
 Start after #4 is at a clean, verified baseline and #20 is reviewed.
