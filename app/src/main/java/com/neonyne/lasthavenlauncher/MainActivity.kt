@@ -69,7 +69,9 @@ class MainActivity : ComponentActivity() {
                 preferences = preferences,
                 onExit = { finish() },
                 onCheckUpdates = { callback -> AppUpdater.checkForUpdate(this, callback) },
-                onDownloadUpdate = { update, callback -> AppUpdater.downloadUpdate(this, update, callback) },
+                onDownloadUpdate = { update, preferDelta, callback ->
+                    AppUpdater.downloadUpdate(this, update, preferDelta, callback)
+                },
                 onInstallUpdate = { uri -> installUpdate(uri) },
             )
         }
@@ -122,7 +124,7 @@ private fun LastHavenApp(
     preferences: SharedPreferences,
     onExit: () -> Unit,
     onCheckUpdates: ((UpdateCheckResult) -> Unit) -> Unit,
-    onDownloadUpdate: (AppUpdateInfo, (Result<Uri>) -> Unit) -> Unit,
+    onDownloadUpdate: (AppUpdateInfo, Boolean, (Result<Uri>) -> Unit) -> Unit,
     onInstallUpdate: (Uri) -> Unit,
 ) {
     val gameUrl = remember {
@@ -135,6 +137,7 @@ private fun LastHavenApp(
     var availableUpdate by remember { mutableStateOf<AppUpdateInfo?>(null) }
     var updateMessage by remember { mutableStateOf<String?>(null) }
     var isDownloadingUpdate by remember { mutableStateOf(false) }
+    var downloadingDelta by remember { mutableStateOf(false) }
     var isCheckingUpdate by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
@@ -252,10 +255,16 @@ private fun LastHavenApp(
             text = {
                 Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     Text("LastHaven Launcher ${update.version} is available.")
+                    if (update.patch != null) {
+                        Text(
+                            "A smaller differential download is available " +
+                                "(${"%.1f".format(update.patch.size / 1024.0 / 1024.0)} MiB).",
+                        )
+                    }
                     Text(update.releaseNotes, maxLines = 8)
                     if (isDownloadingUpdate) {
                         LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
-                        Text("Downloading update…")
+                        Text(if (downloadingDelta) "Downloading smaller update…" else "Downloading full APK…")
                     }
                 }
             },
@@ -264,7 +273,8 @@ private fun LastHavenApp(
                     enabled = !isDownloadingUpdate,
                     onClick = {
                         isDownloadingUpdate = true
-                        onDownloadUpdate(update) { result ->
+                        downloadingDelta = update.patch != null
+                        onDownloadUpdate(update, update.patch != null) { result ->
                             isDownloadingUpdate = false
                             result.onSuccess { uri ->
                                 availableUpdate = null
@@ -274,13 +284,41 @@ private fun LastHavenApp(
                             }
                         }
                     },
-                ) { Text(if (isDownloadingUpdate) "Downloading…" else "Download update") }
+                ) {
+                    Text(
+                        when {
+                            isDownloadingUpdate -> "Downloading…"
+                            update.patch != null -> "Download smaller update"
+                            else -> "Download update"
+                        },
+                    )
+                }
             },
             dismissButton = {
-                TextButton(
-                    enabled = !isDownloadingUpdate,
-                    onClick = { availableUpdate = null },
-                ) { Text("Later") }
+                Column(horizontalAlignment = Alignment.End) {
+                    if (update.patch != null) {
+                        TextButton(
+                            enabled = !isDownloadingUpdate,
+                            onClick = {
+                                isDownloadingUpdate = true
+                                downloadingDelta = false
+                                onDownloadUpdate(update, false) { result ->
+                                    isDownloadingUpdate = false
+                                    result.onSuccess { uri ->
+                                        availableUpdate = null
+                                        onInstallUpdate(uri)
+                                    }.onFailure { error ->
+                                        updateMessage = error.message ?: "Full APK download failed"
+                                    }
+                                }
+                            },
+                        ) { Text("Download full APK instead") }
+                    }
+                    TextButton(
+                        enabled = !isDownloadingUpdate,
+                        onClick = { availableUpdate = null },
+                    ) { Text("Later") }
+                }
             },
         )
     }
