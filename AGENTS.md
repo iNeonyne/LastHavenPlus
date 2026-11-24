@@ -51,6 +51,10 @@ References:
 - https://cefrium.com/guides/adopting-cefrium/
 - https://cefrium.com/docs/
 
+## Named agent assignments
+
+Read [AGENT_WORK.md](AGENT_WORK.md) before starting delegated work. It defines Ploy (repository-only coding agent) and Chaty (main orchestrator), task order, file ownership, handoff rules and integration boundaries. Ploy must not push to `main`; Chaty reviews and integrates all delegated changes.
+
 ## Parallel agent roles
 
 | Role | Owns | Must not duplicate |
