@@ -11,7 +11,7 @@
 | [#5](#issue-5) | P0.2 — Verify LastHaven gameplay and update behavior on a physical arm64 device | open |
 | [#6](#issue-6) | P2 — Add minimal launcher settings and safe storage controls | open |
 | [#7](#issue-7) | P3 — Measure runtime performance and evaluate APK size improvements | open |
-| [#8](#issue-8) | P1 — Build the local ZIP addon manager for v1.1.0 (game injection gated) | open |
+| [#8](#issue-8) | Superseded — legacy addon manager removed; future scope waits for owner spec (#23) | open |
 | [#9](#issue-9) | P2 — Add a compact game navigation and exit menu | open |
 | [#10](#issue-10) | P2 — Track game network data usage | open |
 | [#11](#issue-11) | P2 — Add privacy-conscious app and updater logs | open |
@@ -562,7 +562,7 @@ Allow users to preserve launcher preferences across reinstallations or device ch
 **GitHub:** https://github.com/iNeonyne/LastHavenPlus/issues/18  
 **State:** open
 
-The next major beta change replaces Cefrium with Mozilla GeckoView, adds a home screen with Play and Settings, and reuses the existing ZIP addon manager from Settings. These are planned tasks; current beta source still uses Cefrium and has a Kotlin compile failure.
+The next major beta change replaces Cefrium with Mozilla GeckoView and adds a home screen with Play and Settings. The previous addon manager has been removed; a replacement is blocked pending a new owner specification. Current beta source still uses Cefrium.
 
 ### Phase 0 — Restore beta baseline
 - [ ] #13 Fix accessibility Compose compile errors under Ploy's exclusive ownership.
@@ -579,11 +579,10 @@ The next major beta change replaces Cefrium with Mozilla GeckoView, adds a home 
 - [ ] Preserve the active Gecko session when navigating between gameplay and home.
 - [ ] Apply immersive mode/keep-awake only while gameplay is active; restore normal system UI on home/settings.
 
-### Phase 3 — Existing addon manager
-- [ ] #8 Complete the existing local ZIP archive/repository security and recovery tests.
-- [ ] #23 Place the existing ZIP addon manager under Settings and preserve the existing app-private package library.
-- [ ] Clearly distinguish local package/enabled flags from actual in-game loading. WoW addon ZIPs/`.toc` files are not Gecko WebExtensions.
-- [ ] Game addon loading/injection remains out of scope until separately authorized, documented and physically verified.
+### Phase 3 — Addon manager (blocked)
+- [ ] #23 Wait for the owner to provide a new written addon-manager specification.
+- [ ] Design and review the replacement before implementation. The previous ZIP manager code, tests and UI have been removed.
+- [ ] Do not recreate the previous storage model, package manager or injection hooks without explicit direction.
 
 ### Phase 4 — Regression and release gates
 - [ ] #5 Physical ARM64 gameplay and same-key update verification on GeckoView.
