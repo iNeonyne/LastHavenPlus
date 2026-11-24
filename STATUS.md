@@ -8,11 +8,11 @@
 
 The stable v1.0.0 release is published. Beta still uses Cefrium and opens the game directly on startup. The approved target is GeckoView plus a home screen with Play and Settings. The previous addon manager has been removed; replacement work is blocked pending the owner's new specification.
 
-- **`beta` HEAD before this status checkpoint:** `f8c57eefe73b220340334ae217dc309b2828dc72`.
-- **Work-log checkpoint commit:** `6f4cf468378b3db4d8d04a49fac7914c5e08b775`.
+- **`beta` HEAD at this checkpoint:** `1f282dae4d12935f619a143b7b2efd096e56729a`.
+
 - **`main` (stable):** `6211cf389b8d9f6ef98aa7818f47643bfdaf2053`.
-- **Latest beta CI at the work-log checkpoint:** [run #281](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45497088290), ID `45497088290`, on commit `f8c57eefe73b220340334ae217dc309b2828dc72`; pending at last inspection.
-- **Post-removal runs #268–#279:** cancelled by subsequent pushes; they produced no useful build/test evidence.
+- **Latest observed post-removal CI:** [run #282](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45497136297), ID `45497136297`, on commit `6f4cf468378b3db4d8d04a49fac7914c5e08b775`; cancelled by a subsequent push. Runs #268–#282 were cancelled by newer pushes and produced no build/test evidence for the current head.
+- **Current exact head CI:** no completed run was observed for `1f282dae4d12935f619a143b7b2efd096e56729a` at the time of this update.
 - **Previous source failure:** [run #247](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45493653394) failed Kotlin compilation in `AddonManagerDialog.kt`. That source file and its app entry point have since been removed. Do not treat the blocker as fixed until a new build completes.
 - **Latest successful beta CI run found:** [#179](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45183038304), commit `593fec6b048790cbc30a7fbadf571b749069abea`; historical only.
 - **Published release:** [v1.0.0](https://github.com/iNeonyne/LastHavenPlus/releases/tag/v1.0.0), with the signed ARM64 APK and update manifest. It does not verify current beta.
@@ -104,4 +104,4 @@ At the owner's request, removed `AddonArchiveInspector.kt`, `AddonLibraryReposit
 
 - `WORK_LOG.md` is the append-only restart journal. Agents must record scope, starting commit, inspected/changed files, commands, results, commit SHA, limitations and next safe action at every meaningful checkpoint.
 - `docs/GECKOVIEW_MIGRATION.md` contains the official Mozilla reference links and project-specific migration notes. It is a curated guide, not a vendored copy of Mozilla documentation.
-- Current verification checkpoint is recorded in `WORK_LOG.md`; the latest CI run at that checkpoint (#281) was pending.
+- Current verification checkpoint is recorded in `WORK_LOG.md`; recent post-removal CI runs were cancelled and the exact current head has no completed build evidence.
