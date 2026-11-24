@@ -83,7 +83,7 @@ Acceptance:
 - Existing archive inspector tests remain passing.
 - No claim is made that addons are loaded by the game.
 
-File ownership while active: `AddonLibraryRepository.kt` and repository-focused tests only, unless Chaty approves a narrowly scoped supporting change. The user pushes the completed changes; Chaty then reviews and updates tracking.
+File ownership while active: `AddonLibraryRepository.kt` and repository-focused tests only, unless Chaty approves a narrowly scoped supporting change. Push the completed task branch and open a PR; Chaty then reviews and updates tracking.
 
 ## Chaty — assigned work
 
