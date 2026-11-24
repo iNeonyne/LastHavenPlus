@@ -1,3 +1,13 @@
+## 2026-11-24 — Clarify Ploy handoff and review workflow
+
+- **Role:** Chaty / project coordination
+- **Files:** `AGENT_WORK.md`, `AGENTS.md`, `STATUS.md`, `CHANGELOG-AGENTS.md`
+- **Change:** Updated the delegated workflow so the user pushes Ploy's completed work to the repository. Chaty then inspects the pushed diff, verifies relevant tests, reports review findings and maintains `ISSUES.md`, `STATUS.md` and this changelog. Ploy does not push directly to `main`, edit central tracking files or start the next task without acceptance.
+- **Why:** The user is responsible for publishing Ploy's handoff; Chaty's responsibility is review and accurate task tracking.
+- **Verified:** Documentation-only workflow update committed to `main`. No application code or tests changed.
+- **Do not redo:** Do not expect Ploy to access GitHub Issues or update the tracker. Do not mark a task complete merely because Ploy reports it done; review the pushed diff first.
+- **Follow-ups:** When Ploy's changes appear in the repository, review them against issue #13's acceptance criteria and update the task state.
+
 ## 2026-11-24 — Define Ploy and Chaty agent assignments
 
 - **Role:** Chaty / main orchestrator
