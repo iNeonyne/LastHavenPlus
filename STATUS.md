@@ -1,4 +1,4 @@
-# Project status — LastHavenLauncher
+# Project status — LastHavenPlus
 
 **Last updated:** 2026-11-24  
 **Phase:** P0 — Playable core verification and release hardening
