@@ -50,9 +50,16 @@ jobs:
             exit 1
           fi
           tag="v$RELEASE_VERSION"
-          if gh api "repos/$GITHUB_REPOSITORY/releases/tags/$tag" >/dev/null 2>&1; then
-            echo "::error::A GitHub release already exists for $tag; refusing to retarget it."
-            exit 1
+          existing_release="$(gh api "repos/$GITHUB_REPOSITORY/releases/tags/$tag" 2>/dev/null || true)"
+          if [[ -n "$existing_release" ]]; then
+            is_draft="$(jq -r '.draft' <<< "$existing_release")"
+            release_id="$(jq -r '.id' <<< "$existing_release")"
+            if [[ "$is_draft" != "true" ]]; then
+              echo "::error::A published release already exists for $tag; refusing to replace it."
+              exit 1
+            fi
+            echo "Replacing existing unpublished draft release $tag (release $release_id)."
+            gh api --method DELETE "repos/$GITHUB_REPOSITORY/releases/$release_id" >/dev/null
           fi
           if gh api "repos/$GITHUB_REPOSITORY/git/ref/tags/$tag" >/dev/null 2>&1; then
             gh api --method PATCH "repos/$GITHUB_REPOSITORY/git/refs/tags/$tag" -f "sha=$GITHUB_SHA" -F "force=true" >/dev/null
@@ -148,7 +155,7 @@ jobs:
           printf '%s' "$ANDROID_KEYSTORE_BASE64" | base64 --decode > "$RUNNER_TEMP/lasthavenplus-release.jks"
           chmod 600 "$RUNNER_TEMP/lasthavenplus-release.jks"
           keytool -list -keystore "$RUNNER_TEMP/lasthavenplus-release.jks" \
-            -storepass "$ANDROID_KEYSTORE_PASSWORD" -alias lasthavenplus >/dev/null
+            -storepass "$ANDROID_KEYSTORE_PASSWORD" -alias lasthavenlauncher >/dev/null
 
       - name: Build signed optimized release APK and run unit tests
         env:
@@ -250,6 +257,9 @@ jobs:
           sudo apt-get install -y bsdiff
           mkdir -p release-assets
           cp app/build/outputs/apk/release/app-release.apk release-assets/lasthavenplus-arm64.apk
+          # Keep legacy asset names available so already-installed pre-rebrand
+          # versions of the updater can still discover and install this release.
+          cp release-assets/lasthavenplus-arm64.apk release-assets/lasthavenlauncher-arm64.apk
           TARGET_APK="release-assets/lasthavenplus-arm64.apk"
           TARGET_SHA="$(sha256sum "$TARGET_APK" | awk '{print $1}')"
           TARGET_SIZE="$(stat -c '%s' "$TARGET_APK")"
@@ -321,6 +331,9 @@ jobs:
             --argjson patch "$PATCH_JSON" \
             '{schemaVersion:1, version:$version, versionCode:$versionCode, apk:{name:"lasthavenplus-arm64.apk", sha256:$apkSha, size:$apkSize}, patch:$patch}' \
             > release-assets/lasthavenplus-update.json
+          jq '.apk.name = "lasthavenlauncher-arm64.apk"' \
+            release-assets/lasthavenplus-update.json \
+            > release-assets/lasthavenlauncher-update.json
 
       - name: Publish signed release and update assets
         if: steps.version.outputs.is_release == 'true'
