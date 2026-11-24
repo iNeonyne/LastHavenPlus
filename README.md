@@ -59,7 +59,7 @@ GitHub Actions builds the debug APK and publishes it as a workflow artifact. A r
 - The launcher checks the latest stable GitHub Release on startup and also offers a manual check from the exit dialog.
 - It never downloads automatically. Select **Download smaller update** or **Download full APK instead**; Android handles the final install confirmation.
 - Every stable release uses a `vMAJOR.MINOR.PATCH` tag and publishes a signed `lasthavenlauncher-arm64.apk` plus `lasthavenlauncher-update.json`.
-- When the immediately previous stable release is available and uses the same signing certificate, CI creates a BSDIFF40 patch. It publishes the patch only when it is at least 10% smaller than the full APK.
+- When the immediately previous stable release is available and uses the same signing certificate, CI creates a BSDIFF40 patch. Unchanged Cefrium/Chromium bytes are reused from the installed APK instead of being downloaded again. CI publishes the patch only when it is at least 10% smaller than the full APK; the app reconstructs a complete signed APK locally for Android to install.
 - The app offers a patch only when the installed version, versionCode and APK SHA-256 match that patch's base. It reconstructs the exact signed APK locally, verifies its digest, package ID, version and pinned release certificate, then opens Android's installer.
 - The complete signed APK is always published as a fallback. If a user skips a version or the patch cannot be used, they can choose the full APK.
 - Release signing is configured through GitHub Actions secrets `ANDROID_KEYSTORE_BASE64`, `ANDROID_KEYSTORE_PASSWORD` and `ANDROID_KEY_PASSWORD`, using alias `lasthavenplus`. The key is never committed or bundled in the app.
