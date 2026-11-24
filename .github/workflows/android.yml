@@ -40,6 +40,9 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle-
       
+      - name: Generate Gradle wrapper
+        run: gradle wrapper --gradle-version 9.4 --distribution-type bin
+      
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
       
@@ -86,6 +89,9 @@ jobs:
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.kts', '**/*.gradle') }}
           restore-keys: |
             ${{ runner.os }}-gradle-
+      
+      - name: Generate Gradle wrapper
+        run: gradle wrapper --gradle-version 9.4 --distribution-type bin
       
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
