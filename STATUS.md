@@ -2,23 +2,21 @@
 
 **Last updated:** 2026-11-25  
 **Active branch:** `beta`  
-**Phase:** P0 — Verify GeckoView 160 integration. The source/dependency migration is present; build compatibility is blocked pending Android API 37.2 CI verification.
+**Phase:** P0 — GeckoView 160 build baseline is now green in CI; physical ARM64 gameplay and profile persistence remain unverified. Ploy is working on the home-screen task #22.
 
 ## Snapshot
 
-The stable v1.0.0 release is published. Beta source now uses Mozilla GeckoView 160 but still opens the game directly on startup. **The top priority remains completing and verifying the GeckoView replacement.** The ARM64 artifact and versioned public API have been selected; issue #21 remains open until CI and runtime acceptance checks pass. The home screen and navigation task #22 follows that gate. The previous addon manager has been removed. The owner supplied a Firefox WebExtension specification, then explicitly placed addon-manager work on hold. No extension implementation has started; do not schedule or assign it until the owner resumes it.
+The stable v1.0.0 release remains on `main`. Beta uses Mozilla GeckoView 160 and still launches the game directly; the app home screen and Reload / Home / Return to game navigation are in progress under issue #22. The previous addon manager has been removed, and the replacement addon-manager work remains on hold at the owner's request.
 
-- **Latest inspected migration checkpoint:** `b0d1b154e5eb49c8ef72909e2ba2f4b8fdbddf3d` (GeckoView compile SDK requirement reflected in Gradle and CI).
+- **Current beta HEAD:** `f5a55e6ef9b0c50a4867c579551eee0cd0c9ab58` (CI optimization changelog entry).
+- **Latest application/workflow change:** `54b947279a783c6c382210e65045edd02bd5ee73` (Android CI optimization).
+- **Stable main:** `6211cf389b8d9f6ef98aa7818f47643bfdaf2053`.
+- **Latest successful CI:** [run #308](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45503025246), commit `82590635e77c7abfedcaa6fd1fa4ad8c3b5de469`. The Android release build and unit-test task passed; the produced APK was 92 MB, contained only `arm64-v8a`, and matched the established release signing certificate.
+- **CI optimization verification:** commit `54b947279a783c6c382210e65045edd02bd5ee73` changes workflow triggers, checkout depth and Gradle daemon behavior. Its resulting Actions run has not yet been inspected, so the optimization is committed but not yet validated or benchmarked.
+- **Physical-device verification:** GeckoView gameplay, session/profile persistence, app navigation, storage/network measurements, updater installation and other runtime behavior remain unverified on physical ARM64 hardware.
+- **Release state:** no tag, release publication or promotion to `main` was performed as part of this work.
 
-- **`main` (stable):** `6211cf389b8d9f6ef98aa7818f47643bfdaf2053`.
-- **Latest CI:** [run #304](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45502893050), ID `45502893050`, on current HEAD `b0d1b154e5eb49c8ef72909e2ba2f4b8fdbddf3d`; pending at last inspection. The previous run #302 failed because GeckoView 160 requires compile SDK 37.2 while the project used 37.0. Gradle now declares `compileSdkMinor = 2` and CI requests `platforms;android-37.2`; no successful build/test result yet.
-- **Build evidence:** no successful build or test is claimed for the current documentation-only head.
-- **Previous source failure:** [run #247](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45493653394) failed Kotlin compilation in `AddonManagerDialog.kt`. That source file and its app entry point have since been removed. Do not treat the blocker as fixed until a new build completes.
-- **Latest successful beta CI run found:** [#179](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45183038304), commit `593fec6b048790cbc30a7fbadf571b749069abea`; historical only.
-- **Published release:** [v1.0.0](https://github.com/iNeonyne/LastHavenPlus/releases/tag/v1.0.0), with the signed ARM64 APK and update manifest. It does not verify current beta.
-- **Current task ownership:** Chaty owns #20 GeckoView technical decision and #21 Cefrium replacement. Chaty is also monitoring #4 only as the minimum clean-build prerequisite; run #297 is currently in progress. Ploy's #9 and #11 tasks are paused so the team can focus on the engine migration. #22 follows #21. Addon manager #23 remains on hold.
-
-Documentation, agent references and the removal work are committed directly to `beta`. GeckoView 160 production dependency/source is present but not build-verified. No main promotion, tag or release was performed.
+Ploy owns the home-screen task #22. Chaty owns CI optimization, integration and release coordination. Keep changes to separate files/tasks; do not edit Ploy's home-screen implementation concurrently.
 
 ## Current implementation inspected
 
