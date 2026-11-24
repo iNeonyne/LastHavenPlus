@@ -8,8 +8,8 @@
 
 The stable v1.0.0 release remains on `main`. Beta uses Mozilla GeckoView 160 and still launches the game directly; the app home screen and Reload / Home / Return to game navigation are in progress under issue #22. The previous addon manager has been removed, and the replacement addon-manager work remains on hold at the owner's request.
 
-- **Current beta HEAD:** `f5a55e6ef9b0c50a4867c579551eee0cd0c9ab58` (CI optimization changelog entry).
-- **Latest application/workflow change:** `54b947279a783c6c382210e65045edd02bd5ee73` (Android CI optimization).
+- **Current beta HEAD:** `7f90d55ca8927bf754948ad887b3f85358102265` (CI changelog update; latest workflow code commit `91e21d4bde0a26b8d7cbfd9697615f32c2f57d21`).
+- **Latest workflow change:** `91e21d4bde0a26b8d7cbfd9697615f32c2f57d21` (Android CI optimization plus a 30-minute build-job timeout).
 - **Stable main:** `6211cf389b8d9f6ef98aa7818f47643bfdaf2053`.
 - **Latest successful CI:** [run #308](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45503025246), commit `82590635e77c7abfedcaa6fd1fa4ad8c3b5de469`. The Android release build and unit-test task passed; the produced APK was 92 MB, contained only `arm64-v8a`, and matched the established release signing certificate.
 - **CI optimization verification:** commit `54b947279a783c6c382210e65045edd02bd5ee73` changes workflow triggers, checkout depth and Gradle daemon behavior. Its resulting Actions run has not yet been inspected, so the optimization is committed but not yet validated or benchmarked.
