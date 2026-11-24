@@ -136,8 +136,19 @@ class AddonLibraryRepository(context: Context) {
         val finalArchive = packageFile(inspection.sha256)
         val archiveAlreadyExists = finalArchive.isFile
         if (!archiveAlreadyExists && !stagedFile.renameTo(finalArchive)) {
-            stagedFile.copyTo(finalArchive, overwrite = false)
-            stagedFile.delete()
+            val packageTemporary = File(packages, "${inspection.sha256}.zip.tmp")
+            packageTemporary.delete()
+            try {
+                FileOutputStream(packageTemporary).use { output ->
+                    stagedFile.inputStream().buffered().use { input -> input.copyTo(output) }
+                    output.fd.sync()
+                }
+                if (!packageTemporary.renameTo(finalArchive)) {
+                    throw IllegalStateException("Could not commit the validated addon package.")
+                }
+            } finally {
+                packageTemporary.delete()
+            }
         }
 
         val retained = if (replaceExisting) {
@@ -301,7 +312,9 @@ class AddonLibraryRepository(context: Context) {
     private fun deleteUnreferencedPackages(items: List<AddonLibraryItem>) {
         val retained = items.map { it.archiveSha256 }.toSet()
         packages.listFiles()?.forEach { file ->
-            if (file.name.endsWith(".zip") && file.nameWithoutExtension !in retained) {
+            if (file.name.endsWith(".tmp") ||
+                (file.name.endsWith(".zip") && file.nameWithoutExtension !in retained)
+            ) {
                 file.delete()
             }
         }
