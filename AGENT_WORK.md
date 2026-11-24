@@ -15,7 +15,7 @@ This file is the working agreement for the two active coding agents. The reposit
 - Do not add speculative Cefrium APIs, game-client modifications or unfinished features.
 - Do not create releases, tags, or alter signing secrets.
 - Do not use TickTick.
-- Keep work on separate branches/worktrees and avoid simultaneous edits to the same files.
+- **Exclusive task ownership:** only one agent may actively own a GitHub issue/task at a time. Never work on the same issue in parallel, even on different branches. Record owner, scope and files in STATUS before starting. The other agent must wait for explicit handoff and updated trackers.\n- Keep work on separate branches/worktrees and avoid simultaneous edits to the same files.
 - **`main` is stable; `beta` is the shared integration/testing branch.** Chaty pushes orchestrator work directly to `beta`.
 - Ploy creates a dedicated feature branch from the latest `beta`, pushes her task commits and opens a PR with **base branch `beta`** when her assignment is ready. She must never push directly to `beta` or `main`.
 - After Ploy opens a PR targeting `beta`, Chaty inspects the complete diff, runs or verifies relevant checks, requests fixes as needed, updates `ISSUES.md`, `STATUS.md` and `CHANGELOG-AGENTS.md`, and may merge the PR into `beta` once it passes review and required checks.
@@ -25,7 +25,7 @@ This file is the working agreement for the two active coding agents. The reposit
 
 ## Ploy — assigned work
 
-Ploy works in the following order. Start only the first task; move to the next after Chaty reviews and accepts the previous task.
+Ploy is the exclusive owner of her active delegated issue. Work in the following order, one issue at a time; move to the next only after Chaty reviews, accepts and integrates the previous PR into `beta`. Chaty must not work on the same issue or its implementation/tests while Ploy owns it.
 
 ### P1 — Issue #13: accessibility semantics
 
@@ -48,7 +48,7 @@ File ownership while this task is active: Compose UI files required for semantic
 
 ### P2 — Issue #11: diagnostics test coverage
 
-Start only after Chaty accepts and integrates #13 into `beta`.
+Start only after Chaty accepts and integrates #13 into `beta`. Ploy then exclusively owns #11; Chaty must not modify diagnostics tests or implementation while this assignment is active.
 
 Scope:
 - Expand unit tests for redaction of passwords, cookies, authorization values, tokens, session identifiers and sensitive URL parameters.
@@ -66,7 +66,7 @@ File ownership while active: diagnostics logger and its unit tests only. Push th
 
 ### P3 — Issue #8: addon repository tests
 
-Start only after Chaty accepts and integrates #11 into `beta` and explicitly confirms this task is unblocked.
+Start only after Chaty accepts and integrates #11 into `beta` and explicitly confirms this task is unblocked. Ploy then exclusively owns #8 repository tests; Chaty's #8 runtime-contract investigation stays paused until Ploy hands off.
 
 Scope:
 - Add tests for duplicate imports, replacement confirmation/rollback, package storage limits, export round-trip, index recovery and failed writes.
@@ -89,14 +89,14 @@ File ownership while active: `AddonLibraryRepository.kt` and repository-focused 
 
 ## Chaty — assigned work
 
-Chaty owns the following work and all integration:
+Chaty owns **Issue #4 only as the current active implementation task**. Continue until #4 is handed off; do not start another implementation issue concurrently with Ploy.
 
-1. **Issue #4 — build reliability and updater tests:** Gradle Wrapper, verified distribution checksum, CI migration, updater edge-case tests, package identity checks and CI verification. Preserve the current signing identity and manual update flow.
-2. **Issue #5 — device verification coordination:** maintain the checklist and record evidence supplied from the user's physical ARM64 device. Do not fabricate device results.
-3. **Issue #6 — settings and storage safety:** verify pinned Cefrium APIs before implementing URL, cache or data controls. Keep destructive game-data clearing gated on supported APIs and explicit confirmation.
-4. **Issue #8 — approved runtime integration investigation:** obtain and record the operator-provided technical contract. No runtime injection or game-client modification until the exact authorized interface is established and reviewed. Coordinate with Ploy's isolated repository tests only after they are accepted.
-5. **Issues #9/#10/#11 — integration and verification:** own menu/navigation, network usage, diagnostics integration, CI verification and physical-device follow-up. Ploy may contribute only the explicitly assigned isolated tasks above.
-6. **Issues #12, #14, #15, #16 and #17:** own API research, error handling, updater recovery, lifecycle settings and settings backup. Delegate isolated tests only through a later update to this file.
+1. **Issue #4 — build reliability and updater tests (ACTIVE):** Gradle Wrapper, verified distribution checksum, CI migration, updater edge-case tests, package identity checks and CI verification. Preserve the current signing identity and manual update flow.
+2. **Issue #5 — device verification coordination:** maintain the checklist and record evidence supplied from the user's physical ARM64 device. Do not fabricate device results. Claim only after #4 is handed off and after checking that Ploy does not own #5.
+3. **Issue #6 — settings and storage safety:** verify pinned Cefrium APIs before implementing URL, cache or data controls. Claim only after current work is handed off.
+4. **Issue #8 — approved runtime integration investigation:** BLOCKED while Ploy owns #8 repository tests. After Ploy's #8 task is accepted and handed off, Chaty may claim the distinct operator-contract investigation. No runtime injection or game-client modification until the exact authorized interface is established and reviewed.
+5. **Issue #11 — diagnostics:** Ploy owns the complete delegated test task. Chaty must not edit diagnostics tests or implementation while Ploy owns #11. Any later production-code follow-up requires explicit handoff and updated ownership.
+6. **Issues #9, #10, #12, #14, #15, #16 and #17:** Chaty-owned, scheduled one at a time after #4. Never start one while Ploy owns the same issue. Do not start overlapping work.
 7. Maintain `ISSUES.md`, `STATUS.md`, `CHANGELOG-AGENTS.md`, README and CI/release documentation. Review every Ploy handoff before integration.
 
 ## Handoff format
