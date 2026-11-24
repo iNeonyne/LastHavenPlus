@@ -36,7 +36,6 @@ object AppUpdater {
     private const val RELEASE_API =
         "https://api.github.com/repos/iNeonyne/Lasthavens-Android/releases/latest"
     private const val APK_ASSET_NAME = "lasthavenlauncher-arm64.apk"
-    private const val MIME_APK = "application/vnd.android.package-archive"
     private const val MAX_APK_BYTES = 500L * 1024L * 1024L
 
     private val executor = Executors.newSingleThreadExecutor()
@@ -143,7 +142,15 @@ object AppUpdater {
 
                     connection.inputStream.use { input ->
                         FileOutputStream(temporaryFile).use { output ->
-                            input.copyTo(output, bufferSize = 64 * 1024)
+                            val buffer = ByteArray(64 * 1024)
+                            var totalBytes = 0L
+                            while (true) {
+                                val count = input.read(buffer)
+                                if (count < 0) break
+                                totalBytes += count
+                                check(totalBytes <= MAX_APK_BYTES) { "APK is unexpectedly large" }
+                                output.write(buffer, 0, count)
+                            }
                             output.fd.sync()
                         }
                     }
