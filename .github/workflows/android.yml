@@ -332,9 +332,6 @@ jobs:
             --argjson patch "$PATCH_JSON" \
             '{schemaVersion:1, version:$version, versionCode:$versionCode, apk:{name:"lasthavenplus-arm64.apk", sha256:$apkSha, size:$apkSize}, patch:$patch}' \
             > release-assets/lasthavenplus-update.json
-          jq '.apk.name = "lasthavenlauncher-arm64.apk"' \
-            release-assets/lasthavenplus-update.json \
-            > release-assets/lasthavenlauncher-update.json
 
       - name: Publish signed release and update assets
         if: steps.version.outputs.is_release == 'true'
