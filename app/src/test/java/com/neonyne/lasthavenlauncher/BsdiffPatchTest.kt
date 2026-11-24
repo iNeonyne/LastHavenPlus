@@ -51,6 +51,74 @@ class BsdiffPatchTest {
         }
     }
 
+
+    @Test
+    fun rejectsTruncatedHeaderAndRemovesPartialOutput() {
+        val directory = Files.createTempDirectory("bsdiff-truncated-header").toFile()
+        try {
+            val oldFile = File(directory, "old.apk").apply { writeBytes("old".toByteArray()) }
+            val patchFile = File(directory, "broken.bsdiff").apply {
+                writeBytes("BSDIFF40".toByteArray(Charsets.US_ASCII) + ByteArray(8))
+            }
+            val outputFile = File(directory, "new.apk").apply { writeText("stale output") }
+
+            try {
+                BsdiffPatch.apply(oldFile, patchFile, outputFile, 1024)
+                throw AssertionError("Expected truncated patch to be rejected")
+            } catch (expected: IllegalArgumentException) {
+                assertEquals(false, outputFile.exists())
+            }
+        } finally {
+            directory.deleteRecursively()
+        }
+    }
+
+    @Test
+    fun rejectsUnsupportedPatchMagicAndRemovesPartialOutput() {
+        val directory = Files.createTempDirectory("bsdiff-invalid-magic").toFile()
+        try {
+            val oldFile = File(directory, "old.apk").apply { writeBytes("old".toByteArray()) }
+            val patchFile = File(directory, "broken.bsdiff").apply { writeBytes(ByteArray(32)) }
+            val outputFile = File(directory, "new.apk").apply { writeText("stale output") }
+
+            try {
+                BsdiffPatch.apply(oldFile, patchFile, outputFile, 1024)
+                throw AssertionError("Expected unsupported patch format to be rejected")
+            } catch (expected: IllegalArgumentException) {
+                assertEquals(false, outputFile.exists())
+            }
+        } finally {
+            directory.deleteRecursively()
+        }
+    }
+
+    @Test
+    fun rejectsPatchWhoseDeclaredOutputExceedsLimitBeforeDecompression() {
+        val directory = Files.createTempDirectory("bsdiff-output-limit").toFile()
+        try {
+            val oldFile = File(directory, "old.apk").apply { writeBytes("old".toByteArray()) }
+            val header = ByteArrayOutputStream().apply {
+                write("BSDIFF40".toByteArray(Charsets.US_ASCII))
+                writeOffset(1)
+                writeOffset(1)
+                writeOffset(2048)
+            }.toByteArray()
+            val patchFile = File(directory, "oversized.bsdiff").apply {
+                writeBytes(header + byteArrayOf(1, 2))
+            }
+            val outputFile = File(directory, "new.apk").apply { writeText("stale output") }
+
+            try {
+                BsdiffPatch.apply(oldFile, patchFile, outputFile, 1024)
+                throw AssertionError("Expected output size limit to be enforced")
+            } catch (expected: IllegalArgumentException) {
+                assertEquals(false, outputFile.exists())
+            }
+        } finally {
+            directory.deleteRecursively()
+        }
+    }
+
     private fun compressed(writeContent: ByteArrayOutputStream.() -> Unit): ByteArray {
         val bytes = ByteArrayOutputStream()
         BZip2CompressorOutputStream(bytes).use { compressed ->
