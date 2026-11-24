@@ -16,7 +16,7 @@
 | Maven registry | Configured | Codeberg mirror `https://codeberg.org/api/packages/cefrium/maven` |
 | ABI | Configured | arm64-v8a only |
 | Game page | Not tested in app | Web URL responds with JS-required page; requires real browser execution |
-| CI build | Pending | Workflow added; waiting for GitHub Actions result |
+| CI build | Running | First run exposed a removed SDK package alias (`tools`); workflow now installs platform-tools explicitly and retries |
 | Device test | Not run | No connected arm64 device/emulator available to this run |
 | Release signing | Not configured | Release key must be generated/backed up before first distributed release |
 
