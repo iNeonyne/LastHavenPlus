@@ -1,3 +1,13 @@
+## 2026-11-25 — Plan GeckoView migration, home screen and addon manager placement
+
+- **Role:** Chaty / main orchestrator
+- **Files:** `README.md`, `AGENTS.md`, `AGENT_WORK.md`, `STATUS.md`, `ISSUES.md`, `CHANGELOG-AGENTS.md`, GitHub issues #5, #6, #7, #8, #11, #12, #17, #18 and new issues #20–#23
+- **Change:** Recorded the approved transition from Cefrium to GeckoView, created separate work items for Gecko research, engine replacement, the Play/Settings home screen and placing the existing ZIP addon manager under Settings. Reworked the roadmap and queued non-overlapping ownership after the current build/accessibility tasks.
+- **Why:** The app currently launches directly into Cefrium and its Activity applies gameplay UI state globally. The engine change, app shell redesign and local addon manager should be staged independently to avoid overlapping changes and regressions.
+- **Verified:** Inspected beta source, Gradle configuration, manifest, existing ZIP archive inspector/repository/dialog, current issues, branch head and latest CI run #247. GeckoView official documentation describes the Runtime/Session/View architecture and separate permission/WebExtension APIs. Run #247 fails on two Compose errors in `AddonManagerDialog.kt`; tests and APK verification did not run. The existing addon manager is local package management only, not game injection.
+- **Do not redo:** Do not treat GeckoView as a drop-in dependency rename. Do not assume Cefrium profile data can be imported. Do not rebuild the addon manager or equate WoW addon ZIPs with Gecko WebExtensions. Do not change application ID, signing identity, ABI, build toolchain, game client or updater policy as part of preparation.
+- **Follow-ups:** Ploy completes #13 → #11 → #8 → #20 in sequence; Chaty completes #4, reviews #20 and owns #21; Ploy then owns #22 and #23 after the required integrations. No release or main promotion.
+
 ## 2026-11-25 — Restrict release tags to stable main
 
 - **Role:** Chaty / CI orchestration
