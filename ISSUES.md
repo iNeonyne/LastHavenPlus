@@ -161,8 +161,8 @@ Add essential launcher settings and safe storage visibility after the core game 
 - [ ] Verify settings and storage reporting survive app restarts and do not disrupt the active game session unexpectedly.
 
 ## Dependencies
-- Complete #5 physical-device gameplay and persistence verification first.
-- Implement the navigation/menu entry point in #9.
+- The navigation/menu entry point from #9 is already implemented.
+- Physical-device verification is a release/verification gate, not a blocker to developing and unit-testing settings functionality; keep device checks pending until performed.
 - Do not implement cache clearing or game-data clearing until the pinned Cefrium API and lifecycle requirements are verified.
 
 ## Constraints
