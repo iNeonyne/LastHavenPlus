@@ -11,7 +11,8 @@ LastHavenPlus is an Android launcher for the existing LastHaven Wrath of the Lic
 
 - `main` is the stable release branch; `beta` is the integration and release-candidate branch.
 - Stable releases are promoted to `main` only after the release gates in [ISSUES.md](ISSUES.md) pass and the repository owner explicitly approves.
-- Ploy contributes through task PRs targeting `beta`; Chaty reviews and integrates accepted work. Agents never work on the same issue concurrently.
+- Development is performed against `beta`. Parallel agents may work on separate issues with disjoint file scopes, but never on the same issue concurrently.
+- Task contributors hand completed commits to Chaty on their task branches. **Chaty alone reviews, integrates and pushes changes directly to `beta`. No pull requests are used.**
 
 ## Compatibility
 
@@ -57,16 +58,16 @@ Cefrium 0.21.0 is pinned across the SDK, Compose integration and Gradle plugin. 
 
 ### Build and test
 
-The Gradle Wrapper is not committed yet. Install the required Gradle version, then run from the repository root:
+The repository includes the Gradle Wrapper pinned to Gradle 9.7.1 with a distribution SHA-256. From the repository root, run:
 
 ```bash
-gradle assembleRelease
-gradle testDebugUnitTest
+./gradlew assembleRelease
+./gradlew testDebugUnitTest
 ```
 
 Release signing requires the established project keystore and credentials. GitHub Actions restores these from repository secrets; the private keystore must not be committed. For local unsigned development builds, use the appropriate debug build task when needed.
 
-The CI workflow builds the signed, optimized ARM64 release APK and runs the unit test task. See [Actions](https://github.com/iNeonyne/LastHavenPlus/actions) for the latest run. Build reproducibility and wrapper setup are tracked in [issue #4](https://github.com/iNeonyne/LastHavenPlus/issues/4).
+The CI workflow builds the signed, optimized ARM64 release APK and runs the unit test task. See [Actions](https://github.com/iNeonyne/LastHavenPlus/actions) for the latest run. Remaining updater test coverage and current CI verification are tracked in [issue #4](https://github.com/iNeonyne/LastHavenPlus/issues/4).
 
 ### Official Cefrium references
 
@@ -89,7 +90,7 @@ Read [AGENTS.md](AGENTS.md) before making changes.
 - [GitHub Issues](https://github.com/iNeonyne/LastHavenPlus/issues) remain available for discussion and issue history.
 - [STATUS.md](STATUS.md) records current implementation state, verification and blockers.
 - [CHANGELOG-AGENTS.md](CHANGELOG-AGENTS.md) records meaningful implementation changes.
-- Work is integrated directly into main by the main orchestrator; this repository does not use pull requests.
-- TickTick is not used for this project.
+- Chaty is the sole integration and release coordinator. All accepted work is integrated directly into `beta`.
+- `main` remains stable. Promote a verified `beta` commit to `main` only after all release gates pass and the user explicitly approves.
 
 Keep documentation aligned with verified code and CI results. Mark device-only behavior as unverified until tested on physical ARM64 hardware.
