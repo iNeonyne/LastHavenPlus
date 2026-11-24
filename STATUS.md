@@ -40,7 +40,7 @@
 
 - Baseline from CI run #32: APK is 229,073,631 bytes (218.4 MiB).
 - Largest compressed entry: `lib/arm64-v8a/libcef.so`, 92.84 MiB (201.94 MiB uncompressed).
-- DEX payload: 22 DEX files totaling approximately 115 MiB; this is the main candidate for R8 code shrinking.
+- DEX payload: 22 DEX files totaling 104.4 MiB (109,487,264 bytes as stored in the APK); this is the main candidate for R8 code shrinking.
 - Chromium data files include `icudtl.dat` (8.85 MiB) and `resources.pak` (1.23 MiB); do not strip or replace engine assets without Cefrium-specific compatibility evidence.
 - Release-only R8 minification and resource shrinking are now enabled. A CI build produces an unsigned optimized release candidate and reports its exact APK size and DEX total alongside the debug APK; no optimized result is recorded until that job completes.
 - The release candidate is unsigned because no release keystore is configured; it is for size analysis only and is not installable/distributable as a production update.
