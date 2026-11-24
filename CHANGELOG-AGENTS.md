@@ -1,3 +1,13 @@
+## 2026-11-25 — Bound Android CI runner time and queue optimization verification
+
+- **Role:** Chaty / CI orchestration
+- **Files:** `.github/workflows/android.yml`
+- **Change:** Added a 30-minute timeout to the Android build job as a guard against stalled runner use. This is in addition to Markdown-only path filtering, shallow checkout for ordinary branch builds, and allowing Gradle daemon reuse.
+- **Why:** Bound worst-case runner consumption while the optimized workflow is being exercised.
+- **Verified:** Workflow change committed to `beta` as `91e21d4bde0a26b8d7cbfd9697615f32c2f57d21`. The commit is present and the workflow source contains the timeout. The Actions run result has not yet been retrieved; no successful run or time saving is claimed.
+- **Do not redo:** Keep all build, unit-test, signing, ABI and release ancestry checks. Do not skip CI for source, resource, Gradle, wrapper, manifest or workflow changes.
+- **Follow-ups:** Inspect the run triggered by this workflow commit, confirm the workflow parsed and completed, then compare elapsed time with run #308.
+
 ## 2026-11-25 — Optimize routine Android CI
 
 - **Role:** Chaty / CI orchestration
