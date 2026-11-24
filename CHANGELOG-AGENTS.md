@@ -2,11 +2,11 @@
 
 - **Role:** Main orchestrator / Android / CI
 - **Files:** `BsdiffPatchTest.kt`, `.github/workflows/android.yml`, `STATUS.md`, `CHANGELOG-AGENTS.md`
-- **Change:** Replaced deprecated `createTempDir()` in the BSDIFF reconstruction test with `Files.createTempDirectory(...).toFile()`. The next CI run (#79) passed the combined debug/release build and unit-test step. Its following package verification step failed, so CI diagnostics are being expanded to identify whether the failure is in APK presence, ABI contents, apksigner execution or the pinned signing-certificate comparison.
+- **Change:** Replaced deprecated `createTempDir()` in the BSDIFF reconstruction test with `Files.createTempDirectory(...).toFile()`. The next CI run (#79) passed the combined debug/release build and unit-test step. Its following package verification step failed, the diagnostic run showed both APKs contain only `arm64-v8a`, `apksigner` succeeds, and the actual certificate fingerprint exactly matches the pinned value. The failure is the AWK parser: splitting on `: ` selects the text after `V2 Signer:` rather than the SHA-256 field. The same faulty parser also gates differential patch generation against the previous release.
 - **Why:** Kotlin test compilation was blocking all release verification; after fixing it, the pipeline exposed a separate release-verification blocker.
 - **Verified:** CI run #79 confirms the build-and-test step succeeded and the release-verification step failed. The existing keystore restore step also succeeded. No APK artifact was uploaded and no release was published.
 - **Do not redo:** Keep the existing release key, pinned certificate, application ID, arm64-only configuration, manual update confirmation and full-APK fallback. Do not treat a successful compile as a verified updater.
-- **Follow-ups:** Add precise verification diagnostics, fix the failing check, rerun CI, then test an actual signed update on an arm64 device.
+- **Follow-ups:** Change both certificate parsers to extract the text after the literal certificate digest label, rerun CI, then test an actual signed update on an arm64 device.
 
 ## 2026-11-24 — Move project backlog to GitHub Issues and simplify contributor instructions
 
