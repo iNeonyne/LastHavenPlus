@@ -4,11 +4,11 @@ Instructions for every human or AI agent working in this repository.
 
 ## Mission
 
-Ship the simplest reliable Android app that opens the existing LastHaven WotLK private server in Cefrium and lets the user play.
+Ship the simplest reliable Android app that opens the existing LastHaven WotLK private server and lets the user play. The approved target engine is Mozilla GeckoView; the checked-in beta still uses Cefrium until issue #21 is completed.
 
 Default URL: `https://alt.lasthavens.com/play`
 
-Do not recreate, modify or develop the game. Do not add System WebView, GeckoView or any fallback engine. Do not add general-purpose browser features.
+Do not recreate, modify or develop the game. Replace Cefrium with GeckoView only through the reviewed migration in issues #20/#21. Do not add Android System WebView, keep a second/fallback browser engine, or add general-purpose browser features.
 
 ## Hard rules
 
@@ -16,7 +16,7 @@ Do not recreate, modify or develop the game. Do not add System WebView, GeckoVie
 2. **Work from a GitHub Issue.** Every planned task must have an issue with scope and acceptance criteria. Check existing open issues before creating another; do not recreate tasks already tracked.
 3. **Claim exclusive ownership.** Before editing, claim the issue, exact subtask and files under STATUS → Active work. Only one agent may own an issue/task at a time. The other agent must not implement, edit or independently investigate that same task until explicit handoff and tracker update. Separate subtasks on one broad issue require documented non-overlapping scope and files.
 4. **Document every meaningful change.** Update STATUS and append to CHANGELOG-AGENTS.md, including research failures and unverified assumptions.
-5. **Research Cefrium APIs first.** Never guess engine API names. Use official docs and samples. Record uncertain APIs as blockers.
+5. **Research GeckoView APIs first.** Never guess engine API names. Use current official Mozilla docs/Javadocs and samples. Follow the #20 decision record; record uncertain APIs as blockers. Do not change engine dependencies until the research and baseline-build prerequisites are complete.
 6. **Game first.** Get LastHaven loading and verify the core game flow before optional settings, theming, addon management or performance work.
 7. **arm64-v8a only.** Do not package x86, x86_64 or armeabi-v7a native libraries.
 8. **Stable app identity.** Do not change `applicationId` (`com.neonyne.lasthavenlauncher`) or the established release signing key.
@@ -24,33 +24,33 @@ Do not recreate, modify or develop the game. Do not add System WebView, GeckoVie
 10. **No speculative optimization.** Every performance change needs before/after measurements in STATUS.
 11. **Beta-first coordination.** `main` is the stable release branch; `beta` is the active development, integration and testing branch. Contributors work on separate task branches when parallel work is needed. They hand Chaty the completed branch/commit and verification report; they never push to `beta` or `main`. **Chaty alone reviews, integrates and pushes commits directly to `beta`. No pull requests are used.** Promote `beta` to `main` only after all release gates pass and the user explicitly approves. Never create a release or tag without the applicable approval.
 
-## Current engine decision
+## Browser engine transition
 
-- Cefrium SDK: `com.cefrium:cefrium-sdk:0.21.0`
-- Cefrium Compose wrapper: `com.cefrium:cefrium-compose:0.21.0`
-- Gradle plugin: `com.cefrium` version `0.21.0`
-- Chromium: `156.0.8078.96` (CEF branch 8078)
-- Maven registry: `https://codeberg.org/api/packages/cefrium/maven`
-- UI API: `com.cefrium.compose.CefriumView`, `rememberCefriumViewState`, `rememberCefriumNavigator`
+### Current checked-in beta
+- Current source uses `com.cefrium:cefrium-sdk:0.21.0` and `com.cefrium:cefrium-compose:0.21.0` with the Cefrium Gradle plugin.
+- Current Chromium runtime is documented as `156.0.8078.96`.
+- Current `MainActivity` directly hosts the Cefrium Compose view and automatically loads the configured game URL at startup.
+- These details describe the existing beta source only; they are not the target architecture.
 
-**Terminology:** Official Cefrium docs describe `CefriumView` as the Compose API. The classic Android View integration is `CefriumBrowser.createWithSurface(activity)`. Use the Compose `CefriumView` requested by this project unless an API-level blocker is found; do not silently switch rendering APIs.
+### Approved target
+- Replace Cefrium with Mozilla GeckoView as the sole embedded browser engine. Do not retain Cefrium as a fallback and do not add Android System WebView.
+- Issue #20 verifies current stable GeckoView coordinates/version, Java compatibility, runtime/session APIs, persistent profile behavior, required delegates, ARM64 packaging, APK size and game compatibility.
+- Issue #21 performs the engine replacement only after the beta build baseline and #20 decision record are accepted.
+- GeckoView's core model is one process-scoped `GeckoRuntime`, a managed `GeckoSession`, and a `GeckoView` host. Implement required public delegates for navigation, content/load/crash events, permissions, prompts, media, fullscreen and file/download flows as verified by the pinned API.
+- Mozilla's quick start documents Java 17 compatibility flags and Mozilla's Maven repository. Validate this requirement against the existing AGP/JDK toolchain before changing any build setting.
+- GeckoView retains its own browser profile. Do not assume Cefrium profile files or session data are portable. Keep old Cefrium profile data untouched until a verified preservation/cleanup policy is approved; warn that re-login may be required.
+- Pin only a verified stable GeckoView release in production builds. Do not use Beta/Nightly for release builds or hard-code a version based only on a third-party index.
 
-Official build requirements:
-- JDK 25, Gradle 9.7.1, AGP 9.4.0
-- compileSdk 37, minSdk 29
-- 4 GB Gradle heap
-- AGP 9 built-in Kotlin support; do not apply `org.jetbrains.kotlin.android`
-- Compose compiler Gradle plugin at a matching stable Kotlin version
-- Legacy JNI library packaging
+Official references:
+- https://firefox-source-docs.mozilla.org/mobile/android/geckoview/consumer/geckoview-quick-start.html
+- https://firefox-source-docs.mozilla.org/mobile/android/geckoview/contributor/geckoview-architecture.html
+- https://firefox-source-docs.mozilla.org/mobile/android/geckoview/consumer/web-extensions.html
+- https://firefox-source-docs.mozilla.org/mobile/android/geckoview/consumer/permissions.html
 
-The Codeberg Maven registry mirrors the current and previous releases only. Keep Cefrium pinned; check the official releases page before updating it. Update SDK, Compose wrapper and Gradle plugin together.
-
-References:
-- https://cefrium.com/quickstart/
-- https://cefrium.com/releases/
-- https://cefrium.com/guides/adopting-cefrium/
-- https://cefrium.com/docs/
-
+### Addon boundary
+- The current ZIP manager stores WoW 3.3.5a addon ZIPs and `.toc` metadata in the app-private addon library.
+- WoW addon ZIPs / `.toc` files are not Gecko WebExtensions. Do not conflate them or claim that importing a package means the game loaded it.
+- Reuse the existing archive inspector and package repository. Settings placement is #23; game loading/injection remains separate and requires a documented operator-approved contract.
 ## Named agent assignments
 
 Read [AGENT_WORK.md](AGENT_WORK.md) before starting delegated work. It defines task order, exclusive file ownership and handoff rules. Contributors may push only to their task branches and must provide Chaty the exact commit SHA and verification report. Chaty alone reviews and integrates accepted commits directly into `beta`. No pull requests. `main` remains stable; promote `beta` into `main` only after all release gates pass and the user explicitly approves.
@@ -59,9 +59,9 @@ Read [AGENT_WORK.md](AGENT_WORK.md) before starting delegated work. It defines t
 
 | Role | Owns | Must not duplicate |
 |---|---|---|
-| Architecture | App structure, package, boundaries | Cefrium API research |
+| Architecture | App structure, package, boundaries | GeckoView API research |
 | Android | Activity, manifest, lifecycle, orientation, permissions | Engine integration internals |
-| Cefrium | SDK version, Maven, view host, engine APIs | General app UI |
+| GeckoView | Stable SDK version, Maven, runtime/session host, engine APIs | General app UI |
 | QA | Build, arm64 device/emulator, web capability checks | Unmeasured performance changes |
 | Performance | Profiling and measured improvements after compatibility checks | Speculative flag lists |
 
@@ -127,7 +127,8 @@ Append changelog entries with date, role, files, change, reason, verification, d
 
 ## Storage and privacy
 
-- Use the Cefrium default persistent profile unless a documented requirement proves otherwise.
+- During transition, preserve the existing Cefrium profile; do not copy or delete it.
+- After #21, use the verified persistent GeckoView profile/session strategy documented in #20.
 - Do not place browser data in cache directories.
 - Never clear user data during startup, update or recovery.
 - No analytics SDKs, tracking or background services.
