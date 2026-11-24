@@ -8,11 +8,11 @@
 
 The stable v1.0.0 release is published. Beta still uses Cefrium and opens the game directly on startup. The approved target is GeckoView plus a home screen with Play and Settings. The previous addon manager has been removed; replacement work is blocked pending the owner's new specification.
 
-- **`beta` HEAD before final status checkpoint:** `ca2e5a521354bcd5e0a1b20bd998f30f924b9149`.
+- **`beta` HEAD at checkpoint:** `a9ead95dc2cd9603903913f1553d719b1b8d77d4`.
 
 - **`main` (stable):** `6211cf389b8d9f6ef98aa7818f47643bfdaf2053`.
-- **Latest observed post-removal CI:** [run #286](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45497268893), ID `45497268893`, on commit `f456a663a119c424af17c1893a11ea705b4bb904`; cancelled.
-- **Current exact head CI:** no completed build evidence was observed for the latest documentation/work-log head at the time of this update.
+- **Latest observed post-removal CI:** [run #292](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45497391344), ID `45497391344`, on commit `a9ead95dc2cd9603903913f1553d719b1b8d77d4`; pending.
+- **Current exact head CI:** no completed build evidence was observed for `a9ead95dc2cd9603903913f1553d719b1b8d77d4` at the time of this update.
 - **Previous source failure:** [run #247](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45493653394) failed Kotlin compilation in `AddonManagerDialog.kt`. That source file and its app entry point have since been removed. Do not treat the blocker as fixed until a new build completes.
 - **Latest successful beta CI run found:** [#179](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45183038304), commit `593fec6b048790cbc30a7fbadf571b749069abea`; historical only.
 - **Published release:** [v1.0.0](https://github.com/iNeonyne/LastHavenPlus/releases/tag/v1.0.0), with the signed ARM64 APK and update manifest. It does not verify current beta.
