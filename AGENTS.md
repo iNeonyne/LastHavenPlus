@@ -89,7 +89,7 @@ Agents may work in parallel only on disjoint files/surfaces. The main integrator
 - [ ] Measure cold start, frame pacing, memory, rendering latency and APK size before changing performance settings
 
 ### P3 — Release
-- [ ] Create and securely back up the release signing key
+- [x] Create and securely back up the release signing key
 - [ ] Build release APK/AAB for arm64 only
 - [ ] Verify same-key in-place update preserves game data
 
