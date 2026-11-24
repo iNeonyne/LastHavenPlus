@@ -6,7 +6,7 @@
 - Launch the existing LastHaven WotLK game in the pinned Cefrium/Chromium engine.
 - Add a Settings & usage view with installed APK size, Cefrium profile storage (when available), and app cache size.
 - Show app network bytes received and sent, including current-session and since-device-boot totals where Android supports them.
-- Add local app, Cefrium lifecycle and updater diagnostics with a log viewer and explicit share action.
+- Add local app, Cefrium lifecycle and updater diagnostic events with a log viewer and explicit share action.
 
 ### Updates and reliability
 - Check for stable GitHub Releases and let the user choose whether to download an update.
