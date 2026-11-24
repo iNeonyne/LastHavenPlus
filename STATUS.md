@@ -33,9 +33,14 @@ v1.0.0 was published on 2026-11-24. Physical-device gameplay, persistence and sa
 | Device test | Not run | No connected arm64 device/emulator available to this run |
 | Release signing | Configured; verification pending | Existing `lasthavenplus` key restores successfully in run #79; Run #82 printed the expected certificate fingerprint; CI parser fix and a passing verification rerun are pending |
 
-## Agent contribution workflow
+## Branch and agent workflow
 
-Ploy submits each completed assignment from a dedicated feature branch through a pull request targeting `main`. Ploy must not push directly to `main` or edit central tracking files. Chaty reviews the full diff, verifies relevant CI/tests and maintains the repository trackers. **No PR is merged until the user explicitly approves it.** Chaty may continue making separate orchestrator commits directly to `main`.
+- **`main` — stable release branch.** Do not use it for routine development.
+- **`beta` — shared integration and testing branch**, reset to the current `main` baseline on 2026-11-24.
+- **Chaty** pushes orchestrator changes directly to `beta`.
+- **Ploy** creates a dedicated task branch from the latest `beta`, pushes her work and opens a PR targeting `beta`. She must not push directly to `beta` or `main`.
+- Chaty reviews Ploy's complete diff and CI, requests corrections if needed, updates the trackers and may merge accepted PRs into `beta`.
+- Promote `beta` into `main` only after beta build/features have been verified and the user explicitly approves the promotion. No automatic merges, tags or releases.
 
 ## Work tracking
 
