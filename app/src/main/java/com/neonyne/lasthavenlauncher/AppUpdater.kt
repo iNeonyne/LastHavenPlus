@@ -185,7 +185,7 @@ object AppUpdater {
                                 version = latestVersion,
                                 versionCode = versionCode,
                                 releaseNotes = release.optString("body").ifBlank {
-                                    "A newer version of LastHavenLauncher is available."
+                                    "A newer version of LastHavenPlus is available."
                                 },
                                 downloadUrl = fullUrl,
                                 sha256 = fullSha,
@@ -409,7 +409,7 @@ object AppUpdater {
             instanceFollowRedirects = true
             setRequestProperty("Accept", "application/vnd.github+json")
             setRequestProperty("X-GitHub-Api-Version", "2022-11-28")
-            setRequestProperty("User-Agent", "LastHavenLauncher-Android")
+            setRequestProperty("User-Agent", "LastHavenPlus-Android")
         }
 
     private fun isValidVersion(version: String): Boolean = VERSION_PATTERN.matches(version)
