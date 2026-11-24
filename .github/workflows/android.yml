@@ -9,6 +9,11 @@ on:
     paths-ignore:
       - "*.md"
       - "**/*.md"
+  pull_request:
+    branches: [beta]
+    paths-ignore:
+      - "*.md"
+      - "**/*.md"
   workflow_dispatch:
     inputs:
       release_version:
@@ -24,6 +29,53 @@ permissions:
   contents: write
 
 jobs:
+  # PR validation is intentionally read-only and does not access signing secrets
+  # or upload/publish APKs. The normal beta push pipeline performs signed checks.
+  pull_request_validation:
+    if: github.event_name == 'pull_request'
+    name: PR build and unit tests (unsigned)
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+    steps:
+      - name: Check out PR source
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 25
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "25"
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+        with:
+          packages: platform-tools
+
+      - name: Install Android 37.2 platform
+        run: sdkmanager "platforms;android-37.2" "build-tools;37.0.0"
+
+      - name: Set up Gradle Wrapper
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: wrapper
+          validate-wrappers: true
+
+      - name: Build unsigned release variant and run unit tests
+        run: ./gradlew assembleRelease testDebugUnitTest --stacktrace
+
+      - name: Upload unit-test reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pr-unit-test-reports-${{ github.event.pull_request.number }}
+          path: |
+            app/build/test-results/testDebugUnitTest/*.xml
+            app/build/reports/tests/testDebugUnitTest/
+          if-no-files-found: ignore
+          retention-days: 14
+
   create_tag:
     name: Create release tag
     if: (github.event_name == 'workflow_dispatch' && inputs.release_version != '' && github.ref == 'refs/heads/main') || (github.event_name == 'push' && github.ref == 'refs/heads/main' && contains(github.event.head_commit.message, '[release:'))
@@ -78,7 +130,7 @@ jobs:
 
   build:
     needs: create_tag
-    if: always() && (needs.create_tag.result == 'success' || needs.create_tag.result == 'skipped')
+    if: github.event_name != 'pull_request' && always() && (needs.create_tag.result == 'success' || needs.create_tag.result == 'skipped')
     name: Build and test (arm64)
     runs-on: ubuntu-latest
     timeout-minutes: 30
