@@ -1,3 +1,13 @@
+## 2026-11-24 — Handle Android package-install permission
+
+- **Role:** Android / updater integration
+- **Files:** `MainActivity.kt`
+- **Change:** Added the Android unknown-app installation settings handoff. If the user has not allowed this launcher to request package installs, the app opens the per-app system setting and resumes the pending installer handoff after permission is granted.
+- **Why:** Android blocks APK installation from apps that have not been explicitly allowed by the device owner.
+- **Verified:** Source path reviewed; CI run #31 is pending.
+- **Do not redo:** Do not attempt silent installation or bypass Android's package installer confirmation.
+- **Follow-ups:** Verify permission handoff and same-key update on a physical device.
+
 ## 2026-11-24 — Add opt-in GitHub Releases updater
 
 - **Role:** Main integrator / Android
