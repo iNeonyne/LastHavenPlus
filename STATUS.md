@@ -5,6 +5,8 @@
 
 ## Snapshot
 
+The physical-device verification issue #5 is open again. No public release is approved until the gameplay, persistence and same-key update checklist is completed on real arm64 hardware.
+
 | Area | State | Evidence / notes |
 |---|---|---|
 | Repository | Ready | Greenfield project files committed to main |
