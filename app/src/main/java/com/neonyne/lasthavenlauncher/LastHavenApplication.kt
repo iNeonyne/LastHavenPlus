@@ -12,5 +12,6 @@ class LastHavenApplication : Application() {
         // lazily when the first browser is created, so this runs early enough.
         val isDebuggable = applicationInfo.flags and ApplicationInfo.FLAG_DEBUGGABLE != 0
         Cefrium.setRemoteDebuggingEnabled(isDebuggable)
+        Diagnostics.info(this, "Application", "Process started; remote debugging enabled=$isDebuggable")
     }
 }
