@@ -36,6 +36,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
@@ -116,6 +117,14 @@ class MainActivity : ComponentActivity() {
                 WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
         }
     }
+
+    if (showSettingsDialog) {
+        SettingsDialog(context, usageMeter) { showSettingsDialog = false }
+    }
+
+    if (showDiagnosticsDialog) {
+        DiagnosticsDialog(context) { showDiagnosticsDialog = false }
+    }
 }
 
 @OptIn(CefriumExperimental::class)
@@ -127,12 +136,16 @@ private fun LastHavenApp(
     onDownloadUpdate: (AppUpdateInfo, Boolean, (Result<Uri>) -> Unit) -> Unit,
     onInstallUpdate: (Uri) -> Unit,
 ) {
+    val context = LocalContext.current
+    val usageMeter = remember { AppUsageMeter(context) }
     val gameUrl = remember {
         preferences.getString(KEY_GAME_URL, DEFAULT_GAME_URL) ?: DEFAULT_GAME_URL
     }
     val browserState = rememberCefriumViewState(gameUrl)
     val navigator = rememberCefriumNavigator()
     var showExitPrompt by remember { mutableStateOf(false) }
+    var showSettingsDialog by remember { mutableStateOf(false) }
+    var showDiagnosticsDialog by remember { mutableStateOf(false) }
     var pageLoadFailed by remember { mutableStateOf(false) }
     var availableUpdate by remember { mutableStateOf<AppUpdateInfo?>(null) }
     var updateMessage by remember { mutableStateOf<String?>(null) }
@@ -171,7 +184,7 @@ private fun LastHavenApp(
                                 error: CefriumLoadError,
                             ) {
                                 pageLoadFailed = true
-                                Log.w(TAG, "Main-frame navigation failed: $error")
+                                Diagnostics.warn(context, TAG, "Main-frame navigation failed: $error")
                             }
 
                             override fun onLoadingStateChanged(
@@ -186,7 +199,7 @@ private fun LastHavenApp(
                                         "navigator.storage && navigator.storage.persist " +
                                             "? navigator.storage.persist() : Promise.resolve(false)",
                                         ValueCallback { result ->
-                                            Log.i(TAG, "Persistent storage request result: $result")
+                                            Diagnostics.info(context, TAG, "Persistent storage request result: $result")
                                         },
                                     )
                                 }
@@ -360,6 +373,14 @@ private fun LastHavenApp(
                             }
                         }
                     }) { Text(if (isCheckingUpdate) "Checking…" else "Check for updates") }
+                    TextButton(onClick = {
+                        showExitPrompt = false
+                        showSettingsDialog = true
+                    }) { Text("Settings & usage") }
+                    TextButton(onClick = {
+                        showExitPrompt = false
+                        showDiagnosticsDialog = true
+                    }) { Text("App & debug logs") }
                     TextButton(onClick = {
                         showExitPrompt = false
                         navigator.reload()
