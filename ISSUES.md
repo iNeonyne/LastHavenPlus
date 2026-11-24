@@ -596,7 +596,7 @@ Docs-only research. Verify current stable GeckoView coordinates/version through 
 
 ## Issue 21 — P0 — Replace Cefrium with Mozilla GeckoView
 
-**Current audit (2026-11-25):** The beta source now uses GeckoView 160 and no Cefrium production integration. CI run #308 passed the release build and unit-test task for its tested commit. Physical ARM64 gameplay, Gecko profile persistence, permissions/media and update behavior remain unverified. Do not close this issue based on CI alone.
+**Current audit (2026-11-25):** The beta source now uses GeckoView 160 and no Cefrium production integration. CI run #310 passed the signed release build, unit-test task, signing-certificate and ARM64-only ABI checks for its tested commit. Physical ARM64 gameplay, Gecko profile persistence, permissions/media and update behavior remain unverified. Do not close this issue based on CI alone.
 
 
 **GitHub:** https://github.com/iNeonyne/LastHavenPlus/issues/21  
