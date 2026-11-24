@@ -137,7 +137,7 @@ class AddonLibraryRepository(context: Context) {
         val archiveAlreadyExists = finalArchive.isFile
         if (!archiveAlreadyExists && !stagedFile.renameTo(finalArchive)) {
             stagedFile.copyTo(finalArchive, overwrite = false)
-            if (!stagedFile.delete()) finalArchive.delete()
+            stagedFile.delete()
         }
 
         val retained = if (replaceExisting) {
