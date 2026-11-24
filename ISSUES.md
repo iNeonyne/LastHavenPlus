@@ -25,6 +25,20 @@
 
 ---
 
+## How new work is added
+
+GitHub Issues are the canonical records for each task's discussion, owner, dependencies and lifecycle. This file is the project-wide index and roadmap checklist. The GitHub issue number is the only task ID; do not invent a parallel numbering scheme.
+
+**Chaty handles intake and triage.** For every new request, search open and closed issues and this index for duplicates before creating anything. Reuse or update an existing issue whenever it already covers the requested outcome. New issues must use one of the forms in `.github/ISSUE_TEMPLATE/` and include a clear outcome, bounded scope, non-goals, testable acceptance criteria, verification plan and dependencies. Only then add a concise entry here.
+
+Priority guide: P0 = core/release blocker or data/security risk; P1 = important reliability or planned release capability; P2 = normal improvement; P3 = optional/low urgency. Priority does not guarantee scheduling or inclusion in a release. Set a target release/milestone only after triage.
+
+Lifecycle: Needs triage → Ready → Active → Review → Done; Blocked and Deferred are explicit side states. An issue is not Ready just because it is open. One active owner per issue. Owner, exact subtask, permitted files, branch and dependencies must be recorded in `STATUS.md` before editing. Ploy only works on the assignment in `AGENT_WORK.md`; Chaty owns issue creation, triage and central tracking.
+
+Close only when every acceptance criterion is met and evidence is recorded. If a PR only partially addresses an issue, reference it without auto-closing. Record blockers and decisions on the GitHub issue as well as the repository status. Never claim physical-device verification from CI alone.
+
+---
+
 ## Issue 4 — P0.1 — Improve build reproducibility and updater test coverage
 
 **GitHub:** https://github.com/iNeonyne/LastHavenPlus/issues/4
