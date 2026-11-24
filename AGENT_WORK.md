@@ -5,7 +5,7 @@ This file is the working agreement for the two active coding agents. The reposit
 ## Agent identities
 
 - **Ploy** — repository-only coding agent. She can read and edit repository files but cannot inspect GitHub Issues, Pull Requests, Actions, releases or secrets. This file and `ISSUES.md` are her task brief.
-- **Chaty** — main orchestrator. Owns project coordination, issue/status accuracy, review, integration, CI/release coordination and direct pushes to `main`.
+- **Chaty** — main orchestrator. Owns project coordination, issue/status accuracy, review, integration, CI/release coordination and direct pushes to `beta`. `main` is the stable release branch.
 
 ## Rules for both agents
 
@@ -16,8 +16,10 @@ This file is the working agreement for the two active coding agents. The reposit
 - Do not create releases, tags, or alter signing secrets.
 - Do not use TickTick.
 - Keep work on separate branches/worktrees and avoid simultaneous edits to the same files.
-- Ploy creates a dedicated feature branch, pushes her task commits and opens a pull request with **base branch `main`** when her assignment is ready. She must never push directly to `main`.
-- After Ploy opens a PR targeting `main`, Chaty inspects the complete PR diff, runs or verifies relevant checks, reports defects or accepts the work, and updates `ISSUES.md`, `STATUS.md` and `CHANGELOG-AGENTS.md`. Chaty does not merge automatically: the user must explicitly approve the PR before Chaty merges it.
+- **`main` is stable; `beta` is the shared integration/testing branch.** Chaty pushes orchestrator work directly to `beta`.
+- Ploy creates a dedicated feature branch from the latest `beta`, pushes her task commits and opens a PR with **base branch `beta`** when her assignment is ready. She must never push directly to `beta` or `main`.
+- After Ploy opens a PR targeting `beta`, Chaty inspects the complete diff, runs or verifies relevant checks, requests fixes as needed, updates `ISSUES.md`, `STATUS.md` and `CHANGELOG-AGENTS.md`, and may merge the PR into `beta` once it passes review and required checks.
+- Do not merge `beta` into `main` until beta build/features have been verified and the user explicitly approves the promotion. No automatic merges, tags or releases.
 - Report exact tests and results. Device-only checks must remain marked pending until performed on physical ARM64 hardware.
 - Chaty alone updates the central project status and changelog after reviewing/integrating Ploy's work.
 
@@ -42,11 +44,11 @@ Acceptance:
 - Relevant automated checks pass.
 - TalkBack and focus-order verification are explicitly left pending; Ploy cannot claim physical-device verification.
 
-File ownership while this task is active: Compose UI files required for semantics and their directly related tests. Do not modify `STATUS.md`, `ISSUES.md`, `CHANGELOG-AGENTS.md` or `AGENTS.md`; Chaty handles central tracking. When finished, push the task branch and open a PR targeting `main`; include the PR link in the handoff report for Chaty to review.
+File ownership while this task is active: Compose UI files required for semantics and their directly related tests. Do not modify `STATUS.md`, `ISSUES.md`, `CHANGELOG-AGENTS.md` or `AGENTS.md`; Chaty handles central tracking. When finished, push the task branch and open a PR targeting `beta`; include the PR link in the handoff report for Chaty to review.
 
 ### P2 — Issue #11: diagnostics test coverage
 
-Start only after Chaty accepts #13.
+Start only after Chaty accepts and integrates #13 into `beta`.
 
 Scope:
 - Expand unit tests for redaction of passwords, cookies, authorization values, tokens, session identifiers and sensitive URL parameters.
@@ -60,11 +62,11 @@ Acceptance:
 - Tests are deterministic and do not require network access or a physical device.
 - Any discovered production defect is fixed within the diagnostics files only and documented in the handoff.
 
-File ownership while active: diagnostics logger and its unit tests only. Push the completed task branch and open a PR targeting `main`; Chaty then reviews and updates tracking.
+File ownership while active: diagnostics logger and its unit tests only. Push the completed task branch and open a PR targeting `beta`; Chaty then reviews and updates tracking.
 
 ### P3 — Issue #8: addon repository tests
 
-Start only after Chaty accepts #11 and explicitly confirms this task is unblocked.
+Start only after Chaty accepts and integrates #11 into `beta` and explicitly confirms this task is unblocked.
 
 Scope:
 - Add tests for duplicate imports, replacement confirmation/rollback, package storage limits, export round-trip, index recovery and failed writes.
@@ -106,4 +108,4 @@ At the end of each assignment, Ploy provides:
 - Known limitations and anything not verified.
 - Any follow-up decision needed from Chaty.
 
-Ploy stops after opening the PR and waits for Chaty's review. She does not start the next task automatically.
+Ploy stops after opening the PR and waits for Chaty's review and merge into `beta`. She does not start the next task automatically.
