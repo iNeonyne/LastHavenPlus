@@ -1,4 +1,4 @@
-name: Android build and signed releases
+name: LastHavenPlus Android build and signed releases
 
 on:
   push:
