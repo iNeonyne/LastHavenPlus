@@ -18,6 +18,10 @@
 | Immersive host | Implemented, unverified | Fullscreen flags, landscape sensor orientation, screen stays awake |
 | Loading / retry | Implemented, unverified | Compose loading state, main-frame load error and renderer termination retry |
 | Persistent storage request | Implemented, unverified | Calls `navigator.storage.persist()` after the first completed document load |
+| Settings & usage | Implemented; CI/device verification pending | Shows installed APK bytes, Cefrium profile directory size when present, app/code cache size and refresh action |
+| Network usage | Implemented; device verification pending | Android per-UID RX/TX counters since boot and app-session baseline; includes game + updater, local-only |
+| Diagnostics | Implemented; CI verification pending | Bounded rotating local log, lifecycle/Cefrium/updater events, redaction, viewer/share and redaction unit test |
+| Exit menu | Implemented; device verification pending | Back opens menu with Return to game, Reload, Settings & usage, logs, update check and Leave |
 | Browser profile | Default persistent | Cefrium default profile stores cookies, LocalStorage, IndexedDB, service workers and cache in app-private `app_cefrium`; not the Android cache directory |
 | Remote debugging | Debug builds only | `Cefrium.setRemoteDebuggingEnabled` enabled from Application.onCreate before first browser creation |
 | Latest CI build | **Passing** | Run #85, commit `74353df`; debug and signed release builds, BSDIFF unit test, ARM64-only ABI checks, pinned release certificate verification, APK size report and artifact uploads all succeeded |
@@ -35,6 +39,9 @@ GitHub Issues are the canonical backlog. Do not copy open task checklists into t
 - [#6 — Minimal settings and safe storage controls](https://github.com/iNeonyne/LastHavenPlus/issues/6)
 - [#7 — Performance and APK-size measurements](https://github.com/iNeonyne/LastHavenPlus/issues/7)
 - [#8 — Deferred addon manager](https://github.com/iNeonyne/LastHavenPlus/issues/8)
+- [#9 — Compact navigation and exit menu](https://github.com/iNeonyne/LastHavenPlus/issues/9)
+- [#10 — Network data usage](https://github.com/iNeonyne/LastHavenPlus/issues/10)
+- [#11 — Privacy-conscious app and updater logs](https://github.com/iNeonyne/LastHavenPlus/issues/11)
 
 ## App updater
 
@@ -89,9 +96,9 @@ The web fetch of the game URL returns only “Loading... Please enable JavaScrip
 
 | Owner | Surface | State |
 |---|---|---|
-| Main integrator | Issue #6 — settings, storage reporting and safe controls | Claimed; inspect Android/Cefrium storage boundaries before implementation |
-| Main integrator | Issue #10 — network usage reporting | Claimed; use local Android per-UID counters, no telemetry |
-| Main integrator | Issue #11 — local diagnostics and export | Claimed; redact sensitive data and keep logs bounded |
+| Main integrator | Issues #6 and #9 — settings, usage panel and exit menu | Initial implementation committed; CI/device verification pending; remaining settings/cache actions not implemented |
+| Main integrator | Issue #10 — network usage reporting | Per-UID RX/TX counters implemented; explicitly app-wide (game + updater); device verification pending |
+| Main integrator | Issue #11 — local diagnostics and export | Local rotating logs, redaction, viewer/share and unit test committed; CI verification pending |
 
 
 ## Blockers
@@ -116,8 +123,9 @@ No runtime performance changes have been made. APK size baseline is measured; es
 
 ## Next actions
 
-1. Complete [#4 — build reproducibility, updater tests and CI verification](https://github.com/iNeonyne/LastHavenPlus/issues/4).
-2. Complete [#5 — physical-device gameplay, persistence and update verification](https://github.com/iNeonyne/LastHavenPlus/issues/5).
-3. Start [#6 — minimal settings and safe storage controls](https://github.com/iNeonyne/LastHavenPlus/issues/6) only after the core game path is verified.
-4. Defer [#7 — performance and APK-size measurements](https://github.com/iNeonyne/LastHavenPlus/issues/7) until a repeatable gameplay baseline exists.
-5. Keep [#8 — addon manager](https://github.com/iNeonyne/LastHavenPlus/issues/8) deferred until the core launcher is stable.
+1. Verify CI for the latest main commits and resolve any compilation/test failures.
+2. Complete [#4 — build reproducibility, updater tests and CI verification](https://github.com/iNeonyne/LastHavenPlus/issues/4).
+3. Complete [#5 — physical-device gameplay, persistence and update verification](https://github.com/iNeonyne/LastHavenPlus/issues/5).
+4. Finish #6/#9/#10/#11 after CI and device validation; keep unverified behavior marked pending.
+5. Defer [#7 — performance and APK-size measurements](https://github.com/iNeonyne/LastHavenPlus/issues/7) until a repeatable gameplay baseline exists.
+6. Keep [#8 — addon manager](https://github.com/iNeonyne/LastHavenPlus/issues/8) deferred until the core launcher is stable.
