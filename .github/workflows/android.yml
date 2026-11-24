@@ -271,5 +271,6 @@ jobs:
         with:
           tag_name: ${{ github.ref_name }}
           generate_release_notes: true
+          draft: true
           files: release-assets/*
           fail_on_unmatched_files: true
