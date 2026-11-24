@@ -20,6 +20,15 @@ android {
         }
     }
 
+    buildTypes {
+        release {
+            // Keep debug builds easy to inspect; optimize only distributable builds.
+            isMinifyEnabled = true
+            isShrinkResources = true
+            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"))
+        }
+    }
+
     buildFeatures {
         compose = true
     }
