@@ -23,6 +23,7 @@ The physical-device verification issue #5 is open again. No public release is ap
 | Settings & usage | Implemented; CI/device verification pending | Shows installed APK bytes, Cefrium profile directory size when present, app/code cache size and refresh action |
 | Network usage | Implemented; device verification pending | Android per-UID RX/TX counters since boot and app-session baseline; includes game + updater, local-only |
 | Diagnostics | Implemented; CI verification pending | Bounded rotating local log, lifecycle/Cefrium/updater events, redaction, viewer/share and redaction unit test |
+| Addon manager | Research started; game injection gated | Official Lasthavens documentation says custom addons are Windows-desktop-only; browser-client injection requires explicit operator authorization or a supported API. Local ZIP library can be developed independently. |
 | Exit menu | Implemented; device verification pending | Back opens menu with Return to game, Reload, Settings & usage, logs, update check and Leave |
 | Browser profile | Default persistent | Cefrium default profile stores cookies, LocalStorage, IndexedDB, service workers and cache in app-private `app_cefrium`; not the Android cache directory |
 | Remote debugging | Debug builds only | `Cefrium.setRemoteDebuggingEnabled` enabled from Application.onCreate before first browser creation |
@@ -40,7 +41,7 @@ GitHub Issues are the canonical backlog. Do not copy open task checklists into t
 - [#5 — Physical-device gameplay, persistence and update verification](https://github.com/iNeonyne/LastHavenPlus/issues/5)
 - [#6 — Minimal settings and safe storage controls](https://github.com/iNeonyne/LastHavenPlus/issues/6)
 - [#7 — Performance and APK-size measurements](https://github.com/iNeonyne/LastHavenPlus/issues/7)
-- [#8 — Deferred addon manager](https://github.com/iNeonyne/LastHavenPlus/issues/8)
+- [#8 — Local ZIP addon manager (game integration gated)](https://github.com/iNeonyne/LastHavenPlus/issues/8)
 - [#9 — Compact navigation and exit menu](https://github.com/iNeonyne/LastHavenPlus/issues/9)
 - [#10 — Network data usage](https://github.com/iNeonyne/LastHavenPlus/issues/10)
 - [#11 — Privacy-conscious app and updater logs](https://github.com/iNeonyne/LastHavenPlus/issues/11)
@@ -101,6 +102,7 @@ The web fetch of the game URL returns only “Loading... Please enable JavaScrip
 | Main integrator | Issues #6 and #9 — settings, usage panel and exit menu | Initial implementation committed; CI/device verification pending; remaining settings/cache actions not implemented |
 | Main integrator | Issue #10 — network usage reporting | Per-UID RX/TX counters implemented; explicitly app-wide (game + updater); device verification pending |
 | Main integrator | Issue #11 — local diagnostics and export | Local rotating logs, redaction, viewer/share and unit test committed; CI verification pending |
+| Main integrator | Issue #8 — local ZIP addon manager | Research/issue scope updated; waiting for explicit LastHaven operator authorization or a supported browser-addon API before implementing game injection. Local archive-library work can proceed without touching game internals. |
 
 
 ## Blockers
