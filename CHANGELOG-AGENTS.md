@@ -1,3 +1,13 @@
+## 2026-11-24 — Standardize issue intake and lifecycle for future work
+
+- **Role:** Chaty / project coordination
+- **Files:** `.github/ISSUE_TEMPLATE/*`, `AGENTS.md`, `AGENT_WORK.md`, `ISSUES.md`, `STATUS.md`, `CHANGELOG-AGENTS.md`
+- **Change:** Added structured GitHub issue forms for bug reports, feature requests and engineering tasks. Documented duplicate checks across open/closed issues, required scope and testable acceptance criteria, priority and release triage, dependencies, explicit lifecycle states, one-owner enforcement, PR linking and evidence-based closure. Clarified Chaty owns issue intake/central tracking and Ploy only executes assigned work.
+- **Why:** Make it safe to grow the backlog without duplicate tasks, unclear ownership, vague requests or issues being closed before they are truly complete.
+- **Verified:** Existing GitHub issue inventory reviewed (#4–#18); no new issue created and no existing issue state changed. Templates added to `beta`.
+- **Do not redo:** Do not introduce parallel task IDs or allow Ploy to create/assign/close issues. Do not treat open as ready or priority as a release commitment.
+- **Follow-ups:** Apply the templates to future requests; reconcile existing issue metadata only when its scope/ownership is next reviewed.
+
 ## 2026-11-24 — Make roadmap beta-first and enforce exclusive task ownership
 
 - **Role:** Chaty / project coordination
