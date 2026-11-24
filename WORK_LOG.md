@@ -48,3 +48,15 @@
 - **Unverified / risks:** ...
 - **Next safe action:** ...
 ```
+### 2026-11-25 — Remove legacy addon manager and prepare GeckoView agent references
+
+- **Issue/task:** owner instruction; #9, #11, #20, #21, #22, #23.
+- **Branch and starting commit:** `beta`, `8d624ccf9dc85be1428e352c2fe9c22dfdc69310`.
+- **Files inspected:** `MainActivity.kt`, all four legacy addon manager source/test files, README, AGENTS, AGENT_WORK, STATUS, ISSUES, CHANGELOG-AGENTS and workflow definition.
+- **Files changed:** removed Addon manager state/menu/dialog from `MainActivity.kt`; deleted `AddonArchiveInspector.kt`, `AddonLibraryRepository.kt`, `AddonManagerDialog.kt`, `AddonArchiveInspectorTest.kt`; added `docs/GECKOVIEW_MIGRATION.md`; added this `WORK_LOG.md`; updated README, AGENTS, AGENT_WORK, STATUS, ISSUES and relevant GitHub issue bodies.
+- **Action:** removed the legacy addon manager implementation at the owner's request. The new addon manager is blocked until the owner provides requirements. No user app-private package data was targeted by these GitHub repository file deletions.
+- **Commits:** MainActivity removal `255e2a784ad5f03338ee183d181954ab8b242bb3`; deleted archive inspector `2a49d2a4ee53d01f46ed803a3264fc32c2611b9f`; deleted repository `7b96a1d62396211a87cddb0a4130f4cb3f605305`; deleted dialog `6d2f94d8ccf77333f9b55fa5c73922fd868720f7`; deleted inspector tests `8ac4b79ba5713cd4f313b6d4898b654cfc5d42a5`; migration guide `077aca85fbf350950a595afa193d16d86474f2fc`; work log `3a29c59fd7e80d1a0d53bc67eb7a09c466e6cef6`.
+- **Commands/checks:** inspected recursive beta tree; confirmed no legacy addon implementation/test paths remain. Inspected official Mozilla GeckoView quick start, architecture, API/Javadocs, permissions and WebExtension docs. Latest post-removal beta CI run #268 (ID `45496604607`) was pending at last inspection.
+- **Result:** source removal committed; build/test result not yet known. No app build is claimed successful. No GeckoView production code/dependency has been added.
+- **Unverified / risks:** whether app compiles after removing manager; whether any unsearched dangling references remain; exact stable GeckoView version and build compatibility; all physical-device/browser-profile behavior.
+- **Next safe action:** check run #268 and inspect all remaining source references; fix only actual compile issues. Ploy's active easy task is #9 menu accessibility, followed by #11 diagnostics tests. #23 remains blocked pending owner requirements.
