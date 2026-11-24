@@ -28,7 +28,7 @@ object Diagnostics {
             if (file.length() >= MAX_LOG_BYTES) {
                 val previous = File(directory, "$LOG_FILE.1")
                 previous.delete()
-                file.renameTo(previous)
+                if (!file.renameTo(previous)) file.writeText("")
             }
             val safeMessage = sanitize(message).take(4_000)
             val timestamp = SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS", Locale.US).format(Date())
@@ -40,6 +40,7 @@ object Diagnostics {
     fun warn(context: Context, tag: String, message: String) = log(context, "W", tag, message)
     fun error(context: Context, tag: String, message: String) = log(context, "E", tag, message)
 
+    @Synchronized
     fun read(context: Context): String {
         val directory = File(context.applicationContext.filesDir, "diagnostics")
         val previous = File(directory, "$LOG_FILE.1").takeIf { it.isFile }?.readText().orEmpty()
@@ -47,6 +48,7 @@ object Diagnostics {
         return (previous + current).takeLast(MAX_READ_CHARS).ifBlank { "No diagnostic entries yet." }
     }
 
+    @Synchronized
     fun clear(context: Context) {
         val directory = File(context.applicationContext.filesDir, "diagnostics")
         File(directory, LOG_FILE).delete()
