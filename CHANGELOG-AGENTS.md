@@ -1,3 +1,13 @@
+## 2026-11-24 — Move project backlog to GitHub Issues and simplify contributor instructions
+
+- **Role:** Main orchestrator / documentation
+- **Files:** `README.md`, `AGENTS.md`, `STATUS.md`, `CHANGELOG-AGENTS.md`
+- **Change:** Consolidated the remaining roadmap into GitHub Issues #4–#8. Added issues for minimal settings/safe storage controls, measured performance and APK-size work, and the deferred addon manager. Updated the README to link to the issue backlog, removed the duplicated shared TODO checklist from AGENTS.md, and clarified issue claiming, checklist maintenance, direct-to-main integration and issue closure rules. STATUS now links to tracked work and records only current progress, evidence and blockers.
+- **Why:** Keep one canonical task list, avoid stale duplicated checklists, and make work ownership and completion visible in GitHub.
+- **Verified:** Read current main-branch documentation and open issues; confirmed Gradle Wrapper files are absent and retained that task in issue #4. Created issues #6, #7 and #8. Documentation changes are committed directly to main.
+- **Do not redo:** Do not reintroduce a second TODO checklist in README, AGENTS or STATUS. Do not create duplicate issues for tasks already covered by #4 or #5.
+- **Follow-ups:** Work from the open issue checklists; close issues only after their acceptance criteria are verified.
+
 ## 2026-11-24 — Harden differential update fallback and patch parsing
 
 - **Role:** Main integrator / Android
