@@ -1,3 +1,13 @@
+## 2026-11-24 — Make roadmap beta-first and enforce exclusive task ownership
+
+- **Role:** Chaty / project coordination
+- **Files:** `AGENTS.md`, `AGENT_WORK.md`, `STATUS.md`, `ISSUES.md`, `README.md`, `CHANGELOG-AGENTS.md`
+- **Change:** Reworked the roadmap around beta integration and explicit stable-main promotion gates. Defined the next stable release as conditional on scope freeze, CI, signed ARM64 artifact verification, regression testing, applicable physical-device checks, beta soak and explicit user approval. Added exclusive issue/task ownership and clarified that Ploy's #13 → #11 → #8 sequence pauses overlapping Chaty work until handoff.
+- **Why:** Make release timing evidence-based and prevent duplicate/conflicting work.
+- **Verified:** Documentation consistency checked against beta-first branch model. No code, release, tag or branch promotion performed.
+- **Do not redo:** Do not set a fixed release date or allow concurrent ownership of the same issue.
+- **Follow-ups:** Keep STATUS ownership current and check it before every task claim/reassignment.
+
 ## 2026-11-24 — Establish beta-first integration workflow
 
 - **Role:** Chaty / project coordination
