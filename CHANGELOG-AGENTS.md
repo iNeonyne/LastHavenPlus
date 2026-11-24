@@ -1,3 +1,13 @@
+## 2026-11-24 — Establish beta-first integration workflow
+
+- **Role:** Chaty / project coordination
+- **Files:** `AGENTS.md`, `AGENT_WORK.md`, `STATUS.md`, `ISSUES.md`, `CHANGELOG-AGENTS.md`
+- **Change:** Preserved the previous unrelated `beta` history as `beta-legacy-2026-11-24`, then reset `beta` to the current `main` commit. Updated agent instructions so Chaty pushes directly to `beta`, Ploy opens task PRs targeting `beta`, accepted PRs are integrated into `beta`, and `beta` is promoted to stable `main` only after verification and explicit user approval.
+- **Why:** Keep stable releases isolated from ongoing integration while allowing both agents to contribute to one testable beta line.
+- **Verified:** The old beta commit is reachable from the backup branch; `beta` now points at the former `main` head. Documentation updates are committed to `main` and then synchronized to `beta`.
+- **Do not redo:** Do not delete the legacy backup branch. Do not direct routine development to `main` or automatically promote beta.
+- **Follow-ups:** Ploy's current task branch must be based on `beta` and its PR must target `beta`; continue only after Chaty reviews the current task.
+
 ## 2026-11-24 — Allow Ploy to submit pull requests
 
 - **Role:** Chaty / project coordination
