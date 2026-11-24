@@ -53,7 +53,7 @@ Close only when every acceptance criterion is met and evidence is recorded. If a
 
 ## Issue 4 — P0.1 — Improve build reproducibility and updater test coverage
 
-**Current audit (2026-11-25):** The Gradle Wrapper is present and pinned to Gradle 9.7.1 with a distribution SHA-256. Successful CI run [#308](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45503025246) ran `assembleRelease` and `testDebugUnitTest` for commit `82590635e77c7abfedcaa6fd1fa4ad8c3b5de469`; the signed APK was ARM64-only and matched the established signing certificate. This evidence does not apply to later workflow commits. The workflow optimization run still needs inspection. Keep the issue open for remaining updater edge-case tests and current CI verification.
+**Current audit (2026-11-25):** The Gradle Wrapper is present and pinned to Gradle 9.7.1 with a distribution SHA-256. Successful CI run [#310](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45508671565) ran `assembleRelease` and `testDebugUnitTest` for commit `91e21d4bde0a26b8d7cbfd9697615f32c2f57d21`; signing-certificate and ARM64-only ABI verification passed. This evidence does not apply to later workflow commits. The new PR-only validation job still needs an actual pull request run. Keep the issue open for remaining updater edge-case tests and current CI verification.
 
 **GitHub:** https://github.com/iNeonyne/LastHavenPlus/issues/4
 **State:** open
