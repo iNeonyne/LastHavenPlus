@@ -7,6 +7,12 @@ LastHavenPlus is an Android launcher for the existing LastHaven Wrath of the Lic
 - **Project backlog:** [ISSUES.md](ISSUES.md)
 - **Current project status:** [STATUS.md](STATUS.md)
 
+## Development and releases
+
+- `main` is the stable release branch; `beta` is the integration and release-candidate branch.
+- Stable releases are promoted to `main` only after the release gates in [ISSUES.md](ISSUES.md) pass and the repository owner explicitly approves.
+- Ploy contributes through task PRs targeting `beta`; Chaty reviews and integrates accepted work. Agents never work on the same issue concurrently.
+
 ## Compatibility
 
 | Item | Support |
