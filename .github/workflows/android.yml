@@ -155,7 +155,7 @@ jobs:
           printf '%s' "$ANDROID_KEYSTORE_BASE64" | base64 --decode > "$RUNNER_TEMP/lasthavenplus-release.jks"
           chmod 600 "$RUNNER_TEMP/lasthavenplus-release.jks"
           keytool -list -keystore "$RUNNER_TEMP/lasthavenplus-release.jks" \
-            -storepass "$ANDROID_KEYSTORE_PASSWORD" -alias lasthavenlauncher >/dev/null
+            -storepass "$ANDROID_KEYSTORE_PASSWORD" -alias lasthavenplus >/dev/null
 
       - name: Build signed optimized release APK and run unit tests
         env:
