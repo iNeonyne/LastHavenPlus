@@ -50,7 +50,7 @@ Official references:
 ### Addon boundary
 - No addon manager implementation is currently present. Do not recreate or design a replacement until the owner provides a new written specification.
 - Keep any future WoW addon package format distinct from Gecko WebExtensions; do not conflate the two or claim local storage means the game loaded an addon.
-- Reuse the existing archive inspector and package repository. Settings placement is #23; game loading/injection remains separate and requires a documented operator-approved contract.
+- The old archive inspector and package repository have been deleted. No addon-manager replacement is authorized until the owner supplies a new written specification. Do not implement addon storage or game injection in the meantime.
 ## Named agent assignments
 
 Read [AGENT_WORK.md](AGENT_WORK.md) before starting delegated work. It defines task order, exclusive file ownership and handoff rules. Contributors may push only to their task branches and must provide Chaty the exact commit SHA and verification report. Chaty alone reviews and integrates accepted commits directly into `beta`. No pull requests. `main` remains stable; promote `beta` into `main` only after all release gates pass and the user explicitly approves.
@@ -116,12 +116,13 @@ An open issue is not automatically approved, ready, assigned or scheduled. Closi
 ## Documentation protocol
 
 When starting work:
-1. Read this file, STATUS and the last 5–10 changelog entries.
+1. Read this file, STATUS, `WORK_LOG.md`, the relevant issue and the last 5–10 changelog entries. Read `docs/GECKOVIEW_MIGRATION.md` before any GeckoView task.
 2. Search open and closed issues for duplicates; confirm the request is accepted and sufficiently specified.
 3. Confirm exclusive ownership and record owner, subtask, files, branch and dependencies under STATUS → Active work.
 4. Implement only the approved scope.
 5. Build/test and record exact results.
-6. Update the GitHub issue and ISSUES.md index, STATUS, and CHANGELOG-AGENTS.md; unclaim only after review/acceptance and handoff.
+6. Append a checkpoint to `WORK_LOG.md` after every meaningful inspection, edit, test, commit, handoff or interruption. Include exact commit SHA, changed paths, commands, actual results, unverified items and next safe action.
+7. Update the GitHub issue and ISSUES.md index, STATUS, and CHANGELOG-AGENTS.md; unclaim only after review/acceptance and handoff.
 
 Append changelog entries with date, role, files, change, reason, verification, do-not-redo notes and follow-ups. A failed experiment is still worth recording.
 
