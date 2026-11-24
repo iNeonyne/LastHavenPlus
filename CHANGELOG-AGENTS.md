@@ -1,3 +1,13 @@
+## 2026-11-25 — Audit beta workflow and correct project documentation
+
+- **Role:** Chaty / main orchestrator
+- **Files:** `README.md`, `AGENTS.md`, `AGENT_WORK.md`, `STATUS.md`, `ISSUES.md`, `CHANGELOG-AGENTS.md`
+- **Change:** Reasserted `beta` as the active integration branch and `main` as stable; removed active PR-based handoff instructions; made Chaty the sole reviewer/integrator/pusher to `beta`; reconciled Gradle Wrapper documentation and issue #4 with the wrapper already present; replaced stale status claims with the current beta commit, CI evidence, feature verification states and blockers.
+- **Why:** Existing docs contradicted the agreed no-PR workflow, claimed the wrapper was missing, and did not accurately describe the latest failing beta CI run.
+- **Verified:** Inspected the required project documents, repository tree, source files, GitHub issues, branch heads, recent commits, workflow definition, CI jobs/logs/artifacts and v1.0.0 release assets. Current beta run #232 fails compilation at `AddonManagerDialog.kt:166` and `:171`; tests and APK verification were skipped. Wrapper setup/validation passed. No app/game source, application ID, signing identity, tag, release or main branch was changed.
+- **Do not redo:** Do not add pull requests. Do not add a second Gradle distribution or alter the pinned toolchain. Do not claim device testing or current-beta build success from an older run or published release.
+- **Follow-ups:** Resolve the #13 compile failure under exclusive ownership; rerun beta CI; add a main-only guard to manual release tag creation; complete updater tests and physical ARM64 verification.
+
 ## 2026-11-24 — Standardize issue intake and lifecycle for future work
 
 - **Role:** Chaty / project coordination
