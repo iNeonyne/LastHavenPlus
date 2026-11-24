@@ -8,6 +8,7 @@ import androidx.core.content.FileProvider
 import org.json.JSONObject
 import java.io.File
 import java.io.FileOutputStream
+import java.security.MessageDigest
 import java.net.HttpURLConnection
 import java.net.URL
 import java.util.concurrent.Executors
@@ -16,6 +17,7 @@ data class AppUpdateInfo(
     val version: String,
     val releaseNotes: String,
     val downloadUrl: String,
+    val sha256: String,
 )
 
 sealed class UpdateCheckResult {
@@ -85,6 +87,11 @@ object AppUpdater {
                                 "Release APK must be hosted on GitHub"
                             }
 
+                            val digest = asset.optString("digest")
+                            check(digest.startsWith("sha256:") && digest.length == 71) {
+                                "Release asset must publish its SHA-256 digest"
+                            }
+
                             UpdateCheckResult.Available(
                                 AppUpdateInfo(
                                     version = latestVersion,
@@ -92,6 +99,7 @@ object AppUpdater {
                                         "A newer version of LastHavenLauncher is available."
                                     },
                                     downloadUrl = downloadUrl,
+                                    sha256 = digest.removePrefix("sha256:"),
                                 ),
                             )
                         }
@@ -144,6 +152,20 @@ object AppUpdater {
                     check(temporaryFile.inputStream().use {
                         it.read() == 0x50 && it.read() == 0x4B
                     }) { "Downloaded file is not an APK archive" }
+
+                    val actualDigest = temporaryFile.inputStream().use { input ->
+                        val digest = MessageDigest.getInstance("SHA-256")
+                        val buffer = ByteArray(64 * 1024)
+                        while (true) {
+                            val count = input.read(buffer)
+                            if (count < 0) break
+                            digest.update(buffer, 0, count)
+                        }
+                        digest.digest().joinToString("") { "%02x".format(it) }
+                    }
+                    check(actualDigest.equals(update.sha256, ignoreCase = true)) {
+                        "APK checksum verification failed"
+                    }
 
                     check(temporaryFile.renameTo(apkFile)) { "Could not finalize downloaded APK" }
 
