@@ -17,6 +17,16 @@ Entry format:
 
 ---
 
+## 2026-11-24 — Fix Android SDK setup in CI
+
+- **Role:** QA / CI
+- **Files:** `.github/workflows/android.yml`, `STATUS.md`
+- **Change:** Set up-android to install only platform-tools explicitly; the action's default `tools` package no longer exists in the current Android SDK repository.
+- **Why:** The first CI run failed during SDK setup before Gradle or application code was reached.
+- **Verified:** Failure confirmed in GitHub Actions logs; retry is queued.
+- **Do not redo:** Do not add the obsolete `tools` SDK package.
+- **Follow-ups:** Check the new CI run and resolve any actual Gradle or Kotlin compilation errors.
+
 ## 2026-11-24 — Create greenfield Android app and Cefrium build
 
 - **Role:** Architecture / Android / Cefrium integration
