@@ -50,8 +50,7 @@ jobs:
             echo "::error::Tag $tag already exists. Delete it before reusing this version."
             exit 1
           fi
-          gh api --method POST "repos/$GITHUB_REPOSITORY/git/refs" \\
-            -f "ref=refs/tags/$tag" -f "sha=$GITHUB_SHA" >/dev/null
+          gh api --method POST "repos/$GITHUB_REPOSITORY/git/refs" -f "ref=refs/tags/$tag" -f "sha=$GITHUB_SHA" >/dev/null
           echo "tag_ref=refs/tags/$tag" >> "$GITHUB_OUTPUT"
           echo "Created $tag at $GITHUB_SHA"
 
