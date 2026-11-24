@@ -147,7 +147,8 @@ object AppUpdater {
                         val targetSize = target.getLong("size")
                         check(targetSize in 1..MAX_APK_BYTES) { "Update APK size is invalid" }
 
-                        val patch = manifest.optJSONObject("patch")?.let { patchJson ->
+                        val patch = runCatching {
+                            manifest.optJSONObject("patch")?.let { patchJson ->
                             val patchName = patchJson.getString("name")
                             val patchAsset = assetByName[patchName]
                                 ?: error("Release is missing differential patch $patchName")
