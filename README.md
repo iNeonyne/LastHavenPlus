@@ -97,6 +97,7 @@ Read [AGENTS.md](AGENTS.md) and [AGENT_WORK.md](AGENT_WORK.md) before working on
 - **`main`:** stable release branch.
 - **Pull requests are allowed:** contributors work on dedicated branches and open PRs targeting `beta`. Parallel contributors must work on separate issues with non-overlapping file scopes.
 - **Integration:** contributors submit task branches as PRs targeting `beta`. Chaty alone reviews and merges accepted PRs into `beta`.
+- **PR checks:** PRs targeting `beta` run an unsigned release-variant build and unit tests without signing secrets or release artifacts. Full signed APK, certificate and ABI checks remain on branch/tag builds.
 - **Promotion:** `beta` is promoted to `main` only after release gates pass and the repository owner explicitly approves. Publishing a release requires explicit approval.
 
 Project records:
