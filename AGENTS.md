@@ -22,7 +22,7 @@ Do not recreate, modify or develop the game. Do not add System WebView, GeckoVie
 8. **Stable app identity.** Do not change `applicationId` (`com.neonyne.lasthavenlauncher`) or the established release signing key.
 9. **Storage safety.** Never clear cookies, IndexedDB, LocalStorage or Cache Storage except through a confirmed “Clear game data” action.
 10. **No speculative optimization.** Every performance change needs before/after measurements in STATUS.
-11. **Lean coordination.** Parallelize independent tasks only; agents must own disjoint files/surfaces. Ploy may create a dedicated feature branch, push her task commits and open a pull request for each completed assignment. Ploy must never push directly to `main`. Chaty reviews the PR, checks scope and CI, requests fixes when needed, and updates the task tracker. Do not merge automatically; merge only after the user explicitly approves the PR. Chaty owns separate orchestrator commits directly on `main`.
+11. **Lean coordination.** Parallelize independent tasks only; agents must own disjoint files/surfaces. Ploy may create a dedicated feature branch, push her task commits and open a pull request targeting `main` for each completed assignment. Ploy must never push directly to `main`. Chaty reviews the PR, checks scope and CI, requests fixes when needed, and updates the task tracker. Do not merge automatically; merge only after the user explicitly approves the PR. Chaty owns separate orchestrator commits directly on `main`.
 
 ## Current engine decision
 
@@ -53,7 +53,7 @@ References:
 
 ## Named agent assignments
 
-Read [AGENT_WORK.md](AGENT_WORK.md) before starting delegated work. It defines Ploy (repository-only coding agent) and Chaty (main orchestrator), task order, file ownership, handoff rules and integration boundaries. Ploy creates a dedicated branch and pull request for each completed assignment; she must not push directly to `main`. Chaty reviews the actual PR diff, verifies it and updates `ISSUES.md`, `STATUS.md` and `CHANGELOG-AGENTS.md`. Chaty may merge only after the user explicitly approves the PR.
+Read [AGENT_WORK.md](AGENT_WORK.md) before starting delegated work. It defines Ploy (repository-only coding agent) and Chaty (main orchestrator), task order, file ownership, handoff rules and integration boundaries. Ploy creates a dedicated branch and pull request targeting `main` for each completed assignment; she must not push directly to `main`. Chaty reviews the actual PR diff, verifies it and updates `ISSUES.md`, `STATUS.md` and `CHANGELOG-AGENTS.md`. Chaty may merge only after the user explicitly approves the PR.
 
 ## Parallel agent roles
 
