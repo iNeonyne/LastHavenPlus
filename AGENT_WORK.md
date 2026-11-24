@@ -24,18 +24,17 @@ This file is the execution order and file-ownership contract for the two project
 Work one issue at a time. Stop after each task-branch handoff and wait for Chaty's review and integration before starting the next item.
 
 ### ACTIVE — #9 navigation menu accessibility (easy task)
-**Goal:** Finish the small accessibility follow-up for the existing exit/navigation menu. The legacy addon manager UI has been removed, so its old compile errors no longer apply.
+**Goal:** Finish the small accessibility follow-up for the existing exit/navigation menu.
 
 Scope:
-- Fix `AddonManagerDialog.kt` semantics using supported Compose APIs; do not pass a `contentDescription` argument to Material3 `Switch`.
-- Add concise semantics only when visible text does not already provide a suitable accessible name.
-- Check Return to game, Reload, Settings, diagnostics, update and Exit controls. Do not add an addon manager control.
-- Keep the visual design and behavior unchanged except where required for accessibility.
-- Add/update automated tests where the current test setup supports them.
+- Add meaningful Compose semantics only where visible text does not already provide an accessible name.
+- Check Return to game, Reload, Settings, diagnostics, update and Exit controls.
+- Check focus order and avoid duplicate TalkBack announcements.
+- Do not add an Addons control; the legacy addon manager has been removed.
 
-File boundary: `MainActivity.kt` menu semantics and directly related UI tests only. Do not modify Gradle/engine configuration, updater logic, diagnostics internals, central trackers or unrelated UI.
+File boundary: `MainActivity.kt` menu semantics and directly related UI tests only. Do not modify Gradle/engine configuration, updater logic, diagnostics internals or central trackers.
 
-Acceptance: each menu action has an accessible name without redundant announcements; relevant checks pass. TalkBack/focus-order verification remains pending until a physical ARM64 device is tested.
+Acceptance: menu actions have clear, non-duplicated accessible names; relevant automated checks pass. Physical TalkBack/focus-order verification remains pending until a real ARM64 device is tested.
 
 ### QUEUED — #11 diagnostics tests
 Start only after #9 is integrated into `beta`.
@@ -52,7 +51,7 @@ Scope: tests for redaction formats, bounded log size/rotation and safe failure-p
 File boundary: diagnostics logger and unit tests only.
 
 ### QUEUED — #20 GeckoView technical decision record
-Start only after #8 is integrated into `beta`.
+Start after #11 and the small, isolated #6 settings preparation task are integrated, and after Chaty confirms the beta build baseline.
 
 Scope:
 - Create `docs/GECKOVIEW_MIGRATION.md` only; no production source, Gradle or manifest changes.
@@ -106,3 +105,15 @@ Ploy stops after handing off. Chaty reviews the full diff, reruns or verifies re
 ## Easy work queued for Ploy
 
 After #9 and #11, Ploy may take #6's straightforward, non-engine settings work only after Chaty has integrated #21 and #22. The initial isolated part is editable HTTPS game URL preference validation/persistence with unit tests; do not implement Gecko profile clearing, cache deletion, version reporting or other engine-specific controls until the pinned GeckoView API is reviewed. No addon-manager work until the owner specification arrives.
+
+
+## Ploy task queue after current easy work
+
+1. #9 — ACTIVE: small menu accessibility follow-up.
+2. #11 — diagnostics redaction/rotation/failure-path unit tests; next after #9 integration.
+3. #6 — small, isolated editable HTTPS game URL validation/persistence task after the GeckoView/home navigation contract is available. Do not implement profile/cache clearing or Gecko-specific controls before the exact pinned API is verified.
+4. #20 — GeckoView documentation/research update after Chaty confirms clean beta baseline; documentation-only.
+5. #22 — home screen after #21 integration.
+6. #23 — blocked until owner supplies addon-manager requirements.
+
+Every task must append progress and interruption checkpoints to `WORK_LOG.md`. Ploy never integrates or pushes to beta.
