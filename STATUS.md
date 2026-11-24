@@ -55,7 +55,7 @@ The compile error is in the active #13 accessibility-semantics scope. Keep exclu
 
 ## Release workflow finding
 
-<badge>Corrected on beta</badge> `.github/workflows/android.yml` now restricts manual release-tag creation to `main` and rejects pushed version tags unless their commit is already contained in stable `main`. The workflow was not dispatched for a release; no tag or release was created.
+**Corrected on beta.** `.github/workflows/android.yml` now restricts manual release-tag creation to `main` and rejects pushed version tags unless their commit is already contained in stable `main`. The workflow was not dispatched for a release; no tag or release was created.
 
 ## Tests and artifacts
 
