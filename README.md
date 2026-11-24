@@ -51,19 +51,11 @@ GitHub Actions builds ARM64 debug and signed release variants. Release signing u
 
 ## Work tracking
 
-**GitHub Issues are the single source of truth for all unfinished work.** Use the issue checklists for scope and acceptance criteria. [Open issues](https://github.com/iNeonyne/LastHavenPlus/issues).
+**[`ISSUES.md`](ISSUES.md) is the consolidated, version-controlled project backlog.** It contains the current open GitHub issues, their task descriptions and acceptance checklists. Update it as implementation progresses. GitHub Issues remain linked for discussion and history: [all issues](https://github.com/iNeonyne/LastHavenPlus/issues).
 
-| Priority | Tracked work |
-|---|---|
-| P0.1 | [Build reproducibility, updater tests and CI verification](https://github.com/iNeonyne/LastHavenPlus/issues/4) |
-| P0.2 | [Physical-device gameplay, persistence and update verification](https://github.com/iNeonyne/LastHavenPlus/issues/5) |
-| P2 | [Minimal settings and safe storage controls](https://github.com/iNeonyne/LastHavenPlus/issues/6) |
-| P3 | [Measure runtime performance and APK-size improvements](https://github.com/iNeonyne/LastHavenPlus/issues/7) |
-| P2 | [Network data usage](https://github.com/iNeonyne/LastHavenPlus/issues/10) |
-| P2 | [App and updater diagnostics logs](https://github.com/iNeonyne/LastHavenPlus/issues/11) |
-| Deferred | [Addon manager — only after the core launcher is stable](https://github.com/iNeonyne/LastHavenPlus/issues/8) |
+TickTick is no longer used for this repository; do not create or update project tasks there.
 
-P0/P1 gameplay reliability work is the priority. Do not start optional settings, performance tuning or the addon manager ahead of a verified playable core.
+Prioritize playable-core reliability and the release roadmap recorded in `ISSUES.md`.
 
 ## Settings, storage and diagnostics
 
@@ -95,4 +87,4 @@ The exit menu exposes **Settings & usage** and **App & debug logs**.
 
 Read [AGENTS.md](AGENTS.md) before editing. Keep [STATUS.md](STATUS.md) limited to current progress, active ownership, evidence and blockers. Append every meaningful change to [CHANGELOG-AGENTS.md](CHANGELOG-AGENTS.md).
 
-Use GitHub Issues for task scope and checklists; do not maintain a second TODO list in repository documentation. Claim an issue and work area before editing. Keep the workflow lean, prioritize a playable game, and have the main orchestrator integrate and push directly to `main` without pull requests.
+Use `ISSUES.md` as the consolidated task tracker and update it with implementation progress. GitHub Issues are linked discussion records. Do not use TickTick for project tracking. Claim the relevant task and work area before editing. Keep the workflow lean, prioritize a playable game, and have the main orchestrator integrate and push directly to `main` without pull requests.
