@@ -1,152 +1,102 @@
 # Project status — LastHavenPlus
 
-**Last updated:** 2026-11-24  
-**Phase:** P0 — Playable core verification and release hardening
+**Last updated:** 2026-11-25  
+**Active branch:** `beta`  
+**Phase:** P0 — Restore a clean beta build, then verify the playable core
 
 ## Snapshot
 
-v1.0.0 was published on 2026-11-24. Physical-device gameplay, persistence and same-key update verification remains outstanding as follow-up work; do not claim those checks passed until completed on real arm64 hardware.
+The stable `v1.0.0` release is published from the stable line. The current `beta` source is not buildable at its latest commit: GitHub Actions run #232 fails Kotlin compilation in `AddonManagerDialog.kt`. The unit-test task did not run and no test-report artifact was produced. Do not treat the published APK or an older successful beta run as verification of the current beta source.
 
-| Area | State | Evidence / notes |
+- **`main` (stable):** `6211cf389b8d9f6ef98aa7818f47643bfdaf2053`
+- **`beta` (current head):** `4b4a77293a14648974c78a49824a84a33e2a3e19`
+- **Latest beta CI attempt:** [run #232](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45484304840), failed on current beta head.
+- **Latest successful beta CI run found:** [run #179](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45183038304), commit `593fec6b048790cbc30a7fbadf571b749069abea`. This used an earlier workflow/source snapshot and does **not** verify current beta.
+- **Latest verified CI commit:** `593fec6b048790cbc30a7fbadf571b749069abea` (run #179; historical only).
+- **Current release:** [v1.0.0](https://github.com/iNeonyne/LastHavenPlus/releases/tag/v1.0.0), with one `lasthavenplus-arm64.apk` and `lasthavenplus-update.json`. Its existence does not prove current beta readiness.
+
+## Verification status
+
+| Area | Status | Evidence / limitations |
 |---|---|---|
-| Repository | Ready | Greenfield project files committed to main |
-| Application ID | Set | `com.neonyne.lasthavenlauncher`; do not change |
-| Android scaffold | Created | Kotlin + Jetpack Compose, compileSdk 37, minSdk 29 |
-| Build toolchain | Configured | JDK 25, Gradle 9.7.1, AGP 9.4.0 |
-| Cefrium dependency | Pinned | SDK / Compose / plugin 0.21.0 |
-| Chromium revision | Documented | 156.0.8078.96, CEF branch 8078 |
-| Maven registry | Configured | Codeberg mirror `https://codeberg.org/api/packages/cefrium/maven` |
-| ABI | Verified in CI | Previous CI APK contains arm64-v8a and no x86, x86_64 or armeabi-v7a libraries; new debug/release checks pending |
-| Immersive host | Implemented, unverified | Fullscreen flags, landscape sensor orientation, screen stays awake |
-| Loading / retry | Implemented, unverified | Compose loading state, main-frame load error and renderer termination retry |
-| Persistent storage request | Implemented, unverified | Calls `navigator.storage.persist()` after the first completed document load |
-| Settings & usage | Implemented; CI/device verification pending | Shows installed APK bytes, Cefrium profile directory size when present, app/code cache size and refresh action |
-| Network usage | Implemented; device verification pending | Android per-UID RX/TX counters since boot and app-session baseline; includes game + updater, local-only |
-| Diagnostics | Implemented; CI verification pending | Bounded rotating local log, lifecycle/Cefrium/updater events, redaction, viewer/share and redaction unit test |
-| Addon manager | Local ZIP manager code committed; CI verification pending | ZIP inspector, TOC parser, local package repository, management dialog and exit-menu entry are on main. No release/device verification yet. Operator permission confirmed; exact runtime integration contract pending. |
-| Exit menu | Implemented; device verification pending | Back opens menu with Return to game, Reload, Settings & usage, logs, update check and Leave |
-| Browser profile | Default persistent | Cefrium default profile stores cookies, LocalStorage, IndexedDB, service workers and cache in app-private `app_cefrium`; not the Android cache directory |
-| Remote debugging | Debug builds only | `Cefrium.setRemoteDebuggingEnabled` enabled from Application.onCreate before first browser creation |
-| Latest CI build | Pending | The LastHavenPlus 1.0.0 re-release workflow is queued; no result is claimed until its current commit completes. |
-| Debug APK baseline | Measured | 229,073,631 bytes (218.4 MiB); actual APK extracted from run #32 artifact |
-| R8 / resource shrinking | Configured; validation pending | Enabled only on release variant; CI builds debug and signed release APKs |
-| Device test | Not run | No connected arm64 device/emulator available to this run |
-| Release signing | Configured; verification pending | Existing `lasthavenplus` key restores successfully in run #79; Run #82 printed the expected certificate fingerprint; CI parser fix and a passing verification rerun are pending |
+| Application identity | Implemented; configuration inspected | `applicationId = com.neonyne.lasthavenlauncher`; preserve it |
+| Release signing identity | Configured; current beta artifact unverified | CI expects certificate SHA-256 `b3bbf7520e77dfc384a60b1eee6c5f205b978f9b453849e2be523f642018d263`; run #232 restored the keystore but compilation failed before APK signing verification |
+| ARM64-only packaging | Configured; current beta artifact unverified | `abiFilters += "arm64-v8a"`; workflow checks APK native libraries after build, but run #232 skipped that check |
+| Gradle Wrapper | Implemented and wrapper-validation step passed | `gradlew` is executable; wrapper pins Gradle 9.7.1 and distribution SHA-256 `acd53f1edaf02f1a8ff99879f8a34b302661a057d9b063ae9e35b552f804d20a`; no toolchain change needed |
+| Cefrium engine | Configured; runtime unverified | SDK, Compose wrapper and plugin pinned to 0.21.0; Chromium 156.0.8078.96 |
+| Game launch | Implemented; device unverified | `CefriumView` loads the configured LastHaven URL; no physical ARM64 gameplay test recorded |
+| Browser profile persistence | Default persistent profile path used; persistence unverified | No custom ephemeral profile is configured; source requests `navigator.storage.persist()`; actual cookies/LocalStorage/IndexedDB/service-worker retention needs device testing |
+| Exit menu/navigation | Implemented; device unverified | Back opens menu with Return, Reload, Settings & usage, Diagnostics, Addon manager, update check and Exit |
+| Settings/storage measurements | Implemented; device unverified | Reports installed APK bytes, Cefrium profile directory size when present, and app/code cache size; this is a usage screen, not yet a full preferences surface |
+| Network usage | Implemented; device unverified | Android per-UID RX/TX since boot and app-session baseline; includes game and updater traffic, not game-only |
+| Diagnostics | Implemented; test/runtime verification incomplete | Bounded local rotating log, viewer/share/clear UI and redaction patterns exist; current CI never reached tests |
+| Updater | Implemented in source; CI/runtime unverified | Stable release startup/manual checks, explicit download choices, digest and package/version/signing checks, Android installer handoff; no automatic download/install |
+| Differential update | Implemented in source; compatibility unverified | Patch offered only for matching base version/versionCode and installed APK digest; reconstructed APK digest and signing identity checked; full APK remains selectable fallback |
+| ZIP addon manager | Local package management implemented; game integration absent | ZIP inspection, metadata, local library, import/export/remove and local enabled flags; no extraction into or injection into the game runtime |
+| Physical-device gameplay | Not verified | No evidence of testing on ARM64 hardware |
+| Release readiness | Blocked | Current beta build fails; current signed APK/ABI checks skipped; device and update-path checks remain outstanding |
 
-## Issue management rules
+## Current CI failure
 
-- GitHub Issues are the canonical task/discussion/ownership records; `ISSUES.md` is the linked project index and roadmap checklist.
-- Chaty owns duplicate checks, issue creation, triage, priority, milestones, labels, assignments and closure. Ploy only works on her explicitly assigned issue.
-- Search open and closed issues before creating a new one. Every accepted task needs bounded scope, testable acceptance criteria, verification and dependencies.
-- One active owner per issue. Record exact scope/files/branch here before work starts. No overlapping implementation or investigation by Chaty and Ploy.
-- Use explicit lifecycle states: Needs triage, Ready, Active, Blocked, Review, Done, Deferred/Not planned, Duplicate.
-- Close only with acceptance evidence; keep partial work open. Link PRs with `Closes #N` only when the whole issue is satisfied.
+Run #232 — commit `4b4a77293a14648974c78a49824a84a33e2a3e19`:
 
-## Branch and agent workflow
+- Wrapper setup and wrapper validation: passed.
+- JDK 25, Android SDK 37, version metadata and signing-key restore: passed.
+- `compileDebugKotlin` and `compileReleaseKotlin`: failed.
+- Errors:
+  - `AddonManagerDialog.kt:166:77` — unresolved reference `contentDescription`.
+  - `AddonManagerDialog.kt:171:45` — `Switch` has no parameter named `contentDescription`.
+- Unit tests: not run.
+- Unit-test reports: none found; no report artifact uploaded.
+- Signing-certificate verification, ABI verification and release APK artifact upload: skipped.
+- Differential package generation and release publication: skipped.
 
-- **`main` — stable release branch.** Do not use it for routine development.
-- **`beta` — shared integration and testing branch**, reset to the current `main` baseline on 2026-11-24.
-- **Chaty** pushes orchestrator changes directly to `beta`.
-- **Ploy** creates a dedicated task branch from the latest `beta`, pushes her work and opens a PR targeting `beta`. She must not push directly to `beta` or `main`.
-- Chaty reviews Ploy's complete diff and CI, requests corrections if needed, updates the trackers and may merge accepted PRs into `beta`.
-- Promote `beta` into `main` only after beta build/features have been verified and the user explicitly approves the promotion. No automatic merges, tags or releases.
+The compile error is in the active #13 accessibility-semantics scope. Keep exclusive ownership: the current owner must correct and hand off that task; Chaty reviews and integrates the resulting commit. Do not have two agents work on #13 concurrently.
 
-## Work tracking
+## Release workflow finding
 
-[`ISSUES.md`](ISSUES.md) is now the consolidated, version-controlled backlog containing the open GitHub issues and their checklists. Update it as work progresses. GitHub Issues remain linked discussion/history records. TickTick is no longer used for this repository.
+`.github/workflows/android.yml` correctly builds on pushes to `beta` and `main`, but its manual `workflow_dispatch` tag-creation condition currently accepts a non-empty release version without checking that the selected ref is `main`. Restrict release-tag creation to `main` before using manual release dispatch. Do not run release dispatch, create tags or publish releases as part of this audit.
 
-- [#4 — Build reproducibility, updater tests and CI verification](https://github.com/iNeonyne/LastHavenPlus/issues/4)
-- [#5 — Physical-device gameplay, persistence and update verification](https://github.com/iNeonyne/LastHavenPlus/issues/5)
-- [#6 — Minimal settings and safe storage controls](https://github.com/iNeonyne/LastHavenPlus/issues/6)
-- [#7 — Performance and APK-size measurements](https://github.com/iNeonyne/LastHavenPlus/issues/7)
-- [#8 — Local ZIP addon manager (game integration gated)](https://github.com/iNeonyne/LastHavenPlus/issues/8)
-- [#9 — Compact navigation and exit menu](https://github.com/iNeonyne/LastHavenPlus/issues/9)
-- [#10 — Network data usage](https://github.com/iNeonyne/LastHavenPlus/issues/10)
-- [#11 — Privacy-conscious app and updater logs](https://github.com/iNeonyne/LastHavenPlus/issues/11)
+## Tests and artifacts
 
-## App updater
+- The latest CI attempt did not execute unit tests because Kotlin compilation failed first.
+- Existing test source includes BSDIFF patch tests, ZIP archive-inspector tests and diagnostics redaction tests. Their presence is not evidence that they pass on current beta.
+- Run #232 has zero artifacts.
+- Older successful run #179 uploaded demo APK artifacts under its former workflow; those artifacts are not release evidence for current beta.
+- The published v1.0.0 release has exactly one APK asset plus its update manifest; no debug APK is listed as a release asset.
 
-- Currently checks the latest **published stable GitHub Release** on launcher start; a manual check is also available from the exit dialog. #19 will add an opt-in Beta channel for published prereleases; Stable remains the default.
-- Never downloads automatically. The user explicitly chooses **Download smaller update** or **Download full APK instead**, then Android presents its package installer.
-- Expected release tag: `vMAJOR.MINOR.PATCH`; canonical assets: signed `lasthavenplus-arm64.apk`, `lasthavenplus-update.json`, and an optional `*.bsdiff` patch. Legacy-named APK and manifest aliases are retained for older updater clients.
-- The app checks manifest and GitHub asset digests, installed base APK SHA-256, reconstructed APK SHA-256, package ID, versionCode and the pinned LastHaven release certificate before installer handoff.
-- Uses an app-private temporary file and a non-exported AndroidX FileProvider; no external storage permission or background service.
-- Differential patches reconstruct the complete signed APK byte-for-byte; the app does not repackage or re-sign it. Full APK remains the fallback.
-- CI restores the established `lasthavenplus` signing key from `ANDROID_KEYSTORE_BASE64`, `ANDROID_KEYSTORE_PASSWORD` and `ANDROID_KEY_PASSWORD`; it verifies the expected certificate SHA-256 before continuing.
-- Stable tags `vMAJOR.MINOR.PATCH` build signed ARM64 APKs, generate a manifest, and publish a BSDIFF40 patch from the immediately previous compatible release only when the patch is at least 10% smaller than the full APK.
-- The full signed APK is always published as fallback. Differential downloads are offered only for the exact base version/versionCode; the app checks the installed APK hash, reconstructs the signed APK in a streaming file-based patcher, verifies the target SHA-256, package ID, versionCode and pinned signing certificate, then opens Android's installer.
-- No published GitHub Releases currently exist, so the first stable release will contain the full APK only. Later releases can include a patch if the previous release and generated patch meet compatibility/size checks.
+## Release blockers
 
-## APK size audit
+1. Fix the current Kotlin compilation errors in the exclusively owned #13 task and rerun beta CI.
+2. Obtain a clean current-beta signed release build, unit-test reports, ARM64 ABI verification and signing-certificate verification.
+3. Add and pass updater tests for malformed manifests, version/versionCode handling, digest mismatch, incompatible base APK, interrupted downloads and patch failure/fallback.
+4. Restrict manual release-tag creation to `main`.
+5. Perform physical ARM64 testing for game launch, gameplay, profile persistence, orientation/audio/GPU behavior and same-key update installation.
+6. Verify differential update behavior between two compatible signed releases on a physical ARM64 device.
+7. Keep addon injection explicitly out of scope until the operator-approved runtime integration contract is established; local ZIP package management must not be described as game integration.
 
-- Baseline from CI run #32: APK is 229,073,631 bytes (218.4 MiB).
-- Largest compressed entry: `lib/arm64-v8a/libcef.so`, 92.84 MiB (201.94 MiB uncompressed).
-- DEX payload: 22 DEX files totaling 104.4 MiB (109,487,264 bytes as stored in the APK); this is the main candidate for R8 code shrinking.
-- Chromium data files include `icudtl.dat` (8.85 MiB) and `resources.pak` (1.23 MiB); do not strip or replace engine assets without Cefrium-specific compatibility evidence.
-- Release-only R8 minification and resource shrinking are enabled. CI now builds the signed optimized release APK and reports its exact APK size and DEX total alongside the debug APK; no optimized result is recorded until that job completes.
-- CI verifies the signed APK against the established LastHaven certificate fingerprint before it can be published.
-- The archive downloaded from Actions is not the APK size; use the APK's own file size for comparisons.
+## Branch and integration workflow
 
-## Cefrium API findings
+- `beta` is the active development, integration and testing branch.
+- `main` is the stable release branch.
+- Contributors may work in parallel only on separate issues with disjoint file ownership. Never work on the same issue concurrently.
+- Contributors hand Chaty a task-branch commit SHA and verification report. Chaty alone reviews, integrates and pushes commits directly to `beta`. No pull requests.
+- Promote `beta` to `main` only after release gates pass and the user explicitly approves.
+- Do not create tags, publish releases, or change application ID/signing identity during routine development.
 
-- Current release: Cefrium 0.21.0, Chromium 156.0.8078.96, CEF branch 8078.
-- Official quickstart requires JDK 25, Gradle 9.7.1, AGP 9.4, compileSdk 37, minSdk 29 and a 4 GB Gradle heap.
-- `CefriumView` is the Compose API. The classic Android View API is `CefriumBrowser.createWithSurface(activity)`; this project uses `CefriumView`.
-- `CefriumViewState.rendererTermination` reports renderer death; `CefriumNavigationClient.onLoadError` reports main-frame load errors.
-- `CefriumProfile.getDefault()` is persistent. Its data lives under Cefrium's private `app_cefrium` directory, not Android's cache directory.
-- `CefriumBrowser.clearCache()` / `CefriumNavigator.clearCache()` clears HTTP cache. No documented public code-cache-only clearing API has been confirmed yet.
-- Cefrium's current guide recommends R8 and says the AAR includes consumer rules for engine-required code; the minified app still needs physical-device testing.
-- Cefrium's API is pre-1.0 and may change between releases.
+## Active work and handoff
 
-## Web capability verification
-
-**No capabilities are marked passed until tested inside the app and compared with Chrome on the same device.**
-
-| Requirement | Chrome reference | Cefrium app | Status |
-|---|---|---|---|
-| WebGL2 | Not run | Not run | Pending device |
-| WebAssembly | Not run | Not run | Pending device |
-| WASM threads / SharedArrayBuffer | Not run | Not run | Pending device; requires COOP/COEP |
-| WebSockets | Not run | Not run | Pending device |
-| Audio after user gesture | Not run | Not run | Pending device |
-| LastHaven gameplay | Not run | Not run | Pending device |
-
-The web fetch of the game URL returns only “Loading... Please enable JavaScript to play Lasthavens.” That does not reveal the game's actual runtime requirements. Use remote debugging (`chrome://inspect`) against the Cefrium process and Chrome on the same phone.
-
-## Active work
-
-| Owner | Issue / surface | State |
+| Owner | Issue | Scope / boundary |
 |---|---|---|
-| Chaty | #4 — build reliability and updater test coverage | Active on beta. Current scope: BSDIFF failure cleanup, diagnose archive-inspector CI failures, add CI test-report artifacts and enable beta-branch validation. Files: `BsdiffPatch.kt`, related unit tests, `.github/workflows/android.yml`, and #4 tracker docs. No release/tag actions. |
-| Ploy | #13 — accessibility semantics | Active assignment; Chaty does not edit its implementation/tests. Awaiting PR handoff. |
-| Ploy (queued) | #11 diagnostics tests, then #8 addon repository tests | Starts sequentially only after each prior PR is accepted and integrated. |
-| Chaty (queued) | #19 — beta updater channel | Starts only after #4 is handed off. |
-
-## Blockers
-
-| Blocker | Impact | Next action |
-|---|---|---|
-| No physical arm64 test device attached to this session | Cannot verify gameplay, GPU, audio or persistence | Install CI APK on target phone and run checklist |
-| Differential update path not yet verified across two stable releases | The patch path needs a compatible previous release and physical-device validation | Test the next compatible release update on a physical arm64 device |
-| Code cache clear API not confirmed | Cannot yet implement the requested HTTP + code-cache-only clear action | Inspect pinned SDK API; do not delete engine directories manually |
-
-## Performance log
-
-No runtime performance changes have been made. APK size baseline is measured; establish gameplay and runtime baselines after gameplay loads.
-
-| Metric | Baseline | Optimized |
-|---|---:|---:|
-| Cold start to first paint | Not measured | — |
-| FPS / frame pacing | Not measured | — |
-| PSS / native memory | Not measured | — |
-| APK download size | 229,073,631 bytes (218.4 MiB) | Pending CI release candidate |
-| Rendering latency | Not measured | — |
+| Chaty | #4 | Build reproducibility and updater test coverage; wrapper is already present, so focus on remaining tests and current CI evidence |
+| Ploy | #13 | Accessibility semantics; exclusive owner until task handoff. The current compiler errors are within this scope |
+| Ploy (queued) | #11, then #8 | Sequential only after each prior task is accepted and integrated into beta |
+| Chaty (queued) | #19 | Beta updater channel; only after #4 handoff |
 
 ## Next actions
 
-1. Verify CI for the latest main commits and resolve any compilation/test failures.
-2. Complete [#4 — build reproducibility, updater tests and CI verification](https://github.com/iNeonyne/LastHavenPlus/issues/4).
-3. Complete [#5 — physical-device gameplay, persistence and update verification](https://github.com/iNeonyne/LastHavenPlus/issues/5).
-4. Finish #6/#9/#10/#11 after CI and device validation; keep unverified behavior marked pending.
-5. Defer [#7 — performance and APK-size measurements](https://github.com/iNeonyne/LastHavenPlus/issues/7) until a repeatable gameplay baseline exists.
-6. Keep [#8 — addon manager](https://github.com/iNeonyne/LastHavenPlus/issues/8) deferred until the core launcher is stable.
+1. Correct the #13 Compose semantics compile error under its single-owner assignment; hand off the task-branch commit to Chaty.
+2. Chaty reviews and integrates the fix directly into beta, then verifies a new CI run.
+3. Update #4 acceptance tracking: wrapper setup is complete; updater edge-case coverage and current successful CI evidence remain open.
+4. Add the `main`-only guard to manual release tag creation after the audit/doc pass.
+5. Keep physical-device and differential-update checks open until actual ARM64 hardware verification is recorded.
