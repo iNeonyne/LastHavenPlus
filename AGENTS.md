@@ -68,21 +68,17 @@ Agents may work in parallel only on disjoint files/surfaces. Each agent must ide
 1. Find the existing issue that matches the task. Create a new issue only when no existing issue covers it.
 2. Read its goal, checklist, dependencies, constraints and acceptance criteria.
 3. Claim the issue and file/work area in STATUS before making changes.
-4. Keep the issue checklist accurate as work is completed. Link related issues instead of copying their task lists.
+4. Keep `ISSUES.md` accurate as work is completed. It is the consolidated repository backlog; update task checklists and status alongside implementation changes. GitHub Issues are linked discussion records.
 5. Run the relevant build/tests and record what was actually verified. Do not mark device-only behavior as passed based on CI.
 6. Update STATUS and append a changelog entry.
 7. The main orchestrator integrates and pushes directly to `main`; no pull request workflow.
 8. Close an issue only when its acceptance criteria are met. If blocked, leave it open and document the blocker in STATUS and the issue.
 
 **Tracking links**
-- [All issues](https://github.com/iNeonyne/Lasthavens-Android/issues)
-- [P0.1 — Build reliability and updater tests](https://github.com/iNeonyne/Lasthavens-Android/issues/4)
-- [P0.2 — Physical-device gameplay and update verification](https://github.com/iNeonyne/Lasthavens-Android/issues/5)
-- [P2 — Settings and safe storage controls](https://github.com/iNeonyne/Lasthavens-Android/issues/6)
-- [P3 — Performance and APK-size measurement](https://github.com/iNeonyne/Lasthavens-Android/issues/7)
-- [Deferred — Addon manager](https://github.com/iNeonyne/Lasthavens-Android/issues/8)
+- [Repository task tracker — ISSUES.md](ISSUES.md)
+- [All GitHub issues](https://github.com/iNeonyne/LastHavenPlus/issues)
 
-Do not maintain a second prioritized TODO checklist in this file. GitHub Issues are the canonical backlog.
+`ISSUES.md` is the consolidated, version-controlled backlog. Keep it current as work progresses. GitHub Issues remain linked discussion/history records. Do not create or update TickTick tasks for this repository.
 
 ## Documentation protocol
 
