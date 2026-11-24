@@ -2,7 +2,7 @@ name: LastHavenPlus Android build and signed releases
 
 on:
   push:
-    branches: [main]
+    branches: [main, beta]
     tags: ["v*"]
   workflow_dispatch:
     inputs:
