@@ -23,7 +23,7 @@ The physical-device verification issue #5 is open again. No public release is ap
 | Settings & usage | Implemented; CI/device verification pending | Shows installed APK bytes, Cefrium profile directory size when present, app/code cache size and refresh action |
 | Network usage | Implemented; device verification pending | Android per-UID RX/TX counters since boot and app-session baseline; includes game + updater, local-only |
 | Diagnostics | Implemented; CI verification pending | Bounded rotating local log, lifecycle/Cefrium/updater events, redaction, viewer/share and redaction unit test |
-| Addon manager | Local ZIP manager implementation starting; operator permission confirmed | User confirms explicit operator permission. Exact authorized integration scope/API still needs to be recorded before runtime work. |
+| Addon manager | Local ZIP manager code committed; CI verification pending | ZIP inspector, TOC parser, local package repository, management dialog and exit-menu entry are on main. No release/device verification yet. Operator permission confirmed; exact runtime integration contract pending. |
 | Exit menu | Implemented; device verification pending | Back opens menu with Return to game, Reload, Settings & usage, logs, update check and Leave |
 | Browser profile | Default persistent | Cefrium default profile stores cookies, LocalStorage, IndexedDB, service workers and cache in app-private `app_cefrium`; not the Android cache directory |
 | Remote debugging | Debug builds only | `Cefrium.setRemoteDebuggingEnabled` enabled from Application.onCreate before first browser creation |
@@ -102,7 +102,7 @@ The web fetch of the game URL returns only “Loading... Please enable JavaScrip
 | Main integrator | Issues #6 and #9 — settings, usage panel and exit menu | Initial implementation committed; CI/device verification pending; remaining settings/cache actions not implemented |
 | Main integrator | Issue #10 — network usage reporting | Per-UID RX/TX counters implemented; explicitly app-wide (game + updater); device verification pending |
 | Main integrator | Issue #11 — local diagnostics and export | Local rotating logs, redaction, viewer/share and unit test committed; CI verification pending |
-| Main integrator | Issue #8 — local ZIP addon manager | Operator permission confirmed by user; implementing secure local ZIP library. Awaiting exact authorized integration scope/API before game-runtime work. |
+| Main integrator | Issue #8 — local ZIP addon manager | ZIP inspection/TOC parsing, app-private package library, local enable/disable state, export/remove and Compose UI committed. CI verification pending. Operator permission confirmed; exact authorized runtime scope/API still pending. |
 
 
 ## Blockers
