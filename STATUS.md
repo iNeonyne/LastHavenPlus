@@ -5,7 +5,7 @@
 
 ## Snapshot
 
-The physical-device verification issue #5 is open again. No public release is approved until the gameplay, persistence and same-key update checklist is completed on real arm64 hardware.
+v1.0.0 was published on 2026-11-24. Physical-device gameplay, persistence and same-key update verification remains outstanding as follow-up work; do not claim those checks passed until completed on real arm64 hardware.
 
 | Area | State | Evidence / notes |
 |---|---|---|
