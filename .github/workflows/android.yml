@@ -258,9 +258,6 @@ jobs:
           sudo apt-get install -y bsdiff
           mkdir -p release-assets
           cp app/build/outputs/apk/release/app-release.apk release-assets/lasthavenplus-arm64.apk
-          # Keep legacy asset names available so already-installed pre-rebrand
-          # versions of the updater can still discover and install this release.
-          cp release-assets/lasthavenplus-arm64.apk release-assets/lasthavenlauncher-arm64.apk
           TARGET_APK="release-assets/lasthavenplus-arm64.apk"
           TARGET_SHA="$(sha256sum "$TARGET_APK" | awk '{print $1}')"
           TARGET_SIZE="$(stat -c '%s' "$TARGET_APK")"
