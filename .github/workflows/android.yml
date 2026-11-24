@@ -36,7 +36,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          if [[ ! "$RELEASE_VERSION" =~ ^[0-9]+\\.[0-9]+\\.[0-9]+$ ]]; then
+          if [[ ! "$RELEASE_VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
             echo "::error::Version must use MAJOR.MINOR.PATCH, for example 1.0.0."
             exit 1
           fi
@@ -88,39 +88,42 @@ jobs:
       - name: Resolve version metadata
         id: version
         shell: bash
+        env:
+          CREATED_TAG_REF: ${{ needs.create_tag.outputs.tag_ref }}
         run: |
-          RELEASE_TAG="${{ needs.create_tag.outputs.tag_ref }}"
-          if [[ -n "$RELEASE_TAG" ]]; then
-            tag="${RELEASE_TAG#refs/tags/}"
-            version="${tag#v}"
+          set -euo pipefail
+          if [[ -n "$CREATED_TAG_REF" ]]; then
+            tag="${CREATED_TAG_REF#refs/tags/}"
           elif [[ "$GITHUB_REF" == refs/tags/v* ]]; then
             tag="$GITHUB_REF_NAME"
-            version="${GITHUB_REF_NAME#v}"
+          else
+            tag=""
+          fi
+
+          if [[ -n "$tag" ]]; then
+            version="${tag#v}"
             if [[ ! "$version" =~ ^([0-9]+)\.([0-9]+)\.([0-9]+)$ ]]; then
-              echo "Release tags must use vMAJOR.MINOR.PATCH (without prerelease suffixes)." >&2
+              echo "::error::Release tags must use vMAJOR.MINOR.PATCH."
               exit 1
             fi
             major="${BASH_REMATCH[1]}"
             minor="${BASH_REMATCH[2]}"
             patch="${BASH_REMATCH[3]}"
             if (( major > 999 || minor > 999 || patch > 999 )); then
-              echo "Each semantic version component must be 999 or lower." >&2
+              echo "::error::Each version component must be 999 or lower."
               exit 1
             fi
             version_code=$((major * 1000000 + minor * 1000 + patch))
-          else
-            version="0.1.0"
-            version_code="1"
-          fi
-          echo "name=$version" >> "$GITHUB_OUTPUT"
-          echo "code=$version_code" >> "$GITHUB_OUTPUT"
-          if [[ -n "${tag:-}" ]]; then
             echo "is_release=true" >> "$GITHUB_OUTPUT"
             echo "tag=$tag" >> "$GITHUB_OUTPUT"
           else
+            version="0.1.0"
+            version_code="1"
             echo "is_release=false" >> "$GITHUB_OUTPUT"
             echo "tag=" >> "$GITHUB_OUTPUT"
           fi
+          echo "name=$version" >> "$GITHUB_OUTPUT"
+          echo "code=$version_code" >> "$GITHUB_OUTPUT"
           echo "Building version $version (versionCode $version_code)"
 
       - name: Restore release signing key
