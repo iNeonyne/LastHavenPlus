@@ -92,7 +92,7 @@ Harden the existing build and updater without replacing the current update archi
 - Do not create a second updater.
 - Do not change the application ID or release signing key.
 - Do not add background downloads or automatic installation.
-- Follow AGENTS.md: claim work in STATUS, document meaningful changes in STATUS and CHANGELOG-AGENTS.md, and integrate directly into beta through Chaty. No pull requests.
+- Follow AGENTS.md: claim work in STATUS, document meaningful changes in STATUS and CHANGELOG-AGENTS.md, and submit task work through PRs targeting `beta`. Chaty alone reviews and merges.
 
 ## Acceptance criteria
 A clean checkout builds through the committed, pinned wrapper; updater edge cases are covered by passing automated tests; current beta CI verifies the signed ARM64 release, package identity and artifact sizes.
@@ -559,7 +559,7 @@ The next major beta change replaces Cefrium with Mozilla GeckoView and adds a ho
 
 ### Stable promotion policy
 - `beta` is the active development/integration/testing branch; `main` is stable.
-- Chaty alone integrates and pushes to beta. No PRs.
+- Task changes enter `beta` through PRs. Chaty alone reviews and merges; no contributor may push directly to `beta`.
 - Promote only after every applicable gate passes and the user explicitly approves. Publishing/tagging requires separate explicit approval.
 - No debug APKs, partial features, automatic update downloads/installs, app ID changes or signing-key changes.
 
