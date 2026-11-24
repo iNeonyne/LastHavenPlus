@@ -94,7 +94,7 @@ WoW 3.3.5a addon ZIP/`.toc` packages are not Firefox WebExtensions. GeckoView's 
 
 ## CI evidence and remaining work
 
-The latest verified successful Android build and unit-test task is [run #308](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45503025246), for commit `82590635e77c7abfedcaa6fd1fa4ad8c3b5de469`. It produced a signed ARM64-only release APK and the signer matched the established certificate.
+The latest verified successful Android build and unit-test task is [run #310](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45508671565), for commit `91e21d4bde0a26b8d7cbfd9697615f32c2f57d21`. Its signed release build passed signing-certificate and ARM64-only ABI verification.
 
 Run #308 predates the latest beta HEAD. The subsequent commits through the current documentation cleanup changed documentation/workflow configuration rather than application source. The CI optimization change still requires its own workflow run verification. Check [GitHub Actions](https://github.com/iNeonyne/LastHavenPlus/actions) and `STATUS.md` before making a newer build claim.
 
