@@ -8,7 +8,7 @@
 
 The stable v1.0.0 release is published. Beta still uses Cefrium and opens the game directly on startup. **The top priority is replacing Cefrium with Mozilla GeckoView.** Issue #20's exact stable-artifact/API decision is active under Chaty; issue #21 is next for production integration. The new home screen with Play and Settings follows after the engine is integrated. The previous addon manager has been removed. The owner supplied a Firefox WebExtension specification, then explicitly placed addon-manager work on hold. No extension implementation has started; do not schedule or assign it until the owner resumes it.
 
-- **Latest inspected source checkpoint:** `3c127cb7a6b01d3769744d3094b6dd18e365ea44`; subsequent commits in this workstream update only status/research documentation.
+- **Latest inspected migration checkpoint:** `f16238851ca8decd8400048b8734d5ccdb954d95` (Cefrium removal and GeckoView integration started).
 
 - **`main` (stable):** `6211cf389b8d9f6ef98aa7818f47643bfdaf2053`.
 - **Latest CI:** [run #297](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45498642232), ID `45498642232`, on current HEAD `a9d9b272a004a9a4dcc49fed0067f414ba3601cf`; build/test step is in progress. JDK 25, Android SDK 37, Gradle Wrapper validation, version metadata and signing-key restore completed successfully; no build/test result yet.

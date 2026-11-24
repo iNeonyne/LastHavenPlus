@@ -138,3 +138,15 @@
 - **CI:** Run #297 (ID `45498642232`) remains in progress at the last check. Its release build step emitted many R8 warnings from Chromium resource classes; no completion status or successful test result is available yet. Run #298 is pending behind it.
 - **Limitations:** No GeckoView production code/dependency added. Stable artifact coordinates, POM, native AAR contents, exact API compatibility and final APK size remain unverified. Physical ARM64 game behavior remains unverified.
 - **Next safe action:** Complete #20 artifact/API verification and obtain the #297 baseline result; then start #21 with only the current game-view behavior, leaving home-screen redesign for #22.
+
+
+### 2026-11-25 — GeckoView 160 implementation started
+
+- **Issue/task:** #21 P0.
+- **Branch and starting commit:** `beta`, `f16238851ca8decd8400048b8734d5ccdb954d95`.
+- **Code changes:** Removed Cefrium Gradle plugin, libraries and Codeberg repository. Added Mozilla Maven and `org.mozilla.geckoview:geckoview-arm64-v8a:160.0.20261116130455`. Added lazy process-scoped runtime provider. Replaced Cefrium Compose host with GeckoView/GeckoSession and version-160 API delegates. Settings now measures `filesDir` as persistent app data including GeckoView, not as an exact profile-only value.
+- **API evidence:** Mozilla Firefox `FIREFOX_160_0_RELEASE` public API/source confirms runtime/session/view and delegate method signatures. Maven index lists the ARM64 artifact, Mozilla repository, MPL 2.0 and 14 dependencies.
+- **Safety:** Runtime is created lazily from the foreground app process, not Application.onCreate(), because Gecko child processes also instantiate the Application class. Existing Cefrium data is untouched. Persistent storage/autoplay permissions are scoped to lasthavens.com; other content permissions and media capture are denied by default.
+- **Known follow-up:** Download responses are currently logged, not handled. Verify whether the game requires file downloads before considering that path complete. Session/profile persistence and real gameplay remain unverified.
+- **CI:** Run #301 (ID `45500026644`) was pending at the time of this checkpoint; no build result is claimed.
+- **Next:** Fix any compile/dependency errors from CI, then add tests and physical ARM64 verification.

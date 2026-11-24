@@ -412,3 +412,14 @@ Entry format:
 - **Verified:** The current app's direct Cefrium source usage is in `LastHavenApplication.kt` and `MainActivity.kt`; the plugin/dependencies are in `app/build.gradle.kts`; Cefrium repository declarations are in `settings.gradle.kts`. Mozilla's official quick start requires Java 17 source/target compatibility. A 160.0.20261116130455 artifact is a candidate, but POM/AAR details are not yet verified.
 - **Do not redo:** Do not copy Cefrium APIs or profile data into GeckoView. Do not change JDK/Gradle/AGP/SDK, application ID, signing identity or ABI filter without evidence.
 - **Follow-ups:** Verify candidate artifact POM/AAR and API surface, inspect #297 build result, then begin the engine implementation.
+
+
+## 2026-11-25 — Start GeckoView 160 integration
+
+- **Role:** Chaty / main orchestrator
+- **Files:** Gradle settings/module, Application, MainActivity, GeckoRuntimeProvider, usage meter/settings, GeckoView migration record
+- **Change:** Removed Cefrium integration and added the pinned ARM64 GeckoView 160 artifact. Added a process-scoped runtime provider and GeckoView/GeckoSession host with load/crash/fullscreen and permission delegates. Updated storage wording to report persistent app data including GeckoView rather than a nonexistent Cefrium profile.
+- **Why:** Start the owner's top-priority engine replacement while keeping the current game-first UI and updater.
+- **Verified:** Mozilla Firefox 160 versioned public API source checked. Maven index identifies the artifact as Mozilla-published and MPL 2.0.
+- **Not verified:** Gradle dependency resolution, compilation, tests, final APK ABI/signing/size, persistent profile behavior and physical ARM64 gameplay.
+- **Follow-ups:** Resolve CI feedback; implement only required delegates; verify game functionality on physical ARM64 hardware.

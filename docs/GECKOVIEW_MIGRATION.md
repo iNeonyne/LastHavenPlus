@@ -126,3 +126,29 @@ No other app source file in the recursive beta tree imports Cefrium. The migrati
 ## Migration start boundary
 
 The first implementation pass should introduce the GeckoView runtime/session host while preserving the current single-screen game-first behavior. Do not mix in the new home screen, navigation redesign or optional features. Keep Cefrium profile files untouched. The existing Cefrium persistence request uses page JavaScript; GeckoView profile persistence must be established through its own documented profile/session lifecycle, not by copying Cefrium data or assuming the same JS request is sufficient.
+
+ 
+## Versioned API verification — GeckoView 160
+
+The official Mozilla Firefox source tag `FIREFOX_160_0_RELEASE` was inspected directly at `mobile/android/geckoview/api.txt` and the matching Java sources. The public API for this release includes:
+
+- `GeckoRuntime.create(Context, GeckoRuntimeSettings)` and `GeckoRuntimeSettings.Builder.remoteDebuggingEnabled(boolean)`.
+- `GeckoSession.open(GeckoRuntime)`, `close()`, `loadUri(String)`, `reload()`, and `isOpen()`.
+- `GeckoSession.ProgressDelegate.onPageStart/onPageStop/onSessionStateChange`.
+- `GeckoSession.ContentDelegate.onCrash/onKill/onFullScreen/onExternalResponse`.
+- `GeckoSession.NavigationDelegate.onLoadRequest` and permission delegates for content, Android and media permissions.
+- `GeckoView.setSession(GeckoSession)` and `releaseSession()`.
+
+Versioned source/API: https://github.com/mozilla-firefox/firefox/tree/FIREFOX_160_0_RELEASE/mobile/android/geckoview
+
+The selected Maven artifact is `org.mozilla.geckoview:geckoview-arm64-v8a:160.0.20261116130455`. The Maven index identifies it as Mozilla-published, dated 2026-11-17, MPL 2.0, with 14 listed dependencies. Runtime dependencies include AndroidX Core 1.19.1, Lifecycle 2.11.0, Media3 1.11.1, Play Services FIDO 21.3.1 and SnakeYAML 2.2; the compile dependency includes Kotlin stdlib 2.4.21. Gradle resolution and the final APK size remain subject to CI verification.
+
+Artifact listing and dependency metadata: https://mvnrepository.com/artifact/org.mozilla.geckoview/geckoview-arm64-v8a/160.0.20261116130455
+
+### Profile and storage boundary
+
+The GeckoView 160 public `GeckoRuntime` API does not expose a supported profile-directory getter or a profile-name/path builder. Source inspection shows GeckoThread passes `Context.getFilesDir()` as Gecko's HOME path. The app therefore measures `filesDir` as **persistent app data including GeckoView**, not as an exact profile-only size. Do not guess an internal profile subdirectory or reuse Cefrium's `app_cefrium` path.
+
+### First implementation slice
+
+The first integration removes Cefrium's plugin, dependencies and Maven repository; creates one lazily initialized runtime in the foreground app process; embeds a GeckoSession in GeckoView; handles page load failure, content-process crash/kill, fullscreen notifications, persistent-storage/autoplay permissions for the official game origin, and rejects unrelated site/media permissions by default. The current game-first screen, updater, settings, diagnostics and URL remain in place. Home-screen redesign stays in #22.

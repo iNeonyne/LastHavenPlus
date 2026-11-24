@@ -233,7 +233,7 @@ private fun LastHavenApp(
     }
 
     val reloadGame = {
-        if (session.isOpen) {
+        if (session.isOpen()) {
             session.reload()
         } else {
             session.open(runtime)
@@ -436,7 +436,7 @@ private fun LastHavenApp(
                     }) { Text("App diagnostics") }
                     TextButton(onClick = {
                         showExitPrompt = false
-                        navigator.reload()
+                        reloadGame()
                     }) { Text("Reload game") }
                 }
             },
