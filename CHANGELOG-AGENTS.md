@@ -1,9 +1,8 @@
 # Agent changelog — LastHavenLauncher
 
-Append-only. Newest entries at the top.  
-Every agent **must** add an entry when they change code, Gradle, docs that affect work, or complete research (including failures).
+Append-only. Newest entries at the top. Every meaningful code, Gradle, build, research or documentation change must be recorded.
 
-Format:
+Entry format:
 
 ```markdown
 ## YYYY-MM-DD — short title
@@ -18,12 +17,12 @@ Format:
 
 ---
 
-## 2026-11-24 — Publish greenfield bootstrap documentation
+## 2026-11-24 — Create greenfield Android app and Cefrium build
 
-- **Role:** Architecture / docs
-- **Files:** `README.md`, `AGENTS.md`, `STATUS.md`, `CHANGELOG-AGENTS.md`
-- **Change:** Added the project mission, Cefrium-only target stack, P0–P3 priorities, storage safety rules, parallel work roles, shared TODO, and mandatory documentation protocol.
-- **Why:** Establish one source of truth before implementation and prevent overlapping agent work.
-- **Verified:** All four files committed to the `main` branch; repository contents checked after upload. No app build exists yet.
-- **Do not redo:** Do not re-research the high-level stack choices already documented unless current official Cefrium documentation contradicts them; record any contradiction in STATUS first.
-- **Follow-ups:** Begin P0 scaffold only after claiming ownership in STATUS. Research and pin the exact current Cefrium plugin/SDK versions during integration.
+- **Role:** Architecture / Android / Cefrium integration
+- **Files:** Gradle settings and build files, app manifest, MainActivity, app resources, GitHub Actions workflow, README.md, AGENTS.md, STATUS.md
+- **Change:** Added the Kotlin + Compose Android scaffold, fixed application ID, Cefrium 0.21.0 SDK/Compose/plugin dependencies, Codeberg Maven registry, arm64-only ABI filter, immersive gameplay host using `CefriumView`, minimal Back/exit handling and a CI debug-build workflow.
+- **Why:** Establish the smallest app that can load the existing game before optional features.
+- **Verified:** Official Cefrium 0.21.0 docs confirm the current release, Chromium 156.0.8078.96, JDK 25 / Gradle 9.7.1 / AGP 9.4 / compileSdk 37 requirements and documented `CefriumView` usage. GitHub Actions and physical-device results are pending.
+- **Do not redo:** Do not re-research the documented version/toolchain unless the CI resolver or build contradicts the official release page. `CefriumView` is the Compose API; do not replace it with WebView or another engine.
+- **Follow-ups:** Check CI, install on physical arm64 device, validate LastHaven and then run web capability checks. Release signing key still needs to be generated and backed up before distributing a release build.

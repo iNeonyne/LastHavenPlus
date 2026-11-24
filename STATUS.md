@@ -1,77 +1,79 @@
 # Project status — LastHavenLauncher
 
-Living truth for agents. Update on every meaningful change. Details and history go in `CHANGELOG-AGENTS.md`.
-
 **Last updated:** 2026-11-24  
-**Phase:** P0 — greenfield scaffold not started
-
----
+**Phase:** P0 — Android scaffold and Cefrium integration
 
 ## Snapshot
 
-| Area | State | Notes |
-|------|-------|--------|
-| Repository | Bootstrap ready | Project instructions and tracking docs are on `main`; no application source or Gradle project exists yet |
-| Android scaffold | Not started | Kotlin + Jetpack Compose; JDK 25, AGP 9.4+, Gradle 9.7+ target |
-| Cefrium integrated | Not started | Target: `https://maven.cefrium.com`; verify and pin the current plugin/SDK at integration time |
-| LastHaven loads | Not started | URL: `https://alt.lasthavens.com/play` |
-| Fullscreen / touch / audio | Not started | |
-| Persistent storage | Not started | |
-| Settings | Not started | |
-| Release APK | Not started | |
+| Area | State | Evidence / notes |
+|---|---|---|
+| Repository | Ready | Greenfield project files committed to main |
+| Application ID | Set | `com.neonyne.lasthavenlauncher`; do not change |
+| Android scaffold | Created | Kotlin + Jetpack Compose, compileSdk 37, minSdk 29 |
+| Build toolchain | Configured | JDK 25, Gradle 9.7.1, AGP 9.4.0 |
+| Cefrium dependency | Pinned | SDK / Compose / plugin 0.21.0 |
+| Chromium revision | Documented | 156.0.8078.96, CEF branch 8078 |
+| Maven registry | Configured | Codeberg mirror `https://codeberg.org/api/packages/cefrium/maven` |
+| ABI | Configured | arm64-v8a only |
+| Game page | Not tested in app | Web URL responds with JS-required page; requires real browser execution |
+| CI build | Pending | Workflow added; waiting for GitHub Actions result |
+| Device test | Not run | No connected arm64 device/emulator available to this run |
+| Release signing | Not configured | Release key must be generated/backed up before first distributed release |
 
----
+## Cefrium API findings
+
+- Official quickstart documents `CefriumView`, `rememberCefriumViewState` and `rememberCefriumNavigator` in package `com.cefrium.compose`.
+- Official docs call this the **Compose API**. The classic Android View API is `CefriumBrowser.createWithSurface(activity)`; the project uses the requested `CefriumView` API.
+- Cefrium 0.21.0 is the current release and tracks Chromium 156.0.8078.96.
+- Required toolchain: JDK 25, Gradle 9.7.1, AGP 9.4, compileSdk 37, minSdk 29 and 4 GB Gradle heap.
+- SDK manifest contributes its multiprocess services and permissions via manifest merge; do not duplicate those service declarations.
+- Cefrium API is pre-1.0 and may change between releases.
+
+## Web capability verification
+
+**No capabilities are marked passed until tested inside the app and compared with Chrome on the same device.**
+
+| Requirement | Chrome reference | Cefrium app | Status |
+|---|---|---|---|
+| WebGL2 | Not run | Not run | Pending device |
+| WebAssembly | Not run | Not run | Pending device |
+| WASM threads / SharedArrayBuffer | Not run | Not run | Pending device; requires COOP/COEP |
+| WebSockets | Not run | Not run | Pending device |
+| Audio after user gesture | Not run | Not run | Pending device |
+| LastHaven gameplay | Not run | Not run | Pending device |
+
+The web fetch of the game URL returns only “Loading... Please enable JavaScript to play Lasthavens.” That does not reveal the game's actual runtime requirements. Use remote debugging (`chrome://inspect`) against the Cefrium process and Chrome on the same phone.
 
 ## Active work
 
-| Owner / role | Surface | Started | Notes |
-|--------------|---------|---------|--------|
-| — | — | — | No implementation work claimed |
-
----
+| Owner | Surface | State |
+|---|---|---|
+| Main integrator | Greenfield scaffold + CI | Initial implementation committed; CI pending |
 
 ## Blockers
 
-| ID | Blocker | Impact | Owner |
-|----|---------|--------|-------|
-| — | None currently recorded | — | — |
-
----
-
-## Web requirements (record inside Cefrium build)
-
-| Feature | Chrome on device | Cefrium build | Notes |
-|---------|------------------|---------------|-------|
-| WebGL2 | TBD | TBD | |
-| WebAssembly | TBD | TBD | |
-| WASM threads / SAB | TBD | TBD | Needs COOP/COEP from server |
-| WebSockets | TBD | TBD | |
-| Audio after gesture | TBD | TBD | |
-
----
+| Blocker | Impact | Next action |
+|---|---|---|
+| No physical arm64 test device attached to this session | Cannot verify gameplay, GPU, audio or persistence | Install CI APK on target phone and run checklist |
+| Release signing key not configured | No stable release APK can be shipped yet | Generate/backup key and configure CI secrets before release |
+| Cefrium Compose error callback and profile/cache controls need API-level validation | Retry and clear-cache features not implemented yet | Inspect pinned 0.21.0 API docs before implementation |
 
 ## Performance log
 
-| Date | Change | Metric | Before | After | Device |
-|------|--------|--------|--------|-------|--------|
-| — | — | — | — | — | — |
+No performance changes have been made. Establish baseline numbers after gameplay loads.
 
----
+| Metric | Baseline | Optimized |
+|---|---:|---:|
+| Cold start to first paint | Not measured | — |
+| FPS / frame pacing | Not measured | — |
+| PSS / native memory | Not measured | — |
+| APK download size | Not measured | — |
+| Rendering latency | Not measured | — |
 
-## Decisions (do not reverse without STATUS note)
+## Next actions
 
-1. Cefrium only — no WebView fallback.
-2. arm64-v8a product ABI only.
-3. Fixed applicationId + signing key after first release build.
-4. Every agent change documented in CHANGELOG-AGENTS + STATUS.
-5. Get the game loading before polish or speculative optimization.
-
----
-
-## Next actions (ordered)
-
-1. Scaffold the minimal Kotlin + Compose Android project using the target toolchain.
-2. Verify the current official Cefrium plugin and SDK versions; add Maven, plugin, SDK, and arm64-only ABI filters.
-3. Host `CefriumView` and load the default LastHaven URL.
-4. Build and run on a physical arm64 device; record actual results and complete the web capability checklist via `chrome://inspect`.
-5. Add P1 fullscreen, touch/audio, persistent storage, lifecycle handling, and connection retry.
+1. Confirm the GitHub Actions debug build passes; fix any build errors.
+2. Install the arm64 APK on a physical phone and confirm LastHaven loads.
+3. Run the web capability checklist in Cefrium and Chrome on the same phone.
+4. Implement retry, persistent storage request and lifecycle handling based on verified Cefrium APIs.
+5. Add settings only after the playable path is reliable.

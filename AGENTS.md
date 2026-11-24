@@ -1,197 +1,115 @@
 # AGENTS.md — LastHavenLauncher
 
-Instructions for any human or AI agent working in this repository.
+Instructions for every human or AI agent working in this repository.
 
 ## Mission
 
-Ship the simplest reliable Android app that opens **LastHaven** (WotLK private server client on the web) in **Cefrium** and lets the user play.
+Ship the simplest reliable Android app that opens the existing LastHaven WotLK private server in Cefrium and lets the user play.
 
 Default URL: `https://alt.lasthavens.com/play`
 
-Do **not** rebuild the game. Do **not** use System WebView. Do **not** add a general browser UI.
+Do not recreate, modify or develop the game. Do not add System WebView, GeckoView or any fallback engine. Do not add general-purpose browser features.
 
----
+## Hard rules
 
-## Hard rules (read before editing)
+1. **Read STATUS and the latest changelog entries before editing.**
+2. **Claim ownership.** Add your role and file/work area under STATUS → Active work before editing. One owner per file or Gradle block at a time.
+3. **Document every meaningful change.** Update STATUS and append to CHANGELOG-AGENTS.md, including research failures and unverified assumptions.
+4. **Research Cefrium APIs first.** Never guess engine API names. Use official docs and samples. Record uncertain APIs as blockers.
+5. **Game first.** Get LastHaven loading before optional settings, theming or performance work.
+6. **arm64-v8a only.** Do not package x86, x86_64 or armeabi-v7a native libraries.
+7. **Stable app identity.** Do not change `applicationId` (`com.neonyne.lasthavenlauncher`) or release signing key after the first distributed build.
+8. **Storage safety.** Never clear cookies, IndexedDB, LocalStorage or Cache Storage except through a confirmed “Clear game data” action.
+9. **No speculative optimization.** Every performance change needs before/after measurements in STATUS.
+10. **No unnecessary handoffs.** Parallelize independent tasks only; one integrator owns merging and pushes to main.
 
-1. **Document every change for other agents.**  
-   After any meaningful edit (code, Gradle, docs, experiments, failed attempts), update:
-   - [`STATUS.md`](STATUS.md) — current truth (what works, what doesn’t, blockers)
-   - [`CHANGELOG-AGENTS.md`](CHANGELOG-AGENTS.md) — append-only log of *what* changed, *why*, *who/role*, and *what others must not redo*
-   Incomplete logs cause overlap and wasted work. Treat an undocumented change as incomplete.
+## Current engine decision
 
-2. **No parallel conflicting edits.**  
-   Before claiming a surface (module, file, Gradle block, settings screen), check `STATUS.md` “Active work” and the latest `CHANGELOG-AGENTS.md` entries. If another agent owns it, coordinate or wait.
+- Cefrium SDK: `com.cefrium:cefrium-sdk:0.21.0`
+- Cefrium Compose wrapper: `com.cefrium:cefrium-compose:0.21.0`
+- Gradle plugin: `com.cefrium` version `0.21.0`
+- Chromium: `156.0.8078.96` (CEF branch 8078)
+- Maven registry: `https://codeberg.org/api/packages/cefrium/maven`
+- UI API: `com.cefrium.compose.CefriumView`, `rememberCefriumViewState`, `rememberCefriumNavigator`
 
-3. **Research before inventing APIs.**  
-   Cefrium is pre-1.0. Prefer [cefrium.com/quickstart](https://cefrium.com/quickstart/) and official samples. Flag unverified API names in STATUS instead of guessing.
+**Terminology:** Official Cefrium docs describe `CefriumView` as the Compose API. The classic Android View integration is `CefriumBrowser.createWithSurface(activity)`. Use the Compose `CefriumView` requested by this project unless an API-level blocker is found; do not silently switch rendering APIs.
 
-4. **Game first.**  
-   Get LastHaven loading in Cefrium before settings polish, theming, or speculative performance flags.
+Official build requirements for Cefrium 0.21.0:
+- JDK 25
+- Gradle 9.7.1
+- AGP 9.4.0
+- compileSdk 37, minSdk 29
+- Gradle heap 4 GB
+- AGP 9 built-in Kotlin support; do not apply `org.jetbrains.kotlin.android`
+- Apply the Compose compiler Gradle plugin at the matching stable Kotlin version
+- Use legacy JNI library packaging as required by Cefrium's quickstart
 
-5. **arm64-v8a only.**  
-   Filter ABIs in Gradle. Do not ship x86 / x86_64 / armeabi-v7a native libs in the product APK.
+The Codeberg Maven registry mirrors the current and previous releases only. Keep Cefrium pinned to a specific version; check the official releases page before updating it. Update SDK, Compose wrapper and Gradle plugin together.
 
-6. **Stable identity.**  
-   Never change `applicationId` or the release signing key once established. Updates must preserve game data.
-
-7. **Storage safety.**  
-   Never auto-clear cookies, IndexedDB, localStorage, or Cache Storage. “Clear cache” ≠ “Clear data”.
-
----
-
-## Non-goals
-
-- Recreating or modifying the LastHaven game client  
-- System WebView or multi-engine fallbacks  
-- Bookmarks, tabs, search, multi-site browser  
-- Background services, push, accounts (unless the game itself requires them in-page)  
-- Over-engineered architecture before a working play path  
-
----
-
-## Architecture (target)
-
-```
-app/
-  MainActivity          → fullscreen host, lifecycle, back handling
-  GameScreen / host     → CefriumView (or View CefriumBrowser), load URL, loading + error UI
-  Settings              → small overlay or activity; does not interrupt mid-fight unless user opens it
-  SettingsStore         → URL, fullscreen, orientation preferences
-```
-
-Engine: **Cefrium only**
-
-| Piece | Notes |
-|-------|--------|
-| Maven | `https://maven.cefrium.com` + `includeGroup("com.cefrium")` |
-| Plugin | `id("com.cefrium")` version pinned with SDK |
-| SDK | `com.cefrium:cefrium-sdk:<version>` |
-| UI API | Prefer Compose `CefriumView` + `rememberCefriumViewState` per official quickstart; View API (`CefriumBrowser`) is allowed if documented |
-| Init | Prefer SDK auto-init; only call `Cefrium.initialize` if measured need |
-| Toolchain | JDK **25**, AGP 9.4+, Gradle 9.7+, minSdk 29+, large Gradle heap (`-Xmx4g`) |
-
-Pin exact Cefrium version in Gradle and record Chromium/Cefrium versions in Settings → Engine information and in STATUS.
-
----
+References:
+- https://cefrium.com/quickstart/
+- https://cefrium.com/releases/
+- https://cefrium.com/guides/adopting-cefrium/
+- https://cefrium.com/docs/
 
 ## Parallel agent roles
 
-Use roles to split work. Each role updates STATUS + CHANGELOG-AGENTS when finishing a slice.
+| Role | Owns | Must not duplicate |
+|---|---|---|
+| Architecture | App structure, package, boundaries | Cefrium API research |
+| Android | Activity, manifest, lifecycle, orientation, permissions | Engine integration internals |
+| Cefrium | SDK version, Maven, view host, engine APIs | General app UI |
+| QA | Build, arm64 device/emulator, web capability checks | Unmeasured performance changes |
+| Performance | Profiling and measured improvements after compatibility checks | Speculative flag lists |
 
-| Role | Owns | Does not own |
-|------|------|----------------|
-| **Architecture** | Module layout, package names, navigation boundaries, shared types | Engine API details, pixel-level UI polish |
-| **Android** | Manifest, lifecycle, back press, permissions, release signing notes | Cefrium-specific calls without reading docs |
-| **Cefrium** | SDK version, Maven, `CefriumView` / browser host, engine info strings | App-wide theming, Play Store listing |
-| **Performance** | Measured experiments (FPS, memory, start time, APK size) with before/after | Untested flag dumps |
-| **QA** | Web feature checklist, device matrix notes, regression list | Shipping features without a failing test or repro |
+Agents may work in parallel only on disjoint files/surfaces. The main integrator reviews and commits the combined result directly to `main`.
 
-**Anti-redundancy**
+## Shared TODO
 
-- One owner per file or Gradle block at a time → list under STATUS “Active work”.  
-- Performance changes require a STATUS note with metric + numbers.  
-- If research is already in STATUS, do not re-research; extend it.  
-- Prefer editing existing files over adding parallel “v2” implementations.
+### P0 — Playable core
+- [x] Create a greenfield Android project scaffold
+- [x] Pin Cefrium and configure its Codeberg Maven registry
+- [x] Configure arm64-only packaging
+- [ ] Build the app successfully in CI
+- [ ] Install and load LastHaven on a physical arm64 device
 
----
+### P1 — Gameplay reliability
+- [ ] Confirm fullscreen behavior and touch input
+- [ ] Verify audio and autoplay after a user gesture
+- [ ] Verify cookies, IndexedDB, LocalStorage and Cache Storage persist
+- [ ] Request persistent web storage on a valid page-load path
+- [ ] Handle main-frame load failures and renderer termination with retry
+- [ ] Verify lifecycle pause/resume and session restoration
 
-## Shared TODO (keep in sync with STATUS.md)
+### P2 — Settings and measurement
+- [ ] Game URL
+- [ ] Fullscreen and orientation
+- [ ] Clear HTTP/code cache only
+- [ ] Confirmed clear-game-data action
+- [ ] Reload, engine information and app version
+- [ ] Run WebGL2, WebAssembly, WASM threads/SAB, WebSockets and audio checks in Cefrium; compare with Chrome on the same phone
+- [ ] Measure cold start, frame pacing, memory, rendering latency and APK size before changing performance settings
 
-### P0
+### P3 — Release
+- [ ] Create and securely back up the release signing key
+- [ ] Build release APK/AAB for arm64 only
+- [ ] Verify same-key in-place update preserves game data
 
-- [ ] Scaffold empty Android app (Kotlin, Compose) matching Cefrium toolchain  
-- [ ] Wire Cefrium Maven + plugin + SDK; arm64-only ABI filters  
-- [ ] Load default LastHaven URL in CefriumView  
-- [ ] Confirm page renders on physical arm64 device  
+## Documentation protocol
 
-### P1
+When starting work:
+1. Read this file, STATUS and the last 5–10 changelog entries.
+2. Claim the file/work area in STATUS.
+3. Make the smallest useful change.
+4. Build/test where possible.
+5. Update STATUS, append CHANGELOG-AGENTS, and unclaim the work.
 
-- [ ] Fullscreen gameplay path  
-- [ ] Touch + audio (user-gesture autoplay path)  
-- [ ] Persistent storage + `navigator.storage.persist()` where applicable  
-- [ ] Connection failure → retry UI  
-- [ ] Lifecycle: resume restores session without wiping data  
+Append changelog entries with date, role, files, change, reason, verification, do-not-redo notes and follow-ups. A failed experiment is still worth recording.
 
-### P2
+## Storage and privacy
 
-- [ ] Settings: URL, fullscreen, orientation, clear cache, clear data, reload, engine info, app version  
-- [ ] Performance pass with logged metrics  
-- [ ] APK size: arm64-only, no dead ABIs  
-
-### P3
-
-- [ ] Release-signed APK  
-- [ ] Verify update (same id + key) keeps game data  
-
-### Web capability checks (Cefrium build)
-
-- [ ] WebGL2  
-- [ ] WASM  
-- [ ] WASM threads / SharedArrayBuffer (COOP/COEP)  
-- [ ] WebSockets  
-- [ ] Audio after gesture  
-
----
-
-## Documentation protocol (mandatory)
-
-### When you finish a task
-
-Append to `CHANGELOG-AGENTS.md`:
-
-```markdown
-## YYYY-MM-DD — short title
-- **Role:** Cefrium | Android | …
-- **Files:** list paths touched
-- **Change:** what landed
-- **Why:** motivation / bug / metric
-- **Verified:** device / command / result (or “not verified”)
-- **Do not redo:** explicit note for future agents
-- **Follow-ups:** open items (link STATUS)
-```
-
-Update `STATUS.md`:
-
-- Current phase (P0–P3)  
-- Working / broken / unknown  
-- Active work (who owns what)  
-- Blockers  
-- Latest measured numbers  
-
-### When research fails or is blocked
-
-Still log it. “Tried X, failed because Y” prevents the next agent from repeating X.
-
-### When you start work
-
-1. Read `STATUS.md` and the last 5–10 changelog entries.  
-2. Claim a slice under Active work.  
-3. Implement.  
-4. Log. Unclaim when done.
-
----
-
-## Performance guidelines
-
-- Optimize only with before/after numbers in STATUS.  
-- Candidates: GPU/Surface path, WebGL, WASM memory, frame pacing, long sessions, APK size.  
-- Avoid: background services, unbounded caches, duplicate engine instances.  
-
----
-
-## Security & privacy (minimal)
-
-- Only load the configured game URL by default (user may change URL in settings).  
-- No analytics SDKs unless explicitly required later.  
-- Clear-data is destructive; always confirm.
-
----
-
-## References
-
-- Spec: project objective doc (LastHavenLauncher)  
-- Cefrium: https://cefrium.com/quickstart/  
-- Releases: https://cefrium.com/releases/  
-- Status living file: [`STATUS.md`](STATUS.md)  
-- Agent change log: [`CHANGELOG-AGENTS.md`](CHANGELOG-AGENTS.md)  
+- Use the Cefrium default persistent profile unless a documented requirement proves otherwise.
+- Do not place browser data in cache directories.
+- Never clear user data during startup, update or recovery.
+- No analytics SDKs, tracking or background services.
+- Do not log game cookies, tokens, local storage values or other session secrets.

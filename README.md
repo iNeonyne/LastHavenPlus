@@ -1,105 +1,67 @@
 # LastHavenLauncher
 
-Minimal Android launcher for the **LastHaven** WotLK private server.  
-The game already exists at the URL below. This app only embeds a full Chromium engine and opens it reliably.
+A minimal Android launcher for the existing **LastHaven WotLK private server**. The game is already developed; this app only embeds the browser engine and opens it.
 
-**Default game URL:** `https://alt.lasthavens.com/play` (editable in Settings)
+**Default game URL:** https://alt.lasthavens.com/play
 
-## Goal
+## Current implementation
 
-Open LastHaven and play. No browser chrome, no game library, no WebView fallback.
+- Native Android app: Kotlin + Jetpack Compose
+- Embedded engine: Cefrium 0.21.0 (Chromium 156.0.8078.96)
+- Browser surface: Cefrium Compose API, `CefriumView`
+- Product ABI: `arm64-v8a` only
+- Minimum Android: 10 (API 29)
+- Fixed application ID: `com.neonyne.lasthavenlauncher`
 
-## Stack
+Cefrium's `CefriumView` is a Compose API, not the classic Android `View` class. It is the API named in the project requirements. The classic View integration is `CefriumBrowser.createWithSurface(activity)`.
 
-| Item | Choice |
-|------|--------|
-| Engine | **Cefrium** only (`com.cefrium:cefrium-sdk` + Compose `CefriumView`) |
-| Chromium (pin) | Track current Cefrium release (Chromium 156 family as of docs) |
-| ABI | **arm64-v8a only** |
-| UI | Kotlin + Jetpack Compose |
-| Toolchain | JDK **25**, AGP 9.4+, Gradle 9.7+, compileSdk 36–37, minSdk 29+ |
-| applicationId | Fixed from first signed build (changing id or signing key wipes updates / data) |
+## Build requirements
 
-Maven: primary `https://maven.cefrium.com` (group `com.cefrium`).  
-Codeberg Maven registry mirrors the newest releases.
+Cefrium 0.21.0 requires:
 
-Official docs: [cefrium.com/quickstart](https://cefrium.com/quickstart/)
+- JDK 25
+- Gradle 9.7.1
+- Android Gradle Plugin 9.4.0
+- Android SDK / compileSdk 37
+- 4 GB Gradle heap for Cefrium dexing
+
+Cefrium is pinned at 0.21.0. The Codeberg Maven registry mirrors the current release and the previous release; it is configured in both plugin and dependency resolution. Update the pinned version and plugin together after checking the official release notes.
+
+Official references:
+- [Cefrium Quickstart](https://cefrium.com/quickstart/)
+- [Cefrium Releases](https://cefrium.com/releases/)
+- [Cefrium API reference](https://cefrium.com/docs/)
+
+## Build
+
+Install JDK 25, Android SDK 37 and Gradle 9.7.1, then run:
+
+```bash
+gradle assembleDebug
+gradle testDebugUnitTest
+```
+
+Debug APK: `app/build/outputs/apk/debug/app-debug.apk`
+
+GitHub Actions builds the debug APK and publishes it as a workflow artifact. A release keystore is intentionally not stored in this repository. Configure and securely back up the release signing key before distributing the first release build; never commit it.
 
 ## Priorities
 
-| Priority | Scope |
-|----------|--------|
-| **P0** | New project, Cefrium integrated, LastHaven loads |
-| **P1** | Fullscreen, touch, audio, persistent storage, connection retry |
-| **P2** | Settings, measurable performance work, arm64 APK size |
-| **P3** | Release APK; verify in-place update keeps game data |
+| Priority | Deliverable |
+|---|---|
+| P0 | Minimal app, Cefrium integrated, LastHaven loads on arm64 |
+| P1 | Fullscreen gameplay, touch/audio, lifecycle, persistent storage, retry handling |
+| P2 | Minimal settings, verified compatibility, measured performance, APK size |
+| P3 | Release APK, stable signing, update/data-preservation verification |
 
-## Build (once the Gradle tree exists)
+## Storage policy
 
-```bash
-# Requires JDK 25 + Android SDK matching Cefrium requirements
-./gradlew assembleDebug
-# Output: app/build/outputs/apk/debug/app-debug.apk
-```
-
-Prefer a physical **arm64** phone (test class: modern device, ~12 GB RAM).
-
-## Settings (planned)
-
-- Game URL  
-- Fullscreen  
-- Screen orientation  
-- Clear game cache (HTTP cache + code cache only)  
-- Clear game data (cookies, IndexedDB, localStorage, Cache Storage — with confirmation)  
-- Reload game  
-- Engine information (Cefrium + Chromium versions)  
-- Application version  
-
-## Storage rules
-
-- Must persist: cookies, IndexedDB, localStorage, Cache Storage across sessions.  
-- Same `applicationId` + signing key across APK updates must keep game data.  
-- Request persistent storage (`navigator.storage.persist()`) on a valid launch path.  
-- Never clear browser data automatically.  
-- “Clear cache” must not touch game data stores.
-
-## Web requirements checklist
-
-Record results in [`STATUS.md`](STATUS.md) **inside the Cefrium build** (Chrome on device as reference):
-
-- [ ] WebGL2  
-- [ ] WebAssembly  
-- [ ] WASM threads / SharedArrayBuffer (needs COOP/COEP from the game server)  
-- [ ] WebSockets  
-- [ ] Audio (including after a user gesture)  
-
-Use remote debugging (`chrome://inspect`) against the embedded engine.
-
-## Performance policy
-
-Optimize only where you can show **before/after numbers**. No background services. Prefer GPU path and long-session stability over speculative flags.
-
-| Metric | How |
-|--------|-----|
-| Cold start → first paint | logcat timestamps |
-| Steady FPS / jank | DevTools Performance in-game |
-| Memory (PSS / native) | Android Studio Profiler |
-| APK / download size | arm64-only build report |
+- Cookies, IndexedDB, LocalStorage and Cache Storage are game data and must persist.
+- Never clear browser data automatically.
+- “Clear game cache” may clear only HTTP and code caches.
+- “Clear game data” must be a separate destructive action with confirmation.
+- APK updates must use the same application ID and release signing key.
 
 ## Agent workflow
 
-See [`AGENTS.md`](AGENTS.md) for non-goals, architecture, parallel agent roles, and the shared TODO.
-
-**Every change must be documented** so agents do not overlap or redo work:
-
-| File | Purpose |
-|------|---------|
-| [`STATUS.md`](STATUS.md) | Current truth: phase, blockers, active ownership, metrics |
-| [`CHANGELOG-AGENTS.md`](CHANGELOG-AGENTS.md) | Append-only log of each change (what / why / verified / do-not-redo) |
-
-Claim work under STATUS → Active work before editing a surface. Unclaim when done.
-
-## License
-
-- App code: MIT (unless stated otherwise in `LICENSE`)  
-- Cefrium / CEF / Chromium: LGPL-3.0-or-later and upstream licenses  
+Read [AGENTS.md](AGENTS.md) before editing. Keep [STATUS.md](STATUS.md) current and append every meaningful change to [CHANGELOG-AGENTS.md](CHANGELOG-AGENTS.md). Claim a file or work area before editing it. Keep the workflow lean and prioritize a playable build.
