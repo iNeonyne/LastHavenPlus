@@ -109,11 +109,12 @@ object AddonArchiveInspector {
                         }
                     }
 
-                    if (!entry.isDirectory) {
-                        verifyEntry(zip, entry)
-                        if (safePath.endsWith(".toc", ignoreCase = true)) {
-                            tocEntries += entry
-                        }
+                    if (entry.isDirectory && entry.size != 0L) {
+                        throw AddonArchiveException("Directory entry unexpectedly contains data: ${entry.name}")
+                    }
+                    verifyEntry(zip, entry)
+                    if (!entry.isDirectory && safePath.endsWith(".toc", ignoreCase = true)) {
+                        tocEntries += entry
                     }
                 }
 
@@ -125,6 +126,9 @@ object AddonArchiveInspector {
                     .distinctBy { it.rootPath.lowercase(Locale.ROOT) }
                 if (addons.isEmpty()) {
                     throw AddonArchiveException("No valid addon folders were found.")
+                }
+                if (addons.map { it.folderName.lowercase(Locale.ROOT) }.distinct().size != addons.size) {
+                    throw AddonArchiveException("ZIP contains multiple addon roots with the same folder name.")
                 }
 
                 return AddonArchiveInspection(
