@@ -263,7 +263,7 @@ private fun LastHavenApp(
             title = { Text("Update available") },
             text = {
                 Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Text("LastHaven Launcher ${update.version} is available.")
+                    Text("LastHavenPlus ${update.version} is available.")
                     if (update.patch != null) {
                         Text(
                             "A smaller differential download is available " +
@@ -377,7 +377,7 @@ private fun LastHavenApp(
                     TextButton(onClick = {
                         showExitPrompt = false
                         showDiagnosticsDialog = true
-                    }) { Text("App & debug logs") }
+                    }) { Text("App diagnostics") }
                     TextButton(onClick = {
                         showExitPrompt = false
                         navigator.reload()
