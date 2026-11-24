@@ -76,7 +76,7 @@ The web fetch of the game URL returns only “Loading... Please enable JavaScrip
 
 | Owner | Surface | State |
 |---|---|---|
-| Main integrator | APK size audit and safe R8 / resource shrinking trial; own `app/build.gradle.kts`, CI workflow, status and changelog | Implementation committed; CI validation pending |
+| Main integrator | Signed release pipeline and BSDIFF differential updater; own updater, Gradle signing config, CI workflow, tests and release docs | In progress; preserve existing release certificate and full-APK fallback |
 
 ## Blockers
 
