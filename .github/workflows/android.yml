@@ -136,7 +136,7 @@ jobs:
           echo "Reading release certificate fingerprint"
           CERT_OUTPUT="$("$APKSIGNER" verify --print-certs "$RELEASE_APK")"
           echo "$CERT_OUTPUT"
-          CERT_DIGEST="$(printf '%s\n' "$CERT_OUTPUT" | awk -F': ' '/certificate SHA-256 digest:/ {print tolower($2); exit}')"
+          CERT_DIGEST="$(printf '%s\n' "$CERT_OUTPUT" | awk '/certificate SHA-256 digest:/ {sub(/^.*certificate SHA-256 digest: /, ""); print tolower($0); exit}')"
           echo "Actual release certificate SHA-256: ${CERT_DIGEST:-<missing>}"
           echo "Expected release certificate SHA-256: $EXPECTED_CERT"
           if [[ "$CERT_DIGEST" != "$EXPECTED_CERT" ]]; then
@@ -218,7 +218,7 @@ jobs:
 
               if [[ "$BASE_SHA" == "$BASE_EXPECTED_SHA" ]]; then
                 BASE_CERT_OUTPUT="$("$ANDROID_HOME/build-tools/37.0.0/apksigner" verify --print-certs "$RUNNER_TEMP/previous.apk")"
-                BASE_CERT_DIGEST="$(printf '%s\n' "$BASE_CERT_OUTPUT" | awk -F': ' '/certificate SHA-256 digest:/ {print tolower($2); exit}')"
+                BASE_CERT_DIGEST="$(printf '%s\n' "$BASE_CERT_OUTPUT" | awk '/certificate SHA-256 digest:/ {sub(/^.*certificate SHA-256 digest: /, ""); print tolower($0); exit}')"
                 if [[ "$BASE_CERT_DIGEST" == "b3bbf7520e77dfc384a60b1eee6c5f205b978f9b453849e2be523f642018d263" ]]; then
                   PATCH_NAME="lasthavenlauncher-arm64-${PREVIOUS_TAG}-to-${GITHUB_REF_NAME}.bsdiff"
                   if bsdiff "$RUNNER_TEMP/previous.apk" "$TARGET_APK" "$RUNNER_TEMP/update.bsdiff" &&
