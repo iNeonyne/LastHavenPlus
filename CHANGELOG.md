@@ -16,7 +16,7 @@
 
 ### Privacy and storage
 - Keep diagnostics and usage measurements on-device; no analytics or automatic log uploads.
-- Redact common credentials and session-related values from diagnostic messages.
+- Redact common credentials and session-related values from diagnostic messages, including full Cookie/Set-Cookie headers and JSON credential fields; unit tests cover key/value, header, JSON and URL-query cases.
 - Preserve the Cefrium game profile across normal launches and updates.
 
 ### Notes and limitations
