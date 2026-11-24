@@ -23,6 +23,10 @@
 | [#17](#issue-17) | P2 — Back up and restore launcher settings | open |
 | [#18](#issue-18) | Roadmap — v1.0.0 released, v1.1.0 addon manager, v1.2.0 improvements | open |
 | [#19](https://github.com/iNeonyne/LastHavenPlus/issues/19) | P1 — Add an opt-in beta release channel to the updater | open |
+| [#20](https://github.com/iNeonyne/LastHavenPlus/issues/20) | P1 — Prepare the GeckoView migration technical decision record | open |
+| [#21](https://github.com/iNeonyne/LastHavenPlus/issues/21) | P1 — Replace Cefrium with Mozilla GeckoView | open |
+| [#22](https://github.com/iNeonyne/LastHavenPlus/issues/22) | P1 — Add the home screen with Play and Settings | open |
+| [#23](https://github.com/iNeonyne/LastHavenPlus/issues/23) | P1 — Move the existing ZIP addon manager into Settings | open |
 
 ---
 
@@ -50,13 +54,13 @@ Harden the existing build and updater without replacing the current update archi
 
 ## Build reliability
 - [x] Add the Gradle Wrapper (wrapper scripts, wrapper JAR, and pinned Gradle 9.7.1 distribution URL) — present on beta.
-- [x] Pin the Gradle 9.7.1 distribution SHA-256 in wrapper properties; wrapper validation passed in CI run #232.
-- [x] Commit wrapper JAR and executable `gradlew`; CI wrapper validation passed in run #232.
-- [x] Update GitHub Actions to invoke `./gradlew`; run #232 reached the Gradle build through the wrapper.
+- [x] Pin the Gradle 9.7.1 distribution SHA-256 in wrapper properties; wrapper validation passed in CI run #247.
+- [x] Commit wrapper JAR and executable `gradlew`; CI wrapper validation passed in run #247.
+- [x] Update GitHub Actions to invoke `./gradlew`; run #247 reached the Gradle build through the wrapper.
 - [ ] Keep the existing JDK, AGP, SDK, Cefrium, signing key, application ID, and arm64-only configuration unless a verified compatibility issue requires a change.
 - [ ] Verify current beta debug and signed release builds in CI. Run #232 failed Kotlin compilation before APK/signing/ABI verification; historical run #85 is not current-source evidence.
 
-**Beta audit update (2026-11-25):** The Gradle Wrapper is present and pinned to Gradle 9.7.1 with a distribution SHA-256; wrapper validation passed in run #232. The current beta build fails compilation in #13 at `AddonManagerDialog.kt:166` and `:171`, so unit tests and APK/signature/ABI verification did not run. Keep #4 open for updater edge-case tests and a clean current-beta CI run.
+**Beta audit update (2026-11-25):** The Gradle Wrapper is present and pinned to Gradle 9.7.1 with a distribution SHA-256; wrapper validation passed in run #247. The current beta build fails compilation in #13 at `AddonManagerDialog.kt:166` and `:171`, so unit tests and APK/signature/ABI verification did not run. Keep #4 open for updater edge-case tests and a clean current-beta CI run.
 
 ## Updater and differential-patch tests
 
@@ -101,7 +105,7 @@ Verify the actual launcher experience on physical Android hardware before treati
 
 ## Device verification checklist
 - [ ] Install and cold-start the release APK on a physical arm64 device.
-- [ ] Confirm Cefrium starts and loads https://alt.lasthavens.com/play.
+- [ ] Confirm GeckoView starts and loads https://alt.lasthavens.com/play.
 - [ ] Verify login and a representative gameplay session.
 - [ ] Verify WebGL/WebGL2 and WebAssembly functionality.
 - [ ] Verify touch input, fullscreen behavior, and orientation behavior.
@@ -120,7 +124,7 @@ Verify the actual launcher experience on physical Android hardware before treati
 - Any reproducible failures and steps to reproduce.
 
 ## Constraints
-- Keep Cefrium as the sole browser engine.
+- Keep GeckoView as the sole browser engine.
 - Do not clear browser storage during startup, update, or recovery.
 - Do not make speculative performance changes; record measurements before optimizing.
 - Follow AGENTS.md and document results in STATUS.md and CHANGELOG-AGENTS.md.
@@ -150,14 +154,14 @@ Add essential launcher settings and safe storage visibility after the core game 
   - Apply a valid change on explicit Save/Apply by navigating the game surface to the new URL; do not silently reload while the user is typing or merely opening settings.
   - Keep the chosen URL across app restarts.
 - [ ] Fullscreen and orientation controls, only where useful and verified.
-- [ ] Show app version and Cefrium/Chromium engine version.
-  - Verify the pinned Cefrium SDK exposes a supported public version API before implementation; do not infer or hardcode a runtime version.
-- [x] Show installed APK size and game/browser profile storage usage, separating cache from persistent game data where Android/Cefrium expose reliable figures (initial implementation; physical-device path validation pending).
+- [ ] Show app version and GeckoView/Chromium engine version.
+  - Verify the pinned GeckoView SDK exposes a supported public version API before implementation; do not infer or hardcode a runtime version.
+- [x] Show installed APK size and game/browser profile storage usage, separating cache from persistent game data where Android/GeckoView expose reliable figures (initial implementation; physical-device path validation pending).
 - [x] Add a refresh action and clearly label estimates or unavailable breakdowns.
-- [ ] Inspect the pinned Cefrium API for a safe HTTP-cache and code-cache-only clear operation.
+- [ ] Inspect the pinned GeckoView API for a safe HTTP-cache and code-cache-only clear operation.
 - [ ] If both cache types can be cleared safely, add a clearly named Clear game cache action.
 - [ ] Add a separate Clear game data destructive action with explicit confirmation; never combine it with cache clearing.
-  - Verify the exact pinned Cefrium profile API and lifecycle requirements from official documentation/source before coding; do not guess method names.
+  - Verify the exact pinned GeckoView profile API and lifecycle requirements from official documentation/source before coding; do not guess method names.
   - Explain that this removes saved game login/session and site data; require a second explicit confirmation and ensure the game surface/profile is safely detached before deletion.
   - If no supported safe deletion API exists, leave the action unimplemented and document the limitation rather than deleting profile files by guesswork.
 - [ ] Verify settings and storage reporting survive app restarts and do not disrupt the active game session unexpectedly.
@@ -165,7 +169,7 @@ Add essential launcher settings and safe storage visibility after the core game 
 ## Dependencies
 - The navigation/menu entry point from #9 is already implemented.
 - Physical-device verification is a release/verification gate, not a blocker to developing and unit-testing settings functionality; keep device checks pending until performed.
-- Do not implement cache clearing or game-data clearing until the pinned Cefrium API and lifecycle requirements are verified.
+- Do not implement cache clearing or game-data clearing until the pinned GeckoView API and lifecycle requirements are verified.
 
 ## Constraints
 - Keep the UI minimal and game-focused.
@@ -175,7 +179,7 @@ Add essential launcher settings and safe storage visibility after the core game 
 - Follow AGENTS.md and update STATUS.md and CHANGELOG-AGENTS.md.
 
 ## Acceptance criteria
-Essential settings work on a physical arm64 device; URL validation and explicit apply behavior are tested; storage figures are clearly defined and accurate within Android/Cefrium API limits; cache clearing is limited to verified cache APIs; destructive game-data clearing is separate, confirmed and backed by a verified Cefrium API.
+Essential settings work on a physical arm64 device; URL validation and explicit apply behavior are tested; storage figures are clearly defined and accurate within Android/GeckoView API limits; cache clearing is limited to verified cache APIs; destructive game-data clearing is separate, confirmed and backed by a verified GeckoView API.
 
 ## Roadmap
 - **Target:** v1.1.0.
@@ -193,7 +197,7 @@ Essential settings work on a physical arm64 device; URL validation and explicit 
 Establish reproducible performance and APK-size measurements before making further optimizations.
 
 ## Baseline measurements
-- [ ] Record device model, Android version, app build type and Cefrium version.
+- [ ] Record device model, Android version, app build type and GeckoView version.
 - [ ] Measure cold start to first paint.
 - [ ] Measure frame pacing/FPS during a repeatable in-game scene.
 - [ ] Record process memory/PSS during startup and gameplay.
@@ -204,7 +208,7 @@ Establish reproducible performance and APK-size measurements before making furth
 ## Optimization candidates
 - [ ] Review release R8 output and mapping/usage reports.
 - [ ] Identify app-owned DEX/code that can be safely reduced.
-- [ ] Evaluate whether any unchanged assets can be delivered outside the base APK without breaking Cefrium startup or offline/update assumptions.
+- [ ] Evaluate whether any unchanged assets can be delivered outside the base APK without breaking GeckoView startup or offline/update assumptions.
 - [ ] Keep differential APK updates as the preferred way to reduce repeat download size when the engine payload is unchanged.
 
 ## Dependencies
@@ -212,7 +216,7 @@ Establish reproducible performance and APK-size measurements before making furth
 
 ## Constraints
 - No speculative Chromium flags, native-library stripping, asset deletion or engine replacement.
-- Do not compromise Cefrium compatibility, game storage, package identity or the established signing key.
+- Do not compromise GeckoView compatibility, game storage, package identity or the established signing key.
 - Keep arm64-v8a only.
 - Record before/after evidence in STATUS.md and CHANGELOG-AGENTS.md.
 
@@ -234,13 +238,13 @@ A repeatable baseline is recorded, and every accepted optimization has measured 
 ## Status
 Scheduled for **v1.1.0**. The project owner confirms they have explicit permission from the LastHaven operator for custom addon integration. We are proceeding with the local ZIP manager first. The exact authorized integration surface/API and technical contract still need to be recorded before touching the game runtime.
 
-**Implementation gate:** Do not assume the supplied MAIN-world XHR/Worker/OPFS injection pipeline is the authorized method. Obtain the operator's exact scope and supported integration contract, then validate against that contract. Cefrium document-start scripts and request interception are public APIs, but they do not establish game compatibility by themselves.
+**Implementation gate:** Do not assume the supplied MAIN-world XHR/Worker/OPFS injection pipeline is the authorized method. Obtain the operator's exact scope and supported integration contract, then validate against that contract. GeckoView document-start scripts and request interception are public APIs, but they do not establish game compatibility by themselves.
 
 ## v1.1.0 — local ZIP manager
 - [ ] Import ZIPs through Android's system file picker.
 - [ ] Securely inspect ZIP central-directory records before extraction; reject traversal, absolute paths, symlinks, encrypted/unsupported methods, ZIP64, duplicate case-insensitive paths, CRC mismatches, oversized archives/files and malformed archives.
 - [ ] Detect WoW 3.3.5a addon roots and parse .toc title/version/interface/dependencies where applicable.
-- [ ] Store imported addon packages and metadata locally, separate from Cefrium profile data.
+- [ ] Store imported addon packages and metadata locally, separate from GeckoView profile data.
 - [ ] Show imported addons, metadata, file sizes, compatibility warnings and missing dependencies.
 - [ ] Allow enable/disable, export and remove in the local library. Clearly label local enablement until game integration is implemented and confirmed.
 - [ ] Preserve user data and implement safe replacement/rollback.
@@ -249,7 +253,7 @@ Scheduled for **v1.1.0**. The project owner confirms they have explicit permissi
 ## Game integration — authorization confirmed; contract pending
 - [x] User confirms they have explicit permission from the LastHaven operator.
 - [ ] Record the operator's exact authorized scope and supported addon-loading API/integration contract.
-- [ ] Only then evaluate the approved Cefrium integration method against the live client. Do not reverse-engineer or patch protected game assets, OPFS indexes, worker/WASM imports or runtime internals outside the operator-approved scope.
+- [ ] Only then evaluate the approved GeckoView integration method against the live client. Do not reverse-engineer or patch protected game assets, OPFS indexes, worker/WASM imports or runtime internals outside the operator-approved scope.
 - [ ] Verify gameplay and recovery on a physical arm64 device before enabling integration.
 
 ## Explicitly out of scope for v1.1.0
@@ -259,7 +263,7 @@ Scheduled for **v1.1.0**. The project owner confirms they have explicit permissi
 
 ## Constraints
 - Do not recreate, copy, decompile, reverse-engineer or modify the game client outside the operator-approved scope.
-- Preserve the Cefrium profile and all unrelated game data.
+- Preserve the GeckoView profile and all unrelated game data.
 - All imports and destructive actions require explicit user confirmation.
 - Do not present locally stored addons as game-enabled unless the client confirms they loaded.
 
@@ -351,20 +355,20 @@ Users can inspect trustworthy sent/received app totals, understand what is inclu
 Add useful, privacy-conscious diagnostics for troubleshooting LastHavenPlus and its updater.
 
 ## Scope
-- [x] Capture app lifecycle, Cefrium startup/navigation failures and renderer termination events.
+- [x] Capture app lifecycle, GeckoView startup/navigation failures and renderer termination events.
 - [x] Capture updater checks and download/validation outcomes.
 - [x] Add an in-app log viewer.
 - [x] Add an explicit share action for diagnostic logs.
 - [x] Bound log storage with one rotating previous log.
 - [x] Redact credentials, cookies, authorization headers, tokens, session identifiers and sensitive URL parameters in common key/value formats.
 - [ ] Add CI tests for redaction, rotation/size limits and failure-path logging; a redaction unit test has been added but CI has not yet been verified.
-- [ ] Include the Cefrium/Chromium runtime version in startup diagnostics only if the pinned SDK exposes a supported public version API; otherwise record it as unavailable rather than guessing.
+- [ ] Include the GeckoView/Chromium runtime version in startup diagnostics only if the pinned SDK exposes a supported public version API; otherwise record it as unavailable rather than guessing.
 - [x] Keep logs local; do not upload diagnostics automatically.
 
 ## Constraints
 - Never log passwords, cookies, tokens, private keys, full authorization headers or game session secrets.
 - Avoid excessive logging in normal gameplay.
-- Do not change Cefrium/game storage behavior to collect diagnostics.
+- Do not change GeckoView/game storage behavior to collect diagnostics.
 - Follow AGENTS.md and update STATUS.md and CHANGELOG-AGENTS.md.
 
 ## Acceptance criteria
@@ -377,7 +381,7 @@ Users can inspect and explicitly share useful diagnostics without exposing authe
 
 ---
 
-## Issue 12 — P2 — Surface actionable Cefrium load-error details
+## Issue 12 — P2 — Surface actionable GeckoView load-error details
 
 **GitHub:** https://github.com/iNeonyne/LastHavenPlus/issues/12
 **State:** open
@@ -386,12 +390,12 @@ Users can inspect and explicitly share useful diagnostics without exposing authe
 Make game-load failures easier to diagnose without adding browser-style UI or exposing sensitive information.
 
 ## Scope
-- [ ] Inspect the exact pinned Cefrium 0.21.0 public API/source for `CefriumLoadError` fields before implementation; do not guess property names.
+- [ ] Inspect the exact pinned GeckoView 0.21.0 public API/source for `GeckoViewLoadError` fields before implementation; do not guess property names.
 - [ ] Map supported error codes into a small set of user-friendly categories (for example DNS/network unavailable, TLS/certificate failure, server response/load failure, and unknown).
 - [ ] Keep the existing Retry action and concise failure screen.
 - [ ] Show a safe, simplified category and optional numeric/error code; do not display raw URLs, headers, cookies, tokens, or unfiltered engine messages.
 - [ ] Log the underlying safe diagnostic fields through the existing redacting diagnostics path.
-- [ ] Provide a generic fallback when Cefrium supplies no useful structured detail.
+- [ ] Provide a generic fallback when GeckoView supplies no useful structured detail.
 - [ ] Add tests for category mapping and fallback behavior.
 
 ## Constraints
@@ -400,7 +404,7 @@ Make game-load failures easier to diagnose without adding browser-style UI or ex
 - Follow AGENTS.md and update STATUS.md and CHANGELOG-AGENTS.md.
 
 ## Acceptance criteria
-Common load failures are distinguishable to users/support using verified Cefrium API fields; unknown errors remain safely handled; Retry behavior is unchanged; tests cover mappings and fallback.
+Common load failures are distinguishable to users/support using verified GeckoView API fields; unknown errors remain safely handled; Retry behavior is unchanged; tests cover mappings and fallback.
 
 ## Roadmap
 - **Target:** v1.2.0.
@@ -536,7 +540,7 @@ Allow users to preserve launcher preferences across reinstallations or device ch
 - Add explicit Export and Import actions for launcher settings.
 - Use a versioned, human-readable backup format and Android's document picker/storage access flow.
 - Export only an explicit allowlist of non-sensitive launcher preferences (for example, orientation, keep-awake, and safe display/settings preferences).
-- Never export credentials, cookies, WebView/Cefrium profile data, game cache, tokens, or private game data.
+- Never export credentials, cookies, WebView/GeckoView profile data, game cache, tokens, or private game data.
 - Validate imported files, handle unknown/newer schema versions safely, and apply changes only after user confirmation.
 - Avoid partial preference corruption: validate first, then apply atomically or retain the previous settings.
 
@@ -553,82 +557,47 @@ Allow users to preserve launcher preferences across reinstallations or device ch
 
 ---
 
-## Issue 18 — Roadmap — stable v1.0.0, beta development and controlled main promotion
+## Issue 18 — Roadmap — GeckoView migration, home screen and addon manager
 
-**GitHub:** https://github.com/iNeonyne/LastHavenPlus/issues/18
+**GitHub:** https://github.com/iNeonyne/LastHavenPlus/issues/18  
 **State:** open
 
-# LastHavenPlus release roadmap
+The next major beta change replaces Cefrium with Mozilla GeckoView, adds a home screen with Play and Settings, and reuses the existing ZIP addon manager from Settings. These are planned tasks; current beta source still uses Cefrium and has a Kotlin compile failure.
 
-This roadmap defines what belongs in shared `beta` and when work may be promoted to stable `main`. A commit or successful build alone does not make a release. Current beta must pass its own build and verification gates.
+### Phase 0 — Restore beta baseline
+- [ ] #13 Fix accessibility Compose compile errors under Ploy's exclusive ownership.
+- [ ] #4 Restore clean CI and complete updater edge-case tests. Keep application ID, signing identity and arm64-v8a configuration unchanged.
 
-## Branch model
+### Phase 1 — GeckoView engine migration
+- [ ] #20 Verify stable dependency/version, official APIs, runtime/session lifecycle, persistent profile strategy, delegates, Java compatibility, ARM64 packaging, APK size and LastHaven requirements. Deliver `docs/GECKOVIEW_MIGRATION.md`.
+- [ ] #21 Remove Cefrium and replace it with one pinned stable GeckoView engine. Do not add System WebView or a second/fallback engine.
+- [ ] Keep the old Cefrium profile untouched until a safe cleanup/preservation policy is verified. Do not assume its format is portable to GeckoView; re-login may be necessary.
+- [ ] Validate WebGL/WebGL2, WebAssembly, WebSockets, touch, fullscreen, audio, permissions, cookies, LocalStorage, IndexedDB, service workers, lifecycle/crash recovery and same-key updates on physical ARM64 hardware.
 
-- **`main` — stable release branch.** Contains approved stable releases and explicitly approved hotfixes only. No routine feature development.
-- **`beta` — integration and release-candidate branch.** Chaty pushes orchestrator changes here. Contributors hand Chaty task-branch commits; Chaty alone integrates directly into `beta`. No pull requests.
-- Contributors create task branches from latest `beta` when needed and hand Chaty the exact commit SHA. Chaty reviews and integrates accepted commits directly into `beta`.
-- Features must be complete, tested and documented before being considered release-ready.
-- No automatic merges, tags, releases or beta-to-main promotion.
+### Phase 2 — Home screen
+- [ ] #22 Launch into a simple home screen with a Play button and Settings entry; do not load the game until Play is selected.
+- [ ] Preserve the active Gecko session when navigating between gameplay and home.
+- [ ] Apply immersive mode/keep-awake only while gameplay is active; restore normal system UI on home/settings.
 
-## v1.0.0 — Stable release already published
+### Phase 3 — Existing addon manager
+- [ ] #8 Complete the existing local ZIP archive/repository security and recovery tests.
+- [ ] #23 Place the existing ZIP addon manager under Settings and preserve the existing app-private package library.
+- [ ] Clearly distinguish local package/enabled flags from actual in-game loading. WoW addon ZIPs/`.toc` files are not Gecko WebExtensions.
+- [ ] Game addon loading/injection remains out of scope until separately authorized, documented and physically verified.
 
-**Status: Published 2026-11-24**
+### Phase 4 — Regression and release gates
+- [ ] #5 Physical ARM64 gameplay and same-key update verification on GeckoView.
+- [ ] Complete applicable settings (#6), diagnostics (#11/#12), navigation/accessibility (#9/#13), orientation (#16), updater recovery (#15), backup (#17) and performance (#7) checks.
+- [ ] Clean CI on the exact candidate commit: build, tests, signed APK, package identity, signing certificate, ARM64-only ABI, artifact count and updater manifest/checksum.
+- [ ] Record exact build, commit, CI run, APK digest, device and test outcomes in STATUS.md.
 
-- Canonical assets: `lasthavenplus-arm64.apk` and `lasthavenplus-update.json`.
-- Do not rewrite this release. Follow-up work belongs in beta and a later stable version.
-
-## Next stable release — v1.1.0
-
-**Development branch:** `beta`  
-**Promotion target:** `main`, only after the release gate below passes.
-
-Planned scope:
-- [x] #4 Gradle Wrapper, pinned distribution checksum, executable script and CI wrapper use are implemented; [ ] updater edge-case tests and a clean current-beta CI run remain.
-- [ ] #8 Complete local ZIP addon manager: secure archive validation, import/storage/replacement rollback/export tests and documented limitations. No unfinished game integration.
-- [ ] #6 Complete essential settings/storage behavior supported by verified Cefrium APIs; preserve the persistent game profile.
-- [ ] #15 Complete updater recovery: staged downloads, checksum/signature validation, delta-to-full fallback and safe failure cleanup. Installation remains user-confirmed.
-- [ ] #11 Complete diagnostics privacy/redaction/rotation test coverage.
-- [ ] #13 Complete accessibility semantics; physical TalkBack verification must not be claimed from CI.
-- [ ] Run regression checks for game launch, persistence, updater and addon flows on physical ARM64 hardware.
-- [ ] Defer any feature that cannot meet acceptance criteria; do not ship partial implementations.
-
-## Later beta backlog — candidates for v1.2.0 or later
-
-- [ ] #12 Safe, actionable Cefrium load-error categories using verified public API fields.
-- [ ] #14 On-demand DNS/HTTPS diagnostics; do not imply this proves game-server or gameplay health.
-- [ ] #16 Orientation and keep-awake preferences with lifecycle cleanup.
-- [ ] #17 Versioned backup/restore of allowlisted non-sensitive launcher settings only.
-- [ ] #7 Reproducible performance/APK-size baselines; optimize only from measurements.
-- [ ] Finish remaining #9 navigation/accessibility and physical-device verification.
-- [ ] Review user feedback and beta regressions before committing to stable scope.
-
-## When may beta be promoted to main?
-
-Promote a specific `beta` commit to `main` only when all applicable gates are satisfied and the user explicitly approves:
-
-1. **Scope freeze:** release checklist complete; unfinished features removed or deferred; no unresolved critical/high-severity issue.
-2. **CI:** required build, unit tests, lint/static checks where configured, and release workflow checks pass on the exact candidate commit.
-3. **Artifact integrity:** one canonical signed ARM64 APK; package ID, signing certificate, version metadata, ABI contents and updater manifest/checksums verified. Never publish a debug APK.
-4. **Regression:** game launch/navigation, persistent Cefrium profile, manual updater and included addon flows tested. No user data is cleared or reset.
-5. **Physical-device gate:** applicable gameplay, persistence, install/update and recovery checks pass on a real ARM64 Android device. If a device-only requirement cannot be tested, explicitly defer it from release rather than mark it passed.
-6. **Beta soak:** candidate exercised long enough to catch obvious regressions; record exact commit, build, results and known limitations in STATUS.
-7. **Owner approval:** Chaty presents the candidate commit, artifacts, evidence and risks. **The user explicitly approves promotion** before beta is merged/promoted into main.
-8. **Publish separately:** after promotion, create stable tag/release and publish only the verified canonical artifact, with matching changelog. Publishing also requires explicit user authorization; promotion alone does not publish.
-
-There is no fixed calendar release date. **The next stable main release happens only when these gates pass and the user explicitly approves promotion.**
-
-## Branch and release policy
-
-- arm64-v8a only; preserve application ID and established signing key.
-- Manual, user-confirmed update installation; no background or silent installation.
-- Preserve existing game and Cefrium profile data across updates.
-- Addon ZIPs must be validated before installation; failed/interrupted operations must leave existing addon/game state recoverable.
-- Every stable release must pass applicable CI, signed artifact/package checks, one-APK asset verification and physical-device tests.
-- If a feature cannot be completed and verified, defer it; never ship a half-implemented feature.
+### Stable promotion policy
+- `beta` is the active development/integration/testing branch; `main` is stable.
+- Chaty alone integrates and pushes to beta. No PRs.
+- Promote only after every applicable gate passes and the user explicitly approves. Publishing/tagging requires separate explicit approval.
+- No debug APKs, partial features, automatic update downloads/installs, app ID changes or signing-key changes.
 
 ---
-
-
 ## Issue 19 — P1 — Add an opt-in beta release channel to the updater
 
 **GitHub:** https://github.com/iNeonyne/LastHavenPlus/issues/19
@@ -646,3 +615,39 @@ There is no fixed calendar release date. **The next stable main release happens 
 **Non-goals:** no auto-download/install, no change to stable release publishing, no UI redesign.
 
 **Dependency:** #4. Coordinate with #6; Chaty owns the updater channel control and Ploy must not duplicate it.
+
+## Issue 20 — P1 — Prepare the GeckoView migration technical decision record
+
+**GitHub:** https://github.com/iNeonyne/LastHavenPlus/issues/20  
+**Internal owner:** Ploy, queued after #13, #11 and #8.
+
+Docs-only research. Verify current stable GeckoView coordinates/version through Mozilla's official Maven repository and official Javadocs; document Java compatibility, runtime/session/view lifecycle, persistent profile behavior, required delegates, ARM64/native packaging, APK size, game Web APIs and the Cefrium profile transition risk. Deliver `docs/GECKOVIEW_MIGRATION.md`. Do not change source/build files. WoW addon ZIP packages are not Gecko WebExtensions.
+
+---
+
+## Issue 21 — P1 — Replace Cefrium with Mozilla GeckoView
+
+**GitHub:** https://github.com/iNeonyne/LastHavenPlus/issues/21  
+**Internal owner:** Chaty, queued after #4 is clean and #20 is reviewed.
+
+Replace Cefrium plugin/dependencies/repository/runtime with one verified stable GeckoView release. Implement one process-scoped runtime, managed session/view, safe public delegates and a persistent browser profile. Remove Cefrium source/build references; no dual engine. Preserve app ID, release signing identity, ARM64-only ABI and manual updater flow. Keep existing Cefrium profile files untouched; do not claim portable profile migration. Test build/unit/release verification and physical-device requirements separately.
+
+---
+
+## Issue 22 — P1 — Add the LastHavenPlus home screen with Play and Settings
+
+**GitHub:** https://github.com/iNeonyne/LastHavenPlus/issues/22  
+**Internal owner:** Ploy, queued after #21 integration.
+
+Fresh launch shows a simple branded home screen with Play and Settings. Do not load the game until Play is selected. Settings must be usable without starting a browser session. Preserve the Gecko session when navigating home and make immersive/keep-awake behavior gameplay-only. Define and test Back behavior.
+
+---
+
+## Issue 23 — P1 — Move the existing ZIP addon manager into Settings
+
+**GitHub:** https://github.com/iNeonyne/LastHavenPlus/issues/23  
+**Internal owner:** Ploy, queued after #22 integration.
+
+Reuse the existing `AddonArchiveInspector.kt`, `AddonLibraryRepository.kt` and `AddonManagerDialog.kt`. Add the manager under Settings without resetting or renaming `filesDir/addon-library`. Keep importing/enabling as local library state only; never claim in-game loading. Do not implement game injection or convert WoW addon ZIPs into Gecko WebExtensions.
+
+---
