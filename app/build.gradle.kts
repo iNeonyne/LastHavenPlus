@@ -14,6 +14,7 @@ val releaseSigningConfigured = !releaseStoreFile.isNullOrBlank() &&
 android {
     namespace = "com.neonyne.lasthavenlauncher"
     compileSdk = 37
+    compileSdkMinor = 2
 
     defaultConfig {
         applicationId = "com.neonyne.lasthavenlauncher"
