@@ -204,8 +204,6 @@ object AppUpdater {
                 is UpdateCheckResult.Failed -> Diagnostics.warn(appContext, "Updater", "Update check failed: ${result.message}")
                 UpdateCheckResult.NoUpdate -> Diagnostics.info(appContext, "Updater", "No update available")
             }
-            result.onSuccess { Diagnostics.info(appContext, "Updater", "Update download and validation succeeded") }
-                .onFailure { Diagnostics.error(appContext, "Updater", "Update download failed: ${it.message}") }
             mainHandler.post { callback(result) }
         }
     }
@@ -282,6 +280,8 @@ object AppUpdater {
                 )
             }
 
+            result.onSuccess { Diagnostics.info(appContext, "Updater", "Update download and validation succeeded") }
+                .onFailure { Diagnostics.error(appContext, "Updater", "Update download failed: ${it.message}") }
             mainHandler.post { callback(result) }
         }
     }
