@@ -1,4 +1,4 @@
-# LastHavenLauncher
+# LastHavenPlus
 
 Instructions for every human or AI agent working in this repository.
 
