@@ -4,6 +4,8 @@ A minimal Android launcher for the existing **LastHaven WotLK private server**. 
 
 **Default game URL:** https://alt.lasthavens.com/play
 
+Release notes: see [CHANGELOG.md](CHANGELOG.md) for the v1.0.0 draft (not published).
+
 ## Current implementation
 
 - Native Android app: Kotlin + Jetpack Compose
