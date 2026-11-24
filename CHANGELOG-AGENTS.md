@@ -1,3 +1,13 @@
+## 2026-11-24 — Fix release certificate parsing and pass signed ARM64 CI
+
+- **Role:** Main orchestrator / Android / CI
+- **Files:** `.github/workflows/android.yml`, `STATUS.md`, `CHANGELOG-AGENTS.md`
+- **Change:** Fixed both CI certificate digest parsers. `apksigner` output contains a colon in `V2 Signer:` before the `certificate SHA-256 digest:` label, so splitting on the first colon extracted the label instead of the digest. The parser now strips everything through the literal digest label, for both current-release verification and previous-release eligibility for BSDIFF generation. Added diagnostic checkpoints to release verification.
+- **Why:** The parser falsely rejected a correctly signed APK and would silently prevent future differential patches from being offered.
+- **Verified:** CI run #85 passed: debug and signed release builds, BSDIFF unit test, arm64-v8a-only checks for both APKs, established release-certificate SHA-256 verification, APK size report and both artifact uploads. The existing release key was restored successfully. Run: https://github.com/iNeonyne/Lasthavens-Android/actions/runs/45450335590
+- **Do not redo:** Do not change the established key or pinned fingerprint. Keep the full APK fallback and user-confirmed download/install flow. Do not treat CI build success as proof of a real release-to-release update.
+- **Follow-ups:** Complete the remaining #4 tasks (Gradle Wrapper, broader updater edge-case tests and package-identity check), publish the first controlled stable release, then test a generated differential update and Android installation on a physical arm64 device.
+
 ## 2026-11-24 — Fix BSDIFF test compilation and diagnose release verification
 
 - **Role:** Main orchestrator / Android / CI
