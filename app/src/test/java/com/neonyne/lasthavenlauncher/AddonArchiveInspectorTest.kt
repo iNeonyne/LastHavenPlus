@@ -8,6 +8,9 @@ import org.junit.Assert.fail
 import org.junit.Test
 import java.io.File
 import java.nio.file.Files
+import java.io.RandomAccessFile
+import java.util.zip.CRC32
+import java.util.zip.ZipEntry
 
 class AddonArchiveInspectorTest {
     @Test
@@ -54,6 +57,52 @@ class AddonArchiveInspectorTest {
         val archive = createZip("readme.txt" to "not an addon")
 
         assertRejected(archive, ".toc")
+    }
+
+
+    @Test
+    fun rejectsUnixSymbolicLinks() {
+        val directory = Files.createTempDirectory("addon-symlink-test").toFile()
+        val archive = File(directory, "addon.zip")
+        ZipArchiveOutputStream(archive).use { zip ->
+            val entry = ZipArchiveEntry("Questie/Questie.toc")
+            entry.unixMode = 0xA1FF
+            zip.putArchiveEntry(entry)
+            zip.write("## Title: Questie\\n".toByteArray(Charsets.UTF_8))
+            zip.closeArchiveEntry()
+            zip.finish()
+        }
+
+        assertRejected(archive, "symbolic link")
+    }
+
+    @Test
+    fun rejectsCrcMismatch() {
+        val directory = Files.createTempDirectory("addon-crc-test").toFile()
+        val archive = File(directory, "addon.zip")
+        val payload = "## Title: Questie\\n".toByteArray(Charsets.UTF_8)
+        val crc = CRC32().apply { update(payload) }.value
+        ZipArchiveOutputStream(archive).use { zip ->
+            val entry = ZipArchiveEntry("Questie/Questie.toc")
+            entry.method = ZipEntry.STORED
+            entry.size = payload.size.toLong()
+            entry.compressedSize = payload.size.toLong()
+            entry.crc = crc
+            zip.putArchiveEntry(entry)
+            zip.write(payload)
+            zip.closeArchiveEntry()
+            zip.finish()
+        }
+
+        RandomAccessFile(archive, "rw").use { file ->
+            val dataOffset = 30L + "Questie/Questie.toc".toByteArray().size
+            file.seek(dataOffset)
+            val original = file.read()
+            file.seek(dataOffset)
+            file.write(original xor 0x01)
+        }
+
+        assertRejected(archive, "CRC")
     }
 
     private fun assertRejected(file: File, expectedMessage: String) {
