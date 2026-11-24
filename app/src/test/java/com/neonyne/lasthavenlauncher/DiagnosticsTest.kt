@@ -8,7 +8,8 @@ class DiagnosticsTest {
     @Test
     fun redactsAuthorizationCookiesTokensAndSensitiveQueryParameters() {
         val sanitized = Diagnostics.sanitize(
-            "Authorization: Bearer abc123 cookie=crumbs token=xyz access_token=hidden " +
+            "Authorization: Bearer abc123\\n" +
+                "cookie=crumbs token=xyz access_token=hidden\\n" +
                 "https://example.invalid/play?session_id=private&view=game",
         )
 
