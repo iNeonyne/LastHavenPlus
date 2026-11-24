@@ -35,7 +35,7 @@ The physical-device verification issue #5 is open again. No public release is ap
 
 ## Work tracking
 
-GitHub Issues are the canonical backlog. Do not copy open task checklists into this file. Update issue checklists as work is completed; use this document only for current state, active ownership, evidence and blockers.
+[`ISSUES.md`](ISSUES.md) is now the consolidated, version-controlled backlog containing the open GitHub issues and their checklists. Update it as work progresses. GitHub Issues remain linked discussion/history records. TickTick is no longer used for this repository.
 
 - [#4 — Build reproducibility, updater tests and CI verification](https://github.com/iNeonyne/LastHavenPlus/issues/4)
 - [#5 — Physical-device gameplay, persistence and update verification](https://github.com/iNeonyne/LastHavenPlus/issues/5)
