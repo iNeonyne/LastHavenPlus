@@ -63,6 +63,7 @@ A WoW 3.3.5a addon ZIP/`.toc` package is not a Firefox WebExtension. Local packa
 ## Tests and documentation
 
 - Run the checks relevant to the changed scope and report exact commands/results. Never report a build or test as passing without evidence.
+- PRs targeting `beta` run an unsigned `assembleRelease` plus `testDebugUnitTest` validation with read-only permissions. This job does not access signing secrets or publish APKs. The normal beta push pipeline remains responsible for signed APK, certificate, ABI and artifact checks.
 - Update `STATUS.md` with verified state, unverified behavior, blockers, active ownership and exact CI evidence.
 - Update `ISSUES.md` when task scope/progress changes; do not close an issue merely because documentation changed.
 - Append meaningful work to `CHANGELOG-AGENTS.md` and `WORK_LOG.md`. Preserve the work log as an append-only history.
