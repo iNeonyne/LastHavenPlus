@@ -1,6 +1,8 @@
 package com.neonyne.lasthavenlauncher
 
 import android.content.SharedPreferences
+import android.content.Intent
+import android.net.Uri
 import android.util.Log
 import android.view.WindowManager
 import android.webkit.ValueCallback
@@ -22,6 +24,7 @@ import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -61,6 +64,15 @@ class MainActivity : ComponentActivity() {
             LastHavenApp(
                 preferences = preferences,
                 onExit = { finish() },
+                onCheckUpdates = { callback -> AppUpdater.checkForUpdate(this, callback) },
+                onDownloadUpdate = { update, callback -> AppUpdater.downloadUpdate(this, update, callback) },
+                onInstallUpdate = { uri ->
+                    val intent = Intent(Intent.ACTION_VIEW).apply {
+                        setDataAndType(uri, "application/vnd.android.package-archive")
+                        addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                    }
+                    startActivity(intent)
+                },
             )
         }
     }
@@ -84,6 +96,9 @@ class MainActivity : ComponentActivity() {
 private fun LastHavenApp(
     preferences: SharedPreferences,
     onExit: () -> Unit,
+    onCheckUpdates: ((UpdateCheckResult) -> Unit) -> Unit,
+    onDownloadUpdate: (AppUpdateInfo, (Result<Uri>) -> Unit) -> Unit,
+    onInstallUpdate: (Uri) -> Unit,
 ) {
     val gameUrl = remember {
         preferences.getString(KEY_GAME_URL, DEFAULT_GAME_URL) ?: DEFAULT_GAME_URL
@@ -92,6 +107,22 @@ private fun LastHavenApp(
     val navigator = rememberCefriumNavigator()
     var showExitPrompt by remember { mutableStateOf(false) }
     var pageLoadFailed by remember { mutableStateOf(false) }
+    var availableUpdate by remember { mutableStateOf<AppUpdateInfo?>(null) }
+    var updateMessage by remember { mutableStateOf<String?>(null) }
+    var isDownloadingUpdate by remember { mutableStateOf(false) }
+    var isCheckingUpdate by remember { mutableStateOf(false) }
+
+    LaunchedEffect(Unit) {
+        isCheckingUpdate = true
+        onCheckUpdates { result ->
+            isCheckingUpdate = false
+            when (result) {
+                is UpdateCheckResult.Available -> availableUpdate = result.update
+                is UpdateCheckResult.Failed -> updateMessage = result.message
+                UpdateCheckResult.NoUpdate -> Unit
+            }
+        }
+    }
 
     MaterialTheme(colorScheme = darkColorScheme()) {
         Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
@@ -188,6 +219,58 @@ private fun LastHavenApp(
         }
     }
 
+    if (availableUpdate != null) {
+        val update = availableUpdate!!
+        AlertDialog(
+            onDismissRequest = { if (!isDownloadingUpdate) availableUpdate = null },
+            title = { Text("Update available") },
+            text = {
+                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Text("LastHaven Launcher \${update.version} is available.")
+                    Text(update.releaseNotes, maxLines = 8)
+                    if (isDownloadingUpdate) {
+                        LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
+                        Text("Downloading update…")
+                    }
+                }
+            },
+            confirmButton = {
+                Button(
+                    enabled = !isDownloadingUpdate,
+                    onClick = {
+                        isDownloadingUpdate = true
+                        onDownloadUpdate(update) { result ->
+                            isDownloadingUpdate = false
+                            result.onSuccess { uri ->
+                                availableUpdate = null
+                                onInstallUpdate(uri)
+                            }.onFailure { error ->
+                                updateMessage = error.message ?: "Update download failed"
+                            }
+                        }
+                    },
+                ) { Text(if (isDownloadingUpdate) "Downloading…" else "Download update") }
+            },
+            dismissButton = {
+                TextButton(
+                    enabled = !isDownloadingUpdate,
+                    onClick = { availableUpdate = null },
+                ) { Text("Later") }
+            },
+        )
+    }
+
+    if (updateMessage != null) {
+        AlertDialog(
+            onDismissRequest = { updateMessage = null },
+            title = { Text("Update check") },
+            text = { Text(updateMessage!!) },
+            confirmButton = {
+                TextButton(onClick = { updateMessage = null }) { Text("OK") }
+            },
+        )
+    }
+
     if (showExitPrompt) {
         AlertDialog(
             onDismissRequest = { showExitPrompt = false },
@@ -202,11 +285,22 @@ private fun LastHavenApp(
                 }
             },
             dismissButton = {
-                Button(onClick = {
-                    showExitPrompt = false
-                    navigator.reload()
-                }) {
-                    Text("Reload game")
+                Column(horizontalAlignment = Alignment.End) {
+                    TextButton(onClick = {
+                        isCheckingUpdate = true
+                        onCheckUpdates { result ->
+                            isCheckingUpdate = false
+                            when (result) {
+                                is UpdateCheckResult.Available -> availableUpdate = result.update
+                                is UpdateCheckResult.Failed -> updateMessage = result.message
+                                UpdateCheckResult.NoUpdate -> updateMessage = "You are using the latest version."
+                            }
+                        }
+                    }) { Text(if (isCheckingUpdate) "Checking…" else "Check for updates") }
+                    TextButton(onClick = {
+                        showExitPrompt = false
+                        navigator.reload()
+                    }) { Text("Reload game") }
                 }
             },
         )
