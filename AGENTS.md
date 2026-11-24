@@ -67,31 +67,61 @@ Read [AGENT_WORK.md](AGENT_WORK.md) before starting delegated work. It defines P
 
 Agents may work in parallel only on different issues with disjoint files/surfaces. Never assign the same issue/task to both agents concurrently. Each agent must claim its issue and exact subtask in STATUS before editing. Handoff requires the previous owner to stop and STATUS/AGENT_WORK to be updated. Chaty reviews Ploy's PRs and integrates accepted work into `beta`; `main` is updated only through an approved beta promotion.
 
-## Issue workflow
+## Issue lifecycle and intake
 
-1. Find the existing issue that matches the task. Create a new issue only when no existing issue covers it.
-2. Read its goal, checklist, dependencies, constraints and acceptance criteria.
-3. Claim the issue and file/work area in STATUS before making changes. For Ploy's delegated tasks, Chaty maintains central status; Ploy must not edit central tracking files. Ploy records the issue number and PR link in her handoff.
-4. Keep `ISSUES.md` accurate as work is completed. It is the consolidated repository backlog; update task checklists and status alongside implementation changes. GitHub Issues are linked discussion records.
-5. Run the relevant build/tests and record what was actually verified. Do not mark device-only behavior as passed based on CI.
-6. Update STATUS and append a changelog entry.
-7. Ploy submits work through a pull request from a dedicated task branch targeting `beta`. Chaty reviews and verifies it, then may merge accepted work into `beta`. Chaty makes orchestrator commits directly to `beta`; `main` changes only through an explicitly approved beta promotion.
-8. Close an issue only when its acceptance criteria are met. If blocked, leave it open and document the blocker in STATUS and the issue.
+GitHub Issues are the canonical records for individual work: discussion, ownership, dependencies, decisions and open/closed state. `ISSUES.md` is the human-maintained project index and execution checklist; it must link to the matching GitHub issue and must not invent a second task ID or conflicting state. Keep the detailed acceptance checklist in the issue and mirror only a concise summary/progress line in `ISSUES.md` where practical. If the two disagree, verify the GitHub issue and reconcile the index before work continues.
 
-**Tracking links**
-- [Repository task tracker — ISSUES.md](ISSUES.md)
-- [All GitHub issues](https://github.com/iNeonyne/LastHavenPlus/issues)
+### Creating future issues
 
-`ISSUES.md` is the consolidated, version-controlled backlog. Keep it current as work progresses. GitHub Issues remain linked discussion/history records. Do not create or update TickTick tasks for this repository.
+1. Search **open and closed** GitHub issues, the `ISSUES.md` index and recent PRs before creating anything. Search by user outcome and likely synonyms, not just exact title.
+2. Reuse an existing issue when the request is already covered. Add missing acceptance criteria or a separately scoped subtask rather than creating a duplicate.
+3. Create one issue per independently deliverable outcome. Split work only when deliverables, acceptance criteria and file ownership can be separated without overlapping agents.
+4. Use the Bug report, Feature request or Engineering task issue form. Do not use a vague title such as "improvements" or bundle unrelated requests.
+5. Write a concise title describing the outcome. Include context, exact scope, non-goals, measurable acceptance criteria, verification plan, dependencies and known risks.
+6. Assign priority only after triage: **P0** release/core blocker or data/security risk; **P1** important reliability or planned release capability; **P2** normal improvement; **P3** optional/low urgency. Priority is not a release promise.
+7. Set a milestone/target release only after the scope is accepted. Leave it unset when uncertain. Record dependencies by issue number; never silently pull blocked work into implementation.
+8. Add the new issue to `ISSUES.md` and update the roadmap only after the GitHub issue exists. The GitHub issue number is the sole identifier.
+
+### Lifecycle
+
+Use these working states consistently in issue labels/comments and `STATUS.md`:
+- **Needs triage:** request received; duplicate, value, scope and constraints not yet assessed.
+- **Ready:** accepted, sufficiently specified, dependencies known and acceptance criteria testable.
+- **Active:** one named owner has claimed the exact issue/subtask and file scope in `STATUS.md`.
+- **Blocked:** work cannot proceed; record the specific blocker, who/what can unblock it and next action.
+- **Review:** implementation is submitted; review and required CI/evidence are pending.
+- **Done:** every acceptance criterion is met and evidence is recorded; close the GitHub issue with the appropriate completion reason.
+- **Deferred / not planned:** explicitly record why and whether it may be reconsidered. Do not leave silently stale work looking active.
+- **Duplicate:** link to the canonical issue and close as duplicate.
+
+An open issue is not automatically approved, ready, assigned or scheduled. Closing an issue requires evidence against its acceptance criteria. If only part is complete, keep it open and split a follow-up only when it is independently useful.
+
+### Ownership and agent safety
+
+- One issue has one active owner. Record owner, exact subtask, allowed files, branch and start condition in `STATUS.md` before edits.
+- Chaty owns intake, duplicate checks, GitHub issue creation/updates, priority, labels, roadmap, central trackers, assignment and review.
+- Ploy works only on the issue explicitly assigned in `AGENT_WORK.md`; she cannot see GitHub issue metadata and must not create issues, change labels, assign work or edit central trackers.
+- No agent may investigate, code, test or edit the same issue concurrently with the other agent, even in different branches. A handoff is valid only after the previous owner stops and the trackers are updated.
+- Ploy uses a task branch from latest `beta` and a PR targeting `beta`. Chaty reviews and integrates accepted work. No routine development on `main`.
+
+### Changes, splitting and closure
+
+- If scope changes materially, update the GitHub issue and `ISSUES.md` before expanding implementation.
+- If a request contains independent outcomes, create linked child issues with explicit dependency/order and non-overlapping file ownership. Keep one parent/umbrella issue only when coordination itself has value; do not create empty hierarchy.
+- Record decisions and blockers in the GitHub issue, not only in chat.
+- Every PR must reference its issue (for example, `Closes #123` only if it fully satisfies it; otherwise use `Refs #123`). Never auto-close a parent issue when only one subtask is done.
+- Before closing: verify acceptance criteria, relevant tests/builds, docs, known limitations and physical-device requirements. Record actual evidence; CI does not prove device-only behavior.
+- Reopen an issue if a regression invalidates its acceptance criteria. Create a new issue for a genuinely new follow-up, linking the original.
 
 ## Documentation protocol
 
 When starting work:
 1. Read this file, STATUS and the last 5–10 changelog entries.
-2. Find and claim the corresponding GitHub Issue and add your ownership under STATUS → Active work.
-3. Implement the smallest useful change.
-4. Build/test where possible.
-5. Update STATUS, append CHANGELOG-AGENTS.md, update the issue checklist, and unclaim when done.
+2. Search open and closed issues for duplicates; confirm the request is accepted and sufficiently specified.
+3. Confirm exclusive ownership and record owner, subtask, files, branch and dependencies under STATUS → Active work.
+4. Implement only the approved scope.
+5. Build/test and record exact results.
+6. Update the GitHub issue and ISSUES.md index, STATUS, and CHANGELOG-AGENTS.md; unclaim only after review/acceptance and handoff.
 
 Append changelog entries with date, role, files, change, reason, verification, do-not-redo notes and follow-ups. A failed experiment is still worth recording.
 
