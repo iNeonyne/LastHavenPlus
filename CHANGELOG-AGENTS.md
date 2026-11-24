@@ -47,7 +47,7 @@
 - **Do not redo:** Do not loosen the stable-main release gate or create release tags from beta.
 - **Follow-ups:** Confirm a normal beta CI run accepts the workflow syntax; complete #13 compile fix and #4 updater tests.
 
-**Workflow history note (2026-11-25):** Earlier entries mentioning PRs or TickTick describe superseded historical practices only. Current policy is no PRs and no TickTick; GitHub Issues and `ISSUES.md` are the task sources of truth. Chaty alone integrates commits directly into `beta`.
+**Workflow history note (2026-11-25):** Workflow entries below are chronological. The latest policy update supersedes earlier no-PR instructions: PRs are allowed and are the standard path for task integration into `beta`. Chaty alone reviews and merges; GitHub Issues and `ISSUES.md` remain the task sources of truth. TickTick may be used as a supplementary tracker.
 
 ## 2026-11-25 — Audit beta workflow and correct project documentation
 
@@ -463,6 +463,16 @@ Entry format:
 - **Why:** The documentation contained conflicting Cefrium-era instructions, stale task assignments and verification claims that did not match the current GeckoView source or CI run.
 - **Verified:** Inspected the beta documentation, source references, branch state and successful Actions run #308. Run #308 built and tested commit `82590635e77c7abfedcaa6fd1fa4ad8c3b5de469`; it is not evidence for later workflow commits or physical-device behavior. The Gradle Wrapper is already present and pinned to Gradle 9.7.1.
 - **Not verified:** Current workflow optimization run, physical ARM64 gameplay/profile persistence, home-screen implementation and runtime updater behavior.
-- **Do not redo:** Do not add a PR-based workflow, change `main`, close issues for documentation-only work, or claim physical-device verification from CI.
+- **Do not redo:** Do not bypass PR review for task integration, change `main`, close issues for documentation-only work, or claim physical-device verification from CI.
 - **Follow-ups:** Inspect the CI optimization run; review Ploy's #22 handoff; complete physical ARM64 verification; keep STATUS synchronized with exact current commit and CI evidence.
 
+
+
+## 2026-11-25 — Allow pull requests for beta integration
+
+- **Role:** Chaty / main orchestrator
+- **Branch:** `beta`
+- **Change:** Replaced the active no-PR rule with a PR-based workflow across the repository's current instructions. Contributors use dedicated task branches and open PRs targeting `beta`; Chaty alone reviews and merges accepted PRs. Parallel work remains limited to separate issues with non-overlapping file scopes.
+- **Why:** The repository owner explicitly authorized pull requests and requested that the policy be changed consistently.
+- **Preserved:** `beta` remains the active development/integration/testing branch; `main` remains stable. Promotion to `main` and publication still require explicit owner approval. Historical log entries are retained as history and are superseded by this entry.
+- **Verification:** Documentation-only changes. No application source, build configuration, release signing, `main` or release assets changed. No build or tests were run.
