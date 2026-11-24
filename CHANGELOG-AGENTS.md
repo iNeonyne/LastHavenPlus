@@ -1,3 +1,13 @@
+## 2026-11-24 — Implement first local addon manager milestone
+
+- **Role:** Main integrator / Android
+- **Files:** `AddonArchiveInspector.kt`, `AddonLibraryRepository.kt`, `AddonManagerDialog.kt`, `MainActivity.kt`, `AddonArchiveInspectorTest.kt`
+- **Change:** Added central-directory ZIP inspection without extraction; path traversal, absolute path, symlink, encrypted entry, unsupported compression, ZIP64 entry, duplicate case-insensitive path, size, expansion-ratio, entry-count and CRC checks; WoW .toc title/version/interface/dependency parsing; SHA-256 package identity; app-private ZIP package storage outside Cefrium profile; atomic index replacement with backup recovery; explicit replacement confirmation; a 1 GiB library cap; local enabled flags, export/remove controls and a Compose manager entry in the exit menu. Added JVM tests for TOC parsing, traversal, case-insensitive duplicates and archives without TOC files.
+- **Why:** Deliver a secure local ZIP library first while preserving the game profile and keeping runtime integration separate until the operator-approved technical contract is recorded.
+- **Verified:** Source and test files committed directly to main. GitHub Actions run for the first inspector/test commit is pending; subsequent source commits are on main. No successful compile/test result is claimed yet. No physical-device test or release build has been verified for this feature.
+- **Do not redo:** No archive-controlled path is extracted to disk. Local enabled flags are metadata only and do not claim that addons are loaded by the game. Do not change the Cefrium profile or enable runtime injection before the exact approved integration contract is reviewed.
+- **Follow-ups:** Resolve CI compilation/test failures; add storage/replacement/export tests and any missing archive edge cases; validate picker/export behavior on arm64 hardware; record the operator-approved integration contract before implementing runtime integration.
+
 ## 2026-11-24 — Begin local ZIP addon manager implementation
 
 - **Role:** Main integrator / Android
