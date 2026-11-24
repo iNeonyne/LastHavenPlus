@@ -1,90 +1,89 @@
 # LastHavenPlus
 
-A minimal Android launcher for the existing **LastHaven WotLK private server**. The game is already developed; this app only embeds the browser engine and opens it.
+LastHavenPlus is an Android launcher for the existing LastHaven Wrath of the Lich King browser game. It opens the game in the embedded Cefrium browser; it does not recreate or develop the game.
 
-**Default game URL:** https://alt.lasthavens.com/play
+- **Game:** [alt.lasthavens.com/play](https://alt.lasthavens.com/play)
+- **Latest release:** [v1.0.0](https://github.com/iNeonyne/LastHavenPlus/releases/tag/v1.0.0)
+- **Project backlog:** [ISSUES.md](ISSUES.md)
+- **Current project status:** [STATUS.md](STATUS.md)
 
-Release notes: see [CHANGELOG.md](CHANGELOG.md) for the v1.0.0 draft (not published).
+## Compatibility
 
-## Current implementation
+| Item | Support |
+|---|---|
+| Android | Android 10 (API 29) and later |
+| CPU architecture | ARM64 (arm64-v8a) only |
+| Application ID | com.neonyne.lasthavenlauncher |
+| Browser engine | Cefrium 0.21.0 |
+| Chromium | 156.0.8078.96 |
+| UI | Kotlin and Jetpack Compose |
 
-- Native Android app: Kotlin + Jetpack Compose
-- Embedded engine: Cefrium 0.21.0 (Chromium 156.0.8078.96)
-- Browser surface: Cefrium Compose API, `CefriumView`
-- Product ABI: `arm64-v8a` only
-- Minimum Android: 10 (API 29)
-- Fixed application ID: `com.neonyne.lasthavenlauncher`
+The application ID and release signing identity are part of update compatibility. Do not change them for routine branding or feature work.
 
-Cefrium's `CefriumView` is a Compose API, not the classic Android `View` class. It is the API named in the project requirements. The classic View integration is `CefriumBrowser.createWithSurface(activity)`.
+## Features
 
-## Build requirements
+- Opens the LastHaven game in a persistent Cefrium browser profile.
+- Provides an in-app exit menu with return, reload, settings/usage, diagnostics and update actions.
+- Reports installed APK size, available Cefrium profile size and app cache size as separate measurements.
+- Reports app-wide network bytes received and sent. These counters include game and updater traffic, not game traffic alone.
+- Keeps bounded diagnostic logs on-device, redacts common sensitive fields and shares logs only when requested.
+- Checks for stable releases and offers a manual choice between a smaller differential update (when compatible) and the full APK. Downloads and installation are user-initiated; updates are never installed automatically.
+- Includes a local ZIP addon library for importing, inspecting, organizing, exporting and removing addon packages. **The current manager does not inject addons into the browser game.** Game integration is tracked separately in [issue #8](https://github.com/iNeonyne/LastHavenPlus/issues/8).
 
-Cefrium 0.21.0 requires:
+## Download and update
+
+Get the signed ARM64 APK from [GitHub Releases](https://github.com/iNeonyne/LastHavenPlus/releases).
+
+The launcher checks for a newer stable release on startup and also provides a manual check. It does not download or install updates without user action. A full APK is published as the fallback; a differential patch is offered only when the installed base version and digest match.
+
+Install the APK through Android and approve the package installer prompt. Keep the same application installed when updating so its browser profile and game data remain available.
+
+## Build from source
+
+### Requirements
 
 - JDK 25
 - Gradle 9.7.1
-- Android Gradle Plugin 9.4.0
-- Android SDK / compileSdk 37
-- 4 GB Gradle heap for Cefrium dexing
+- Android SDK Platform 37 and Build Tools 37.0.0
+- At least 4 GB of Gradle heap for Cefrium dexing
 
-Cefrium is pinned at 0.21.0. The Codeberg Maven registry mirrors the current release and the previous release; it is configured in both plugin and dependency resolution. Update the pinned version and plugin together after checking the official release notes.
+Cefrium 0.21.0 is pinned across the SDK, Compose integration and Gradle plugin. Its Maven package is resolved from the Codeberg registry.
 
-Official references:
-- [Cefrium Quickstart](https://cefrium.com/quickstart/)
-- [Cefrium Releases](https://cefrium.com/releases/)
-- [Cefrium API reference](https://cefrium.com/docs/)
+### Build and test
 
-## Build locally
-
-Install JDK 25, Android SDK 37 and Gradle 9.7.1, then run:
+The Gradle Wrapper is not committed yet. Install the required Gradle version, then run from the repository root:
 
 ```bash
-gradle assembleDebug
+gradle assembleRelease
 gradle testDebugUnitTest
 ```
 
-The Gradle Wrapper is not yet committed. Adding the wrapper and switching CI/local build instructions to `./gradlew` is tracked in [issue #4](https://github.com/iNeonyne/LastHavenPlus/issues/4).
+Release signing requires the established project keystore and credentials. GitHub Actions restores these from repository secrets; the private keystore must not be committed. For local unsigned development builds, use the appropriate debug build task when needed.
 
-Debug APK: `app/build/outputs/apk/debug/app-debug.apk`
+The CI workflow builds the signed, optimized ARM64 release APK and runs the unit test task. See [Actions](https://github.com/iNeonyne/LastHavenPlus/actions) for the latest run. Build reproducibility and wrapper setup are tracked in [issue #4](https://github.com/iNeonyne/LastHavenPlus/issues/4).
 
-GitHub Actions builds ARM64 debug and signed release variants. Release signing uses repository secrets; the private keystore is never stored in the repository. See [STATUS.md](STATUS.md) for the latest verification state.
+### Official Cefrium references
 
-## Work tracking
+- [Quickstart](https://cefrium.com/quickstart/)
+- [Releases](https://cefrium.com/releases/)
+- [API documentation](https://cefrium.com/docs/)
 
-**[`ISSUES.md`](ISSUES.md) is the consolidated, version-controlled project backlog.** It contains the current open GitHub issues, their task descriptions and acceptance checklists. Update it as implementation progresses. GitHub Issues remain linked for discussion and history: [all issues](https://github.com/iNeonyne/LastHavenPlus/issues).
+## Data and privacy
 
-TickTick is no longer used for this repository; do not create or update project tasks there.
+- Browser cookies, LocalStorage, IndexedDB, service workers and other profile data are stored in Cefrium's persistent app-private profile.
+- Game data is not cleared during startup, update or recovery.
+- Network counters and diagnostic logs stay on-device. Logs are shared only through the user's explicit action.
+- Do not manually delete Cefrium profile files or change the app's signing identity when updating.
 
-Prioritize playable-core reliability and the release roadmap recorded in `ISSUES.md`.
+## Project workflow
 
-## Settings, storage and diagnostics
+Read [AGENTS.md](AGENTS.md) before making changes.
 
-The exit menu exposes **Settings & usage** and **App & debug logs**.
+- [ISSUES.md](ISSUES.md) is the consolidated, version-controlled project backlog. Update it as work progresses.
+- [GitHub Issues](https://github.com/iNeonyne/LastHavenPlus/issues) remain available for discussion and issue history.
+- [STATUS.md](STATUS.md) records current implementation state, verification and blockers.
+- [CHANGELOG-AGENTS.md](CHANGELOG-AGENTS.md) records meaningful implementation changes.
+- Work is integrated directly into main by the main orchestrator; this repository does not use pull requests.
+- TickTick is not used for this project.
 
-- Storage reports the installed APK size, the Cefrium profile directory when present, and Android app/code cache size. These are separate measurements, not a single combined game-install figure.
-- Network usage uses Android per-UID byte counters. It reports app traffic (game plus updater), split into received and sent bytes, since device boot and since the current app session where supported. Android resets the boot counters on reboot; these are not game-process-only totals.
-- Diagnostics are stored locally, bounded to a rotating log, and redact common credential/session fields. Sharing is explicit; logs are not uploaded automatically.
-
-## In-app updater
-
-- The launcher checks the latest stable GitHub Release on startup and also offers a manual check from the exit dialog.
-- It never downloads automatically. Select **Download smaller update** or **Download full APK instead**; Android handles the final install confirmation.
-- Every stable release uses a `vMAJOR.MINOR.PATCH` tag and publishes a signed `lasthavenplus-arm64.apk` plus `lasthavenplus-update.json`; legacy-named aliases are also retained for older installed updater versions.
-- When the immediately previous stable release is available and uses the same signing certificate, CI creates a BSDIFF40 patch. Unchanged Cefrium/Chromium bytes are reused from the installed APK instead of being downloaded again. CI publishes the patch only when it is at least 10% smaller than the full APK; the app reconstructs a complete signed APK locally for Android to install.
-- The app offers a patch only when the installed version, versionCode and APK SHA-256 match that patch's base. It reconstructs the exact signed APK locally, verifies its digest, package ID, version and pinned release certificate, then opens Android's installer.
-- The complete signed APK is always published as a fallback. If a user skips a version or the patch cannot be used, they can choose the full APK.
-- Release signing is configured through GitHub Actions secrets `ANDROID_KEYSTORE_BASE64`, `ANDROID_KEYSTORE_PASSWORD` and `ANDROID_KEY_PASSWORD`, using the established keystore alias `lasthavenplus`. The key is never committed or bundled in the app.
-
-## Storage policy
-
-- Cookies, IndexedDB, LocalStorage and Cache Storage are game data and must persist.
-- Never clear browser data automatically.
-- “Clear game cache” may clear only HTTP and code caches, and only after the pinned Cefrium API is verified.
-- “Clear game data” must be a separate destructive action with confirmation.
-- APK updates must use the same application ID and release signing key.
-
-## Agent workflow
-
-Read [AGENTS.md](AGENTS.md) before editing. Keep [STATUS.md](STATUS.md) limited to current progress, active ownership, evidence and blockers. Append every meaningful change to [CHANGELOG-AGENTS.md](CHANGELOG-AGENTS.md).
-
-Use `ISSUES.md` as the consolidated task tracker and update it with implementation progress. GitHub Issues are linked discussion records. Do not use TickTick for project tracking. Claim the relevant task and work area before editing. Keep the workflow lean, prioritize a playable game, and have the main orchestrator integrate and push directly to `main` without pull requests.
+Keep documentation aligned with verified code and CI results. Mark device-only behavior as unverified until tested on physical ARM64 hardware.
