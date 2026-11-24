@@ -39,24 +39,66 @@ jobs:
         with:
           gradle-version: '9.7.1'
 
-      - name: Build debug APK
-        run: gradle assembleDebug testDebugUnitTest --no-daemon --stacktrace
+      - name: Build debug and optimized release APKs
+        run: gradle assembleDebug assembleRelease testDebugUnitTest --no-daemon --stacktrace
 
-      - name: Verify APK ABI
+      - name: Verify ABI and report APK sizes
         run: |
-          APK="app/build/outputs/apk/debug/app-debug.apk"
-          test -f "$APK"
-          unzip -l "$APK" | tee apk-contents.txt
-          if grep -E 'lib/(x86|x86_64|armeabi-v7a)/' apk-contents.txt; then
-            echo "Unexpected non-arm64 native library found"
-            exit 1
-          fi
-          grep -q 'lib/arm64-v8a/' apk-contents.txt
+          python3 - <<'PY'
+          import os
+          import zipfile
+
+          apks = [
+              "app/build/outputs/apk/debug/app-debug.apk",
+              "app/build/outputs/apk/release/app-release-unsigned.apk",
+          ]
+          summary = ["| APK | File size | ARM64 native libraries |", "|---|---:|---:|"]
+          for apk in apks:
+              if not os.path.isfile(apk):
+                  raise SystemExit(f"Missing expected APK: {apk}")
+              with zipfile.ZipFile(apk) as archive:
+                  native = {
+                      name.split("/")[1]
+                      for name in archive.namelist()
+                      if name.startswith("lib/") and name.endswith(".so") and len(name.split("/")) > 2
+                  }
+                  unexpected = native - {"arm64-v8a"}
+                  if unexpected:
+                      raise SystemExit(f"{apk}: unexpected native ABIs: {sorted(unexpected)}")
+                  if "arm64-v8a" not in native:
+                      raise SystemExit(f"{apk}: no arm64-v8a native libraries found")
+                  entries = sorted(
+                      ((item.compress_size, item.filename) for item in archive.infolist()),
+                      reverse=True,
+                  )
+                  dex_bytes = sum(
+                      item.compress_size for item in archive.infolist()
+                      if item.filename.endswith(".dex")
+                  )
+                  largest = ", ".join(f"{name} ({size / 1024 / 1024:.1f} MiB)" for size, name in entries[:3])
+              size = os.path.getsize(apk)
+              print(f"{apk}: {size:,} bytes ({size / 1024 / 1024:.1f} MiB)")
+              print(f"  DEX total: {dex_bytes / 1024 / 1024:.1f} MiB")
+              print(f"  Largest entries: {largest}")
+              summary.append(
+                  f"| {os.path.basename(os.path.dirname(apk))} | {size:,} bytes ({size / 1024 / 1024:.1f} MiB) | {', '.join(sorted(native))} |"
+              )
+          with open(os.environ["GITHUB_STEP_SUMMARY"], "a", encoding="utf-8") as report:
+              report.write("\n## APK size report\n\n" + "\n".join(summary) + "\n")
+          PY
 
       - name: Upload debug APK
         uses: actions/upload-artifact@v4
         with:
           name: lasthavenlauncher-debug-arm64
           path: app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Upload optimized release candidate (unsigned)
+        uses: actions/upload-artifact@v4
+        with:
+          name: lasthavenlauncher-release-unsigned-arm64
+          path: app/build/outputs/apk/release/app-release-unsigned.apk
           if-no-files-found: error
           retention-days: 14
