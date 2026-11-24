@@ -317,3 +317,13 @@ Entry format:
 - **Verified:** Official Cefrium 0.21.0 docs confirm the current release, Chromium 156.0.8078.96, JDK 25 / Gradle 9.7.1 / AGP 9.4 / compileSdk 37 requirements and documented `CefriumView` usage. GitHub Actions and physical-device results are pending.
 - **Do not redo:** Do not re-research the documented version/toolchain unless the CI resolver or build contradicts the official release page. `CefriumView` is the Compose API; do not replace it with WebView or another engine.
 - **Follow-ups:** Check CI, install on physical arm64 device, validate LastHaven and then run web capability checks. Release signing key still needs to be generated and backed up before distributing a release build.
+
+
+## 2026-11-24 — Queue beta updater channel and functional settings work
+
+- **Role:** Planning / issue triage
+- **Files:** GitHub issues #6 and #19, `AGENT_WORK.md`, `ISSUES.md`, `STATUS.md`
+- **Change:** Created #19 for an opt-in updater Beta channel (published prereleases only; Stable remains default) and refined #6 around functional settings and UX clarity without a visual redesign. Assigned #19 to Chaty after #4 and queued #6 for Ploy after #13, #11 and #8 are reviewed and integrated.
+- **Why:** Users need an explicit way to test beta releases and settings that expose useful, working controls rather than a usage-only popup.
+- **Constraints:** No overlapping ownership; no automatic download/install; no release or tag changes; no visual redesign in this pass; preserve the existing stable updater validation path.
+- **Verified:** GitHub issues #6 and #19 updated/created; coordination files updated on `beta`. No app code changed and no tests run.
