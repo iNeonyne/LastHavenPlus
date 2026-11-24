@@ -77,11 +77,11 @@ class AddonLibraryRepository(context: Context) {
     }
 
     @Synchronized
-    fun confirmReplacement(token: String): AddonImportResult.Imported {
+    fun confirmReplacement(token: String, archiveName: String): AddonImportResult.Imported {
         val stagedFile = stagedFile(token)
         if (!stagedFile.isFile) throw IllegalStateException("The pending addon import has expired.")
         try {
-            val inspection = AddonArchiveInspector.inspect(stagedFile)
+            val inspection = AddonArchiveInspector.inspect(stagedFile, safeDisplayName(archiveName))
             return commit(stagedFile, inspection, readIndex(), replaceExisting = true)
         } finally {
             stagedFile.delete()
@@ -168,6 +168,12 @@ class AddonLibraryRepository(context: Context) {
             )
         }
         val updated = retained + newItems
+        val uniquePackages = updated.distinctBy { it.archiveSha256 }
+        val libraryBytes = uniquePackages.sumOf { it.archiveBytes }
+        if (libraryBytes > MAX_LIBRARY_BYTES) {
+            if (!archiveAlreadyExists && !existing.any { it.archiveSha256 == inspection.sha256 }) finalArchive.delete()
+            throw AddonArchiveException("The local addon library is limited to 1 GiB. Remove older packages first.")
+        }
         try {
             writeIndex(updated)
         } catch (error: Exception) {
@@ -213,6 +219,9 @@ class AddonLibraryRepository(context: Context) {
         value.substringAfterLast('/').substringAfterLast('\\').take(128).ifBlank { "addon.zip" }
 
     private fun readIndex(): List<AddonLibraryItem> {
+        val backup = File(root, "library.json.bak")
+        if (!index.exists() && backup.exists()) backup.renameTo(index)
+        if (index.exists()) backup.delete()
         if (!index.isFile) return emptyList()
         val array = JSONArray(index.readText(Charsets.UTF_8))
         return buildList {
@@ -267,18 +276,26 @@ class AddonLibraryRepository(context: Context) {
         }
 
         val temporary = File(root, "library.json.tmp")
+        val backup = File(root, "library.json.bak")
         FileOutputStream(temporary).use { output ->
             output.write(array.toString().toByteArray(Charsets.UTF_8))
             output.fd.sync()
         }
-        if (index.exists() && !index.delete()) {
+        if (backup.exists()) backup.delete()
+        if (index.exists() && !index.renameTo(backup)) {
             temporary.delete()
-            throw IllegalStateException("Could not replace the addon library index.")
+            throw IllegalStateException("Could not prepare the addon library index replacement.")
         }
         if (!temporary.renameTo(index)) {
+            if (backup.exists()) backup.renameTo(index)
             temporary.delete()
-            throw IllegalStateException("Could not save the addon library index.")
+            throw IllegalStateException("Could not save the addon library index; the previous index was restored.")
         }
+        backup.delete()
+    }
+
+    companion object {
+        const val MAX_LIBRARY_BYTES = 1024L * 1024L * 1024L
     }
 
     private fun deleteUnreferencedPackages(items: List<AddonLibraryItem>) {
