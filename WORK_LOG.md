@@ -66,3 +66,13 @@
 - **Workflow:** beta CI run #268, ID `45496604607`, on `810cecdec2c2d795acc81331272f0751efa3b579`.
 - **Result:** run was cancelled by newer pushes before useful build/test evidence was produced. It does not establish that the app compiles after the manager removal.
 - **Follow-up:** wait for the latest beta push's CI run; record the exact run/commit and inspect job logs before updating implementation status.
+
+
+### 2026-11-25 — Final preparation verification checkpoint
+
+- **Branch:** `beta`.
+- **Commit at checkpoint:** `f8c57eefe73b220340334ae217dc309b2828dc72`.
+- **Verified repository tree:** `docs/GECKOVIEW_MIGRATION.md` and `WORK_LOG.md` are present; `AddonArchiveInspector.kt`, `AddonLibraryRepository.kt`, `AddonManagerDialog.kt` and `AddonArchiveInspectorTest.kt` are absent.
+- **Verified assignments:** Ploy #9 active (small menu accessibility), #11 queued, #20 queued documentation research, #22 queued after #21; #23 blocked awaiting owner requirements. Chaty owns #4 and #21.
+- **CI:** run #281, ID `45497088290`, on commit `f8c57eefe73b220340334ae217dc309b2828dc72`, pending at inspection. Runs #268, #278 and #279 were cancelled by subsequent pushes and are not test evidence.
+- **Next safe action:** inspect the final current beta CI run and its logs. If build/tests fail, fix only confirmed failures, respecting Ploy's #9 file ownership. Do not begin GeckoView production integration before the clean baseline and reviewed #20 decision record.
