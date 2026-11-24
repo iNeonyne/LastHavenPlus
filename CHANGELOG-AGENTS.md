@@ -3,7 +3,7 @@
 - **Role:** Main integrator / build optimization
 - **Files:** `app/build.gradle.kts`, `.github/workflows/android.yml`, `STATUS.md`, `CHANGELOG-AGENTS.md`
 - **Change:** Enabled R8 code minification and resource shrinking for the release variant only. CI now builds debug plus an unsigned optimized release candidate, checks both APKs contain arm64-v8a only, and records file size, DEX total and largest entries.
-- **Why:** The measured baseline APK was 229,073,631 bytes (218.4 MiB); its 22 DEX files totaled about 115 MiB, while `libcef.so` alone was 92.84 MiB compressed. Shrinking is the least invasive candidate to reduce the DEX payload.
+- **Why:** The measured baseline APK was 229,073,631 bytes (218.4 MiB); its 22 DEX files total about 104.4 MiB, while `libcef.so` alone was 92.84 MiB compressed. Shrinking is the least invasive candidate to reduce the DEX payload.
 - **Verified:** Baseline obtained by downloading and inspecting the actual APK from successful CI run #32. Cefrium's current public guide says to keep R8 enabled and that its AAR consumer rules preserve engine-required code since 0.12.0. New CI result and runtime/device validation are pending.
 - **Do not redo:** Do not strip Chromium native code or Cefrium data assets, add broad keep rules, or remove engine runtime dependencies without compatibility evidence. Do not treat the unsigned release candidate as installable or distributable.
 - **Follow-ups:** Compare the optimized release APK against the measured baseline; review R8 mapping/usage outputs and test the minified build on a physical arm64 device before shipping.
