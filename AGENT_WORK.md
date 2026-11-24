@@ -16,8 +16,8 @@ This file is the working agreement for the two active coding agents. The reposit
 - Do not create releases, tags, or alter signing secrets.
 - Do not use TickTick.
 - Keep work on separate branches/worktrees and avoid simultaneous edits to the same files.
-- Ploy creates a dedicated feature branch, pushes her task commits and opens a pull request when her assignment is ready. She must never push directly to `main`.
-- After Ploy opens a PR, Chaty inspects the complete PR diff, runs or verifies relevant checks, reports defects or accepts the work, and updates `ISSUES.md`, `STATUS.md` and `CHANGELOG-AGENTS.md`. Chaty does not merge automatically: the user must explicitly approve the PR before Chaty merges it.
+- Ploy creates a dedicated feature branch, pushes her task commits and opens a pull request with **base branch `main`** when her assignment is ready. She must never push directly to `main`.
+- After Ploy opens a PR targeting `main`, Chaty inspects the complete PR diff, runs or verifies relevant checks, reports defects or accepts the work, and updates `ISSUES.md`, `STATUS.md` and `CHANGELOG-AGENTS.md`. Chaty does not merge automatically: the user must explicitly approve the PR before Chaty merges it.
 - Report exact tests and results. Device-only checks must remain marked pending until performed on physical ARM64 hardware.
 - Chaty alone updates the central project status and changelog after reviewing/integrating Ploy's work.
 
@@ -42,7 +42,7 @@ Acceptance:
 - Relevant automated checks pass.
 - TalkBack and focus-order verification are explicitly left pending; Ploy cannot claim physical-device verification.
 
-File ownership while this task is active: Compose UI files required for semantics and their directly related tests. Do not modify `STATUS.md`, `ISSUES.md`, `CHANGELOG-AGENTS.md` or `AGENTS.md`; Chaty handles central tracking. When finished, push the task branch and open a PR; include the PR link in the handoff report for Chaty to review.
+File ownership while this task is active: Compose UI files required for semantics and their directly related tests. Do not modify `STATUS.md`, `ISSUES.md`, `CHANGELOG-AGENTS.md` or `AGENTS.md`; Chaty handles central tracking. When finished, push the task branch and open a PR targeting `main`; include the PR link in the handoff report for Chaty to review.
 
 ### P2 — Issue #11: diagnostics test coverage
 
@@ -60,7 +60,7 @@ Acceptance:
 - Tests are deterministic and do not require network access or a physical device.
 - Any discovered production defect is fixed within the diagnostics files only and documented in the handoff.
 
-File ownership while active: diagnostics logger and its unit tests only. Push the completed task branch and open a PR; Chaty then reviews and updates tracking.
+File ownership while active: diagnostics logger and its unit tests only. Push the completed task branch and open a PR targeting `main`; Chaty then reviews and updates tracking.
 
 ### P3 — Issue #8: addon repository tests
 
@@ -83,7 +83,7 @@ Acceptance:
 - Existing archive inspector tests remain passing.
 - No claim is made that addons are loaded by the game.
 
-File ownership while active: `AddonLibraryRepository.kt` and repository-focused tests only, unless Chaty approves a narrowly scoped supporting change. Push the completed task branch and open a PR; Chaty then reviews and updates tracking.
+File ownership while active: `AddonLibraryRepository.kt` and repository-focused tests only, unless Chaty approves a narrowly scoped supporting change. Push the completed task branch and open a PR targeting `main`; Chaty then reviews and updates tracking.
 
 ## Chaty — assigned work
 
