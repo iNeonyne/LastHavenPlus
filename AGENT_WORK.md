@@ -104,11 +104,13 @@ Chaty owns **Issue #4 only as the current active implementation task**. Continue
 
 1. **Issue #4 — build reliability and updater tests (ACTIVE):** Gradle Wrapper, verified distribution checksum, CI migration, updater edge-case tests, package identity checks and CI verification. Preserve the current signing identity and manual update flow.
 2. **Issue #5 — device verification coordination:** maintain the checklist and record evidence supplied from the user's physical ARM64 device. Do not fabricate device results. Claim only after #4 is handed off and after checking that Ploy does not own #5.
-3. **Issue #6 — settings and storage safety:** verify pinned Cefrium APIs before implementing URL, cache or data controls. Claim only after current work is handed off.
-4. **Issue #8 — approved runtime integration investigation:** BLOCKED while Ploy owns #8 repository tests. After Ploy's #8 task is accepted and handed off, Chaty may claim the distinct operator-contract investigation. No runtime injection or game-client modification until the exact authorized interface is established and reviewed.
-5. **Issue #11 — diagnostics:** Ploy owns the complete delegated test task. Chaty must not edit diagnostics tests or implementation while Ploy owns #11. Any later production-code follow-up requires explicit handoff and updated ownership.
-6. **Issues #9, #10, #12, #14, #15, #16 and #17:** Chaty-owned, scheduled one at a time after #4. Never start one while Ploy owns the same issue. Do not start overlapping work.
-7. Maintain `ISSUES.md`, `STATUS.md`, `CHANGELOG-AGENTS.md`, README and CI/release documentation. Review every Ploy handoff before integration.
+3. **Issue #19 — opt-in beta updater channel (QUEUED NEXT):** after #4 is handed off, Chaty owns stable/beta release selection, prerelease filtering, channel persistence and updater tests. Keep the stable channel as default; do not download or install automatically.
+4. **Issue #5 — device verification coordination:** maintain the checklist and record evidence supplied from the user's physical ARM64 device. Do not fabricate device results. Claim only after #19 is handed off and after checking that Ploy does not own #5.
+5. **Issue #6 — settings and storage safety (Ploy queued after #8):** Ploy owns the functionality-first settings pass after #8 is accepted/integrated. Chaty must not edit settings UI/state implementation while Ploy owns #6. Verify pinned Cefrium APIs before implementing URL, cache or data controls.
+6. **Issue #8 — approved runtime integration investigation:** BLOCKED while Ploy owns #8 repository tests. After Ploy's #8 task is accepted and handed off, Chaty may claim the distinct operator-contract investigation. No runtime injection or game-client modification until the exact authorized interface is established and reviewed.
+7. **Issue #11 — diagnostics:** Ploy owns the complete delegated test task. Chaty must not edit diagnostics tests or implementation while Ploy owns #11. Any later production-code follow-up requires explicit handoff and updated ownership.
+8. **Issues #9, #10, #12, #14, #15, #16 and #17:** Chaty-owned, scheduled one at a time after #4. Never start one while Ploy owns the same issue. Do not start overlapping work.
+9. Maintain `ISSUES.md`, `STATUS.md`, `CHANGELOG-AGENTS.md`, README and CI/release documentation. Review every Ploy handoff before integration.
 
 ## Handoff format
 
@@ -120,3 +122,27 @@ At the end of each assignment, Ploy provides:
 - Any follow-up decision needed from Chaty.
 
 Ploy stops after opening the PR and waits for Chaty's review and merge into `beta`. She does not start the next task automatically.
+
+
+### Ploy — queued after current sequence
+
+### P2 — Issue #6: functionality-first settings and safe storage
+
+Start only after #13, #11 and #8 have each been reviewed, accepted and integrated into `beta`. Ploy then exclusively owns #6; Chaty must not edit settings implementation while this task is active.
+
+Scope:
+- Turn the existing usage-only AlertDialog into a coherent settings experience centered on working functionality, not visual redesign.
+- Implement editable HTTPS game URL with validation, explicit Apply, persistence and safe navigation behavior.
+- Separate changeable preferences from read-only storage/network/version information; clearly explain units, limitations and unavailable values.
+- Make every shown control functional and persisted; do not add inert placeholders.
+- Investigate the pinned Cefrium API before any cache/profile deletion controls. Implement only documented safe cache clearing; do not guess profile deletion APIs or delete profile files manually.
+- Coordinate with #19: Chaty exclusively implements the beta/stable updater-channel setting under #19. Ploy must not duplicate or modify that control.
+- Opening/dismissing settings must not reload the game or alter its profile/session.
+
+Acceptance:
+- Settings provide useful, working controls and clear read-only information without a visual redesign.
+- URL validation, persistence and explicit apply behavior have automated tests.
+- Destructive actions are absent unless supported by a verified Cefrium API and have separate explicit confirmation.
+- No placeholder/inert controls; tests and limitations are documented. Physical-device-only verification remains pending until performed.
+
+File ownership: settings Compose/state/persistence files and directly related tests only. Do not modify updater implementation/channel control, central trackers or release workflows. Create a feature branch from latest `beta`, open a PR targeting `beta`, then stop for Chaty's review.
