@@ -4,7 +4,7 @@
 
 ## Current priorities
 
-1. **P0 — GeckoView verification and release baseline:** GeckoView 160 is now the engine in beta. CI run #308 passed the Android release build and unit-test task for commit `82590635e77c7abfedcaa6fd1fa4ad8c3b5de469`; this is not a physical-device result and is not the latest beta HEAD.
+1. **P0 — GeckoView verification and release baseline:** GeckoView 160 is now the engine in beta. CI run #310 passed the signed Android release build, unit tests, signing-certificate and ARM64-only ABI checks for commit `91e21d4bde0a26b8d7cbfd9697615f32c2f57d21`; this is not a physical-device result or a build of the latest beta HEAD.
 2. **P1 — Home screen and navigation (#22):** Ploy owns the home screen, Play/Settings entry points and Reload/Home/Return to game flow. Chaty must not edit the assigned UI files concurrently.
 3. **P0.2 — Physical ARM64 verification (#5):** gameplay, profile persistence, media, navigation and update installation remain unverified until tested on real ARM64 hardware.
 4. **Build reproducibility/updater tests (#4):** Gradle Wrapper is present and pinned. Continue the missing updater edge-case coverage and verify current CI/workflow behavior.
