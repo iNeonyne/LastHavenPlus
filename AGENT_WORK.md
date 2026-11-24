@@ -24,6 +24,16 @@ This file is the working agreement for the two active coding agents. The reposit
 - Report exact tests and results. Device-only checks must remain marked pending until performed on physical ARM64 hardware.
 - Chaty alone updates the central project status and changelog after reviewing/integrating Ploy's work.
 
+
+## Issue intake and task boundaries
+
+- Chaty owns all issue intake and triage. Ploy must not create GitHub issues, choose priority, assign owners, change labels/milestones, close issues or edit the central tracker.
+- Every new request must be duplicate-checked against open and closed issues before creating a new issue.
+- A task is not ready merely because it exists. Chaty must define a testable outcome, bounded scope, non-goals, acceptance criteria, verification plan and dependencies before assignment.
+- One issue, one active owner. Record the exact files and subtask. Do not split one issue across agents unless the split is explicit and has non-overlapping files and acceptance criteria.
+- If you discover adjacent work, report it to Chaty. Do not silently broaden the issue or start a second task.
+- PRs must reference their issue. Use `Closes #N` only when all acceptance criteria are satisfied; otherwise use `Refs #N`.
+
 ## Ploy — assigned work
 
 Ploy is the exclusive owner of her active delegated issue. Work in the following order, one issue at a time; move to the next only after Chaty reviews, accepts and integrates the previous PR into `beta`. Chaty must not work on the same issue or its implementation/tests while Ploy owns it.
