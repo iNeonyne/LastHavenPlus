@@ -1,118 +1,71 @@
 # Agent work assignments — LastHavenPlus
 
-This file is the execution order and file-ownership contract for the two project agents. The repository owner remains the decision-maker.
+The repository owner makes final product and release decisions. Chaty is the main orchestrator; Ploy is a scoped implementation agent.
 
-## Agent identities
-- **Ploy** — repository-only coding/research agent. She works only on the assignment below, cannot inspect GitHub Issues/Actions/releases/secrets, and must not edit central trackers.
-- **Chaty** — main orchestrator. Owns issue intake, priorities, central docs/status, review, CI/release coordination and direct pushes to `beta`. `main` is stable.
+## Roles
 
-## Rules
-- Read `AGENTS.md`, `README.md`, `STATUS.md`, `ISSUES.md`, `WORK_LOG.md` and this file before starting a task; read `docs/GECKOVIEW_MIGRATION.md` before GeckoView work.
-- `beta` is the only development/integration branch. `main` is stable.
-- Parallel work is allowed only on separate issues and non-overlapping files. Never work on the same issue concurrently.
-- Ploy creates a task branch from latest `beta`, pushes only to that task branch and hands Chaty its branch name, exact commit SHA, changed files, tests/results and limitations. Ploy never pushes to `beta` or `main`.
-- Chaty alone reviews the complete diff and integrates accepted commits directly into `beta`. No pull requests are used.
-- Chaty owns GitHub issue creation/updates, labels, assignment, priority, backlog, STATUS, README, AGENTS and CHANGELOG-AGENTS. Ploy must not change central trackers.
-- No TickTick. GitHub Issues and `ISSUES.md` are the source of truth.
-- Do not modify the game/client, application ID, established release signing identity or arm64-only target. Do not add automatic update downloading/installation. Do not create tags, releases or promote beta to main without explicit approval.
-- Current beta still contains Cefrium. The approved target is GeckoView; follow issues #20/#21 and do not independently change engine dependencies or begin engine work before the assigned task is ready.
-- The previous addon manager implementation has been removed. Issue #23 (Firefox WebExtension addon manager) is explicitly on hold by the owner. Do not research, design, implement, test, assign, or otherwise spend project effort on addon-manager work until the owner explicitly resumes it. Keep WoW addon packages distinct from Gecko WebExtensions.
-- Physical-device testing remains unverified until performed on real ARM64 hardware.
+- **Chaty:** owns intake, issue triage, task assignment, central documentation, review, CI/release coordination and integration. Chaty alone pushes accepted commits directly to `beta`.
+- **Ploy:** implements only the task assigned below. Ploy does not edit central trackers, create or manage GitHub issues, integrate into `beta`, or push to `main`.
 
-## Ploy — paused while GeckoView is the top priority
+## Shared workflow
 
-Ploy's smaller tasks #9 (menu accessibility) and #11 (diagnostics tests) are paused. Do not edit their files or begin another task until Chaty reactivates the queue. The current top-priority work is owned by Chaty; no concurrent agent is assigned to the same GeckoView issues.
+- `beta` is the only active development, integration and testing branch. `main` is stable.
+- No pull requests are used.
+- Parallel work is allowed only for different issues with non-overlapping file scopes. Never work on the same issue concurrently.
+- Ploy works from a task branch based on current `beta` when isolation is needed, then hands Chaty the branch, exact commit SHA, changed files, test results and limitations.
+- Chaty reviews and integrates accepted work directly into `beta`.
+- Promote to `main` or publish a release only after release gates pass and the owner explicitly approves.
+- GitHub Issues and `ISSUES.md` are the source of truth. TickTick may be used as a supplementary task tracker.
+- Physical-device behavior remains unverified until tested on real ARM64 hardware.
 
-### PAUSED — #9 navigation menu accessibility (easy task)
-**Goal:** Finish the small accessibility follow-up for the existing exit/navigation menu.
+## Project constraints
 
-Scope:
-- Add meaningful Compose semantics only where visible text does not already provide an accessible name.
-- Check Return to game, Reload, Settings, diagnostics, update and Exit controls.
-- Check focus order and avoid duplicate TalkBack announcements.
-- Do not add an Addons control; the legacy addon manager has been removed.
+- Keep the application ID `com.neonyne.lasthavenlauncher`, established release signing identity and ARM64-only target unchanged.
+- Do not modify the game/client.
+- Do not add automatic update downloads or installation.
+- Do not ship debug APKs or partially implemented features.
+- Do not change Gradle, AGP, JDK, Android SDK or GeckoView versions without evidence and compatibility validation.
+- Do not restore or work on the removed addon manager. Issue #23 remains on hold pending a new owner specification.
 
-File boundary: `MainActivity.kt` menu semantics and directly related UI tests only. Do not modify Gradle/engine configuration, updater logic, diagnostics internals or central trackers.
+## Ploy — ACTIVE: issue #22 home screen and navigation
 
-Acceptance: menu actions have clear, non-duplicated accessible names; relevant automated checks pass. Physical TalkBack/focus-order verification remains pending until a real ARM64 device is tested.
+**Goal:** Add the app's first-launch home screen and complete the transition between home, settings and the existing game.
 
-### PAUSED — #11 diagnostics tests
-Start only after #9 is integrated into `beta`.
+**Required behavior**
+- Fresh app launch opens the LastHavenPlus home screen, not the game.
+- Home screen presents one prominent Play action and a Settings entry.
+- Play opens the existing game.
+- The in-game menu exposes Reload, Home and Return to game while preserving existing supported actions.
+- Home returns to the launcher home screen. Return to game restores the existing game session rather than unnecessarily recreating or reloading it.
+- Settings can be opened from home and the game menu.
+- Apply immersive mode, landscape/game orientation and keep-screen-on behavior only while gameplay is active; restore normal system UI on home/settings.
+- Do not initialize a game session merely by opening Settings.
 
-Scope: tests for redaction formats, bounded log size/rotation and safe failure-path logging. Do not change the logging architecture or collect additional sensitive data unless a reproducible test exposes a specific defect.
+**File ownership**
+- Ploy owns the home/navigation UI and directly related UI tests, including `MainActivity.kt`, `HomeScreen.kt`, `AppNavigation.kt` if present, and narrowly related resources/tests.
+- Do not edit GeckoRuntime/session provider internals, Gradle/dependency configuration, updater implementation, diagnostics internals or addon-related code.
+- Chaty must not edit Ploy's assigned files while this task is active. Any scope expansion requires a handoff and an updated assignment first.
 
-File boundary: diagnostics logger and its unit tests only. Do not touch engine migration or screen navigation.
+**Acceptance and evidence**
+- Home appears on fresh launch.
+- Play opens the game.
+- Home and Settings navigation work from the appropriate entry points.
+- Return to game preserves the existing session.
+- Reload reloads the current game page.
+- System UI/orientation/keep-awake behavior is scoped to gameplay.
+- Relevant automated tests/build checks pass.
+- Physical ARM64 interaction and TalkBack behavior remain unverified until tested on hardware.
 
-### NOT ASSIGNED — #20 GeckoView technical decision record
-Chaty owns this P0 research decision as part of the engine migration workstream. Ploy must not research or edit the same document concurrently.
+## Chaty — integration and release coordination
 
-Scope:
-- Update `docs/GECKOVIEW_MIGRATION.md` only; no production source, Gradle or manifest changes.
-- Verify current stable GeckoView artifact/version and official Mozilla API documentation.
-- Document runtime/session/view lifecycle, profile persistence and Cefrium data portability risks, navigation/crash/permission/prompt/media/fullscreen/file delegates, target game API requirements, ARM64/AAR packaging, APK-size measurement and CI/device test plan.
-- Keep the future addon manager out of scope until the owner provides its new specification.
+- Maintain exclusive ownership of central documentation, `STATUS.md`, `ISSUES.md`, `README.md`, `AGENTS.md`, this file, `CHANGELOG-AGENTS.md` and `WORK_LOG.md`.
+- Verify the CI optimization run associated with commit `54b947279a783c6c382210e65045edd02bd5ee73`; do not claim performance improvement until elapsed time is compared with a suitable baseline.
+- Keep the successful run #308 evidence tied to its actual tested commit `82590635e77c7abfedcaa6fd1fa4ad8c3b5de469`; do not describe it as a build of later documentation/workflow commits.
+- Coordinate the remaining GeckoView physical-device checks and review Ploy's issue #22 handoff.
+- Do not promote `beta` to `main`, create a release tag or publish a release without explicit owner approval.
 
-Acceptance: official references and date/version evidence are recorded; unresolved questions and an ordered migration plan are clear. Chaty reviews the decision record before #21 starts.
+## Paused and deferred work
 
-### QUEUED — #22 home screen and navigation
-Start only after Chaty has integrated #21 into `beta` and handed off the engine screen contract.
-
-Scope: home screen with LastHavenPlus branding, one prominent Play action and a Settings entry; no automatic game navigation on app startup; game-to-home/settings/back/exit navigation; preserve the existing Gecko session when navigating away; apply immersive/keep-awake only during gameplay.
-
-File boundary: screen/navigation UI (`MainActivity.kt`, `HomeScreen.kt`, `AppNavigation.kt` and directly related tests). Do not change Gecko runtime/session implementation, Gradle dependencies, updater internals or addon repository logic.
-
-Acceptance: home appears on fresh launch; Play opens game; Settings works without initializing a game session; home/game transitions do not reload the game; relevant navigation tests pass.
-
-### BLOCKED — #23 addon manager rebuild
-Do not start this task until the owner provides a new written specification. The previous ZIP addon manager implementation, tests and app entry point have been deleted. Do not recreate its old features or storage format based on historical documentation.
-
-## Chaty — active and queued
-
-### ACTIVE — #4 build baseline gate (limited)
-- Monitor the current post-removal beta CI run and inspect its build/test result.
-- Resolve only confirmed baseline blockers needed to establish a reproducible starting point for GeckoView.
-- Keep the committed Gradle Wrapper; do not change Gradle/JDK/AGP/SDK/signing identity speculatively.
-- Do not let unrelated updater enhancements delay the engine migration; defer remaining updater test expansion until after the GeckoView replacement is stable.
-
-### ACTIVE — #20 GeckoView technical decision record
-- Chaty owns immediate verification of the stable GeckoView artifact, exact coordinates, API surface, Java/toolchain compatibility, ARM64 payload, licenses and size impact.
-- Do not add the dependency until the official artifact and current build compatibility are verified.
-
-### NEXT — #21 replace Cefrium with GeckoView
-Begin production integration immediately after #20's exact stable-artifact/API decision and the current beta baseline build are verified.
-
-Scope: replace Cefrium plugin/dependencies/repository/runtime with one verified stable GeckoView version; implement process-scoped GeckoRuntime, managed GeckoSession and GeckoView host; safe delegates; persistent profile; remove all Cefrium production references.
-
-File boundary: `app/build.gradle.kts`, `settings.gradle.kts`, `LastHavenApplication.kt`, browser-engine package and the minimal `MainActivity.kt` host conversion needed to maintain the current one-screen Play/game flow. Do not implement the new home navigation or alter addon library logic.
-
-Acceptance: no Cefrium code/dependency remains; builds/tests/signature/ABI checks pass; runtime/session/profile behavior is tested; physical ARM64 gameplay verification remains explicitly pending until performed.
-
-### DEFERRED — #19 beta updater channel
-Do not start until the GeckoView engine migration and home/navigation changes are integrated and the updater is retested against the new app architecture. Stable remains the default; no automatic download/install.
-
-## Handoff format
-
-Ploy provides Chaty:
-- GitHub issue number and task-branch name.
-- Exact commit SHA and changed file list.
-- Commands run and actual test/build results.
-- Known limitations, unverified behavior and any follow-up decision.
-
-Ploy stops after handing off. Chaty reviews the full diff, reruns or verifies required checks, integrates accepted work directly into `beta`, updates central trackers and only then advances the assignment queue.
-
-
-## Ploy task queue while GeckoView is top priority
-
-1. #9 — PAUSED: small menu accessibility follow-up.
-2. #11 — PAUSED: diagnostics redaction/rotation/failure-path unit tests.
-3. #20 — Chaty owns the technical decision record; no parallel Ploy work.
-4. #22 — queued after Chaty integrates #21.
-5. #6 — queued after #21/#22 define the navigation contract.
-6. #23 — on hold at the owner's explicit request.
-
-Every task must append progress and interruption checkpoints to `WORK_LOG.md`. Ploy never integrates or pushes to beta. Chaty owns the GeckoView migration as the top priority; Ploy remains paused until a non-overlapping task is explicitly reactivated.
-
-
-## DEFERRED — #23 Firefox WebExtension addon manager
-
-Owner placed this entire workstream on hold on 2026-11-25. Do not assign it to Ploy or Chaty, create extension files, vendor dependencies, conduct further implementation research, or run tests for it until the owner explicitly resumes the task. Preserve the owner's specification in conversation context; it is not an authorization to proceed while on hold. Existing removal of the legacy Android addon manager remains in effect.
+- Issue #9 accessibility follow-up: paused until the home/navigation implementation is integrated and can be checked against the final UI.
+- Issue #11 diagnostics test expansion: paused; resume after the home/navigation handoff or when Chaty explicitly reorders it.
+- Issue #23 addon manager: blocked by the owner's hold. Do not begin until a new written specification is supplied.
