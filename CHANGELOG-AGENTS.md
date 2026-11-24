@@ -423,3 +423,14 @@ Entry format:
 - **Verified:** Mozilla Firefox 160 versioned public API source checked. Maven index identifies the artifact as Mozilla-published and MPL 2.0.
 - **Not verified:** Gradle dependency resolution, compilation, tests, final APK ABI/signing/size, persistent profile behavior and physical ARM64 gameplay.
 - **Follow-ups:** Resolve CI feedback; implement only required delegates; verify game functionality on physical ARM64 hardware.
+
+
+## 2026-11-25 — GeckoView 160 API 37.2 build prerequisite
+
+- **Role:** Chaty / main orchestrator
+- **Files:** `app/build.gradle.kts`, `.github/workflows/android.yml`, `README.md`, `STATUS.md`, `WORK_LOG.md`, GitHub issue #22
+- **Change:** Matched the Android compile SDK minor level to GeckoView 160's AAR metadata requirement (37.2), changed CI to install the matching SDK platform, corrected stale Cefrium descriptions to reflect the checked-in GeckoView source, and clarified #22's Reload / Home / Return to game menu behavior.
+- **Why:** Run #302 failed before Kotlin compilation because GeckoView required API 37.2 while the project used 37.0. The home-screen task must preserve the live GeckoSession and should follow a verified engine build.
+- **Verified:** Run #302 failure cause is explicit in its Gradle log; official Android Gradle Plugin docs support the minor API compile SDK declaration. Run #304 on commit `b0d1b154e5eb49c8ef72909e2ba2f4b8fdbddf3d` was pending at this checkpoint.
+- **Not verified:** SDK 37.2 package installation, app compilation, tests, release signing, ABI, artifact contents, GeckoView runtime/profile behavior and physical ARM64 gameplay.
+- **Follow-up:** Inspect run #304; if it clears the build gate, begin issue #22. No main promotion, tag or release.
