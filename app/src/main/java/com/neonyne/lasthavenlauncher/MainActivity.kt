@@ -4,7 +4,6 @@ import android.content.SharedPreferences
 import android.content.Intent
 import android.net.Uri
 import android.provider.Settings
-import android.util.Log
 import android.view.WindowManager
 import android.webkit.ValueCallback
 import android.os.Bundle
@@ -254,11 +253,7 @@ private fun LastHavenApp(
     }
 
     BackHandler {
-        if (browserState.canGoBack) {
-            navigator.navigateBack()
-        } else {
-            showExitPrompt = true
-        }
+        showExitPrompt = true
     }
 
     if (availableUpdate != null) {
@@ -363,6 +358,7 @@ private fun LastHavenApp(
             },
             dismissButton = {
                 Column(horizontalAlignment = Alignment.End) {
+                    TextButton(onClick = { showExitPrompt = false }) { Text("Return to game") }
                     TextButton(onClick = {
                         isCheckingUpdate = true
                         onCheckUpdates { result ->
