@@ -26,7 +26,17 @@
 | Device test | Not run | No connected arm64 device/emulator available to this run |
 | Release signing | Configured; CI validation pending | Existing `lasthavenplus` key is restored from GitHub secrets and its SHA-256 fingerprint is pinned in CI and the updater |
 
-## Work tracking\n\nGitHub Issues are the canonical backlog. Do not copy open task checklists into this file. Update the issue checklists as work is completed; use this document only for current state, active ownership, evidence and blockers.\n\n- [#4 — Build reproducibility, updater tests and CI verification](https://github.com/iNeonyne/Lasthavens-Android/issues/4)\n- [#5 — Physical-device gameplay, persistence and update verification](https://github.com/iNeonyne/Lasthavens-Android/issues/5)\n- [#6 — Minimal settings and safe storage controls](https://github.com/iNeonyne/Lasthavens-Android/issues/6)\n- [#7 — Performance and APK-size measurements](https://github.com/iNeonyne/Lasthavens-Android/issues/7)\n- [#8 — Deferred addon manager](https://github.com/iNeonyne/Lasthavens-Android/issues/8)\n\n## App updater
+## Work tracking
+
+GitHub Issues are the canonical backlog. Do not copy open task checklists into this file. Update issue checklists as work is completed; use this document only for current state, active ownership, evidence and blockers.
+
+- [#4 — Build reproducibility, updater tests and CI verification](https://github.com/iNeonyne/Lasthavens-Android/issues/4)
+- [#5 — Physical-device gameplay, persistence and update verification](https://github.com/iNeonyne/Lasthavens-Android/issues/5)
+- [#6 — Minimal settings and safe storage controls](https://github.com/iNeonyne/Lasthavens-Android/issues/6)
+- [#7 — Performance and APK-size measurements](https://github.com/iNeonyne/Lasthavens-Android/issues/7)
+- [#8 — Deferred addon manager](https://github.com/iNeonyne/Lasthavens-Android/issues/8)
+
+## App updater
 
 - Checks the latest **published stable GitHub Release** on launcher start; a manual check is also available from the exit dialog.
 - Never downloads automatically. The user explicitly chooses **Download smaller update** or **Download full APK instead**, then Android presents its package installer.
@@ -103,8 +113,8 @@ No runtime performance changes have been made. APK size baseline is measured; es
 
 ## Next actions
 
-1. Install the arm64 CI APK on a physical phone and confirm LastHaven loads.
-2. Run the web capability checklist in Cefrium and Chrome on the same phone.
-3. Confirm persistent storage result and app update/data retention.
-4. Verify the signed build and BSDIFF unit test in CI; publish the first signed release (full APK only), then test one subsequent release's delta generation and on-device installation.
-4. Add minimal settings after the playable path is reliable; preserve the cache/data distinction.
+1. Complete [#4 — build reproducibility, updater tests and CI verification](https://github.com/iNeonyne/Lasthavens-Android/issues/4).
+2. Complete [#5 — physical-device gameplay, persistence and update verification](https://github.com/iNeonyne/Lasthavens-Android/issues/5).
+3. Start [#6 — minimal settings and safe storage controls](https://github.com/iNeonyne/Lasthavens-Android/issues/6) only after the core game path is verified.
+4. Defer [#7 — performance and APK-size measurements](https://github.com/iNeonyne/Lasthavens-Android/issues/7) until a repeatable gameplay baseline exists.
+5. Keep [#8 — addon manager](https://github.com/iNeonyne/Lasthavens-Android/issues/8) deferred until the core launcher is stable.
