@@ -15,13 +15,13 @@
 | [#9](#issue-9) | P2 — Add a compact game navigation and exit menu | open |
 | [#10](#issue-10) | P2 — Track game network data usage | open |
 | [#11](#issue-11) | P2 — Add privacy-conscious app and updater logs | open |
-| [#12](#issue-12) | P2 — Surface actionable Cefrium load-error details | open |
+| [#12](#issue-12) | P2 — Surface actionable GeckoView load-error details | open |
 | [#13](#issue-13) | P2 — Add accessible names to launcher actions | open |
 | [#14](#issue-14) | P2 — Add connection diagnostics | open |
 | [#15](#issue-15) | P2 — Make updater recovery safer | open |
 | [#16](#issue-16) | P2 — Add gameplay orientation and keep-awake settings | open |
 | [#17](#issue-17) | P2 — Back up and restore launcher settings | open |
-| [#18](#issue-18) | Roadmap — v1.0.0 released, v1.1.0 addon manager, v1.2.0 improvements | open |
+| [#18](#issue-18) | Roadmap — GeckoView migration, home screen and addon manager | open |
 | [#19](https://github.com/iNeonyne/LastHavenPlus/issues/19) | P1 — Add an opt-in beta release channel to the updater | open |
 | [#20](https://github.com/iNeonyne/LastHavenPlus/issues/20) | P1 — Prepare the GeckoView migration technical decision record | open |
 | [#21](https://github.com/iNeonyne/LastHavenPlus/issues/21) | P1 — Replace Cefrium with Mozilla GeckoView | open |
