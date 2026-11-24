@@ -150,3 +150,16 @@
 - **Known follow-up:** Download responses are currently logged, not handled. Verify whether the game requires file downloads before considering that path complete. Session/profile persistence and real gameplay remain unverified.
 - **CI:** Run #301 (ID `45500026644`) was pending at the time of this checkpoint; no build result is claimed.
 - **Next:** Fix any compile/dependency errors from CI, then add tests and physical ARM64 verification.
+
+
+### 2026-11-25 — GeckoView 160 API 37.2 build-gate correction and home-navigation intake
+
+- **Issue/task:** #21 build compatibility prerequisite; owner request for #22 home screen and in-game Home menu action.
+- **Branch and starting commit:** `beta`, `78be2ce796ceace711f4984f0353e7c5cfe4221a`.
+- **Files inspected:** `README.md`, `AGENTS.md`, `STATUS.md`, `ISSUES.md`, `CHANGELOG-AGENTS.md`, `AGENT_WORK.md`, `WORK_LOG.md`, `docs/GECKOVIEW_MIGRATION.md`, `MainActivity.kt`, `app/build.gradle.kts`, `settings.gradle.kts`, `.github/workflows/android.yml`; GitHub issues #21 and #22; workflow run #302.
+- **Finding:** beta source and Gradle configuration already contain GeckoView 160, despite stale documents claiming Cefrium. CI run #302 failed at AAR metadata validation: GeckoView requires compile SDK 37.2, but the project compiled against 37.0. Tests and signing/ABI/artifact checks did not run.
+- **Files changed:** `app/build.gradle.kts` (`compileSdkMinor = 2`); `.github/workflows/android.yml` (install `platforms;android-37.2`); README and STATUS updated to describe the actual GeckoView source and verification boundary; issue #22 acceptance criteria updated to include Reload / Home / Return to game while preserving existing controls.
+- **Commits:** `5853695b50dfd5d19bb256f08e25ddc0ec8c11db` (Gradle API 37.2); `b0d1b154e5eb49c8ef72909e2ba2f4b8fdbddf3d` (CI SDK package); `bd85506758cc497eff729a9e4bff73753bb1faee` (README); `eed0efece19409ae78c5df4884975f9dbf18066d` (STATUS).
+- **Verification:** official Android Gradle Plugin API docs confirm `compileSdkMinor` / `minorApiLevel` configuration; run #302 logs confirm GeckoView's explicit 37.2 minimum. New run #304 (ID `45502893050`) was pending at the last check on commit `b0d1b154e5eb49c8ef72909e2ba2f4b8fdbddf3d`.
+- **Not verified:** whether `platforms;android-37.2` resolves on GitHub runners; Kotlin compile, unit tests, signed APK, signer, ARM64-only payload, GeckoView runtime/profile persistence and physical ARM64 gameplay.
+- **Next safe action:** inspect run #304. If green through compilation/tests/signing/ABI, proceed with #22 home screen and navigation as a separate UI task, preserving the same GeckoSession while moving between screens. Do not promote `beta` to `main` or publish a release.
