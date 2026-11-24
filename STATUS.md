@@ -22,18 +22,18 @@
 | Remote debugging | Debug builds only | `Cefrium.setRemoteDebuggingEnabled` enabled from Application.onCreate before first browser creation |
 | Previous CI build | **Passing** | Run #32, commit `0c4393c`; debug build, unit-test task, ABI verification and artifact upload succeeded |
 | Debug APK baseline | Measured | 229,073,631 bytes (218.4 MiB); actual APK extracted from run #32 artifact |
-| R8 / resource shrinking | Configured; validation pending | Enabled only on release variant; CI now builds both debug and unsigned release APKs |
+| R8 / resource shrinking | Configured; validation pending | Enabled only on release variant; CI builds debug and signed release APKs |
 | Device test | Not run | No connected arm64 device/emulator available to this run |
-| Release signing | Not configured | Release key must be generated/backed up before first distributed release |
+| Release signing | Configured; CI validation pending | Existing `lasthavenplus` key is restored from GitHub secrets and its SHA-256 fingerprint is pinned in CI and the updater |
 
 ## App updater
 
 - Checks the latest **published stable GitHub Release** on launcher start; a manual check is also available from the exit dialog.
-- Never downloads automatically. The user must select **Download update**, then Android presents its package installer.
-- Expected release tag: `vMAJOR.MINOR.PATCH`; expected asset: `lasthavenlauncher-arm64.apk`.
-- Requires GitHub's release asset `sha256:` digest; the downloaded APK is SHA-256 verified before the installer is opened.
+- Never downloads automatically. The user explicitly chooses **Download smaller update** or **Download full APK instead**, then Android presents its package installer.
+- Expected release tag: `vMAJOR.MINOR.PATCH`; assets: signed `lasthavenlauncher-arm64.apk`, `lasthavenlauncher-update.json`, and an optional `*.bsdiff` patch.
+- The app checks manifest and GitHub asset digests, installed base APK SHA-256, reconstructed APK SHA-256, package ID, versionCode and the pinned LastHaven release certificate before installer handoff.
 - Uses an app-private temporary file and a non-exported AndroidX FileProvider; no external storage permission or background service.
-- Android package installer enforces package identity/signature. A distributed release must use the same application ID and signing key as the installed app.
+- Differential patches reconstruct the complete signed APK byte-for-byte; the app does not repackage or re-sign it. Full APK remains the fallback.
 - CI now restores the existing `lasthavenplus` signing key from `ANDROID_KEYSTORE_BASE64`, `ANDROID_KEYSTORE_PASSWORD` and `ANDROID_KEY_PASSWORD`; it verifies the expected certificate SHA-256 before continuing.
 - Stable tags `vMAJOR.MINOR.PATCH` build signed ARM64 APKs, generate a manifest, and publish a BSDIFF40 patch from the immediately previous compatible release only when the patch is at least 10% smaller than the full APK.
 - The full signed APK is always published as fallback. Differential downloads are offered only for the exact base version/versionCode; the app checks the installed APK hash, reconstructs the signed APK in a streaming file-based patcher, verifies the target SHA-256, package ID, versionCode and pinned signing certificate, then opens Android's installer.
@@ -45,8 +45,8 @@
 - Largest compressed entry: `lib/arm64-v8a/libcef.so`, 92.84 MiB (201.94 MiB uncompressed).
 - DEX payload: 22 DEX files totaling 104.4 MiB (109,487,264 bytes as stored in the APK); this is the main candidate for R8 code shrinking.
 - Chromium data files include `icudtl.dat` (8.85 MiB) and `resources.pak` (1.23 MiB); do not strip or replace engine assets without Cefrium-specific compatibility evidence.
-- Release-only R8 minification and resource shrinking are now enabled. A CI build produces an unsigned optimized release candidate and reports its exact APK size and DEX total alongside the debug APK; no optimized result is recorded until that job completes.
-- The release candidate is unsigned because no release keystore is configured; it is for size analysis only and is not installable/distributable as a production update.
+- Release-only R8 minification and resource shrinking are enabled. CI now builds the signed optimized release APK and reports its exact APK size and DEX total alongside the debug APK; no optimized result is recorded until that job completes.
+- CI verifies the signed APK against the established LastHaven certificate fingerprint before it can be published.
 - The archive downloaded from Actions is not the APK size; use the APK's own file size for comparisons.
 
 ## Cefrium API findings
