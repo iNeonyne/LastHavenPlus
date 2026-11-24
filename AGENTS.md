@@ -48,8 +48,8 @@ Official references:
 - https://firefox-source-docs.mozilla.org/mobile/android/geckoview/consumer/permissions.html
 
 ### Addon boundary
-- The current ZIP manager stores WoW 3.3.5a addon ZIPs and `.toc` metadata in the app-private addon library.
-- WoW addon ZIPs / `.toc` files are not Gecko WebExtensions. Do not conflate them or claim that importing a package means the game loaded it.
+- No addon manager implementation is currently present. Do not recreate or design a replacement until the owner provides a new written specification.
+- Keep any future WoW addon package format distinct from Gecko WebExtensions; do not conflate the two or claim local storage means the game loaded an addon.
 - Reuse the existing archive inspector and package repository. Settings placement is #23; game loading/injection remains separate and requires a documented operator-approved contract.
 ## Named agent assignments
 
