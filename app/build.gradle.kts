@@ -1,7 +1,6 @@
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.plugin.compose")
-    id("com.cefrium") version "0.21.0"
 }
 
 val releaseStoreFile = System.getenv("ANDROID_KEYSTORE_PATH")
@@ -63,8 +62,7 @@ android {
 }
 
 dependencies {
-    implementation("com.cefrium:cefrium-sdk:0.21.0")
-    implementation("com.cefrium:cefrium-compose:0.21.0")
+    implementation("org.mozilla.geckoview:geckoview-arm64-v8a:160.0.20261116130455")
 
     implementation("androidx.appcompat:appcompat:1.7.0")
     implementation("androidx.mediarouter:mediarouter:1.7.0")

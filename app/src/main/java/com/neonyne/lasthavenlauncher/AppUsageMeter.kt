@@ -7,7 +7,7 @@ import java.io.File
 
 data class UsageSnapshot(
     val installedApkBytes: Long,
-    val cefriumProfileBytes: Long?,
+    val persistentDataBytes: Long,
     val cacheBytes: Long,
     val receivedSinceBootBytes: Long?,
     val sentSinceBootBytes: Long?,
@@ -28,7 +28,7 @@ class AppUsageMeter(context: Context) {
     fun snapshot(): UsageSnapshot {
         val rx = TrafficStats.getUidRxBytes(uid).takeIf { it >= 0L }
         val tx = TrafficStats.getUidTxBytes(uid).takeIf { it >= 0L }
-        val profile = File(appContext.applicationInfo.dataDir, "app_cefrium")
+        val persistentData = appContext.filesDir
         val apkFiles = buildList {
             add(File(appContext.applicationInfo.sourceDir))
             appContext.applicationInfo.splitSourceDirs?.forEach { add(File(it)) }
@@ -36,7 +36,7 @@ class AppUsageMeter(context: Context) {
 
         return UsageSnapshot(
             installedApkBytes = apkFiles.sumOf { if (it.isFile) it.length() else 0L },
-            cefriumProfileBytes = if (profile.exists()) directorySize(profile) else null,
+            persistentDataBytes = directorySize(persistentData),
             cacheBytes = directorySize(appContext.cacheDir) + directorySize(appContext.codeCacheDir),
             receivedSinceBootBytes = rx,
             sentSinceBootBytes = tx,

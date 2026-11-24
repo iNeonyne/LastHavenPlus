@@ -5,7 +5,6 @@ import android.content.Intent
 import android.net.Uri
 import android.provider.Settings
 import android.view.WindowManager
-import android.webkit.ValueCallback
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
@@ -27,6 +26,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -37,16 +37,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
-import com.cefrium.CefriumBrowser
-import com.cefrium.CefriumExperimental
-import com.cefrium.CefriumLoadError
-import com.cefrium.CefriumNavigationClient
-import com.cefrium.compose.CefriumView
-import com.cefrium.compose.rememberCefriumNavigator
-import com.cefrium.compose.rememberCefriumViewState
+import org.mozilla.geckoview.GeckoResult
+import org.mozilla.geckoview.GeckoSession
+import org.mozilla.geckoview.GeckoView
+import java.util.Locale
 
 private const val DEFAULT_GAME_URL = "https://lasthavens.com/play"
 private const val PREFERENCES_NAME = "launcher_settings"
@@ -121,7 +119,6 @@ class MainActivity : ComponentActivity() {
 
 }
 
-@OptIn(CefriumExperimental::class)
 @Composable
 private fun LastHavenApp(
     preferences: SharedPreferences,
@@ -135,8 +132,9 @@ private fun LastHavenApp(
     val gameUrl = remember {
         preferences.getString(KEY_GAME_URL, DEFAULT_GAME_URL) ?: DEFAULT_GAME_URL
     }
-    val browserState = rememberCefriumViewState(gameUrl)
-    val navigator = rememberCefriumNavigator()
+    val runtime = remember(context) { GeckoRuntimeProvider.get(context) }
+    val session = remember(runtime) { GeckoSession() }
+    var isLoading by remember { mutableStateOf(true) }
     var showExitPrompt by remember { mutableStateOf(false) }
     var showSettingsDialog by remember { mutableStateOf(false) }
     var showDiagnosticsDialog by remember { mutableStateOf(false) }
@@ -147,9 +145,99 @@ private fun LastHavenApp(
     var downloadingDelta by remember { mutableStateOf(false) }
     var isCheckingUpdate by remember { mutableStateOf(false) }
 
-    LaunchedEffect(browserState.rendererTermination) {
-        if (browserState.rendererTermination != null) {
-            Diagnostics.error(context, TAG, "Cefrium renderer terminated: ${browserState.rendererTermination}")
+    DisposableEffect(session, runtime, gameUrl) {
+        session.setProgressDelegate(object : GeckoSession.ProgressDelegate {
+            override fun onPageStart(session: GeckoSession, url: String) {
+                pageLoadFailed = false
+                isLoading = true
+                Diagnostics.info(context, TAG, "GeckoView page started: " + url)
+            }
+
+            override fun onPageStop(session: GeckoSession, success: Boolean) {
+                isLoading = false
+                pageLoadFailed = !success
+                if (!success) Diagnostics.warn(context, TAG, "GeckoView page load failed")
+            }
+        })
+        session.setContentDelegate(object : GeckoSession.ContentDelegate {
+            override fun onCrash(session: GeckoSession) {
+                isLoading = false
+                pageLoadFailed = true
+                Diagnostics.error(context, TAG, "GeckoView content process crashed")
+            }
+
+            override fun onKill(session: GeckoSession) {
+                isLoading = false
+                pageLoadFailed = true
+                Diagnostics.error(context, TAG, "GeckoView content process was killed")
+            }
+
+            override fun onFullScreen(session: GeckoSession, fullScreen: Boolean) {
+                Diagnostics.info(context, TAG, "GeckoView fullscreen changed: " + fullScreen)
+            }
+
+            override fun onExternalResponse(session: GeckoSession, response: org.mozilla.geckoview.WebResponse) {
+                Diagnostics.warn(context, TAG, "GeckoView external response not handled: " + response.uri)
+            }
+        })
+        session.setNavigationDelegate(object : GeckoSession.NavigationDelegate {
+            override fun onLoadRequest(
+                session: GeckoSession,
+                request: GeckoSession.NavigationDelegate.LoadRequest,
+            ): GeckoResult<org.mozilla.geckoview.AllowOrDeny> = GeckoResult.allow()
+        })
+        session.setPermissionDelegate(object : GeckoSession.PermissionDelegate {
+            override fun onContentPermissionRequest(
+                session: GeckoSession,
+                permission: GeckoSession.PermissionDelegate.ContentPermission,
+            ): GeckoResult<Int> {
+                val host = Uri.parse(permission.uri).host.orEmpty().lowercase(Locale.ROOT)
+                val isGameOrigin = host == "lasthavens.com" || host.endsWith(".lasthavens.com")
+                val decision = when (permission.permission) {
+                    GeckoSession.PermissionDelegate.PERMISSION_PERSISTENT_STORAGE,
+                    GeckoSession.PermissionDelegate.PERMISSION_AUTOPLAY_AUDIBLE,
+                    GeckoSession.PermissionDelegate.PERMISSION_AUTOPLAY_INAUDIBLE ->
+                        if (isGameOrigin) {
+                            GeckoSession.PermissionDelegate.ContentPermission.VALUE_ALLOW
+                        } else {
+                            GeckoSession.PermissionDelegate.ContentPermission.VALUE_DENY
+                        }
+                    else -> GeckoSession.PermissionDelegate.ContentPermission.VALUE_DENY
+                }
+                return GeckoResult.fromValue(decision)
+            }
+
+            override fun onAndroidPermissionsRequest(
+                session: GeckoSession,
+                permissions: Array<out String>?,
+                callback: GeckoSession.PermissionDelegate.Callback,
+            ) {
+                callback.reject()
+            }
+
+            override fun onMediaPermissionRequest(
+                session: GeckoSession,
+                uri: String,
+                video: Array<out GeckoSession.PermissionDelegate.MediaSource>?,
+                audio: Array<out GeckoSession.PermissionDelegate.MediaSource>?,
+                callback: GeckoSession.PermissionDelegate.MediaCallback,
+            ) {
+                callback.reject()
+            }
+        })
+        session.open(runtime)
+        session.loadUri(gameUrl)
+        onDispose {
+            session.close()
+        }
+    }
+
+    val reloadGame = {
+        if (session.isOpen) {
+            session.reload()
+        } else {
+            session.open(runtime)
+            session.loadUri(gameUrl)
         }
     }
 
@@ -168,47 +256,15 @@ private fun LastHavenApp(
     MaterialTheme(colorScheme = darkColorScheme()) {
         Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
             Box(modifier = Modifier.fillMaxSize()) {
-                CefriumView(
-                    state = browserState,
-                    modifier = Modifier.fillMaxSize(),
-                    navigator = navigator,
-                    onBrowserReady = { browser ->
-                        var persistentStorageRequested = false
-                        browser.setNavigationClient(object : CefriumNavigationClient {
-                            override fun onLoadStart(browser: CefriumBrowser, url: String) {
-                                pageLoadFailed = false
-                            }
-
-                            override fun onLoadError(
-                                browser: CefriumBrowser,
-                                error: CefriumLoadError,
-                            ) {
-                                pageLoadFailed = true
-                                Diagnostics.warn(context, TAG, "Main-frame navigation failed: $error")
-                            }
-
-                            override fun onLoadingStateChanged(
-                                browser: CefriumBrowser,
-                                loading: Boolean,
-                                canGoBack: Boolean,
-                                canGoForward: Boolean,
-                            ) {
-                                if (!loading && !persistentStorageRequested) {
-                                    persistentStorageRequested = true
-                                    browser.evaluateJavaScript(
-                                        "navigator.storage && navigator.storage.persist " +
-                                            "? navigator.storage.persist() : Promise.resolve(false)",
-                                        ValueCallback { result ->
-                                            Diagnostics.info(context, TAG, "Persistent storage request result: $result")
-                                        },
-                                    )
-                                }
-                            }
-                        })
+                AndroidView(
+                    factory = { viewContext ->
+                        GeckoView(viewContext).apply { setSession(session) }
                     },
+                    modifier = Modifier.fillMaxSize(),
+                    onRelease = { view -> view.releaseSession() },
                 )
 
-                if (browserState.isLoading && !pageLoadFailed) {
+                if (isLoading && !pageLoadFailed) {
                     LinearProgressIndicator(
                         modifier = Modifier
                             .align(Alignment.TopCenter)
@@ -216,7 +272,7 @@ private fun LastHavenApp(
                     )
                 }
 
-                if (pageLoadFailed || browserState.rendererTermination != null) {
+                if (pageLoadFailed) {
                     Surface(
                         modifier = Modifier.fillMaxSize(),
                         color = Color(0xFF080B12),
@@ -241,7 +297,7 @@ private fun LastHavenApp(
                             Spacer(modifier = Modifier.height(20.dp))
                             Button(onClick = {
                                 pageLoadFailed = false
-                                navigator.reload()
+                                reloadGame()
                             }) {
                                 Text("Retry")
                             }
