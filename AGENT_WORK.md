@@ -16,7 +16,7 @@ This file is the execution order and file-ownership contract for the two project
 - No TickTick. GitHub Issues and `ISSUES.md` are the source of truth.
 - Do not modify the game/client, application ID, established release signing identity or arm64-only target. Do not add automatic update downloading/installation. Do not create tags, releases or promote beta to main without explicit approval.
 - Current beta still contains Cefrium. The approved target is GeckoView; follow issues #20/#21 and do not independently change engine dependencies or begin engine work before the assigned task is ready.
-- The previous addon manager implementation has been removed. Do not recreate or design a replacement until the owner provides a new written specification. Keep WoW addon packages distinct from Gecko WebExtensions.
+- The previous addon manager implementation has been removed. Issue #23 (Firefox WebExtension addon manager) is explicitly on hold by the owner. Do not research, design, implement, test, assign, or otherwise spend project effort on addon-manager work until the owner explicitly resumes it. Keep WoW addon packages distinct from Gecko WebExtensions.
 - Physical-device testing remains unverified until performed on real ARM64 hardware.
 
 ## Ploy — exclusive assignment sequence
@@ -106,3 +106,8 @@ Ploy stops after handing off. Chaty reviews the full diff, reruns or verifies re
 6. #23 — blocked until owner supplies addon-manager requirements.
 
 Every task must append progress and interruption checkpoints to `WORK_LOG.md`. Ploy never integrates or pushes to beta.
+
+
+## DEFERRED — #23 Firefox WebExtension addon manager
+
+Owner placed this entire workstream on hold on 2026-11-25. Do not assign it to Ploy or Chaty, create extension files, vendor dependencies, conduct further implementation research, or run tests for it until the owner explicitly resumes the task. Preserve the owner's specification in conversation context; it is not an authorization to proceed while on hold. Existing removal of the legacy Android addon manager remains in effect.

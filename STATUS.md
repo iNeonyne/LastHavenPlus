@@ -6,17 +6,17 @@
 
 ## Snapshot
 
-The stable v1.0.0 release is published. Beta still uses Cefrium and opens the game directly on startup. The approved target is GeckoView plus a home screen with Play and Settings. The previous addon manager has been removed. The owner has now supplied the replacement Firefox WebExtension specification; implementation and game-injection verification have not started.
+The stable v1.0.0 release is published. Beta still uses Cefrium and opens the game directly on startup. The approved target is GeckoView plus a home screen with Play and Settings. The previous addon manager has been removed. The owner supplied a Firefox WebExtension specification, then explicitly placed addon-manager work on hold. No extension implementation has started; do not schedule or assign it until the owner resumes it.
 
-- **Latest verified `beta` HEAD:** `bf5dec75e2933b1181917e73dbba4489485965e4`.
+- **Latest verified `beta` HEAD before this hold update:** `5f3fbe619aed796b80979919bbe9a710d6ef1370`.
 
 - **`main` (stable):** `6211cf389b8d9f6ef98aa7818f47643bfdaf2053`.
-- **Latest CI for current HEAD:** [run #295](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45498271033), ID `45498271033`, on commit `bf5dec75e2933b1181917e73dbba4489485965e4`; pending at this checkpoint.
-- **Build evidence:** run #295 is pending; no successful build or test is claimed for the current head.
+- **Latest CI noted for the URL change:** [run #295](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45498271033), ID `45498271033`, on commit `bf5dec75e2933b1181917e73dbba4489485965e4`; pending at last inspection. This documentation-only hold update has no CI result yet.
+- **Build evidence:** no successful build or test is claimed for the current documentation-only head.
 - **Previous source failure:** [run #247](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45493653394) failed Kotlin compilation in `AddonManagerDialog.kt`. That source file and its app entry point have since been removed. Do not treat the blocker as fixed until a new build completes.
 - **Latest successful beta CI run found:** [#179](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45183038304), commit `593fec6b048790cbc30a7fbadf571b749069abea`; historical only.
 - **Published release:** [v1.0.0](https://github.com/iNeonyne/LastHavenPlus/releases/tag/v1.0.0), with the signed ARM64 APK and update manifest. It does not verify current beta.
-- **Current task ownership:** Ploy #9 (easy menu accessibility), then #11 diagnostics tests; Chaty #4 build/updater tests and #21 engine migration after #20 research. The owner supplied the Firefox WebExtension specification for #23; implementation awaits the pinned fflate vendor file.
+- **Current task ownership:** Ploy #9 (easy menu accessibility), then #11 diagnostics tests; Chaty #4 build/updater tests and #21 engine migration after #20 research. Addon manager #23 is deferred by explicit owner request; no implementation is authorized until resumed.
 
 Documentation, agent references and the removal work are committed directly to `beta`. No GeckoView production dependency/source has been added. No main promotion, tag or release was performed.
 

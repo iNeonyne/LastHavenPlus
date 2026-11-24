@@ -379,3 +379,14 @@ Entry format:
 - **Verification:** Source and documentation were searched for the old hostname in the matching files before editing. The new URL is set in the Android default constant. CI run #295 for the URL-change commit was pending at this checkpoint; no build or runtime result is claimed.
 - **Do not redo:** Do not restore the `alt.` hostname. Do not alter the application ID, signing identity, GeckoView plan or game source.
 - **Follow-ups:** Check run #295; implement the separately specified Firefox WebExtension when the required fflate distribution is available; verify the canonical host on physical ARM64 and Firefox desktop/Android.
+
+
+## 2026-11-25 — Defer addon manager work at owner request
+
+- **Role:** Chaty / main orchestrator
+- **Files:** `STATUS.md`, `ISSUES.md`, `AGENT_WORK.md`, `WORK_LOG.md`, `CHANGELOG-AGENTS.md`, GitHub issue #23
+- **Change:** Marked the Firefox WebExtension addon-manager workstream deferred/on hold. Removed it from active agent scheduling and explicitly prohibited research, implementation, testing or assignment until the owner resumes it.
+- **Why:** The owner requested that addon manager work stop for now.
+- **Verified:** Issue #23 remains open and is marked deferred in the repository backlog; the old Android addon manager remains removed. No extension files or dependencies were added.
+- **Do not redo:** Do not continue addon-manager work based on the earlier specification without explicit owner authorization to resume.
+- **Follow-ups:** Focus on the existing Android launcher build, accessibility, diagnostics and GeckoView migration tasks.

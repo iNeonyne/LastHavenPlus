@@ -26,7 +26,7 @@
 | [#20](https://github.com/iNeonyne/LastHavenPlus/issues/20) | P1 — Prepare the GeckoView migration technical decision record | open |
 | [#21](https://github.com/iNeonyne/LastHavenPlus/issues/21) | P1 — Replace Cefrium with Mozilla GeckoView | open |
 | [#22](https://github.com/iNeonyne/LastHavenPlus/issues/22) | P1 — Add the home screen with Play and Settings | open |
-| [#23](https://github.com/iNeonyne/LastHavenPlus/issues/23) | P1 — Rebuild addon manager after owner specification | open |
+| [#23](https://github.com/iNeonyne/LastHavenPlus/issues/23) | Deferred — Firefox WebExtension addon manager (owner hold) | deferred |
 
 ---
 

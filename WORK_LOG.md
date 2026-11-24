@@ -102,3 +102,14 @@
 - **CI:** run #295 (`45498271033`) on the URL source/docs commit was pending when inspected. No successful build is claimed.
 - **Limitations:** Firefox WebExtension implementation has not been committed. The fflate vendor distribution remains an external prerequisite, and injection must be validated against the live game.
 - **Next safe action:** check CI #295, then continue #23 against the exact supplied specification and test desktop/Android Firefox behavior independently.
+
+
+### 2026-11-25 — Owner placed addon manager work on hold
+
+- **Branch:** `beta`.
+- **Starting commit:** `5f3fbe619aed796b80979919bbe9a710d6ef1370`.
+- **Action:** Stopped the Firefox WebExtension addon-manager workstream per explicit owner instruction. Updated issue #23, `ISSUES.md`, `AGENT_WORK.md`, `STATUS.md`, and this journal to mark it deferred and prohibit further assignment or implementation until the owner resumes it.
+- **Files changed:** `STATUS.md`, `ISSUES.md`, `AGENT_WORK.md`, `WORK_LOG.md`, `CHANGELOG-AGENTS.md`.
+- **Tests:** Documentation-only change; no application or extension tests run.
+- **Limitations:** The old Android addon manager remains removed. The supplied Firefox extension specification is retained as context only; no extension source was added.
+- **Next safe action:** Continue the non-addon project priorities (#4, #9, #11, #20, #21, #22). Do not touch #23 until explicit resume instruction.
