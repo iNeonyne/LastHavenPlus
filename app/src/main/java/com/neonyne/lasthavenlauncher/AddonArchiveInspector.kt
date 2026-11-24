@@ -4,6 +4,7 @@ import org.apache.commons.compress.archivers.zip.ZipArchiveEntry
 import org.apache.commons.compress.archivers.zip.ZipFile
 import java.io.File
 import java.io.IOException
+import java.io.RandomAccessFile
 import java.util.Locale
 import java.util.zip.CRC32
 import java.security.MessageDigest
@@ -53,6 +54,9 @@ object AddonArchiveInspector {
             throw AddonArchiveException("ZIP is larger than the 128 MiB import limit.")
         }
 
+        if (hasZip64EndLocator(file)) {
+            throw AddonArchiveException("ZIP64 archives are not supported.")
+        }
         val digest = sha256(file)
         try {
             ZipFile(file).use { zip ->
@@ -237,6 +241,30 @@ object AddonArchiveInspector {
 
     private fun splitDependencies(value: String?): List<String> =
         value?.split(',')?.map(String::trim)?.filter(String::isNotEmpty)?.distinct().orEmpty()
+
+    private fun hasZip64EndLocator(file: File): Boolean {
+        val tailLength = minOf(file.length(), 22L + 65_535L + 20L).toInt()
+        if (tailLength < 42) return false
+        val tail = ByteArray(tailLength)
+        RandomAccessFile(file, "r").use { input ->
+            input.seek(file.length() - tailLength)
+            input.readFully(tail)
+        }
+        for (eocd in tail.size - 22 downTo 20) {
+            if (tail[eocd] != 0x50.toByte() || tail[eocd + 1] != 0x4b.toByte() ||
+                tail[eocd + 2] != 0x05.toByte() || tail[eocd + 3] != 0x06.toByte()
+            ) continue
+            val commentLength = (tail[eocd + 20].toInt() and 0xff) or
+                ((tail[eocd + 21].toInt() and 0xff) shl 8)
+            if (eocd + 22 + commentLength != tail.size) continue
+            val locator = eocd - 20
+            if (tail[locator] == 0x50.toByte() && tail[locator + 1] == 0x4b.toByte() &&
+                tail[locator + 2] == 0x06.toByte() && tail[locator + 3] == 0x07.toByte()
+            ) return true
+            return false
+        }
+        return false
+    }
 
     private fun sha256(file: File): String {
         val digest = MessageDigest.getInstance("SHA-256")
