@@ -49,6 +49,9 @@ dependencies {
     implementation("androidx.core:core:1.16.0")
     implementation("androidx.browser:browser:1.8.0")
     implementation("androidx.activity:activity-compose:1.13.0")
+    implementation("org.apache.commons:commons-compress:1.27.1")
+
+    testImplementation("junit:junit:4.13.2")
 
     val composeBom = platform("androidx.compose:compose-bom:2026.09.00")
     implementation(composeBom)
