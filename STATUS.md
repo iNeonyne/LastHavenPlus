@@ -97,6 +97,10 @@ The web fetch of the game URL returns only “Loading... Please enable JavaScrip
 
 ## Active work
 
+| Owner | Issue / surface | State |
+|---|---|---|
+| Chaty | #4 — build reliability and updater test coverage | In progress. Added three malformed BSDIFF tests; CI run #45474077737 is pending. Previous run #45473637053 failed on three addon archive tests; diagnosis required. Gradle Wrapper and isolated updater-manifest/download tests remain outstanding. |
+
 Delegated ownership and task order are defined in [AGENT_WORK.md](AGENT_WORK.md). Ploy's first assignment is #13 (accessibility semantics); #11 diagnostics tests and #8 addon repository tests are queued sequentially after review. The user will push Ploy's completed work. Chaty reviews the pushed diff, verifies it and updates the repository task tracker; Chaty owns all other issues, CI, release coordination and central documentation.
 
 | Owner | Surface | State |
