@@ -1,0 +1,26 @@
+# Gradle
+.gradle/
+build/
+*/build/
+*.apk
+*.aab
+
+# Local config
+local.properties
+gradle.properties.local
+
+# IDE
+.idea/
+*.iml
+.vscode/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Harness/AndroidHarness local
+.harness/
+.codegraph/
+
+# Local build scripts
+build-apk-local.sh
