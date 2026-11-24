@@ -1,7 +1,7 @@
 # Project status — LastHavenLauncher
 
 **Last updated:** 2026-11-24  
-**Phase:** P0 — Android scaffold and Cefrium integration
+**Phase:** P0 — Playable core verification and release hardening
 
 ## Snapshot
 
@@ -26,7 +26,7 @@
 | Device test | Not run | No connected arm64 device/emulator available to this run |
 | Release signing | Configured; CI validation pending | Existing `lasthavenplus` key is restored from GitHub secrets and its SHA-256 fingerprint is pinned in CI and the updater |
 
-## App updater
+## Work tracking\n\nGitHub Issues are the canonical backlog. Do not copy open task checklists into this file. Update the issue checklists as work is completed; use this document only for current state, active ownership, evidence and blockers.\n\n- [#4 — Build reproducibility, updater tests and CI verification](https://github.com/iNeonyne/Lasthavens-Android/issues/4)\n- [#5 — Physical-device gameplay, persistence and update verification](https://github.com/iNeonyne/Lasthavens-Android/issues/5)\n- [#6 — Minimal settings and safe storage controls](https://github.com/iNeonyne/Lasthavens-Android/issues/6)\n- [#7 — Performance and APK-size measurements](https://github.com/iNeonyne/Lasthavens-Android/issues/7)\n- [#8 — Deferred addon manager](https://github.com/iNeonyne/Lasthavens-Android/issues/8)\n\n## App updater
 
 - Checks the latest **published stable GitHub Release** on launcher start; a manual check is also available from the exit dialog.
 - Never downloads automatically. The user explicitly chooses **Download smaller update** or **Download full APK instead**, then Android presents its package installer.
