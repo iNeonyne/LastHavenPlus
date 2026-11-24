@@ -13,16 +13,16 @@ object Diagnostics {
     private const val LOG_FILE = "lasthavenplus.log"
 
     private val secretHeaderPattern = Regex(
-        "(?im)(\\b(?:authorization|cookie|set-cookie)\\s*:\\s*)[^\\r\\n]+",
+        "(?im)(\\b(?:authorization|cookie|set-cookie)\s*:\s*)[^\\r\\n]+",
     )
     private val secretPattern = Regex(
-        "(?i)((?:access[_-]?token|refresh[_-]?token|password|passwd|authorization|set-cookie|cookie|session(?:[_-]?id)?|token|secret|api[_-]?key)(\\s*[=:]\\s*))(?:bearer\\s+)?([^&\\s,;]+)",
+        "(?i)((?:access[_-]?token|refresh[_-]?token|password|passwd|authorization|set-cookie|cookie|session(?:[_-]?id)?|token|secret|api[_-]?key)(\s*[=:]\s*))(?:bearer\s+)?([^&\s,;]+)",
     )
     private val jsonSecretPattern = Regex(
-        """(?i)(["']?(?:access[_-]?token|refresh[_-]?token|password|passwd|authorization|set-cookie|cookie|session(?:[_-]?id)?|token|secret|api[_-]?key)["']\\s*:\\s*["']?)([^"'&\\s,;}]+)""",
+        """(?i)(["']?(?:access[_-]?token|refresh[_-]?token|password|passwd|authorization|set-cookie|cookie|session(?:[_-]?id)?|token|secret|api[_-]?key)["']\s*:\s*["']?)([^"'&\s,;}]+)""",
     )
     private val querySecretPattern = Regex(
-        "(?i)([?&](?:access[_-]?token|refresh[_-]?token|token|session(?:[_-]?id)?|auth|api[_-]?key|key|code|password|secret)=)[^&#\\s]+",
+        "(?i)([?&](?:access[_-]?token|refresh[_-]?token|token|session(?:[_-]?id)?|auth|api[_-]?key|key|code|password|secret)=)[^&#\s]+",
     )
 
     @Synchronized
