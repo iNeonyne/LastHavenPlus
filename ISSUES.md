@@ -16,7 +16,7 @@
 | [#10](#issue-10) | P2 — Track game network data usage | open |
 | [#11](#issue-11) | P2 — Add privacy-conscious app and updater logs | open |
 | [#12](#issue-12) | P2 — Surface actionable GeckoView load-error details | open |
-| [#13](#issue-13) | P2 — Add accessible names to launcher actions | open |
+| [#13](#issue-13) | Superseded by #9 — old AddonManager compile/accessibility task; pending CI confirmation | open |
 | [#14](#issue-14) | P2 — Add connection diagnostics | open |
 | [#15](#issue-15) | P2 — Make updater recovery safer | open |
 | [#16](#issue-16) | P2 — Add gameplay orientation and keep-awake settings | open |
@@ -230,56 +230,14 @@ A repeatable baseline is recorded, and every accepted optimization has measured 
 
 ---
 
-## Issue 8 — P1 — Build the local ZIP addon manager for v1.1.0 (game injection gated)
+## Issue 8 — Superseded — Legacy addon manager removed; future scope waits for owner spec (#23)
 
-**GitHub:** https://github.com/iNeonyne/LastHavenPlus/issues/8
-**State:** open
+**GitHub:** https://github.com/iNeonyne/LastHavenPlus/issues/8  
+**State:** open for historical traceability; no active implementation work.
 
-## Status
-Scheduled for **v1.1.0**. The project owner confirms they have explicit permission from the LastHaven operator for custom addon integration. We are proceeding with the local ZIP manager first. The exact authorized integration surface/API and technical contract still need to be recorded before touching the game runtime.
-
-**Implementation gate:** Do not assume the supplied MAIN-world XHR/Worker/OPFS injection pipeline is the authorized method. Obtain the operator's exact scope and supported integration contract, then validate against that contract. GeckoView document-start scripts and request interception are public APIs, but they do not establish game compatibility by themselves.
-
-## v1.1.0 — local ZIP manager
-- [ ] Import ZIPs through Android's system file picker.
-- [ ] Securely inspect ZIP central-directory records before extraction; reject traversal, absolute paths, symlinks, encrypted/unsupported methods, ZIP64, duplicate case-insensitive paths, CRC mismatches, oversized archives/files and malformed archives.
-- [ ] Detect WoW 3.3.5a addon roots and parse .toc title/version/interface/dependencies where applicable.
-- [ ] Store imported addon packages and metadata locally, separate from GeckoView profile data.
-- [ ] Show imported addons, metadata, file sizes, compatibility warnings and missing dependencies.
-- [ ] Allow enable/disable, export and remove in the local library. Clearly label local enablement until game integration is implemented and confirmed.
-- [ ] Preserve user data and implement safe replacement/rollback.
-- [ ] Add tests for ZIP validation, metadata parsing, duplicate imports, storage limits, export round-trip and failed writes.
-
-## Game integration — authorization confirmed; contract pending
-- [x] User confirms they have explicit permission from the LastHaven operator.
-- [ ] Record the operator's exact authorized scope and supported addon-loading API/integration contract.
-- [ ] Only then evaluate the approved GeckoView integration method against the live client. Do not reverse-engineer or patch protected game assets, OPFS indexes, worker/WASM imports or runtime internals outside the operator-approved scope.
-- [ ] Verify gameplay and recovery on a physical arm64 device before enabling integration.
-
-## Explicitly out of scope for v1.1.0
-- Online addon catalog/store, repository browsing or automatic addon discovery.
-- Automatic addon downloads or updates.
-- Any game-runtime modification outside the operator-approved scope.
-
-## Constraints
-- Do not recreate, copy, decompile, reverse-engineer or modify the game client outside the operator-approved scope.
-- Preserve the GeckoView profile and all unrelated game data.
-- All imports and destructive actions require explicit user confirmation.
-- Do not present locally stored addons as game-enabled unless the client confirms they loaded.
-
-## Acceptance criteria
-The local ZIP manager passes its archive/security/storage tests. Any game integration is limited to the operator's confirmed scope, uses a documented/approved integration contract, and passes physical arm64 testing. If that contract cannot be established, ship the local ZIP library only with its limitations clearly disclosed.
-
-## Roadmap
-- **Target:** v1.1.0 — local ZIP manager; approved game integration after contract review.
-- **Roadmap:** https://github.com/iNeonyne/LastHavenPlus/issues/18
-
-## Implementation progress — 2026-11-24
-
-Initial code is committed on `main`: ZIP inspection/CRC/path/security checks, WoW .toc parsing, local package/index storage, replacement confirmation, local enabled flags, export/remove UI and exit-menu entry. JVM tests have been added. CI has not yet completed successfully, and this feature is not release-ready. Physical-device verification and the operator-approved runtime integration contract remain outstanding.
+The previous ZIP addon manager was removed from beta at the owner's request on 2026-11-25. Its former implementation checklist is obsolete. Do not restore it or continue the former game-injection approach. A new design will be written only after the owner provides a replacement specification; see #23.
 
 ---
-
 ## Issue 9 — P2 — Add a compact game navigation and exit menu
 
 **GitHub:** https://github.com/iNeonyne/LastHavenPlus/issues/9
@@ -565,7 +523,7 @@ Allow users to preserve launcher preferences across reinstallations or device ch
 The next major beta change replaces Cefrium with Mozilla GeckoView and adds a home screen with Play and Settings. The previous addon manager has been removed; a replacement is blocked pending a new owner specification. Current beta source still uses Cefrium.
 
 ### Phase 0 — Restore beta baseline
-- [ ] #13 Fix accessibility Compose compile errors under Ploy's exclusive ownership.
+- [ ] #9 Finish the exit-menu accessibility follow-up (Ploy); #13's old AddonManager compile blocker was removed with the legacy manager and remains pending post-removal CI confirmation.
 - [ ] #4 Restore clean CI and complete updater edge-case tests. Keep application ID, signing identity and arm64-v8a configuration unchanged.
 
 ### Phase 1 — GeckoView engine migration
@@ -586,7 +544,7 @@ The next major beta change replaces Cefrium with Mozilla GeckoView and adds a ho
 
 ### Phase 4 — Regression and release gates
 - [ ] #5 Physical ARM64 gameplay and same-key update verification on GeckoView.
-- [ ] Complete applicable settings (#6), diagnostics (#11/#12), navigation/accessibility (#9/#13), orientation (#16), updater recovery (#15), backup (#17) and performance (#7) checks.
+- [ ] Complete applicable settings (#6), diagnostics (#11/#12), navigation/accessibility (#9), orientation (#16), updater recovery (#15), backup (#17) and performance (#7) checks.
 - [ ] Clean CI on the exact candidate commit: build, tests, signed APK, package identity, signing certificate, ARM64-only ABI, artifact count and updater manifest/checksum.
 - [ ] Record exact build, commit, CI run, APK digest, device and test outcomes in STATUS.md.
 
