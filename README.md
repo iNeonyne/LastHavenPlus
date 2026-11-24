@@ -63,6 +63,14 @@ GitHub Actions builds ARM64 debug and signed release variants. Release signing u
 
 P0/P1 gameplay reliability work is the priority. Do not start optional settings, performance tuning or the addon manager ahead of a verified playable core.
 
+## Settings, storage and diagnostics
+
+The exit menu exposes **Settings & usage** and **App & debug logs**.
+
+- Storage reports the installed APK size, the Cefrium profile directory when present, and Android app/code cache size. These are separate measurements, not a single combined game-install figure.
+- Network usage uses Android per-UID byte counters. It reports app traffic (game plus updater), split into received and sent bytes, since device boot and since the current app session where supported. Android resets the boot counters on reboot; these are not game-process-only totals.
+- Diagnostics are stored locally, bounded to a rotating log, and redact common credential/session fields. Sharing is explicit; logs are not uploaded automatically.
+
 ## In-app updater
 
 - The launcher checks the latest stable GitHub Release on startup and also offers a manual check from the exit dialog.
