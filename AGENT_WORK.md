@@ -15,7 +15,8 @@ This file is the working agreement for the two active coding agents. The reposit
 - Do not add speculative Cefrium APIs, game-client modifications or unfinished features.
 - Do not create releases, tags, or alter signing secrets.
 - Do not use TickTick.
-- **Exclusive task ownership:** only one agent may actively own a GitHub issue/task at a time. Never work on the same issue in parallel, even on different branches. Record owner, scope and files in STATUS before starting. The other agent must wait for explicit handoff and updated trackers.\n- Keep work on separate branches/worktrees and avoid simultaneous edits to the same files.
+- **Exclusive task ownership:** only one agent may actively own a GitHub issue/task at a time. Never work on the same issue in parallel, even on different branches. Record owner, scope and files in STATUS before starting. The other agent must wait for explicit handoff and updated trackers.
+- Keep work on separate branches/worktrees and avoid simultaneous edits to the same files.
 - **`main` is stable; `beta` is the shared integration/testing branch.** Chaty pushes orchestrator work directly to `beta`.
 - Ploy creates a dedicated feature branch from the latest `beta`, pushes her task commits and opens a PR with **base branch `beta`** when her assignment is ready. She must never push directly to `beta` or `main`.
 - After Ploy opens a PR targeting `beta`, Chaty inspects the complete diff, runs or verifies relevant checks, requests fixes as needed, updates `ISSUES.md`, `STATUS.md` and `CHANGELOG-AGENTS.md`, and may merge the PR into `beta` once it passes review and required checks.
