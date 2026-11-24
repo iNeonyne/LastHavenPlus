@@ -1,3 +1,13 @@
+## 2026-11-24 — Move project task tracking into the repository
+
+- **Role:** Main integrator / documentation
+- **Files:** `ISSUES.md`, `AGENTS.md`, `README.md`, `STATUS.md`, `CHANGELOG-AGENTS.md`
+- **Change:** Added `ISSUES.md` containing all 15 currently open GitHub issues, including their full task descriptions, checklists, acceptance criteria and direct links. Updated contributor instructions and project documentation to make the repository file the consolidated, version-controlled task tracker. TickTick is no longer part of the project workflow; existing TickTick tasks are left untouched and will not be updated.
+- **Why:** Keep the active backlog alongside the code so it is reviewable, versioned and maintained with implementation changes.
+- **Verified:** `ISSUES.md` was created on `main`; documentation updates committed individually. No app source or release artifacts changed.
+- **Do not redo:** Do not resume TickTick synchronization or recreate the task list in multiple documentation files. Update `ISSUES.md` as tasks change.
+- **Follow-ups:** Keep issue states/checklists current in `ISSUES.md`; retain GitHub links for discussion and traceability.
+
 ## 2026-11-24 — Harden addon ZIP validation and package commits
 
 - **Role:** Main integrator / Android / QA
