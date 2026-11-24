@@ -90,7 +90,11 @@ object AppUpdater {
 
                     val packageInfo = installedPackageInfo(appContext)
                     val currentVersion = packageInfo.versionName ?: "0.0.0"
-                    if (compareVersions(latestVersion, currentVersion) <= 0) {
+                    val versionComparison = compareVersions(latestVersion, currentVersion)
+                    val latestVersionCode = versionCodeForVersion(latestVersion)
+                    if (versionComparison < 0 ||
+                        (versionComparison == 0 && latestVersionCode <= packageInfo.longVersionCode)
+                    ) {
                         UpdateCheckResult.NoUpdate
                     } else {
                         val assets = release.getJSONArray("assets")
@@ -392,6 +396,14 @@ object AppUpdater {
         }
 
     private fun isValidVersion(version: String): Boolean = VERSION_PATTERN.matches(version)
+
+    private fun versionCodeForVersion(version: String): Long {
+        val parts = VERSION_PATTERN.matchEntire(version)?.groupValues?.drop(1)
+            ?: error("Invalid release version: $version")
+        val values = parts.map { it.toLong() }
+        check(values.all { it <= 999L }) { "Release version components must be 999 or lower" }
+        return values[0] * 1_000_000L + values[1] * 1_000L + values[2]
+    }
 
     private fun compareVersions(first: String, second: String): Int {
         val a = VERSION_PATTERN.matchEntire(first)?.groupValues?.drop(1)
