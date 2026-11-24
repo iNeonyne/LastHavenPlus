@@ -22,7 +22,7 @@ Do not recreate, modify or develop the game. Do not add System WebView, GeckoVie
 8. **Stable app identity.** Do not change `applicationId` (`com.neonyne.lasthavenlauncher`) or the established release signing key.
 9. **Storage safety.** Never clear cookies, IndexedDB, LocalStorage or Cache Storage except through a confirmed “Clear game data” action.
 10. **No speculative optimization.** Every performance change needs before/after measurements in STATUS.
-11. **Beta-first coordination.** `main` is the stable release branch; `beta` is the integration and testing branch. Chaty works directly on `beta`. Ploy creates a dedicated task branch and opens a PR targeting `beta`; she must never push directly to `beta` or `main`. Chaty reviews the complete diff and CI, requests fixes when needed, and may merge an accepted Ploy PR into `beta`. Do not merge `beta` into `main` until the user explicitly approves the promotion after beta verification. No automatic merges or releases.
+11. **Beta-first coordination.** `main` is the stable release branch; `beta` is the active development, integration and testing branch. Contributors work on separate task branches when parallel work is needed. They hand Chaty the completed branch/commit and verification report; they never push to `beta` or `main`. **Chaty alone reviews, integrates and pushes commits directly to `beta`. No pull requests are used.** Promote `beta` to `main` only after all release gates pass and the user explicitly approves. Never create a release or tag without the applicable approval.
 
 ## Current engine decision
 
@@ -65,7 +65,7 @@ Read [AGENT_WORK.md](AGENT_WORK.md) before starting delegated work. It defines P
 | QA | Build, arm64 device/emulator, web capability checks | Unmeasured performance changes |
 | Performance | Profiling and measured improvements after compatibility checks | Speculative flag lists |
 
-Agents may work in parallel only on different issues with disjoint files/surfaces. Never assign the same issue/task to both agents concurrently. Each agent must claim its issue and exact subtask in STATUS before editing. Handoff requires the previous owner to stop and STATUS/AGENT_WORK to be updated. Chaty reviews Ploy's PRs and integrates accepted work into `beta`; `main` is updated only through an approved beta promotion.
+Agents may work in parallel only on different issues with disjoint files/surfaces. Never assign the same issue/task to both agents concurrently. Each agent must claim its issue and exact subtask in STATUS before editing. Handoff requires the previous owner to stop and STATUS/AGENT_WORK to be updated. Chaty alone integrates accepted task commits directly into `beta`; `main` is updated only through an explicitly approved beta promotion.
 
 ## Issue lifecycle and intake
 
@@ -102,14 +102,14 @@ An open issue is not automatically approved, ready, assigned or scheduled. Closi
 - Chaty owns intake, duplicate checks, GitHub issue creation/updates, priority, labels, roadmap, central trackers, assignment and review.
 - Ploy works only on the issue explicitly assigned in `AGENT_WORK.md`; she cannot see GitHub issue metadata and must not create issues, change labels, assign work or edit central trackers.
 - No agent may investigate, code, test or edit the same issue concurrently with the other agent, even in different branches. A handoff is valid only after the previous owner stops and the trackers are updated.
-- Ploy uses a task branch from latest `beta` and a PR targeting `beta`. Chaty reviews and integrates accepted work. No routine development on `main`.
+- Contributors use a task branch from latest `beta` when parallel isolation is needed, then hand the commit SHA and test evidence to Chaty. No pull requests. Chaty alone integrates into `beta`. No routine development on `main`.
 
 ### Changes, splitting and closure
 
 - If scope changes materially, update the GitHub issue and `ISSUES.md` before expanding implementation.
 - If a request contains independent outcomes, create linked child issues with explicit dependency/order and non-overlapping file ownership. Keep one parent/umbrella issue only when coordination itself has value; do not create empty hierarchy.
 - Record decisions and blockers in the GitHub issue, not only in chat.
-- Every PR must reference its issue (for example, `Closes #123` only if it fully satisfies it; otherwise use `Refs #123`). Never auto-close a parent issue when only one subtask is done.
+- Every task-branch handoff must identify its GitHub issue and exact commit SHA. Chaty records the integration commit and closes an issue only when all acceptance criteria are satisfied. Never close a parent issue when only one subtask is done.
 - Before closing: verify acceptance criteria, relevant tests/builds, docs, known limitations and physical-device requirements. Record actual evidence; CI does not prove device-only behavior.
 - Reopen an issue if a regression invalidates its acceptance criteria. Create a new issue for a genuinely new follow-up, linking the original.
 
