@@ -1,3 +1,13 @@
+## 2026-11-24 — Harden differential update fallback and patch parsing
+
+- **Role:** Main integrator / Android
+- **Files:** `AppUpdater.kt`, `BsdiffPatch.kt`, `STATUS.md`, `README.md`
+- **Change:** Made optional patch metadata fail closed to the full-APK path, validated release versionCode against the semantic tag, handled same-version-name first signed upgrades using versionCode, isolated the BSDIFF compressed streams, rejected no-progress control records and corrected bounded stream reads. Updated the documented key state and release workflow status.
+- **Why:** A malformed or unavailable patch must not block a valid signed full APK update, and the patcher must handle large APKs without sharing stream offsets or allocating the whole APK in memory.
+- **Verified:** Source reviewed; CI compilation and the BSDIFF unit test are still pending. The patch-generation workflow independently verifies its output with `bspatch` and SHA-256 before publication.
+- **Do not redo:** Do not remove the full APK fallback, bypass digest/certificate checks, or alter the existing release key.
+- **Follow-ups:** Check the next main CI run; test a patch from one published signed release to the next on a physical arm64 device.
+
 ## 2026-11-24 — Add signed differential APK updates
 
 - **Role:** Main integrator / Android / CI
