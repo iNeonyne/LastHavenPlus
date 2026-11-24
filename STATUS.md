@@ -2,7 +2,7 @@
 
 **Last updated:** 2026-11-25  
 **Active branch:** `beta`  
-**Audit snapshot:** `54273f6ae5cb337d103c5a27a511057138c1c4c1` (the beta HEAD immediately before this status-report commit)  
+**Latest inspected beta HEAD before this status update:** `b88f55422395def3b01bd53e5362f3fd6e76d4bb` (documentation and workflow updates only)  
 **Phase:** GeckoView 160 is integrated in source and has a successful CI build/test baseline. Home-screen/navigation work is assigned to Ploy. Physical ARM64 gameplay and profile persistence remain unverified.
 
 ## Summary
@@ -19,16 +19,17 @@
 |---|---|
 | Active branch | `beta` |
 | Stable branch | `main` |
-| Beta audit snapshot before this report commit | `54273f6ae5cb337d103c5a27a511057138c1c4c1` |
-| Latest successful Android CI run inspected | [#308](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45503025246) |
-| Commit tested by run #308 | `82590635e77c7abfedcaa6fd1fa4ad8c3b5de469` |
-| CI result | `assembleRelease` and `testDebugUnitTest` succeeded |
-| Release APK | 92,850,795 bytes; ARM64 (`arm64-v8a`) only |
-| Signing | APK certificate matched the established release signing certificate |
-| Current workflow optimization | Commits `54b947279a783c6c382210e65045edd02bd5ee73` and `91e21d4bde0a26b8d7cbfd9697615f32c2f57d21`; resulting run has not been verified in this audit |
+| Latest inspected beta HEAD before this status update | `b88f55422395def3b01bd53e5362f3fd6e76d4bb` |
+| Latest successful Android CI run inspected | [#310](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45508671565) |
+| Commit tested by run #310 | `91e21d4bde0a26b8d7cbfd9697615f32c2f57d21` |
+| CI result | `assembleRelease`, `testDebugUnitTest`, release signature verification and ARM64-only ABI verification succeeded |
+| Signed APK artifact | `lasthavenplus-release-signed-arm64` uploaded; workflow job passed |
+| Earlier measured APK size | Run #308: 92,850,795 bytes |
+| PR workflow change | Run [#311](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45511064839) is testing the workflow commit; no PR-triggered run has yet verified the new PR-only job |
+| Release state | No promotion to `main` or new release publication performed |
 | Release state | No promotion to `main` or new release publication performed |
 
-Run #308 is the latest successful run inspected, not a build of the current documentation/workflow HEAD. Its test task passing is evidence for that tested commit only. The later workflow optimization needs its own run inspection and timing comparison before any improvement is claimed.
+Run #310 is the latest successful Android run inspected. It verifies the signed ARM64 release build and unit tests for commit `91e21d4bde0a26b8d7cbfd9697615f32c2f57d21`, not the current documentation/workflow HEAD. Run #311 is in progress for the PR-trigger change. The PR-only validation job has not yet been exercised by an actual pull request, so its behavior remains unverified.
 
 ## Implemented in beta source
 
