@@ -1,0 +1,116 @@
+{
+  "title": {
+    "message": "Gestor de addons"
+  },
+  "description": {
+    "message": "Addons ZIP locales para Lasthavens 3.3.5a."
+  },
+  "importZip": {
+    "message": "Importar ZIP"
+  },
+  "play": {
+    "message": "Abrir juego"
+  },
+  "hint": {
+    "message": "Los cambios se aplican al recargar la página del juego."
+  },
+  "waiting": {
+    "message": "Esperando el juego"
+  },
+  "storageTitle": {
+    "message": "Almacenamiento"
+  },
+  "storageInfo": {
+    "message": "Los archivos se guardan en este perfil de Chrome. Al eliminar un addon se conservan sus ajustes del juego. Los addons integrados se gestionan en la biblioteca del juego."
+  },
+  "limits": {
+    "message": "Límites: ZIP 128 MB; archivo descomprimido 256 MB; fichero 64 MB; biblioteca 384 MB."
+  },
+  "reloadInfo": {
+    "message": "Recarga el juego cuando puedas interrumpir la sesión."
+  },
+  "empty": {
+    "message": "No hay addons locales. Importa un ZIP."
+  },
+  "enabled": {
+    "message": "Activado"
+  },
+  "disabled": {
+    "message": "Desactivado"
+  },
+  "exportZip": {
+    "message": "Exportar ZIP"
+  },
+  "remove": {
+    "message": "Eliminar"
+  },
+  "saved": {
+    "message": "Guardado. Recarga el juego para aplicar los cambios."
+  },
+  "imported": {
+    "message": "Importación terminada. Los addons nuevos están desactivados."
+  },
+  "noVersion": {
+    "message": "Sin versión"
+  },
+  "files": {
+    "message": "archivos"
+  },
+  "addons": {
+    "message": "addons"
+  },
+  "active": {
+    "message": "activados"
+  },
+  "dependencies": {
+    "message": "Comprueba las dependencias: {names}. Pueden estar en la biblioteca del juego."
+  },
+  "changed": {
+    "message": "Hay cambios pendientes. Recarga el juego."
+  },
+  "ready": {
+    "message": "Addons locales preparados: {count}"
+  },
+  "loadError": {
+    "message": "Error del cargador. El juego puede iniciarse sin addons locales."
+  },
+  "importError": {
+    "message": "No se pudo importar el archivo. Detalles técnicos:"
+  },
+  "libraryLimit": {
+    "message": "La biblioteca supera los 384 MB."
+  },
+  "interfaceWarning": {
+    "message": "El TOC no declara Interface 30300. Compatibilidad sin verificar."
+  },
+  "errorPath": {
+    "message": "Ruta no permitida en el archivo: {detail}"
+  },
+  "errorArchiveSize": {
+    "message": "El ZIP supera los 128 MB."
+  },
+  "errorExpanded": {
+    "message": "Se supera el límite de 64 MB por fichero o 256 MB descomprimidos."
+  },
+  "errorIntegrity": {
+    "message": "Error de integridad del fichero: {detail}"
+  },
+  "errorFolder": {
+    "message": "Carpeta de addon inválida o duplicada: {detail}"
+  },
+  "errorToc": {
+    "message": "Falta el archivo principal Folder/Folder.toc."
+  },
+  "errorUnsupported": {
+    "message": "ZIP no compatible: cifrado, ZIP64, varios volúmenes, enlaces o método de compresión."
+  },
+  "errorDuplicate": {
+    "message": "Ruta duplicada en el archivo: {detail}"
+  },
+  "errorZip": {
+    "message": "El archivo ZIP no es válido o está dañado."
+  },
+  "errorUnexpected": {
+    "message": "La operación falló. Comprueba el espacio del navegador e inténtalo de nuevo."
+  }
+}
