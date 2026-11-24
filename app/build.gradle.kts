@@ -1,3 +1,9 @@
+plugins {
+    id("com.android.application")
+    id("org.jetbrains.kotlin.plugin.compose")
+    id("com.cefrium") version "0.21.0"
+}
+
 val releaseStoreFile = System.getenv("ANDROID_KEYSTORE_PATH")
 val releaseStorePassword = System.getenv("ANDROID_KEYSTORE_PASSWORD")
 val releaseKeyPassword = System.getenv("ANDROID_KEY_PASSWORD")
@@ -5,12 +11,6 @@ val releaseSigningConfigured = !releaseStoreFile.isNullOrBlank() &&
     !releaseStorePassword.isNullOrBlank() &&
     !releaseKeyPassword.isNullOrBlank() &&
     file(releaseStoreFile).isFile
-
-plugins {
-    id("com.android.application")
-    id("org.jetbrains.kotlin.plugin.compose")
-    id("com.cefrium") version "0.21.0"
-}
 
 android {
     namespace = "com.neonyne.lasthavenlauncher"
