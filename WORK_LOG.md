@@ -91,3 +91,14 @@
 - **Changes:** Added explicit pre-task reading of the restart journal and GeckoView reference; made per-step logging mandatory after inspections, edits, tests, commits, handoffs and interruptions; removed the last obsolete instruction to reuse the deleted addon manager; finalized Ploy's sequence as #9 → #11 → #20, then #22 after #21, followed by the small #6 URL-settings task. #23 remains blocked pending owner requirements.
 - **Commits:** `32e6a33921f5d26d91589ea49592baf180537ecc` (AGENTS), `6119d686e25ce883abc41148b428cc13e54b578c` (AGENT_WORK).
 - **Next safe action:** inspect the latest beta CI run for the post-removal source. Current docs-only commits do not prove app compilation. No GeckoView implementation has begun.
+
+
+### 2026-11-25 — Canonical game URL correction
+
+- **Branch:** `beta`.
+- **Starting commit:** `9af9743be1b82e0995583181ff1de970ccdcb270`.
+- **Change:** Replaced the `alt.lasthavens.com` game URL with `https://lasthavens.com/play` in `MainActivity.kt`, `README.md`, `AGENTS.md` and `ISSUES.md`; updated `STATUS.md` and this journal.
+- **Commit:** `bf5dec75e2933b1181917e73dbba4489485965e4` (URL source/docs); follow-up status/journal commit recorded separately by this checkpoint.
+- **CI:** run #295 (`45498271033`) on the URL source/docs commit was pending when inspected. No successful build is claimed.
+- **Limitations:** Firefox WebExtension implementation has not been committed. The fflate vendor distribution remains an external prerequisite, and injection must be validated against the live game.
+- **Next safe action:** check CI #295, then continue #23 against the exact supplied specification and test desktop/Android Firefox behavior independently.

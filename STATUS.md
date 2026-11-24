@@ -6,17 +6,17 @@
 
 ## Snapshot
 
-The stable v1.0.0 release is published. Beta still uses Cefrium and opens the game directly on startup. The approved target is GeckoView plus a home screen with Play and Settings. The previous addon manager has been removed; replacement work is blocked pending the owner's new specification.
+The stable v1.0.0 release is published. Beta still uses Cefrium and opens the game directly on startup. The approved target is GeckoView plus a home screen with Play and Settings. The previous addon manager has been removed. The owner has now supplied the replacement Firefox WebExtension specification; implementation and game-injection verification have not started.
 
-- **`beta` HEAD before this final status correction:** `cb2f2fe216fbbedf8e6db60814ff3305704244b4`.
+- **Latest verified `beta` HEAD:** `bf5dec75e2933b1181917e73dbba4489485965e4`.
 
 - **`main` (stable):** `6211cf389b8d9f6ef98aa7818f47643bfdaf2053`.
-- **Latest observed post-removal CI:** [run #292](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45497391344), ID `45497391344`, on commit `a9ead95dc2cd9603903913f1553d719b1b8d77d4`; cancelled by the following status update.
-- **Current exact head CI:** no completed build evidence has been observed for the documentation-only head; cancelled runs do not establish whether the post-removal source compiles.
+- **Latest CI for current HEAD:** [run #295](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45498271033), ID `45498271033`, on commit `bf5dec75e2933b1181917e73dbba4489485965e4`; pending at this checkpoint.
+- **Build evidence:** run #295 is pending; no successful build or test is claimed for the current head.
 - **Previous source failure:** [run #247](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45493653394) failed Kotlin compilation in `AddonManagerDialog.kt`. That source file and its app entry point have since been removed. Do not treat the blocker as fixed until a new build completes.
 - **Latest successful beta CI run found:** [#179](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45183038304), commit `593fec6b048790cbc30a7fbadf571b749069abea`; historical only.
 - **Published release:** [v1.0.0](https://github.com/iNeonyne/LastHavenPlus/releases/tag/v1.0.0), with the signed ARM64 APK and update manifest. It does not verify current beta.
-- **Current task ownership:** Ploy #9 (easy menu accessibility), then #11 diagnostics tests; Chaty #4 build/updater tests and #21 engine migration after #20 research. #23 is blocked pending owner instructions.
+- **Current task ownership:** Ploy #9 (easy menu accessibility), then #11 diagnostics tests; Chaty #4 build/updater tests and #21 engine migration after #20 research. The owner supplied the Firefox WebExtension specification for #23; implementation awaits the pinned fflate vendor file.
 
 Documentation, agent references and the removal work are committed directly to `beta`. No GeckoView production dependency/source has been added. No main promotion, tag or release was performed.
 
@@ -29,7 +29,7 @@ Documentation, agent references and the removal work are committed directly to `
 | CPU architecture | `abiFilters += "arm64-v8a"` configured | Actual APK ABI verification skipped in run #247; current run #278 pending |
 | Build wrapper | Gradle Wrapper present, pinned to 9.7.1 with SHA-256 | Wrapper setup/validation step passed in run #247; no replacement wrapper or toolchain change needed |
 | Browser engine | Cefrium SDK/Compose/plugin 0.21.0 currently configured; Chromium `156.0.8078.96` | Runtime behavior on physical hardware unverified; this engine is scheduled for removal under #21 |
-| Game launch | `MainActivity` directly creates the Cefrium Compose view and loads the configured LastHaven URL on app launch | Source inspected; no physical ARM64 gameplay evidence |
+| Game launch | `MainActivity` directly creates the Cefrium Compose view and loads `https://lasthavens.com/play` on app launch | Source inspected; no physical ARM64 gameplay evidence |
 | App shell | Current app is game-first and applies immersive mode/keep-screen-on from Activity startup; manifest declares `sensorLandscape` | Home screen and gameplay-only window/orientation behavior are not implemented |
 | Browser profile | Current Cefrium default persistent app-private profile is used; source requests `navigator.storage.persist()` | Cookies/LocalStorage/IndexedDB/service-worker persistence across force-stop/restart is unverified on device |
 | Exit/navigation | Back opens the current compact exit menu; Return/Reload/Settings/Diagnostics/update/Exit paths exist | Addon manager entry removed; physical navigation and TalkBack checks unverified |

@@ -368,3 +368,14 @@ Entry format:
 - **Why:** Users need an explicit way to test beta releases and settings that expose useful, working controls rather than a usage-only popup.
 - **Constraints:** No overlapping ownership; no automatic download/install; no release or tag changes; no visual redesign in this pass; preserve the existing stable updater validation path.
 - **Verified:** GitHub issues #6 and #19 updated/created; coordination files updated on `beta`. No app code changed and no tests run.
+
+
+## 2026-11-25 — Switch the configured game URL to the canonical host
+
+- **Role:** Chaty / main orchestrator
+- **Files:** `app/src/main/java/com/neonyne/lasthavenlauncher/MainActivity.kt`, `README.md`, `AGENTS.md`, `ISSUES.md`, `STATUS.md`, `WORK_LOG.md`
+- **Change:** Replaced `https://alt.lasthavens.com/play` with `https://lasthavens.com/play` in the Android app default and all matching project instructions/backlog references. The Firefox WebExtension specification also uses this canonical host.
+- **Why:** The owner explicitly requested the non-`alt` game URL as the project URL.
+- **Verification:** Source and documentation were searched for the old hostname in the matching files before editing. The new URL is set in the Android default constant. CI run #295 for the URL-change commit was pending at this checkpoint; no build or runtime result is claimed.
+- **Do not redo:** Do not restore the `alt.` hostname. Do not alter the application ID, signing identity, GeckoView plan or game source.
+- **Follow-ups:** Check run #295; implement the separately specified Firefox WebExtension when the required fflate distribution is available; verify the canonical host on physical ARM64 and Firefox desktop/Android.
