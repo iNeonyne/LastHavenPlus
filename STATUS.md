@@ -8,11 +8,13 @@
 
 The stable v1.0.0 release is published. The checked-in beta still uses Cefrium and opens the game directly on startup. The owner has approved a major architecture change: replace Cefrium with Mozilla GeckoView, add a simple home screen with Play and Settings, and reuse the existing ZIP addon manager from Settings. These are planned tasks, not implemented features.
 
-The current beta head is not buildable: GitHub Actions run #247 failed Kotlin compilation in `AddonManagerDialog.kt`. Unit tests did not run, no test report was produced, and signed APK/signing/ABI checks were skipped. Restore a clean beta baseline before changing the engine.
+The latest inspected source baseline is not buildable: GitHub Actions run #247 failed Kotlin compilation in `AddonManagerDialog.kt`. Later pushes in this preparation changed documentation and issue tracking only; no application or build source was changed. Unit tests did not run, no test report was produced, and signed APK/signing/ABI checks were skipped. Restore a clean beta baseline before changing the engine.
 
 - **`main` (stable):** `6211cf389b8d9f6ef98aa7818f47643bfdaf2053`
-- **Latest audited `beta` commit:** `c00740a77e54ff4e26d69512959fb8feb0487a51`
-- **Latest beta CI run:** [#247](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45493653394), run ID `45493653394`, failed on commit `c00740a77e54ff4e26d69512959fb8feb0487a51`.
+- **Latest source baseline audited:** `c00740a77e54ff4e26d69512959fb8feb0487a51`.
+- **Documentation/roadmap preparation committed to `beta` through:** `2d9c71fc09dd18dc9debf803195c6ad5e3b064f0` (README, AGENTS, AGENT_WORK, STATUS, ISSUES and CHANGELOG-only changes; no app/build source modified).
+- **Latest source-build result inspected:** [#247](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45493653394), run ID `45493653394`, failed on source baseline `c00740a77e54ff4e26d69512959fb8feb0487a51`.
+- **Documentation-head CI:** [#253](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45495673227) was queued on the documentation-only head `2d9c71fc09dd18dc9debf803195c6ad5e3b064f0` at the time of this status update; it is not recorded as a successful build.
 - **Latest successful beta CI run found:** [#179](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45183038304), commit `593fec6b048790cbc30a7fbadf571b749069abea`; historical and not evidence for current beta.
 - **Published release:** [v1.0.0](https://github.com/iNeonyne/LastHavenPlus/releases/tag/v1.0.0), with `lasthavenplus-arm64.apk` and `lasthavenplus-update.json`. This does not verify the new beta architecture.
 
