@@ -75,7 +75,7 @@ Agents may work in parallel only on disjoint files/surfaces. Each agent must ide
 4. Keep `ISSUES.md` accurate as work is completed. It is the consolidated repository backlog; update task checklists and status alongside implementation changes. GitHub Issues are linked discussion records.
 5. Run the relevant build/tests and record what was actually verified. Do not mark device-only behavior as passed based on CI.
 6. Update STATUS and append a changelog entry.
-7. Ploy submits work through a pull request from a dedicated branch. Chaty reviews and verifies it, then waits for explicit user approval before merging. Chaty may continue making separate orchestrator commits directly to `main`.
+7. Ploy submits work through a pull request from a dedicated task branch targeting `beta`. Chaty reviews and verifies it, then may merge accepted work into `beta`. Chaty makes orchestrator commits directly to `beta`; `main` changes only through an explicitly approved beta promotion.
 8. Close an issue only when its acceptance criteria are met. If blocked, leave it open and document the blocker in STATUS and the issue.
 
 **Tracking links**
