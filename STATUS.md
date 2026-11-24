@@ -9,8 +9,8 @@
 The stable `v1.0.0` release is published from the stable line. The current `beta` source is not buildable at its latest commit: GitHub Actions run #232 fails Kotlin compilation in `AddonManagerDialog.kt`. The unit-test task did not run and no test-report artifact was produced. Do not treat the published APK or an older successful beta run as verification of the current beta source.
 
 - **`main` (stable):** `6211cf389b8d9f6ef98aa7818f47643bfdaf2053`
-- **`beta` (current head):** `4b4a77293a14648974c78a49824a84a33e2a3e19`
-- **Latest beta CI attempt:** [run #232](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45484304840), failed on current beta head.
+- **`beta` audit head before this status refresh:** `6db0eb9613b86d0d2a62bd78d95fa7f09fb432c4` (documentation/workflow-only commits since the failed source build)
+- **Latest fully inspected source-build failure:** [run #232](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45484304840), failed on source commit `4b4a77293a14648974c78a49824a84a33e2a3e19`. Later documentation-only pushes triggered replacement CI runs; they do not change the source failure described below.
 - **Latest successful beta CI run found:** [run #179](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45183038304), commit `593fec6b048790cbc30a7fbadf571b749069abea`. This used an earlier workflow/source snapshot and does **not** verify current beta.
 - **Latest verified CI commit:** `593fec6b048790cbc30a7fbadf571b749069abea` (run #179; historical only).
 - **Current release:** [v1.0.0](https://github.com/iNeonyne/LastHavenPlus/releases/tag/v1.0.0), with one `lasthavenplus-arm64.apk` and `lasthavenplus-update.json`. Its existence does not prove current beta readiness.
@@ -55,7 +55,7 @@ The compile error is in the active #13 accessibility-semantics scope. Keep exclu
 
 ## Release workflow finding
 
-`.github/workflows/android.yml` correctly builds on pushes to `beta` and `main`, but its manual `workflow_dispatch` tag-creation condition currently accepts a non-empty release version without checking that the selected ref is `main`. Restrict release-tag creation to `main` before using manual release dispatch. Do not run release dispatch, create tags or publish releases as part of this audit.
+<badge>Corrected on beta</badge> `.github/workflows/android.yml` now restricts manual release-tag creation to `main` and rejects pushed version tags unless their commit is already contained in stable `main`. The workflow was not dispatched for a release; no tag or release was created.
 
 ## Tests and artifacts
 
@@ -89,7 +89,7 @@ The compile error is in the active #13 accessibility-semantics scope. Keep exclu
 | Owner | Issue | Scope / boundary |
 |---|---|---|
 | Chaty | #4 | Build reproducibility and updater test coverage; wrapper is already present, so focus on remaining tests and current CI evidence |
-| Ploy | #13 | Accessibility semantics; exclusive owner until task handoff. The current compiler errors are within this scope |
+| Ploy | #13 | Accessibility semantics; exclusive owner until task handoff. The current compiler errors are within this scope. No task branch or handoff commit is visible in GitHub yet |
 | Ploy (queued) | #11, then #8 | Sequential only after each prior task is accepted and integrated into beta |
 | Chaty (queued) | #19 | Beta updater channel; only after #4 handoff |
 
@@ -98,5 +98,5 @@ The compile error is in the active #13 accessibility-semantics scope. Keep exclu
 1. Correct the #13 Compose semantics compile error under its single-owner assignment; hand off the task-branch commit to Chaty.
 2. Chaty reviews and integrates the fix directly into beta, then verifies a new CI run.
 3. Update #4 acceptance tracking: wrapper setup is complete; updater edge-case coverage and current successful CI evidence remain open.
-4. Add the `main`-only guard to manual release tag creation after the audit/doc pass.
+4. Keep the `main`-only release-tag guard in place; verify its behavior in a normal CI run without dispatching a release.
 5. Keep physical-device and differential-update checks open until actual ARM64 hardware verification is recorded.
