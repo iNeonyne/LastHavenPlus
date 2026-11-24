@@ -59,6 +59,7 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        Diagnostics.info(this, "Lifecycle", "Activity created")
 
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         WindowCompat.setDecorFitsSystemWindows(window, false)
@@ -98,6 +99,7 @@ class MainActivity : ComponentActivity() {
 
     override fun onResume() {
         super.onResume()
+        Diagnostics.info(this, "Lifecycle", "Activity resumed")
         val uri = pendingUpdateUri
         if (uri != null && packageManager.canRequestPackageInstalls()) {
             pendingUpdateUri = null
@@ -145,6 +147,12 @@ private fun LastHavenApp(
     var isDownloadingUpdate by remember { mutableStateOf(false) }
     var downloadingDelta by remember { mutableStateOf(false) }
     var isCheckingUpdate by remember { mutableStateOf(false) }
+
+    LaunchedEffect(browserState.rendererTermination) {
+        if (browserState.rendererTermination != null) {
+            Diagnostics.error(context, TAG, "Cefrium renderer terminated: ${browserState.rendererTermination}")
+        }
+    }
 
     LaunchedEffect(Unit) {
         isCheckingUpdate = true
