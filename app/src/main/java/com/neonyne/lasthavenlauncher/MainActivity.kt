@@ -140,6 +140,7 @@ private fun LastHavenApp(
     var showExitPrompt by remember { mutableStateOf(false) }
     var showSettingsDialog by remember { mutableStateOf(false) }
     var showDiagnosticsDialog by remember { mutableStateOf(false) }
+    var showAddonManagerDialog by remember { mutableStateOf(false) }
     var pageLoadFailed by remember { mutableStateOf(false) }
     var availableUpdate by remember { mutableStateOf<AppUpdateInfo?>(null) }
     var updateMessage by remember { mutableStateOf<String?>(null) }
@@ -372,6 +373,10 @@ private fun LastHavenApp(
                     }) { Text(if (isCheckingUpdate) "Checking…" else "Check for updates") }
                     TextButton(onClick = {
                         showExitPrompt = false
+                        showAddonManagerDialog = true
+                    }) { Text("Addon manager") }
+                    TextButton(onClick = {
+                        showExitPrompt = false
                         showSettingsDialog = true
                     }) { Text("Settings & usage") }
                     TextButton(onClick = {
@@ -385,6 +390,10 @@ private fun LastHavenApp(
                 }
             },
         )
+    }
+
+    if (showAddonManagerDialog) {
+        AddonManagerDialog(context) { showAddonManagerDialog = false }
     }
 
     if (showSettingsDialog) {
