@@ -22,7 +22,7 @@ LastHavenPlus is an Android launcher for the existing LastHaven Wrath of the Lic
 | Android | Android 10 (API 29) and later |
 | CPU architecture | ARM64 (`arm64-v8a`) only |
 | Application ID | `com.neonyne.lasthavenlauncher` |
-| Current browser engine | Cefrium 0.21.0; this is transitional and remains in beta until issue #21 is completed |
+| Current browser engine | Mozilla GeckoView 160 ARM64 artifact; build and runtime verification are still pending under issue #21 |
 | Current Chromium | 156.0.8078.96 |
 | UI | Kotlin and Jetpack Compose |
 
@@ -30,8 +30,8 @@ The application ID and established release signing identity are part of update c
 
 ## Current beta behavior
 
-- The current beta implementation opens the LastHaven game directly when the app starts. The new home screen is planned under [issue #22](https://github.com/iNeonyne/LastHavenPlus/issues/22); it is not implemented yet.
-- The current game view uses a persistent app-private Cefrium profile. Runtime persistence on physical ARM64 hardware remains unverified.
+- The current beta implementation still opens the LastHaven game directly when the app starts. The app home screen is planned under [issue #22](https://github.com/iNeonyne/LastHavenPlus/issues/22); it is not implemented yet.
+- The current source hosts GeckoView 160 using a process-scoped runtime and a GeckoSession. Profile persistence across restarts and all game behavior remain unverified on physical ARM64 hardware.
 - The app has an exit/navigation menu, settings and usage information, diagnostics and manual update actions. The legacy addon manager has been removed pending a new owner-provided specification.
 - Storage information distinguishes installed APK size, browser profile directory size and app cache size.
 - Network counters report app-wide bytes received and sent, including game and updater traffic; they are not game-only counters.
@@ -43,7 +43,7 @@ The application ID and established release signing identity are part of update c
 
 The next major beta change replaces Cefrium with **Mozilla GeckoView** and introduces a simple home screen:
 
-- GeckoView becomes the sole embedded browser engine; no Android System WebView or Cefrium fallback is planned. The current source remains Cefrium-based until [issue #21](https://github.com/iNeonyne/LastHavenPlus/issues/21) is implemented and verified.
+- GeckoView is now the sole embedded browser engine in the current source; no Android System WebView or Cefrium fallback remains. Issue #21 remains open until build, tests, signing, ABI and runtime checks pass.
 - The app opens to a home screen with a prominent **Play** button and a **Settings** entry. The game is loaded only after Play is selected ([issue #22](https://github.com/iNeonyne/LastHavenPlus/issues/22)).
 - The future addon manager will be designed from a new owner-provided specification ([issue #23](https://github.com/iNeonyne/LastHavenPlus/issues/23)); do not reuse or recreate the deleted implementation.
 - A WoW addon ZIP / `.toc` package is not a Gecko WebExtension. Moving to GeckoView does not itself provide game addon loading. Any future game integration requires a separately documented, operator-approved contract and physical-device verification.
@@ -68,10 +68,10 @@ Install the APK through Android and approve the package installer prompt. Preser
 
 - JDK 25
 - Gradle 9.7.1 (the committed Wrapper is pinned with a distribution SHA-256)
-- Android SDK Platform 37 and Build Tools 37.0.0
-- At least 4 GB of Gradle heap for the current Cefrium dexing workload
+- Android SDK Platform 37.2 and Build Tools 37.0.0
+- At least 4 GB of Gradle heap for GeckoView dependency processing
 
-The engine migration issue must validate GeckoView's documented Java 17 compile compatibility and its impact on the existing Android Gradle Plugin/JDK setup before changing build configuration. Do not change the Gradle, AGP, JDK, Android SDK, signing configuration or application ID speculatively.
+GeckoView 160's AAR metadata requires compile SDK 37.2. The project now declares API 37 minor level 2 and CI installs `platforms;android-37.2`; this compatibility adjustment is awaiting CI verification. Do not change the Gradle, AGP, JDK, signing configuration or application ID speculatively.
 
 ### Build and test
 
@@ -84,7 +84,7 @@ The repository includes the Gradle Wrapper pinned to Gradle 9.7.1. From the repo
 
 Release signing requires the established project keystore and credentials. GitHub Actions restores these from repository secrets; the private keystore must not be committed. Do not ship debug APKs as release assets.
 
-See [Actions](https://github.com/iNeonyne/LastHavenPlus/actions) for current CI evidence. The latest inspected beta run is failing Kotlin compilation; see [STATUS.md](STATUS.md) and [issue #4](https://github.com/iNeonyne/LastHavenPlus/issues/4).
+See [Actions](https://github.com/iNeonyne/LastHavenPlus/actions) for current CI evidence. The latest completed GeckoView build attempt failed on the AAR compile SDK requirement; the API 37.2 correction is pending run #304. See [STATUS.md](STATUS.md) and [issue #21](https://github.com/iNeonyne/LastHavenPlus/issues/21).
 
 ### Official GeckoView references
 
@@ -94,11 +94,11 @@ See [Actions](https://github.com/iNeonyne/LastHavenPlus/actions) for current CI 
 - [WebExtensions in GeckoView](https://firefox-source-docs.mozilla.org/mobile/android/geckoview/consumer/web-extensions.html)
 - [Site permissions in GeckoView](https://firefox-source-docs.mozilla.org/mobile/android/geckoview/consumer/permissions.html)
 
-The exact stable GeckoView artifact/version is intentionally not pinned in this documentation. Issue #20 must verify the available stable version from Mozilla's Maven repository and validate API/toolchain compatibility before issue #21 changes dependencies.
+The current source pins Mozilla's ARM64 GeckoView artifact `160.0.20261116130455`. The public API was checked against Mozilla's Firefox 160 source; dependency resolution, build compatibility, signed APK contents and runtime behavior remain subject to issue #21 verification.
 
 ## Data and privacy
 
-- The current beta stores browser data in Cefrium's persistent app-private profile. The new GeckoView profile must also be persistent and must be verified over force-stop/restart.
+- The current source uses GeckoView's app-private data location. Persistent cookies, LocalStorage, IndexedDB, service workers and authentication over force-stop/restart remain unverified.
 - Do not assume existing Cefrium cookies, LocalStorage, IndexedDB, service workers or game sessions can be converted to GeckoView format.
 - Do not delete or reset legacy Cefrium profile files as part of the engine transition.
 - Network counters and diagnostic logs stay on-device. Logs are shared only through the user's explicit action.
