@@ -146,6 +146,9 @@ object AppUpdater {
                         }
                         val targetSize = target.getLong("size")
                         check(targetSize in 1..MAX_APK_BYTES) { "Update APK size is invalid" }
+                        check(fullAsset.getLong("size") == targetSize) {
+                            "GitHub APK asset size does not match the update manifest"
+                        }
 
                         val patch = runCatching {
                             manifest.optJSONObject("patch")?.let { patchJson ->
@@ -165,6 +168,9 @@ object AppUpdater {
                                 val patchSize = patchJson.getLong("size")
                                 check(patchSize in 1..MAX_PATCH_BYTES) {
                                     "Differential patch size is invalid"
+                                }
+                                check(patchAsset.getLong("size") == patchSize) {
+                                    "GitHub patch asset size does not match the update manifest"
                                 }
                                 AppUpdatePatch(
                                     downloadUrl = patchUrl,
@@ -229,31 +235,47 @@ object AppUpdater {
                     installedInfo.versionName == patch.baseVersion &&
                     installedInfo.longVersionCode == patch.baseVersionCode
 
-                if (canUsePatch) {
-                    val delta = patch ?: error("Differential patch metadata is missing")
-                    val baseApk = File(appContext.applicationInfo.sourceDir)
-                    check(baseApk.isFile && baseApk.canRead()) {
-                        "Installed APK is not accessible; choose the full APK instead"
-                    }
-                    check(sha256(baseApk).equals(delta.baseSha256, true)) {
-                        "Installed APK does not match this patch; choose the full APK instead"
-                    }
+                val patchAttempt = if (canUsePatch) {
+                    runCatching {
+                        val delta = patch ?: error("Differential patch metadata is missing")
+                        val baseApk = File(appContext.applicationInfo.sourceDir)
+                        check(baseApk.isFile && baseApk.canRead()) {
+                            "Installed APK is not accessible"
+                        }
+                        check(sha256(baseApk).equals(delta.baseSha256, true)) {
+                            "Installed APK does not match the patch base"
+                        }
 
-                    val patchFile = File(updateDirectory, "update.bsdiff.part")
-                    patchFile.delete()
-                    try {
-                        downloadToFile(
-                            delta.downloadUrl,
-                            delta.sha256,
-                            delta.size,
-                            MAX_PATCH_BYTES,
-                            patchFile,
-                        )
-                        BsdiffPatch.apply(baseApk, patchFile, temporaryApk, MAX_APK_BYTES)
-                    } finally {
+                        val patchFile = File(updateDirectory, "update.bsdiff.part")
                         patchFile.delete()
+                        try {
+                            downloadToFile(
+                                delta.downloadUrl,
+                                delta.sha256,
+                                delta.size,
+                                MAX_PATCH_BYTES,
+                                patchFile,
+                            )
+                            BsdiffPatch.apply(baseApk, patchFile, temporaryApk, MAX_APK_BYTES)
+                        } finally {
+                            patchFile.delete()
+                        }
                     }
                 } else {
+                    null
+                }
+
+                if (patchAttempt == null || patchAttempt.isFailure) {
+                    // A delta is an optimization, never a single point of failure.
+                    temporaryApk.delete()
+                    val reason = patchAttempt?.exceptionOrNull()?.message
+                    if (reason != null) {
+                        Diagnostics.warn(
+                            appContext,
+                            "Updater",
+                            "Differential update failed; falling back to full APK: $reason",
+                        )
+                    }
                     downloadToFile(
                         update.downloadUrl,
                         update.sha256,
@@ -339,6 +361,7 @@ object AppUpdater {
     ) {
         val connection = openConnection(url)
         try {
+            checkTrustedGithubResponse(connection)
             check(connection.responseCode == HttpURLConnection.HTTP_OK) {
                 "Update download failed (HTTP ${connection.responseCode})"
             }
@@ -367,8 +390,24 @@ object AppUpdater {
             check(totalBytes == expectedSize) { "Downloaded file size does not match its manifest" }
             val actual = digest.digest().joinToString("") { "%02x".format(it) }
             check(actual.equals(expectedSha256, true)) { "Downloaded file checksum verification failed" }
+        } catch (error: Exception) {
+            destination.delete()
+            throw error
         } finally {
             connection.disconnect()
+        }
+    }
+
+    private fun checkTrustedGithubResponse(connection: HttpURLConnection) {
+        val finalUrl = connection.url
+        val trustedHosts = setOf(
+            "github.com",
+            "api.github.com",
+            "release-assets.githubusercontent.com",
+            "objects.githubusercontent.com",
+        )
+        check(finalUrl.protocol == "https" && finalUrl.host.lowercase() in trustedHosts) {
+            "Update server redirected to an untrusted host"
         }
     }
 
@@ -395,7 +434,8 @@ object AppUpdater {
     }
 
     private fun requireGithubUrl(value: String): String {
-        check(value.startsWith("https://github.com/")) {
+        val parsed = URL(value)
+        check(parsed.protocol == "https" && parsed.host.equals("github.com", true)) {
             "Release assets must be hosted on GitHub"
         }
         return value
