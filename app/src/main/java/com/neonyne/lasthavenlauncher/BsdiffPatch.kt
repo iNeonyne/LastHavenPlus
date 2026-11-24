@@ -19,118 +19,139 @@ internal object BsdiffPatch {
 
         outputFile.delete()
         try {
-            FileInputStream(patchFile).use { patchInput ->
-                val header = ByteArray(HEADER_SIZE)
-                readFully(patchInput, header)
-                require(header.copyOfRange(0, 8).contentEquals(MAGIC)) {
-                    "Unsupported differential patch format"
-                }
+            val header = ByteArray(HEADER_SIZE)
+            FileInputStream(patchFile).use { readFully(it, header) }
+            require(header.copyOfRange(0, 8).contentEquals(MAGIC)) {
+                "Unsupported differential patch format"
+            }
 
-                val controlLength = readOffset(header, 8)
-                val diffLength = readOffset(header, 16)
-                val newSize = readOffset(header, 24)
-                require(controlLength >= 0 && diffLength >= 0 && newSize > 0) {
-                    "Invalid differential patch header"
-                }
-                require(newSize <= maxOutputBytes) { "Updated APK exceeds the size limit" }
-                require(controlLength <= patchFile.length() - HEADER_SIZE) {
-                    "Truncated differential patch"
-                }
-                require(diffLength <= patchFile.length() - HEADER_SIZE - controlLength) {
-                    "Truncated differential patch"
-                }
+            val controlLength = readOffset(header, 8)
+            val diffLength = readOffset(header, 16)
+            val newSize = readOffset(header, 24)
+            require(controlLength >= 0 && diffLength >= 0 && newSize > 0) {
+                "Invalid differential patch header"
+            }
+            require(newSize <= maxOutputBytes) { "Updated APK exceeds the size limit" }
+            require(controlLength <= patchFile.length() - HEADER_SIZE) {
+                "Truncated differential patch"
+            }
+            require(diffLength <= patchFile.length() - HEADER_SIZE - controlLength) {
+                "Truncated differential patch"
+            }
 
-                val controlBytes = BoundedInputStream(patchInput, controlLength)
-                val diffBytes = BoundedInputStream(patchInput, diffLength)
-                val extraBytes = BoundedInputStream(
-                    patchInput,
-                    patchFile.length() - HEADER_SIZE - controlLength - diffLength,
-                )
-                val control = BZip2CompressorInputStream(controlBytes, true)
-                val diff = BZip2CompressorInputStream(diffBytes, true)
-                val extra = BZip2CompressorInputStream(extraBytes, true)
+            val extraLength = patchFile.length() - HEADER_SIZE - controlLength - diffLength
+            val control = openBzipSection(patchFile, HEADER_SIZE.toLong(), controlLength)
+            val diff = openBzipSection(patchFile, HEADER_SIZE + controlLength, diffLength)
+            val extra = openBzipSection(
+                patchFile,
+                HEADER_SIZE + controlLength + diffLength,
+                extraLength,
+            )
 
-                try {
-                    RandomAccessFile(oldFile, "r").use { oldApk ->
-                        FileOutputStream(outputFile).use { output ->
-                            val oldSize = oldApk.length()
-                            var oldPosition = 0L
-                            var newPosition = 0L
-                            val diffBuffer = ByteArray(BUFFER_SIZE)
-                            val oldBuffer = ByteArray(BUFFER_SIZE)
-                            val outputBuffer = ByteArray(BUFFER_SIZE)
+            try {
+                RandomAccessFile(oldFile, "r").use { oldApk ->
+                    FileOutputStream(outputFile).use { output ->
+                        val oldSize = oldApk.length()
+                        var oldPosition = 0L
+                        var newPosition = 0L
+                        val diffBuffer = ByteArray(BUFFER_SIZE)
+                        val oldBuffer = ByteArray(BUFFER_SIZE)
+                        val outputBuffer = ByteArray(BUFFER_SIZE)
 
-                            while (newPosition < newSize) {
-                                val addLength = readOffset(control)
-                                val copyLength = readOffset(control)
-                                val seekAdjustment = readOffset(control)
-                                require(addLength >= 0 && copyLength >= 0) {
-                                    "Invalid differential patch control data"
-                                }
-                                require(addLength <= newSize - newPosition) {
-                                    "Differential patch exceeds output size"
-                                }
-
-                                var remaining = addLength
-                                while (remaining > 0) {
-                                    val count = minOf(remaining, BUFFER_SIZE.toLong()).toInt()
-                                    readFully(diff, diffBuffer, count)
-                                    oldBuffer.fill(0, 0, count)
-
-                                    val availableStart = maxOf(0L, oldPosition)
-                                    val availableEnd = minOf(oldSize, oldPosition + count)
-                                    if (availableEnd > availableStart) {
-                                        val sourceOffset = (availableStart - oldPosition).toInt()
-                                        val availableCount = (availableEnd - availableStart).toInt()
-                                        oldApk.seek(availableStart)
-                                        oldApk.readFully(oldBuffer, sourceOffset, availableCount)
-                                    }
-
-                                    for (index in 0 until count) {
-                                        outputBuffer[index] =
-                                            ((oldBuffer[index].toInt() and 0xff) +
-                                                (diffBuffer[index].toInt() and 0xff)).toByte()
-                                    }
-                                    output.write(outputBuffer, 0, count)
-                                    oldPosition += count
-                                    newPosition += count
-                                    remaining -= count
-                                }
-
-                                require(copyLength <= newSize - newPosition) {
-                                    "Differential patch exceeds output size"
-                                }
-                                remaining = copyLength
-                                while (remaining > 0) {
-                                    val count = minOf(remaining, BUFFER_SIZE.toLong()).toInt()
-                                    readFully(extra, outputBuffer, count)
-                                    output.write(outputBuffer, 0, count)
-                                    newPosition += count
-                                    remaining -= count
-                                }
-                                oldPosition += seekAdjustment
+                        while (newPosition < newSize) {
+                            val addLength = readOffset(control.stream)
+                            val copyLength = readOffset(control.stream)
+                            val seekAdjustment = readOffset(control.stream)
+                            require(addLength >= 0 && copyLength >= 0) {
+                                "Invalid differential patch control data"
+                            }
+                            require(addLength <= newSize - newPosition) {
+                                "Differential patch exceeds output size"
                             }
 
-                            require(newPosition == newSize) { "Reconstructed APK has an invalid size" }
-                            require(control.read() == -1) { "Unexpected trailing control data" }
-                            controlBytes.skipRemaining()
-                            require(diff.read() == -1) { "Unexpected trailing difference data" }
-                            diffBytes.skipRemaining()
-                            require(extra.read() == -1) { "Unexpected trailing extra data" }
-                            extraBytes.skipRemaining()
-                            output.fd.sync()
+                            var remaining = addLength
+                            while (remaining > 0) {
+                                val count = minOf(remaining, BUFFER_SIZE.toLong()).toInt()
+                                readFully(diff.stream, diffBuffer, count)
+                                oldBuffer.fill(0, 0, count)
+
+                                val oldEnd = Math.addExact(oldPosition, count.toLong())
+                                val availableStart = maxOf(0L, oldPosition)
+                                val availableEnd = minOf(oldSize, oldEnd)
+                                if (availableEnd > availableStart) {
+                                    val sourceOffset = (availableStart - oldPosition).toInt()
+                                    val availableCount = (availableEnd - availableStart).toInt()
+                                    oldApk.seek(availableStart)
+                                    oldApk.readFully(oldBuffer, sourceOffset, availableCount)
+                                }
+
+                                for (index in 0 until count) {
+                                    outputBuffer[index] =
+                                        ((oldBuffer[index].toInt() and 0xff) +
+                                            (diffBuffer[index].toInt() and 0xff)).toByte()
+                                }
+                                output.write(outputBuffer, 0, count)
+                                oldPosition = oldEnd
+                                newPosition += count
+                                remaining -= count
+                            }
+
+                            require(copyLength <= newSize - newPosition) {
+                                "Differential patch exceeds output size"
+                            }
+                            remaining = copyLength
+                            while (remaining > 0) {
+                                val count = minOf(remaining, BUFFER_SIZE.toLong()).toInt()
+                                readFully(extra.stream, outputBuffer, count)
+                                output.write(outputBuffer, 0, count)
+                                newPosition += count
+                                remaining -= count
+                            }
+                            oldPosition = Math.addExact(oldPosition, seekAdjustment)
                         }
+
+                        require(newPosition == newSize) { "Reconstructed APK has an invalid size" }
+                        require(control.stream.read() == -1) { "Unexpected trailing control data" }
+                        control.bounded.skipRemaining()
+                        require(diff.stream.read() == -1) { "Unexpected trailing difference data" }
+                        diff.bounded.skipRemaining()
+                        require(extra.stream.read() == -1) { "Unexpected trailing extra data" }
+                        extra.bounded.skipRemaining()
+                        output.fd.sync()
                     }
-                } finally {
-                    control.close()
-                    diff.close()
-                    extra.close()
                 }
+            } finally {
+                control.stream.close()
+                diff.stream.close()
+                extra.stream.close()
             }
-            require(outputFile.length() > 0) { "Reconstructed APK is empty" }
+
+            require(outputFile.length() == newSize) { "Reconstructed APK has an invalid size" }
             return outputFile.length()
         } catch (error: Exception) {
             outputFile.delete()
+            throw error
+        }
+    }
+
+    private fun openBzipSection(file: File, offset: Long, length: Long): BzipSection {
+        require(length > 0) { "Differential patch contains an empty compressed section" }
+        val input = FileInputStream(file)
+        try {
+            var remaining = offset
+            while (remaining > 0) {
+                val skipped = input.skip(remaining)
+                if (skipped > 0) {
+                    remaining -= skipped
+                } else {
+                    if (input.read() < 0) throw IllegalArgumentException("Truncated differential patch")
+                    remaining--
+                }
+            }
+            val bounded = BoundedInputStream(input, length)
+            return BzipSection(BZip2CompressorInputStream(bounded, true), bounded)
+        } catch (error: Exception) {
+            input.close()
             throw error
         }
     }
@@ -165,6 +186,11 @@ internal object BsdiffPatch {
         }
     }
 
+    private data class BzipSection(
+        val stream: BZip2CompressorInputStream,
+        val bounded: BoundedInputStream,
+    )
+
     private class BoundedInputStream(
         private val source: InputStream,
         private var remaining: Long,
@@ -195,7 +221,7 @@ internal object BsdiffPatch {
             }
         }
 
-        override fun close() = Unit
+        override fun close() = source.close()
     }
 
     private const val HEADER_SIZE = 32
