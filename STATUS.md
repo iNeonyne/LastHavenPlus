@@ -33,6 +33,10 @@ v1.0.0 was published on 2026-11-24. Physical-device gameplay, persistence and sa
 | Device test | Not run | No connected arm64 device/emulator available to this run |
 | Release signing | Configured; verification pending | Existing `lasthavenplus` key restores successfully in run #79; Run #82 printed the expected certificate fingerprint; CI parser fix and a passing verification rerun are pending |
 
+## Agent contribution workflow
+
+Ploy submits each completed assignment from a dedicated feature branch through a pull request. Ploy must not push directly to `main` or edit central tracking files. Chaty reviews the full diff, verifies relevant CI/tests and maintains the repository trackers. **No PR is merged until the user explicitly approves it.** Chaty may continue making separate orchestrator commits directly to `main`.
+
 ## Work tracking
 
 [`ISSUES.md`](ISSUES.md) is now the consolidated, version-controlled backlog containing the open GitHub issues and their checklists. Update it as work progresses. GitHub Issues remain linked discussion/history records. TickTick is no longer used for this repository.
