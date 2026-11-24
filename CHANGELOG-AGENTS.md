@@ -1,3 +1,12 @@
+## 2026-11-25 — Remove legacy addon manager and add durable agent references
+
+- **Role:** Chaty / main orchestrator
+- **Files:** `MainActivity.kt`, deleted `AddonArchiveInspector.kt`, `AddonLibraryRepository.kt`, `AddonManagerDialog.kt`, `AddonArchiveInspectorTest.kt`, new `docs/GECKOVIEW_MIGRATION.md`, new `WORK_LOG.md`, `README.md`, `AGENTS.md`, `AGENT_WORK.md`, `STATUS.md`, `ISSUES.md`, GitHub issues #8, #9, #11, #13, #20 and #23
+- **Change:** Removed the old addon manager UI, repository, archive inspector and tests from beta. Removed its entry/state from MainActivity. Added a curated GeckoView/Mozilla reference guide and an append-only restart journal. Reassigned Ploy to the small menu accessibility task #9, then diagnostics tests #11; future settings work is limited to an isolated URL preference task after the engine/home contract is ready. Reframed #23 as blocked pending the owner's new addon-manager specification.
+- **Why:** The owner will provide a new addon-manager design. Keeping the old implementation or asking agents to reuse it would conflict with that direction. Durable checkpoints prevent lost context after interruption.
+- **Verified:** GitHub beta tree no longer contains the four deleted addon source/test files. MainActivity no longer contains the addon manager state, menu action or dialog call. Mozilla official quick start, architecture, Javadocs, permissions and WebExtension references were checked and summarized in `docs/GECKOVIEW_MIGRATION.md`. CI run #268 (`45496604607`) was pending at last inspection.
+- **Do not redo:** Do not restore the old ZIP manager or invent its replacement. Do not delete unrelated user app data. Do not copy Mozilla's full documentation into the repository; use the official links and curated notes. Do not claim the app compiles until post-removal CI passes.
+- **Follow-ups:** Check run #268; search for any dangling references; Ploy completes #9 then #11; Chaty owns clean beta build and #21; wait for owner addon-manager instructions before new design/assignment.
 ## 2026-11-25 — Plan GeckoView migration, home screen and addon manager placement
 
 - **Role:** Chaty / main orchestrator
