@@ -6,9 +6,9 @@
 
 ## Snapshot
 
-The stable v1.0.0 release is published. The checked-in beta still uses Cefrium and opens the game directly on startup. The owner has approved a major architecture change: replace Cefrium with Mozilla GeckoView, add a simple home screen with Play and Settings, and reuse the existing ZIP addon manager from Settings. These are planned tasks, not implemented features.
+The stable v1.0.0 release is published. The checked-in beta still uses Cefrium and opens the game directly on startup. The owner has approved replacing Cefrium with Mozilla GeckoView and adding a home screen with Play and Settings. The legacy addon manager has been removed; a replacement is blocked until the owner supplies a new specification.
 
-The latest inspected source baseline is not buildable: GitHub Actions run #247 failed Kotlin compilation in `AddonManagerDialog.kt`. Later pushes in this preparation changed documentation and issue tracking only; no application or build source was changed. Unit tests did not run, no test report was produced, and signed APK/signing/ABI checks were skipped. Restore a clean beta baseline before changing the engine.
+The previous source baseline failed compilation in the now-deleted `AddonManagerDialog.kt`. The manager and its app entry points have since been removed. A new beta CI run #268 is pending on the current source after the removal; do not treat the old compile error as resolved until that run completes. Unit tests and signed APK/ABI verification remain unverified.
 
 - **`main` (stable):** `6211cf389b8d9f6ef98aa7818f47643bfdaf2053`
 - **Latest source baseline audited:** `c00740a77e54ff4e26d69512959fb8feb0487a51`.
@@ -30,7 +30,7 @@ The latest inspected source baseline is not buildable: GitHub Actions run #247 f
 | Game launch | `MainActivity` directly creates the Cefrium Compose view and loads the configured LastHaven URL on app launch | Source inspected; no physical ARM64 gameplay evidence |
 | App shell | Current app is game-first and applies immersive mode/keep-screen-on from Activity startup; manifest declares `sensorLandscape` | Home screen and gameplay-only window/orientation behavior are not implemented |
 | Browser profile | Current Cefrium default persistent app-private profile is used; source requests `navigator.storage.persist()` | Cookies/LocalStorage/IndexedDB/service-worker persistence across force-stop/restart is unverified on device |
-| Exit/navigation | Back opens the current compact exit menu; Return/Reload/Settings/Diagnostics/Addon manager/update/Exit paths exist | Source inspected; physical navigation and TalkBack checks unverified |
+| Exit/navigation | Back opens the current compact exit menu; Return/Reload/Settings/Diagnostics/update/Exit paths exist | Addon manager entry removed; physical navigation and TalkBack checks unverified |
 | Settings/usage | APK size, Cefrium profile directory size and app/code cache size displayed separately | Source inspected; physical-device values and GeckoView profile measurement not yet verified |
 | Network usage | Android per-UID RX/TX counters and app-session baseline | Includes game and updater traffic; physical-device readings unverified |
 | Diagnostics | Bounded local rotating log, viewer/share/clear and redaction logic exist | Unit tests have not run on current beta; physical logging/redaction behavior unverified |
@@ -42,8 +42,7 @@ The latest inspected source baseline is not buildable: GitHub Actions run #247 f
 
 - Wrapper setup/validation, JDK 25, Android SDK 37, version metadata and signing-key restore passed.
 - Kotlin compilation failed with the same two source errors:
-  - `AddonManagerDialog.kt:166:77` — unresolved reference `contentDescription`.
-  - `AddonManagerDialog.kt:171:45` — Material3 `Switch` has no parameter named `contentDescription`.
+  - The reported errors were in `AddonManagerDialog.kt`, which has now been removed. The next CI run must establish whether any further compilation errors remain.
 - Unit-test task failed before tests could run; the report upload step found no XML results.
 - Signing-certificate verification, ARM64 ABI verification, APK upload and differential package steps were skipped.
 - Job ID: `138798442495`.
@@ -63,14 +62,14 @@ The latest inspected source baseline is not buildable: GitHub Actions run #247 f
 
 | Issue | Internal owner | Order / status |
 |---|---|---|
-| [#13](https://github.com/iNeonyne/LastHavenPlus/issues/13) | Ploy | Active — fix compile/accessibility blocker |
+| [#9](https://github.com/iNeonyne/LastHavenPlus/issues/9) | Ploy | Active — small exit-menu accessibility follow-up |
 | [#4](https://github.com/iNeonyne/LastHavenPlus/issues/4) | Chaty | Active — clean build and updater tests; #13 currently blocks CI |
 | [#11](https://github.com/iNeonyne/LastHavenPlus/issues/11) | Ploy | Queued after #13 |
-| [#8](https://github.com/iNeonyne/LastHavenPlus/issues/8) | Ploy | Queued after #11; repository tests only |
+| [#8](https://github.com/iNeonyne/LastHavenPlus/issues/8) | — | Superseded; old manager removed, future spec tracked by #23 |
 | [#20](https://github.com/iNeonyne/LastHavenPlus/issues/20) | Ploy | Queued after #8; docs-only GeckoView technical decision record |
 | [#21](https://github.com/iNeonyne/LastHavenPlus/issues/21) | Chaty | Queued after clean #4 baseline and reviewed #20; replace Cefrium |
 | [#22](https://github.com/iNeonyne/LastHavenPlus/issues/22) | Ploy | Queued after #21 integration; home screen / Play / Settings navigation |
-| [#23](https://github.com/iNeonyne/LastHavenPlus/issues/23) | Ploy | Queued after #22; place existing addon manager under Settings |
+| [#23](https://github.com/iNeonyne/LastHavenPlus/issues/23) | Unassigned | Blocked pending owner addon-manager specification |
 | [#19](https://github.com/iNeonyne/LastHavenPlus/issues/19) | Chaty | Deferred until engine and home/navigation migration is stable |
 
 Ploy is an internal repository agent and is not assigned through GitHub's account assignee field; this file is the authoritative internal work order. One active owner per issue/task remains mandatory.
@@ -97,3 +96,10 @@ Ploy is an internal repository agent and is not assigned through GitHub's accoun
 ## Addon manager removal (2026-11-25)
 
 At the owner's request, removed `AddonArchiveInspector.kt`, `AddonLibraryRepository.kt`, `AddonManagerDialog.kt`, `AddonArchiveInspectorTest.kt`, and the Addon manager entry/state from `MainActivity.kt`. No user app-private data was targeted or deleted by these repository commits. The replacement design is intentionally unspecified and must not be recreated until the owner provides instructions. Issue #23 now tracks the future rebuild requirement.
+
+
+## Work log and agent references
+
+- `WORK_LOG.md` is the append-only restart journal. Agents must record scope, starting commit, inspected/changed files, commands, results, commit SHA, limitations and next safe action at every meaningful checkpoint.
+- `docs/GECKOVIEW_MIGRATION.md` contains the official Mozilla reference links and project-specific migration notes. It is a curated guide, not a vendored copy of Mozilla documentation.
+- Current post-removal CI: run #268, ID `45496604607`, on commit `810cecdec2c2d795acc81331272f0751efa3b579`, pending at last inspection.
