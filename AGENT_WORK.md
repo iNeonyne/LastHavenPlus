@@ -16,40 +16,40 @@ This file is the execution order and file-ownership contract for the two project
 - No TickTick. GitHub Issues and `ISSUES.md` are the source of truth.
 - Do not modify the game/client, application ID, established release signing identity or arm64-only target. Do not add automatic update downloading/installation. Do not create tags, releases or promote beta to main without explicit approval.
 - Current beta still contains Cefrium. The approved target is GeckoView; follow issues #20/#21 and do not independently change engine dependencies or begin engine work before the assigned task is ready.
-- Keep the existing WoW addon ZIP library distinct from Gecko WebExtensions. Local enabled flags do not mean game injection or in-game loading.
+- The previous addon manager implementation has been removed. Do not recreate or design a replacement until the owner provides a new written specification. Keep WoW addon packages distinct from Gecko WebExtensions.
 - Physical-device testing remains unverified until performed on real ARM64 hardware.
 
 ## Ploy — exclusive assignment sequence
 
 Work one issue at a time. Stop after each task-branch handoff and wait for Chaty's review and integration before starting the next item.
 
-### ACTIVE — #13 accessibility semantics
-**Goal:** Resolve the Compose compile errors and improve accessible names for launcher actions.
+### ACTIVE — #9 navigation menu accessibility (easy task)
+**Goal:** Finish the small accessibility follow-up for the existing exit/navigation menu. The legacy addon manager UI has been removed, so its old compile errors no longer apply.
 
 Scope:
 - Fix `AddonManagerDialog.kt` semantics using supported Compose APIs; do not pass a `contentDescription` argument to Material3 `Switch`.
 - Add concise semantics only when visible text does not already provide a suitable accessible name.
-- Check the menu, Retry, Reload, update/download, Settings, diagnostics, addon manager and Exit controls.
+- Check Return to game, Reload, Settings, diagnostics, update and Exit controls. Do not add an addon manager control.
 - Keep the visual design and behavior unchanged except where required for accessibility.
 - Add/update automated tests where the current test setup supports them.
 
-File boundary: Compose UI files needed for #13 and directly related tests. Do not modify Gradle/engine configuration, repository logic, central trackers or unrelated UI.
+File boundary: `MainActivity.kt` menu semantics and directly related UI tests only. Do not modify Gradle/engine configuration, updater logic, diagnostics internals, central trackers or unrelated UI.
 
-Acceptance: current compiler errors are fixed, relevant checks pass, no duplicate screen-reader labels are introduced, and TalkBack/focus-order verification remains pending until a physical ARM64 device is tested.
+Acceptance: each menu action has an accessible name without redundant announcements; relevant checks pass. TalkBack/focus-order verification remains pending until a physical ARM64 device is tested.
 
 ### QUEUED — #11 diagnostics tests
-Start only after #13 is integrated into `beta`.
+Start only after #9 is integrated into `beta`.
 
 Scope: tests for redaction formats, bounded log size/rotation and safe failure-path logging. Do not change the logging architecture or collect additional sensitive data unless a reproducible test exposes a specific defect.
 
 File boundary: diagnostics logger and its unit tests only. Do not touch engine migration or screen navigation.
 
-### QUEUED — #8 addon repository tests
-Start only after #11 is integrated into `beta`.
+### QUEUED — #11 diagnostics tests
+Start after #9 is integrated into `beta`.
 
-Scope: duplicate imports, replacement confirmation/rollback, storage limits, export round-trip, index recovery and failed writes using temporary directories and deterministic ZIP fixtures.
+Scope: tests for redaction formats, bounded log size/rotation and safe failure-path logging. Do not change logging architecture or collect additional sensitive data.
 
-File boundary: `AddonLibraryRepository.kt` and repository-focused tests only. Preserve local enabled flags as library metadata. No game injection, engine hooks, Gecko WebExtensions, online catalog or UI redesign.
+File boundary: diagnostics logger and unit tests only.
 
 ### QUEUED — #20 GeckoView technical decision record
 Start only after #8 is integrated into `beta`.
@@ -71,14 +71,8 @@ File boundary: screen/navigation UI (`MainActivity.kt`, `HomeScreen.kt`, `AppNav
 
 Acceptance: home appears on fresh launch; Play opens game; Settings works without initializing a game session; home/game transitions do not reload the game; relevant navigation tests pass.
 
-### QUEUED — #23 move existing addon manager into Settings
-Start only after #22 is integrated into `beta`.
-
-Scope: place the current `AddonManagerDialog` behind the Settings destination; preserve existing repository data and reuse `AddonArchiveInspector.kt`, `AddonLibraryRepository.kt`, `AddonManagerDialog.kt` and tests. Do not reset or rename `filesDir/addon-library`.
-
-File boundary: Settings UI and addon manager presentation/navigation only. Avoid editing the archive inspector/repository unless a separately approved defect is found. No game injection or Gecko WebExtension conversion.
-
-Acceptance: packages already stored by the current beta remain visible; import/export/replace/remove remain explicit; the UI clearly labels local library state and never claims addons were loaded by the game.
+### BLOCKED — #23 addon manager rebuild
+Do not start this task until the owner provides a new written specification. The previous ZIP addon manager implementation, tests and app entry point have been deleted. Do not recreate its old features or storage format based on historical documentation.
 
 ## Chaty — active and queued
 
@@ -108,3 +102,7 @@ Ploy provides Chaty:
 - Known limitations, unverified behavior and any follow-up decision.
 
 Ploy stops after handing off. Chaty reviews the full diff, reruns or verifies required checks, integrates accepted work directly into `beta`, updates central trackers and only then advances the assignment queue.
+
+## Easy work queued for Ploy
+
+After #9 and #11, Ploy may take #6's straightforward, non-engine settings work only after Chaty has integrated #21 and #22. The initial isolated part is editable HTTPS game URL preference validation/persistence with unit tests; do not implement Gecko profile clearing, cache deletion, version reporting or other engine-specific controls until the pinned GeckoView API is reviewed. No addon-manager work until the owner specification arrives.
