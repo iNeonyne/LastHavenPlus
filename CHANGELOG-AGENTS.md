@@ -1,3 +1,13 @@
+## 2026-11-24 — Begin local ZIP addon manager implementation
+
+- **Role:** Main integrator / Android
+- **Files:** `STATUS.md`, GitHub issue #8
+- **Change:** User confirmed they have explicit permission from the LastHaven operator for custom addon integration. Updated issue #8 and STATUS to reflect that authorization is confirmed, while requiring the exact approved scope/API contract before implementing game-runtime integration. Began the local ZIP library work as an independent first milestone.
+- **Why:** Authorization has been confirmed by the project owner, but the implementation still needs to follow the operator-approved integration method rather than assume the previously proposed XHR/worker/OPFS pipeline is the correct or authorized interface.
+- **Verified:** User confirmation received; issue #8 and STATUS updated. No app code has been changed yet in this entry.
+- **Do not redo:** Do not treat general permission as proof that a specific injection technique is approved or compatible. Do not touch Cefrium profile data or protected runtime internals outside the authorized scope.
+- **Follow-ups:** Implement secure ZIP inspection, .toc metadata parsing, local storage and management UI; request the exact operator-approved integration contract before runtime integration.
+
 ## 2026-11-24 — Research browser addon integration and gate game injection
 
 - **Role:** Main integrator / Cefrium / architecture
