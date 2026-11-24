@@ -149,30 +149,34 @@ object AppUpdater {
 
                         val patch = runCatching {
                             manifest.optJSONObject("patch")?.let { patchJson ->
-                            val patchName = patchJson.getString("name")
-                            val patchAsset = assetByName[patchName]
-                                ?: error("Release is missing differential patch $patchName")
-                            val patchUrl = requireGithubUrl(patchAsset.getString("browser_download_url"))
-                            val patchSha = requireSha256(patchJson.getString("sha256"))
-                            val patchApiDigest = patchAsset.optString("digest")
-                            if (patchApiDigest.startsWith("sha256:")) {
-                                check(patchApiDigest.removePrefix("sha256:").equals(patchSha, true)) {
-                                    "GitHub patch digest does not match the update manifest"
+                                val patchName = patchJson.getString("name")
+                                val patchAsset = assetByName[patchName]
+                                    ?: error("Release is missing differential patch $patchName")
+                                val patchUrl = requireGithubUrl(
+                                    patchAsset.getString("browser_download_url"),
+                                )
+                                val patchSha = requireSha256(patchJson.getString("sha256"))
+                                val patchApiDigest = patchAsset.optString("digest")
+                                if (patchApiDigest.startsWith("sha256:")) {
+                                    check(patchApiDigest.removePrefix("sha256:").equals(patchSha, true)) {
+                                        "GitHub patch digest does not match the update manifest"
+                                    }
                                 }
-                            }
-                            val patchSize = patchJson.getLong("size")
-                            check(patchSize in 1..MAX_PATCH_BYTES) { "Differential patch size is invalid" }
-                            AppUpdatePatch(
-                                downloadUrl = patchUrl,
-                                sha256 = patchSha,
-                                size = patchSize,
-                                baseVersion = patchJson.getString("fromVersion"),
-                                baseVersionCode = patchJson.getLong("fromVersionCode"),
-                                baseSha256 = requireSha256(patchJson.getString("fromSha256")),
-                            ).takeIf {
-                                it.baseVersion == currentVersion &&
-                                    it.baseVersionCode == packageInfo.longVersionCode
-                            }
+                                val patchSize = patchJson.getLong("size")
+                                check(patchSize in 1..MAX_PATCH_BYTES) {
+                                    "Differential patch size is invalid"
+                                }
+                                AppUpdatePatch(
+                                    downloadUrl = patchUrl,
+                                    sha256 = patchSha,
+                                    size = patchSize,
+                                    baseVersion = patchJson.getString("fromVersion"),
+                                    baseVersionCode = patchJson.getLong("fromVersionCode"),
+                                    baseSha256 = requireSha256(patchJson.getString("fromSha256")),
+                                ).takeIf {
+                                    it.baseVersion == currentVersion &&
+                                        it.baseVersionCode == packageInfo.longVersionCode
+                                }
                             }
                         }.getOrNull()
 
