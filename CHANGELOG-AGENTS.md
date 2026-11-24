@@ -454,3 +454,15 @@ Entry format:
 - **Verified:** Run #302 failure cause is explicit in its Gradle log; official Android Gradle Plugin docs support the minor API compile SDK declaration. Run #304 on commit `b0d1b154e5eb49c8ef72909e2ba2f4b8fdbddf3d` was pending at this checkpoint.
 - **Not verified:** SDK 37.2 package installation, app compilation, tests, release signing, ABI, artifact contents, GeckoView runtime/profile behavior and physical ARM64 gameplay.
 - **Follow-up:** Inspect run #304; if it clears the build gate, begin issue #22. No main promotion, tag or release.
+
+## 2026-11-25 — Align project documentation with the verified beta state
+
+- **Role:** Chaty / main orchestrator
+- **Files:** `README.md`, `AGENTS.md`, `AGENT_WORK.md`, `STATUS.md`, `ISSUES.md`, `CHANGELOG.md`, `docs/GECKOVIEW_MIGRATION.md`, `CHANGELOG-AGENTS.md`, `WORK_LOG.md`
+- **Change:** Reorganized the project README and aligned the agent rules, work assignment, issue index, status report, release changelog and GeckoView guide with the current beta source and verified CI evidence. Clarified beta/main responsibilities, Chaty's sole integration role, the no-PR workflow, TickTick's supplementary role and the addon-manager hold. Marked physical-device behavior unverified.
+- **Why:** The documentation contained conflicting Cefrium-era instructions, stale task assignments and verification claims that did not match the current GeckoView source or CI run.
+- **Verified:** Inspected the beta documentation, source references, branch state and successful Actions run #308. Run #308 built and tested commit `82590635e77c7abfedcaa6fd1fa4ad8c3b5de469`; it is not evidence for later workflow commits or physical-device behavior. The Gradle Wrapper is already present and pinned to Gradle 9.7.1.
+- **Not verified:** Current workflow optimization run, physical ARM64 gameplay/profile persistence, home-screen implementation and runtime updater behavior.
+- **Do not redo:** Do not add a PR-based workflow, change `main`, close issues for documentation-only work, or claim physical-device verification from CI.
+- **Follow-ups:** Inspect the CI optimization run; review Ploy's #22 handoff; complete physical ARM64 verification; keep STATUS synchronized with exact current commit and CI evidence.
+
