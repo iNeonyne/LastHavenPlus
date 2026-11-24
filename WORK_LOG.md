@@ -76,3 +76,10 @@
 - **Verified assignments:** Ploy #9 active (small menu accessibility), #11 queued, #20 queued documentation research, #22 queued after #21; #23 blocked awaiting owner requirements. Chaty owns #4 and #21.
 - **CI:** run #281, ID `45497088290`, on commit `f8c57eefe73b220340334ae217dc309b2828dc72`, pending at inspection. Runs #268, #278 and #279 were cancelled by subsequent pushes and are not test evidence.
 - **Next safe action:** inspect the final current beta CI run and its logs. If build/tests fail, fix only confirmed failures, respecting Ploy's #9 file ownership. Do not begin GeckoView production integration before the clean baseline and reviewed #20 decision record.
+
+
+### 2026-11-25 — Mandatory logging rule propagated to agent instructions
+
+- **Action:** Updated `AGENTS.md` and `AGENT_WORK.md` to require an append-only `WORK_LOG.md` checkpoint after every meaningful inspection, change, test, commit, handoff or interruption. Each entry must include exact commit, paths, commands/results, limitations and next safe action.
+- **Reason:** Ensure another agent can resume safely after an unexpected stop without relying on chat history.
+- **Next safe action:** Check the current beta head and CI. No tests are claimed from cancelled runs.
