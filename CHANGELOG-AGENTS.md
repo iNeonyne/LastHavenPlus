@@ -1,3 +1,13 @@
+## 2026-11-24 — Rewrite README for the current v1.0.0 project state
+
+- **Role:** Main integrator / documentation
+- **Files:** `README.md`
+- **Change:** Reorganized the README around the app's purpose, supported Android/ARM64 target, implemented features, current v1.0.0 release, manual updater behavior, build requirements, data handling and repository workflow. Removed stale wording that called v1.0.0 an unpublished draft. Explicitly documented that the addon manager currently stores and manages ZIP packages locally and does not inject them into the game.
+- **Why:** Make the README useful to users and contributors while distinguishing implemented behavior from planned or unverified work.
+- **Verified:** Confirmed the published v1.0.0 GitHub Release and its two assets through the repository Releases API; checked the current app Gradle configuration and CI workflow. Documentation-only change; no app build or tests were run for this edit.
+- **Do not redo:** Keep detailed implementation state and verification evidence in STATUS.md; keep task scope in ISSUES.md rather than duplicating the backlog in README.
+- **Follow-ups:** Refresh README feature/build/release claims whenever the implementation, supported toolchain or release process changes.
+
 ## 2026-11-24 — Move project task tracking into the repository
 
 - **Role:** Main integrator / documentation
