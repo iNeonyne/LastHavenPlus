@@ -13,12 +13,13 @@ import java.io.RandomAccessFile
  */
 internal object BsdiffPatch {
     fun apply(oldFile: File, patchFile: File, outputFile: File, maxOutputBytes: Long): Long {
-        require(oldFile.isFile && oldFile.canRead()) { "Installed APK is not readable" }
-        require(patchFile.isFile && patchFile.length() >= HEADER_SIZE) { "Invalid patch file" }
-        require(maxOutputBytes > 0) { "Invalid output size limit" }
-
+        // Never leave an old partial APK at the output path when validation fails.
         outputFile.delete()
         try {
+            require(oldFile.isFile && oldFile.canRead()) { "Installed APK is not readable" }
+            require(patchFile.isFile && patchFile.length() >= HEADER_SIZE) { "Invalid patch file" }
+            require(maxOutputBytes > 0) { "Invalid output size limit" }
+
             val header = ByteArray(HEADER_SIZE)
             FileInputStream(patchFile).use { readFully(it, header) }
             require(header.copyOfRange(0, 8).contentEquals(MAGIC)) {
