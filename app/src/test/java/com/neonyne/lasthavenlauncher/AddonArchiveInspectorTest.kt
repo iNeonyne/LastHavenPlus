@@ -105,6 +105,30 @@ class AddonArchiveInspectorTest {
         assertRejected(archive, "CRC")
     }
 
+
+    @Test
+    fun rejectsZip64EndOfCentralDirectoryLocator() {
+        val archive = createZip("Questie/Questie.toc" to "## Title: Questie\\n")
+        val bytes = archive.readBytes()
+        var eocd = -1
+        for (index in bytes.size - 22 downTo 0) {
+            if (bytes[index] == 0x50.toByte() && bytes[index + 1] == 0x4b.toByte() &&
+                bytes[index + 2] == 0x05.toByte() && bytes[index + 3] == 0x06.toByte()
+            ) {
+                eocd = index
+                break
+            }
+        }
+        assertTrue("ZIP end record should exist", eocd >= 0)
+        val locator = byteArrayOf(
+            0x50, 0x4b, 0x06, 0x07, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        )
+        val modified = bytes.copyOfRange(0, eocd) + locator + bytes.copyOfRange(eocd, bytes.size)
+        archive.writeBytes(modified)
+
+        assertRejected(archive, "ZIP64")
+    }
+
     private fun assertRejected(file: File, expectedMessage: String) {
         try {
             AddonArchiveInspector.inspect(file)
