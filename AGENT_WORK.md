@@ -7,7 +7,7 @@ This file is the execution order and file-ownership contract for the two project
 - **Chaty** — main orchestrator. Owns issue intake, priorities, central docs/status, review, CI/release coordination and direct pushes to `beta`. `main` is stable.
 
 ## Rules
-- Read `AGENTS.md`, `README.md`, `STATUS.md`, `ISSUES.md` and this file before starting a task.
+- Read `AGENTS.md`, `README.md`, `STATUS.md`, `ISSUES.md`, `WORK_LOG.md` and this file before starting a task; read `docs/GECKOVIEW_MIGRATION.md` before GeckoView work.
 - `beta` is the only development/integration branch. `main` is stable.
 - Parallel work is allowed only on separate issues and non-overlapping files. Never work on the same issue concurrently.
 - Ploy creates a task branch from latest `beta`, pushes only to that task branch and hands Chaty its branch name, exact commit SHA, changed files, tests/results and limitations. Ploy never pushes to `beta` or `main`.
