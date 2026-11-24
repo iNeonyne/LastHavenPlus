@@ -14,13 +14,14 @@
 | Cefrium dependency | Pinned | SDK / Compose / plugin 0.21.0 |
 | Chromium revision | Documented | 156.0.8078.96, CEF branch 8078 |
 | Maven registry | Configured | Codeberg mirror `https://codeberg.org/api/packages/cefrium/maven` |
-| ABI | Configured | arm64-v8a only |
+| ABI | Verified in CI | APK contains arm64-v8a and no x86, x86_64 or armeabi-v7a libraries |
 | Immersive host | Implemented, unverified | Fullscreen flags, landscape sensor orientation, screen stays awake |
 | Loading / retry | Implemented, unverified | Compose loading state, main-frame load error and renderer termination retry |
 | Persistent storage request | Implemented, unverified | Calls `navigator.storage.persist()` after the first completed document load |
 | Browser profile | Default persistent | Cefrium default profile stores cookies, LocalStorage, IndexedDB, service workers and cache in app-private `app_cefrium`; not the Android cache directory |
 | Remote debugging | Debug builds only | `Cefrium.setRemoteDebuggingEnabled` enabled from Application.onCreate before first browser creation |
-| CI build | Pending | API 37 package corrected to `platforms;android-37.0`; Gradle build pending |
+| CI build | **Passing** | Run #15, commit `3d4e1a0`; build, unit-test task, ABI verification and artifact upload all succeeded |
+| Debug APK artifact | Available | `lasthavenlauncher-debug-arm64`, run #15; artifact expires 2026-12-08 |
 | Device test | Not run | No connected arm64 device/emulator available to this run |
 | Release signing | Not configured | Release key must be generated/backed up before first distributed release |
 
@@ -53,7 +54,7 @@ The web fetch of the game URL returns only “Loading... Please enable JavaScrip
 
 | Owner | Surface | State |
 |---|---|---|
-| Main integrator | Greenfield scaffold + CI | Initial implementation committed; CI pending |
+| Main integrator | CI verification and status reconciliation | Complete |
 
 ## Blockers
 
@@ -77,8 +78,7 @@ No performance changes have been made. Establish baseline numbers after gameplay
 
 ## Next actions
 
-1. Confirm the GitHub Actions debug build passes; fix any build errors.
-2. Install the arm64 APK on a physical phone and confirm LastHaven loads.
-3. Run the web capability checklist in Cefrium and Chrome on the same phone.
-4. Confirm persistent storage result and app update/data retention.
-5. Add minimal settings after the playable path is reliable; preserve the cache/data distinction.
+1. Install the arm64 CI APK on a physical phone and confirm LastHaven loads.
+2. Run the web capability checklist in Cefrium and Chrome on the same phone.
+3. Confirm persistent storage result and app update/data retention.
+4. Add minimal settings after the playable path is reliable; preserve the cache/data distinction.
