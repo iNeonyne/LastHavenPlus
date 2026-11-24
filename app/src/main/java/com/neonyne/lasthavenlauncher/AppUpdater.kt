@@ -161,7 +161,10 @@ object AppUpdater {
                                 baseVersion = patchJson.getString("fromVersion"),
                                 baseVersionCode = patchJson.getLong("fromVersionCode"),
                                 baseSha256 = requireSha256(patchJson.getString("fromSha256")),
-                            )
+                            ).takeIf {
+                                it.baseVersion == currentVersion &&
+                                    it.baseVersionCode == packageInfo.longVersionCode
+                            }
                         }
 
                         UpdateCheckResult.Available(
