@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<full-backup-content>
-    <include domain="sharedpref" path="." />
-    <include domain="database" path="." />
-    <include domain="file" path="." />
-    <!-- Exclude Cefrium engine data - it's large and device-specific -->
-    <exclude domain="file" path="app_cefrium" />
-</full-backup-content>
