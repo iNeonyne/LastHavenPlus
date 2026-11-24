@@ -43,18 +43,11 @@ Scope: tests for redaction formats, bounded log size/rotation and safe failure-p
 
 File boundary: diagnostics logger and its unit tests only. Do not touch engine migration or screen navigation.
 
-### QUEUED — #11 diagnostics tests
-Start after #9 is integrated into `beta`.
-
-Scope: tests for redaction formats, bounded log size/rotation and safe failure-path logging. Do not change logging architecture or collect additional sensitive data.
-
-File boundary: diagnostics logger and unit tests only.
-
 ### QUEUED — #20 GeckoView technical decision record
-Start after #11 and the small, isolated #6 settings preparation task are integrated, and after Chaty confirms the beta build baseline.
+Start after #11 is integrated and Chaty confirms the beta build baseline. The initial reference guide already exists at `docs/GECKOVIEW_MIGRATION.md`; Ploy verifies and expands it with exact stable-version/API/toolchain evidence, documentation only.
 
 Scope:
-- Create `docs/GECKOVIEW_MIGRATION.md` only; no production source, Gradle or manifest changes.
+- Update `docs/GECKOVIEW_MIGRATION.md` only; no production source, Gradle or manifest changes.
 - Verify current stable GeckoView artifact/version and official Mozilla API documentation.
 - Document runtime/session/view lifecycle, profile persistence and Cefrium data portability risks, navigation/crash/permission/prompt/media/fullscreen/file delegates, target game API requirements, ARM64/AAR packaging, APK-size measurement and CI/device test plan.
 - Clearly distinguish WoW addon ZIP/`.toc` packages from Gecko WebExtensions.
