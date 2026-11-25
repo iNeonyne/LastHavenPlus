@@ -33,8 +33,9 @@ The repository owner makes final product and release decisions. Chaty is the mai
 
 ## Chaty — ACTIVE: release-workflow review (#31 / PR #32)
 
-**PR:** https://github.com/iNeonyne/LastHavenPlus/pull/32  
-**Candidate head at review:** `919486d98ef8862ffbb042139589926d617803d4`
+**Superseded PR:** https://github.com/iNeonyne/LastHavenPlus/pull/32  
+**Replacement PR:** https://github.com/iNeonyne/LastHavenPlus/pull/34  
+**Candidate head:** `751102ac2e00b4adb10c0ab8b34ac3017c5f6311`
 
 Required before merge:
 - Bound release-list API response bytes, not only elapsed time.
@@ -44,11 +45,11 @@ Required before merge:
 - Obtain successful exact-head unsigned PR build/unit-test CI.
 - Retain final signed release, signer, ARM64 and asset-count verification.
 
-PR #32's exact-head Actions runs #348 and #349 were cancelled. No passing validation is claimed.
+PR #32's exact-head Actions runs #348 and #349 were cancelled; it is superseded. PR #34 run #351 is in progress. No passing validation is claimed yet.
 
 ## Chaty — ACTIVE: documentation reconciliation (#29)
 
-Update README, STATUS, ISSUES, AGENT_WORK, CHANGELOG-AGENTS and WORK_LOG against current beta, current source, exact CI evidence and published v2.0.0 release metadata. Preserve historical changelog entries. Keep #29 open until the documentation PR is merged and verified.
+Update README, STATUS, ISSUES, AGENT_WORK, CHANGELOG-AGENTS, WORK_LOG and GeckoView migration notes against current beta, current source, exact CI evidence and published v2.0.0 release metadata. Preserve historical changelog entries. Keep #29 open until the documentation PR is merged and verified.
 
 ## Chaty — PLANNED: addon manager integration (#23)
 
