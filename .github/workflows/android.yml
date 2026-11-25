@@ -382,8 +382,8 @@ jobs:
             python3 .github/scripts/bounded_release_input.py --stdin - "$RELEASES_JSON" 4194304; then
             if jq -e 'type == "array"' "$RELEASES_JSON" >/dev/null 2>&1; then
               PREVIOUS_RELEASE="$(jq -c --arg current "$RELEASE_TAG" \
-                '[.[] | select(.draft == false and .prerelease == false and .tag_name != $current)][0] // empty' \
-                "$RELEASES_JSON")"
+                '[.[] | select(type == "object" and .draft == false and .prerelease == false and (.tag_name | type == "string") and .tag_name != $current)][0] // empty' \
+                "$RELEASES_JSON" 2>/dev/null || true)"
             else
               echo "::warning::Previous-release API returned malformed data; publishing the full APK only."
               PREVIOUS_RELEASE=""
@@ -394,9 +394,9 @@ jobs:
           fi
 
           if [[ -n "$PREVIOUS_RELEASE" ]]; then
-            PREVIOUS_TAG="$(jq -r '.tag_name // empty' <<< "$PREVIOUS_RELEASE")"
-            PREVIOUS_APK_URL="$(jq -r '.assets[]? | select(.name == "lasthavenplus-arm64.apk") | .browser_download_url' <<< "$PREVIOUS_RELEASE" | head -n 1)"
-            PREVIOUS_MANIFEST_URL="$(jq -r '.assets[]? | select(.name == "lasthavenplus-update.json") | .browser_download_url' <<< "$PREVIOUS_RELEASE" | head -n 1)"
+            PREVIOUS_TAG="$(jq -r '.tag_name // empty' <<< "$PREVIOUS_RELEASE" 2>/dev/null || true)"
+            PREVIOUS_APK_URL="$(jq -r '.assets[]? | select(.name == "lasthavenplus-arm64.apk") | .browser_download_url' <<< "$PREVIOUS_RELEASE" 2>/dev/null | head -n 1 || true)"
+            PREVIOUS_MANIFEST_URL="$(jq -r '.assets[]? | select(.name == "lasthavenplus-update.json") | .browser_download_url' <<< "$PREVIOUS_RELEASE" 2>/dev/null | head -n 1 || true)"
 
             if [[ "$PREVIOUS_TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ &&
               -n "$PREVIOUS_APK_URL" && "$PREVIOUS_APK_URL" != "null" &&
@@ -408,12 +408,13 @@ jobs:
                 BASE_VERSION="$(jq -r '.version // empty' "$RUNNER_TEMP/previous-manifest.json" 2>/dev/null || true)"
                 BASE_VERSION_CODE="$(jq -r '.versionCode // empty' "$RUNNER_TEMP/previous-manifest.json" 2>/dev/null || true)"
                 BASE_EXPECTED_SHA="$(jq -r '.apk.sha256 // empty' "$RUNNER_TEMP/previous-manifest.json" 2>/dev/null || true)"
-                BASE_SHA="$(sha256sum "$RUNNER_TEMP/previous.apk" | awk '{print $1}')"
+                BASE_SHA="$(sha256sum "$RUNNER_TEMP/previous.apk" 2>/dev/null | awk '{print $1}' || true)"
 
                 if [[ "$BASE_VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ &&
                   "$PREVIOUS_TAG" == "v$BASE_VERSION" &&
                   "$BASE_VERSION_CODE" =~ ^[0-9]+$ &&
                   "$BASE_EXPECTED_SHA" =~ ^[0-9a-fA-F]{64}$ &&
+                  "$BASE_SHA" =~ ^[0-9a-fA-F]{64}$ &&
                   "$BASE_SHA" == "$BASE_EXPECTED_SHA" ]]; then
 
                   BASE_CERT_OUTPUT="$("$ANDROID_HOME/build-tools/37.0.0/apksigner" verify --print-certs "$RUNNER_TEMP/previous.apk" 2>/dev/null || true)"
@@ -436,21 +437,28 @@ jobs:
                       if timeout 120s bsdiff "$RUNNER_TEMP/previous.apk" "$TARGET_APK" "$RUNNER_TEMP/update.bsdiff" &&
                         timeout 60s bspatch "$RUNNER_TEMP/previous.apk" "$RUNNER_TEMP/reconstructed.apk" "$RUNNER_TEMP/update.bsdiff" &&
                         [[ "$(sha256sum "$RUNNER_TEMP/reconstructed.apk" | awk '{print $1}')" == "$TARGET_SHA" ]]; then
-                        PATCH_SIZE="$(stat -c '%s' "$RUNNER_TEMP/update.bsdiff")"
-                        if (( PATCH_SIZE * 10 < TARGET_SIZE * 9 )); then
-                          cp "$RUNNER_TEMP/update.bsdiff" "release-assets/$PATCH_NAME"
-                          PATCH_SHA="$(sha256sum "release-assets/$PATCH_NAME" | awk '{print $1}')"
-                          PATCH_JSON="$(jq -n \
-                            --arg name "$PATCH_NAME" \
-                            --arg fromVersion "$BASE_VERSION" \
-                            --arg fromSha256 "$BASE_SHA" \
-                            --arg sha256 "$PATCH_SHA" \
-                            --argjson fromVersionCode "$BASE_VERSION_CODE" \
-                            --argjson size "$PATCH_SIZE" \
-                            '{name:$name, fromVersion:$fromVersion, fromVersionCode:$fromVersionCode, fromSha256:$fromSha256, sha256:$sha256, size:$size}')"
-                          echo "Verified differential patch: $PATCH_SIZE bytes versus $TARGET_SIZE-byte full APK."
+                        if PATCH_SIZE="$(stat -c '%s' "$RUNNER_TEMP/update.bsdiff" 2>/dev/null)" &&
+                          [[ "$PATCH_SIZE" =~ ^[0-9]+$ ]] &&
+                          (( PATCH_SIZE > 0 && PATCH_SIZE * 10 < TARGET_SIZE * 9 )); then
+                          if cp "$RUNNER_TEMP/update.bsdiff" "release-assets/$PATCH_NAME" &&
+                            PATCH_SHA="$(sha256sum "release-assets/$PATCH_NAME" 2>/dev/null | awk '{print $1}')" &&
+                            [[ "$PATCH_SHA" =~ ^[0-9a-fA-F]{64}$ ]] &&
+                            PATCH_JSON="$(jq -n \
+                              --arg name "$PATCH_NAME" \
+                              --arg fromVersion "$BASE_VERSION" \
+                              --arg fromSha256 "$BASE_SHA" \
+                              --arg sha256 "$PATCH_SHA" \
+                              --argjson fromVersionCode "$BASE_VERSION_CODE" \
+                              --argjson size "$PATCH_SIZE" \
+                              '{name:$name, fromVersion:$fromVersion, fromVersionCode:$fromVersionCode, fromSha256:$fromSha256, sha256:$sha256, size:$size}')"; then
+                            echo "Verified differential patch: $PATCH_SIZE bytes versus $TARGET_SIZE-byte full APK."
+                          else
+                            rm -f "release-assets/$PATCH_NAME"
+                            PATCH_JSON="null"
+                            echo "::warning::Could not stage or describe the optional differential patch; publishing full APK only."
+                          fi
                         else
-                          echo "Differential patch is not at least 10% smaller; publishing full APK only."
+                          echo "Differential patch is not at least 10% smaller or its size could not be verified; publishing full APK only."
                         fi
                       else
                         echo "::warning::Differential patch generation or reconstruction failed; publishing full APK only."
