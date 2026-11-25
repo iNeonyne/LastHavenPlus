@@ -13,7 +13,7 @@
 - Beta uses GeckoView 160 and is ARM64-only. The application ID is `com.neonyne.lasthavenlauncher`.
 - Updater hardening from PR #30 is integrated in beta at `1d6c1ec`.
 - Beta HEAD `1f300b9` is a documentation-only commit after the integrated app source commit. The intervening commits do not change application source.
-- PR #32 was superseded. Replacement PR [#34](https://github.com/iNeonyne/LastHavenPlus/pull/34) adds hard streamed byte limits and URL validation for optional differential inputs; exact-head CI is running. PR #34 is not integrated.
+- PR #32 was superseded. Replacement PR [#34](https://github.com/iNeonyne/LastHavenPlus/pull/34) adds streamed byte limits, HTTPS host validation, release-tag validation and regression tests. First exact-head run #351 passed; latest head is being checked in run #352. PR #34 is not integrated.
 - The owner approved resuming the supplied addon manager. Issue #23 records the audit and scope; no manager code is integrated.
 - No physical ARM64 device verification is claimed.
 
@@ -28,7 +28,7 @@
 | Updater PR validation | [Run #345](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45521843766) passed unsigned release build and unit tests for the exact PR head |
 | Signed beta validation | [Run #346](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45522408962) passed for exact integrated commit `1d6c1ec` |
 | Release workflow retry | Run #347 was cancelled during optional differential packaging; the v2.0.0 GitHub Release is now independently confirmed published with the two assets listed above |
-| PR #32 validation | PR #32 runs #348/#349 were cancelled; replacement PR #34 run [#351](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45527186955) is in progress for exact head `751102ac2e00b4adb10c0ab8b34ac3017c5f6311` |
+| Release workflow validation | PR #32 runs #348/#349 were cancelled and the PR was superseded. Replacement PR #34 run [#351](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45527186955) passed for superseded head `751102ac...`; latest head `3103a0c64a4dff784ed019efc35900076f07aea8` is being validated in [run #352](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45527536278) |
 | Physical device | Not performed / unverified |
 
 Run #346 verified the signed optimized release build, unit tests, established signing certificate, ARM64-only package and artifact upload for the exact beta integration commit `1d6c1ec`. It does not verify later documentation-only beta HEAD `1f300b9`. Do not describe CI as physical-device verification.
@@ -53,7 +53,7 @@ Run #346 verified the signed optimized release build, unit tests, established si
 
 ### P0 — release workflow and updater
 
-- [ ] Review PR #34 and exact-head CI. The superseded PR #32 lacked hard byte caps; PR #34 adds bounded streaming reads and regression tests. Do not merge until exact-head CI passes.
+- [ ] Review PR #34 and exact-head CI. The superseded PR #32 lacked hard byte caps; PR #34 adds bounded streaming reads, release-tag validation and download/redirect tests. Do not merge until the latest exact-head CI passes.
 - [ ] Complete updater regression coverage tracked in #4: malformed manifests, digest mismatch, incompatible base APK, corrupted/truncated patches and interrupted downloads at the download boundary.
 - [ ] Verify pending installer recovery, delta/full fallback and same-key in-place update on physical ARM64 hardware (#5).
 
@@ -95,7 +95,7 @@ Run #346 verified the signed optimized release build, unit tests, established si
 | Owner | Issue/task | Scope |
 |---|---|---|
 | Chaty | #29 documentation reconciliation | README, STATUS, AGENT_WORK, CHANGELOG-AGENTS and WORK_LOG; PR to beta |
-| Chaty | #31 / PR #32 | Review release-workflow corrections; require bounded response sizes and exact-head CI |
+| Chaty | #31 / PR #34 | Review bounded release inputs and exact-head CI; supersedes PR #32 |
 | Chaty | #23 planning | Confirm exact GeckoView 160 extension API feasibility, then split into non-overlapping assignments |
 | Owner/device tester | #5 | Physical ARM64 gameplay, profile persistence and updater installation verification |
 | Ploy | No active assignment | Wait for an explicit issue-scoped assignment |
