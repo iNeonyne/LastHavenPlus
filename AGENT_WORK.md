@@ -9,13 +9,13 @@ The repository owner makes final product and release decisions. Chaty is the mai
 
 ## Active assignment
 
-### Chaty — documentation reconciliation (#29)
+### Chaty — repository housekeeping and documentation reconciliation
 
-**Branch:** `chaty/docs-reconciliation-v2.1`  
-**Base:** current beta at `dffca7e67ef4a8dd1bec8777c2c4c8b8a51a0210`  
-**Scope:** reconcile README, STATUS, ISSUES, changelog, migration notes and work records against merged PR #43, current source, exact CI evidence and owner-provided device-test status.
+**Branch:** `chaty/housekeeping-doc-reconciliation`  
+**Base:** beta at `854fce1b1e2989cb012ebf5a15d196d91ff7cad7`  
+**Scope:** reconcile status/backlog/agent instructions with merged PRs #46/#47, update stale assignment and release evidence, and align addon-manager hold language across documentation.
 
-**Exclusions:** no application source, Gradle, signing, release workflow, game client or addon-manager implementation changes. Do not close physical test issues without evidence. Do not promote or publish from this task.
+**Exclusions:** no application source, Gradle, signing, release workflow, game client or addon-manager implementation changes. Do not close physical test issues without evidence. Do not publish a release or change `main`.
 
 **Verification:** docs-only diff review, validate links and ensure no claim exceeds source/CI/device evidence. PR targets beta; Chaty reviews and merges.
 
