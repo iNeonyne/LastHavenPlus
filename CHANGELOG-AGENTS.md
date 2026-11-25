@@ -590,3 +590,12 @@ Entry format:
 - **Branch audit:** 27 branches were returned, including two protected working branches (`main`, `beta`), a legacy backup with no common ancestor, superseded task branches and prior housekeeping branches. No open PRs were found. Several branches contain unique commits or diverged history and were not deleted. The available GitHub integration exposes no branch-delete action; do not simulate deletion by force-moving refs.
 - **Scope:** backlog and work-history documentation plus GitHub issue metadata only. No app source, Gradle, CI workflow, signing, release publication or game changes.
 - **Verification:** exact branch comparisons were inspected for the Chaty task branches. Physical-device testing remains unverified. No application tests were run for this documentation-only update.
+
+
+## 2026-11-25 — Close completed Home implementation and clarify remaining UI verification
+
+- **Issue #22:** closed as completed after verifying the Home/Play/Settings implementation in PR #26 and the later v2.1.0 navigation changes in PR #43. The obsolete Home-menu action list was superseded by the owner's exact three-action Back menu.
+- **Issue #42:** retained open and retitled to track physical ARM64 verification of the already-integrated v2.1.0 UI, not a second implementation pass.
+- **Issue #18:** replaced the stale proposed-scope roadmap with the actual promoted-candidate state, remaining physical-device and final-tag artifact gates, and explicit addon-manager hold.
+- **Issues #4/#31:** updated with the signed beta evidence from run #45601558602. Both remain open because physical update installation and release-tag fallback failure-path verification are outstanding.
+- **Validation:** checked PR #26/#43/#47 merge records, exact CI evidence and current issue states. Documentation/issue metadata only; no application tests or physical-device checks were run.
