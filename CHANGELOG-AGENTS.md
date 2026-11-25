@@ -658,5 +658,15 @@ Entry format:
 
 - PR [#72](https://github.com/iNeonyne/LastHavenPlus/pull/72) squash-merged to beta at `82e819a43e6d728a9eb8fea620eca47ac9c998df` after exact-head PR run [#45627915789](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45627915789) passed lint, formatting, unsigned release build, JVM tests and updater-helper tests.
 - The negative formatter test was rejected as expected in run [#45627319452](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45627319452); its temporary probe was removed before merge.
-- Post-merge quality run [#45631250015](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45631250015) and beta build run [#45631249817](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45631249817) were triggered for the merge SHA and remain pending at this entry.
+- Post-merge quality run [#45631250015](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45631250015) and beta build run [#45631249817](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45631249817) completed successfully for the merge SHA. The beta build verified signing and ARM64 packaging; release-tag publication steps were skipped.
 - No application behavior, `main`, tag, or release publication was changed.
+
+
+## 2026-11-25 — v2.2.0 roadmap and agent ownership housekeeping
+
+- Replaced the stale v2.1.0 post-release roadmap framing with a v2.2.0 planning track; v2.1.0 remains the published stable release and no new release is authorized.
+- Assigned Chaty central roadmap, issue triage, documentation, branch audit, CI and beta integration.
+- Assigned Ploy issue #56 only: direct launch and responsive in-game overlay, with a dedicated beta-targeted PR and strict non-overlapping scope.
+- Reconciled #42 as superseded by #56; new UI physical verification remains under #5/#56.
+- Verified issue #60 post-merge quality run #45631250015 and signed beta build run #45631249817 both completed successfully after PR #72. Release-tag publication steps were skipped.
+- Preserved #23 Addon Manager hold and physical ARM64 verification blockers.

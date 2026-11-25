@@ -2,17 +2,17 @@
 
 **Source of truth:** GitHub Issues and this version-controlled backlog. Keep issue scope, status and acceptance criteria aligned. Do not close an issue because documentation changed.
 
-## Current priorities
+## Current priorities — v2.2.0
 
-1. **P0 — Release workflow reliability (#31):** PR #37 differential fallback hardening and PR #54 draft-ID cleanup/verification are integrated. PR #54 exact-head unsigned validation and post-merge signed beta validation both passed (runs #45610110307 and #45610518305). Keep #31 open until a future owner-authorized release run exercises the draft-ID path and fallback failure cases.
-2. **P0 — Physical ARM64 verification (#5):** Gameplay, GeckoView profile persistence, navigation, audio/GPU behavior and same-key updater installation remain unverified on hardware.
-3. **P0 — Updater regression coverage (#4, #15):** Updater hardening is integrated at beta commit `1d6c1ec42becab44735edfd0323dfc60ff4b9f9d`; additional malformed-manifest, digest, patch and interrupted-download tests remain.
-4. **P1 — Addon manager integration (#23):** On hold by owner instruction. Do not resume or assign work until explicit owner approval.
-5. **P2 — Storage measurement accuracy (#28):** Audit all app-private data paths and replace recursive directory sizing with iterative traversal.
-6. **P2 — Remaining product polish:** #9, #11, #12, #14, #16 and #17 only after core reliability gates.
-7. **P3 — Performance and APK size (#7):** Measure before optimizing; do not expand v2.1.0 scope without owner approval.
+1. **P0 — Core runtime and release confidence (#5, #21, #4, #31):** physical ARM64 gameplay/profile/update verification is the critical release gate; finish remaining updater regression coverage and keep release-ID/differential fallback testing owner-authorized.
+2. **P1 — Direct-launch and responsive overlay redesign (#56):** Ploy owns implementation; Chaty reviews and integrates. This replaces the v2.1.0 Home-screen-first experience. Portrait/landscape Settings and preserved GeckoSession state are mandatory.
+3. **P1 — UI/device verification (#42 superseded; #5/#56):** old v2.1.0 Home-screen verification is superseded by #56. Test the new UX on physical ARM64 hardware under #5/#56.
+4. **P1/P2 — Engineering reliability (#60 complete; #61–#66):** keep CI hardening and dependency review separate from product work; no unverified toolchain upgrades.
+5. **P2 — Settings and diagnostics (#6, #9–#17, #28):** prioritize only after the direct-launch core and physical device matrix; preserve data and privacy boundaries.
+6. **P3 — Performance/APK size (#7):** measure before optimizing.
+7. **Deferred — Addon Manager (#23) and beta channel (#19):** no Addon Manager work without explicit owner approval; beta channel is not a v2.2.0 prerequisite.
 
-**Release roadmap:** [#18 — v2.1.0 post-release verification and reliability](https://github.com/iNeonyne/LastHavenPlus/issues/18). v2.1.0 is published at [GitHub Releases](https://github.com/iNeonyne/LastHavenPlus/releases/tag/v2.1.0); stable README/CHANGELOG are reconciled on main. Physical ARM64 gameplay/profile/UI/update verification remains outstanding. The addon manager (#23) is on hold and is not part of active scope.
+**Release roadmap:** [#18 — v2.2.0 roadmap](https://github.com/iNeonyne/LastHavenPlus/issues/18). v2.1.0 is published. v2.2.0 is a planning target, not a release commitment. No tag, promotion, or publication is authorized by this roadmap.
 
 ## Backlog index
 
@@ -23,7 +23,7 @@
 | [#6](#issue-6) | P2 | Settings and safe storage controls | Open; implementation exists, device verification remains |
 | [#7](#issue-7) | P3 | Runtime performance and APK size | Open; measure before optimizing |
 | [#8](#issue-8) | — | Legacy addon manager | Closed — superseded; no planned work |
-| [#9](#issue-9) | P2 | Accessibility and navigation verification | Open; TalkBack semantics and physical navigation checks remain after #42 |
+| [#9](#issue-9) | P2 | Accessibility and navigation verification | Open; TalkBack semantics and physical navigation checks remain for the #56 overlay |
 | [#10](#issue-10) | P2 | App-wide network usage verification | Open; app-wide counters are implemented, physical readings remain to verify |
 | [#11](#issue-11) | P2 | Privacy-conscious diagnostics | Paused; further tests remain |
 | [#12](#issue-12) | P2 | GeckoView load-error details | Open |
@@ -32,17 +32,18 @@
 | [#15](#issue-15) | P2 | Updater recovery | Open |
 | [#16](#issue-16) | P2 | Gameplay orientation and keep-awake settings | Open |
 | [#17](#issue-17) | P2 | Settings backup and restore | Open |
-| [#18](#issue-18) | Roadmap | v2.1.0 post-release verification and reliability | Open; release published, physical and workflow follow-up remains |
+| [#18](#issue-18) | Roadmap | v2.2.0 roadmap and release gates | Open; planning and sequencing updated |
 | [#19](#issue-19) | P1 | Opt-in beta release channel | Open |
 | [#20](#issue-20) | P1 | GeckoView 160 artifact/dependency audit | Decision implemented; POM, transitive dependencies, notices and size evidence remain |
 | [#21](#issue-21) | P0 | GeckoView runtime/profile hardware verification | Migration integrated; physical GeckoView checks remain alongside #5 |
-| [#22](#issue-22) | P1 | Home screen and Play/Settings navigation | Closed — source implementation integrated; physical checks tracked in #5/#42 |
+| [#22](#issue-22) | Superseded | Home screen and Play/Settings navigation | Replaced by direct-launch/overlay scope #56; physical checks tracked in #5/#56 |
 | [#23](#issue-23) | Deferred | Integrate and harden supplied GeckoView addon manager | On hold by owner instruction; do not resume without explicit approval |
 | [#28](https://github.com/iNeonyne/LastHavenPlus/issues/28) | P2 | Storage usage accuracy and iterative directory sizing | Open; not started |
-| [#42](https://github.com/iNeonyne/LastHavenPlus/issues/42) | P1 | v2.1.0 launcher UI verification | Source implementation integrated by PR #43; physical UI verification remains |
+| [#42](https://github.com/iNeonyne/LastHavenPlus/issues/42) | Superseded | v2.1.0 Home-screen UI verification | Superseded by direct-launch redesign #56; new UX verification belongs to #5/#56 |
 | [#29](https://github.com/iNeonyne/LastHavenPlus/issues/29) | Done | Reconcile beta documentation and CI evidence | Closed as completed after PR #46 merged to beta |
 | [#31](https://github.com/iNeonyne/LastHavenPlus/issues/31) | P0 | Draft release asset verification and differential fallback | PR #54 merged; exact-head unsigned and post-merge signed beta runs passed; live release-ID path/fallback checks remain |
-| [#60](https://github.com/iNeonyne/LastHavenPlus/issues/60) | P2 | Android lint and Kotlin formatting quality gate | PR #72 merged to beta; exact-head PR checks passed; post-merge workflow verification pending |
+| [#56](https://github.com/iNeonyne/LastHavenPlus/issues/56) | P1 | Direct launch and responsive in-game overlay | Active implementation; Ploy assigned, Chaty reviews/integrates |
+| [#60](https://github.com/iNeonyne/LastHavenPlus/issues/60) | Done | Android lint and Kotlin formatting quality gate | PR #72 merged; exact-head PR and post-merge beta quality/build workflows passed |
 
 ---
 
@@ -712,3 +713,12 @@ Add a focused, read-only quality workflow for Android lint and Kotlin formatting
 
 ### Verification
 Record exact branch head, Actions run URLs, lint results, formatter result and limitations here and in STATUS.md. The negative test is recorded separately from the final passing exact-head validation.
+
+
+## v2.2.0 delivery ownership (2026-11-25)
+
+- **Chaty:** owns roadmap #18, central documentation, issue triage, branch audit, CI evidence, PR review and beta integration.
+- **Ploy:** owns implementation of #56 only, on a dedicated branch and PR targeting beta. See AGENT_WORK.md for behavior, file boundaries, exclusions, tests and handoff requirements.
+- **Physical ARM64 verification (#5):** requires owner-provided hardware/results; CI or agent emulation must not be reported as a physical-device pass.
+- **#42:** the old v2.1.0 Home-screen-first acceptance scope is superseded by #56. Do not duplicate its old Home screen/menu implementation.
+- **#60:** exact PR validation passed in run #45627915789; post-merge quality workflow #45631250015 and signed beta build workflow #45631249817 both completed successfully. Issue can be closed as completed.
