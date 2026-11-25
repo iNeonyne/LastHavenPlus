@@ -17,6 +17,7 @@ import java.util.concurrent.ArrayBlockingQueue
 import java.util.concurrent.RejectedExecutionException
 import java.util.concurrent.ThreadPoolExecutor
 import java.util.concurrent.TimeUnit
+import java.util.UUID
 
 data class AppUpdatePatch(
     val downloadUrl: String,
@@ -255,11 +256,19 @@ object AppUpdater {
             callback(Result.failure(IllegalStateException("Updater is busy. Try again shortly.")))
         }) {
             val result = runCatching {
-                val updateDirectory = File(appContext.filesDir, "updates").apply { mkdirs() }
-                val finalApk = File(updateDirectory, "LastHavenPlus-update.apk")
-                val temporaryApk = File(updateDirectory, "update.apk.part")
-                temporaryApk.delete()
-
+                val updateDirectory = File(appContext.filesDir, "updates").apply {
+                    check(isDirectory || mkdirs()) { "Could not create the update download directory" }
+                }
+                val temporaryApk = File.createTempFile(
+                    "update-${update.versionCode}-",
+                    ".apk.part",
+                    updateDirectory,
+                )
+                try {
+                val finalApk = File(
+                    updateDirectory,
+                    "LastHavenPlus-update-${update.versionCode}-${UUID.randomUUID()}.apk",
+                )
                 val patch = update.patch
                 val installedInfo = installedPackageInfo(appContext)
                 val canUsePatch = preferDelta &&
@@ -289,8 +298,11 @@ object AppUpdater {
                             "Installed APK does not match the patch base"
                         }
 
-                        val patchFile = File(updateDirectory, "update.bsdiff.part")
-                        patchFile.delete()
+                        val patchFile = File.createTempFile(
+                            "update-${update.versionCode}-",
+                            ".bsdiff.part",
+                            updateDirectory,
+                        )
                         try {
                             downloadToFile(
                                 delta.downloadUrl,
@@ -335,12 +347,13 @@ object AppUpdater {
                     "${appContext.packageName}.updates",
                     finalApk,
                 )
+                } finally {
+                    temporaryApk.delete()
+                }
             }
 
             result.onSuccess { Diagnostics.info(appContext, "Updater", "Update download and validation succeeded") }
                 .onFailure {
-                    File(appContext.filesDir, "updates/update.apk.part").delete()
-                    File(appContext.filesDir, "updates/update.bsdiff.part").delete()
                     Diagnostics.error(appContext, "Updater", "Update download failed: ${it.message}")
                 }
             mainHandler.post { callback(result) }
