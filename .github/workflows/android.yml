@@ -382,8 +382,8 @@ jobs:
             python3 .github/scripts/bounded_release_input.py --stdin - "$RELEASES_JSON" 4194304; then
             if jq -e 'type == "array"' "$RELEASES_JSON" >/dev/null 2>&1; then
               PREVIOUS_RELEASE="$(jq -c --arg current "$RELEASE_TAG" \
-                '[.[] | select(.draft == false and .prerelease == false and .tag_name != $current)][0] // empty' \
-                "$RELEASES_JSON")"
+                '[.[] | select(type == "object" and .draft == false and .prerelease == false and (.tag_name | type == "string") and .tag_name != $current)][0] // empty' \
+                "$RELEASES_JSON" 2>/dev/null || true)"
             else
               echo "::warning::Previous-release API returned malformed data; publishing the full APK only."
               PREVIOUS_RELEASE=""
@@ -394,9 +394,9 @@ jobs:
           fi
 
           if [[ -n "$PREVIOUS_RELEASE" ]]; then
-            PREVIOUS_TAG="$(jq -r '.tag_name // empty' <<< "$PREVIOUS_RELEASE")"
-            PREVIOUS_APK_URL="$(jq -r '.assets[]? | select(.name == "lasthavenplus-arm64.apk") | .browser_download_url' <<< "$PREVIOUS_RELEASE" | head -n 1)"
-            PREVIOUS_MANIFEST_URL="$(jq -r '.assets[]? | select(.name == "lasthavenplus-update.json") | .browser_download_url' <<< "$PREVIOUS_RELEASE" | head -n 1)"
+            PREVIOUS_TAG="$(jq -r '.tag_name // empty' <<< "$PREVIOUS_RELEASE" 2>/dev/null || true)"
+            PREVIOUS_APK_URL="$(jq -r '.assets[]? | select(.name == "lasthavenplus-arm64.apk") | .browser_download_url' <<< "$PREVIOUS_RELEASE" 2>/dev/null | head -n 1 || true)"
+            PREVIOUS_MANIFEST_URL="$(jq -r '.assets[]? | select(.name == "lasthavenplus-update.json") | .browser_download_url' <<< "$PREVIOUS_RELEASE" 2>/dev/null | head -n 1 || true)"
 
             if [[ "$PREVIOUS_TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ &&
               -n "$PREVIOUS_APK_URL" && "$PREVIOUS_APK_URL" != "null" &&
