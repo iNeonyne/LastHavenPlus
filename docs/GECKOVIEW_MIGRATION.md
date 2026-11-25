@@ -1,10 +1,10 @@
 # GeckoView integration notes
 
-**Current branch:** `beta`  
+**Documented baseline:** `main` / published v2.1.0  
 **Current engine:** Mozilla GeckoView 160, ARM64 artifact  
 **Last reviewed:** 2026-11-25
 
-This document records the GeckoView integration as it exists in beta. It supplements, but does not replace, Mozilla's documentation.
+This document records the GeckoView integration on stable `main` and the published v2.1.0 baseline. It supplements, but does not replace, Mozilla's documentation. Issue #56 is the source of truth for the requested next-step direct-launch/in-game-overlay redesign; that redesign is not part of the published v2.1.0 baseline.
 
 ## Official references
 
@@ -21,11 +21,11 @@ Use the API matching the pinned GeckoView artifact. Do not assume moving mozilla
 
 ## Current implementation
 
-Beta uses `org.mozilla.geckoview:geckoview-arm64-v8a:160.0.20261116130455`, a process-scoped `GeckoRuntime`, a `GeckoSession` and a `GeckoView` host. Runtime/session initialization is deferred until Play. The game URL is `https://lasthavens.com/play`.
+The `main` build uses `org.mozilla.geckoview:geckoview-arm64-v8a:160.0.20261116130455`, a process-scoped `GeckoRuntime`, a `GeckoSession` and a `GeckoView` host. Runtime/session initialization is deferred until Play. The game URL is `https://lasthavens.com/play`.
 
-The app opens on a launcher Home screen. Settings does not initialize the game. Android Back from gameplay opens a full-screen menu containing Reload, Settings and Return to game. Settings, diagnostics and update details are full-screen destinations. PR #43 also adds responsive Home/settings layouts and adaptive launcher icon resources.
+In the published v2.1.0 baseline, the app opens on a launcher Home screen. Settings does not initialize the game. Android Back from gameplay opens a full-screen menu containing Reload, Settings and Return to game. Settings, diagnostics and update details are full-screen destinations. The release includes responsive Home/settings layouts and adaptive launcher icon resources. This is the current released behavior, not the desired next UX: issue #56 requests direct game launch and a responsive in-game overlay that keeps the game visible.
 
-The existing GeckoSession is retained when its view is detached for launcher navigation. Source and JVM layout-policy tests are integrated; physical session retention and UI behavior still require device verification.
+The existing GeckoSession is retained when its view is detached for launcher navigation. Source and JVM layout-policy tests are integrated; physical session retention and UI behavior still require device verification. Changes made for issue #56 must preserve this same-session guarantee while replacing the Home/full-screen-menu flow.
 
 ## Build configuration and identity
 
@@ -42,7 +42,7 @@ Preserve:
 
 - Keep one runtime per application process.
 - Manage the game session lifecycle explicitly.
-- Keep the existing GeckoSession while navigating to Home/settings and back; do not reload solely because the visible Compose destination changes.
+- Keep the existing GeckoSession while navigating to the current Home/settings destinations and back; do not reload solely because the visible Compose destination changes. When issue #56 is implemented, preserve the same session while showing/dismissing the overlay and visiting Settings.
 - Scope immersive UI, gameplay orientation and keep-screen-on to gameplay; Home/settings restore normal system UI.
 - Handle navigation, progress/load state, content events, crashes, fullscreen, permissions, prompts, media and external responses using the pinned API and actual game requirements.
 - Do not grant broad site or Android permissions automatically. Keep permission decisions origin-scoped and user-mediated where required.
@@ -84,17 +84,18 @@ The owner has reported that the app and GeckoView work on an ARM64 device. No de
 
 ## Addon boundary
 
-Issue #23 is owner-approved for investigation/integration of a supplied XPI addon manager. No implementation is integrated yet. Before any install path is added, verify the pinned GeckoView 160 extension APIs, unsigned XPI behavior, install confirmation, session/tab lifecycle and all archive/network security constraints. A WoW 3.3.5a addon ZIP/`.toc` package is not a Firefox WebExtension; GeckoView WebExtension support does not itself load game addons. Do not claim game addon injection.
+Addon-manager work is on hold pending explicit owner approval to resume it. Do not start implementation, add install paths or treat the menu entry in issue #56 as authorization to resume the addon manager. If the owner reopens the work, first verify the pinned GeckoView 160 extension APIs, unsigned XPI behavior, install confirmation, session/tab lifecycle and archive/network security constraints. A WoW 3.3.5a addon ZIP/`.toc` package is not a Firefox WebExtension; GeckoView WebExtension support does not itself load game addons. Do not claim game addon injection.
 
 ## CI evidence and remaining work
 
-- PR #43 exact-head unsigned validation passed in [run #386](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45600824024) for `505e4fe4b91e0fcfae5aecf58ef9d9376e5598d3`.
-- PR #43 merged to beta at `dffca7e67ef4a8dd1bec8777c2c4c8b8a51a0210`.
-- Post-merge signed beta run [#45601558602](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45601558602) must be checked for final conclusion, artifact, certificate and ABI verification before release readiness is claimed.
-- The last previously verified signed ARM64 build was run #330 for older commit `e924c580699ad34f1083d1a9a0fe96901037c0ae`; it does not verify the v2.1.0 candidate.
+- The v2.1.0 release is published. Its signed ARM64 APK, update manifest and differential patch are documented in the root README and CHANGELOG.
+- Main commit `3726b140df0d1bf15610d034ce29106a6d037282` includes the release-ID-based draft asset cleanup and final-release verification fix.
+- Main workflow run [#45621083722](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45621083722) completed successfully. It verified the bounded-input Python tests, signed optimized APK build, JVM unit tests, signing certificate and ARM64 ABI. Because this was a normal main push rather than a release-tag run, differential generation, release publishing, legacy asset cleanup and final release-asset verification were skipped; the fix's release-only path is not yet exercised by this run.
+- The separate Android quality workflow has not yet had a confirmed run. Validate it independently before treating lint and its complete test set as a reliable required gate.
+- Physical ARM64 verification remains outstanding for the requested issue #56 overlay behavior and the full GeckoView feature matrix. CI does not replace device testing.
 
 Remaining work:
-1. Inspect exact post-merge signed build and artifact.
-2. Complete physical ARM64 game, profile, permission, media, navigation and updater tests.
-3. Inspect the adaptive launcher icon in the built APK.
-4. Review the beta-to-main promotion diff while preserving stable-branch history and stable documentation policy.
+1. Complete issue #56's direct-launch/in-game-overlay redesign without changing the existing GeckoSession/profile or addon-manager scope.
+2. Run the separate quality workflow and resolve any SDK, lint or test failures.
+3. Complete physical ARM64 game, profile, permission, media, navigation and updater tests; record device, Android version, exact APK digest and results.
+4. Review the beta/main divergence before any promotion or branch deletion; do not merge stale branch snapshots wholesale.
