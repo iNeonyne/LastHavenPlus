@@ -5,7 +5,7 @@
 ## Current priorities
 
 1. **P0 — GeckoView verification and release baseline:** GeckoView 160 is now the engine in beta. CI run #310 passed the signed Android release build, unit tests, signing-certificate and ARM64-only ABI checks for commit `91e21d4bde0a26b8d7cbfd9697615f32c2f57d21`; this is not a physical-device result or a build of the latest beta HEAD.
-2. **P0 — Security/lifecycle hardening:** PR #26 is merged into beta at `e924c580699ad34f1083d1a9a0fe96901037c0ae`. Exact-head PR run #329 passed unsigned release build and unit tests. Signed post-merge CI and physical verification remain open.
+2. **P0 — Security/lifecycle hardening:** PR #26 is merged into beta at `e924c580699ad34f1083d1a9a0fe96901037c0ae`. Exact-head PR run #329 passed unsigned build/unit tests; signed run #330 passed release build, unit tests, certificate and ARM64-only packaging for the merge commit. Physical verification remains open.
 3. **P1 — Home screen and navigation (#22):** Implemented and merged in PR #26. PR CI passed; physical navigation/accessibility verification remains open.
 4. **P0.2 — Physical ARM64 verification (#5):** gameplay, profile persistence, media, navigation and update installation remain unverified until tested on real ARM64 hardware.
 5. **Build reproducibility/updater tests (#4):** Gradle Wrapper is present and pinned. Continue the missing updater edge-case coverage and verify current CI/workflow behavior.
@@ -54,7 +54,7 @@ Close only when every acceptance criterion is met and evidence is recorded. If a
 
 ## Issue 4 — P0.1 — Improve build reproducibility and updater test coverage
 
-**Current audit (2026-11-25):** The Gradle Wrapper is pinned to Gradle 9.7.1 with a distribution SHA-256. Signed CI run [#310](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45508671565) passed release build/tests, signer and ARM64-only ABI checks for commit `91e21d4bde0a26b8d7cbfd9697615f32c2f57d21`; this does not verify current beta HEAD. PR #26 merged to beta at `e924c580699ad34f1083d1a9a0fe96901037c0ae`. Exact-head PR run [#329](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45518210756) passed unsigned release build and unit tests for `3a1396f7364be1e6aa658b3eb67be41549a906fb`; it does not verify signed ARM64 packaging. Keep the issue open for remaining updater edge cases, post-merge signed CI and physical update installation.
+**Current audit (2026-11-25):** The Gradle Wrapper is pinned to Gradle 9.7.1 with a distribution SHA-256. Signed CI run [#310](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45508671565) passed release build/tests, signer and ARM64-only ABI checks for commit `91e21d4bde0a26b8d7cbfd9697615f32c2f57d21`; this does not verify current beta HEAD. PR #26 merged to beta at `e924c580699ad34f1083d1a9a0fe96901037c0ae`. Exact-head PR run [#329](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45518210756) passed unsigned release build and unit tests for `3a1396f7364be1e6aa658b3eb67be41549a906fb`; it does not verify signed ARM64 packaging. Keep the issue open for remaining updater edge cases and physical update installation; signed CI is verified by run #330.
 
 **GitHub:** https://github.com/iNeonyne/LastHavenPlus/issues/4
 **State:** open
@@ -651,3 +651,6 @@ Wait for the owner to provide a new addon-manager specification. Then Chaty will
 ---
 
 **Integration checkpoint (2026-11-25):** PR #26 merged to beta at `e924c580699ad34f1083d1a9a0fe96901037c0ae`. PR run #329 passed unsigned release build and unit tests for the exact PR head. Signed post-merge ARM64 CI and physical device verification remain open. `main` and `beta` are diverged (beta ahead 166, main ahead 9); review the nine main-only commits before any promotion.
+
+
+**Post-merge CI (2026-11-25):** Run [#330](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45518704468) passed signed optimized release build, unit tests, established certificate verification and ARM64-only packaging for `e924c580699ad34f1083d1a9a0fe96901037c0ae`. Artifact upload succeeded. Physical updater installation and device gameplay remain open.
