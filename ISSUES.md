@@ -52,6 +52,7 @@ Ploy is an internal agent role, not a confirmed GitHub login; assignment is visi
 | [#31](https://github.com/iNeonyne/LastHavenPlus/issues/31) | P0 | Draft release asset verification and differential fallback | PR #54 merged; exact-head unsigned and post-merge signed beta runs passed; live release-ID path/fallback checks remain |
 | [#56](https://github.com/iNeonyne/LastHavenPlus/issues/56) | P1 | [PLOY ACTIVE] Direct launch and responsive in-game overlay | Active implementation; Ploy assigned, Chaty reviews/integrates |
 | [#60](https://github.com/iNeonyne/LastHavenPlus/issues/60) | Done | Android lint and Kotlin formatting quality gate | PR #72 merged; exact-head PR and post-merge beta quality/build workflows passed |
+| [#81](https://github.com/iNeonyne/LastHavenPlus/issues/81) | P2 | Compatible AndroidX and compression library refresh | Active; library-only PR candidate, exact-head CI pending |
 
 ---
 
@@ -781,3 +782,11 @@ Record exact branch head, Actions run URLs, lint results, formatter result and l
 - **Physical ARM64 verification (#5):** requires owner-provided hardware/results; CI or agent emulation must not be reported as a physical-device pass.
 - **#42:** the old v2.1.0 Home-screen-first acceptance scope is superseded by #56. Do not duplicate its old Home screen/menu implementation.
 - **#60:** exact PR validation passed in run #45627915789; post-merge quality workflow #45631250015 and signed beta build workflow #45631249817 both completed successfully. Issue can be closed as completed.
+
+
+## Issue 81 — P2 — Refresh compatible AndroidX and compression libraries
+
+**GitHub:** https://github.com/iNeonyne/LastHavenPlus/issues/81  
+**State:** open; Chaty owns review and integration
+
+Reassess the safe library-only portion of closed Dependabot PRs #68 and #69. Candidate changes: AppCompat 1.8.0, MediaRouter 1.9.0, Browser 1.10.0, Compose BOM 2026.11.01 and Commons Compress 1.28.0. Keep AGP, Kotlin, Gradle, JDK, SDK/Build Tools, GeckoView, ABI, signing and release configuration unchanged. Merge only after exact-head dependency resolution, lint, formatting, unsigned release build and unit tests pass.
