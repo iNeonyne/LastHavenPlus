@@ -23,12 +23,12 @@
 | [#5](#issue-5) | P0.2 | Physical ARM64 gameplay and update verification | Open; not yet performed |
 | [#6](#issue-6) | P2 | Settings and safe storage controls | Open; implementation exists, device verification remains |
 | [#7](#issue-7) | P3 | Runtime performance and APK size | Open; measure before optimizing |
-| [#8](#issue-8) | — | Legacy addon manager | Superseded; do not restore |
+| [#8](#issue-8) | — | Legacy addon manager | Closed — superseded; no planned work |
 | [#9](#issue-9) | P2 | Navigation menu accessibility | Paused pending final #22 UI |
 | [#10](#issue-10) | P2 | Network data usage | Implemented in source; device verification remains |
 | [#11](#issue-11) | P2 | Privacy-conscious diagnostics | Paused; further tests remain |
 | [#12](#issue-12) | P2 | GeckoView load-error details | Open |
-| [#13](#issue-13) | — | Legacy addon-manager compile/accessibility work | Superseded |
+| [#13](#issue-13) | — | Accessible names / legacy addon-manager compile work | Closed — consolidated into #9 |
 | [#14](#issue-14) | P2 | Connection diagnostics | Open |
 | [#15](#issue-15) | P2 | Updater recovery | Open |
 | [#16](#issue-16) | P2 | Gameplay orientation and keep-awake settings | Open |
@@ -250,7 +250,7 @@ A repeatable baseline is recorded, and every accepted optimization has measured 
 ## Issue 8 — Superseded — Legacy addon manager removed; future scope waits for owner spec (#23)
 
 **GitHub:** https://github.com/iNeonyne/LastHavenPlus/issues/8  
-**State:** open for historical traceability; no active implementation work.
+**State:** closed as not planned; historical context only. Do not restore the removed implementation.
 
 The previous ZIP addon manager was removed from beta at the owner's request on 2026-11-25. Its former implementation checklist is obsolete. Do not restore it or continue the former game-injection approach. A new design will be written only after the owner provides a replacement specification; see #23.
 
@@ -391,7 +391,7 @@ Common load failures are distinguishable to users/support using verified GeckoVi
 ## Issue 13 — P2 — Add accessible names to launcher actions
 
 **GitHub:** https://github.com/iNeonyne/LastHavenPlus/issues/13
-**State:** open
+**State:** closed as duplicate; accessibility work is tracked in #9.
 
 ## Goal
 Ensure launcher controls are understandable to Android accessibility services, especially TalkBack.
