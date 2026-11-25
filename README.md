@@ -9,7 +9,7 @@ LastHavenPlus is an Android launcher for the existing LastHaven Wrath of the Lic
 
 The current repository candidate uses Mozilla GeckoView 160. It is not yet published as a new stable release. The published v1.0.0 release remains unchanged until a separately approved release is created.
 
-The GeckoView candidate was integrated into `beta` by [PR #26](https://github.com/iNeonyne/LastHavenPlus/pull/26). Its exact PR head passed the unsigned release build and unit tests. Signed ARM64 packaging for the integrated beta commit and physical-device gameplay, profile persistence and update installation remain unverified.
+The GeckoView candidate was integrated into `beta` by [PR #26](https://github.com/iNeonyne/LastHavenPlus/pull/26). Its exact PR head passed the unsigned release build and unit tests. Signed ARM64 packaging, unit tests, established signing certificate and ARM64-only packaging passed Actions run [#330](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45518704468) for the integrated beta commit. Physical-device gameplay, profile persistence and update installation remain unverified.
 
 ## Compatibility and identity
 
