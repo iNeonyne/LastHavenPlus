@@ -62,15 +62,14 @@ jobs:
           gradle-version: wrapper
           validate-wrappers: true
 
+      - name: Fetch beta formatting baseline
+        run: git fetch --no-tags --depth=1 origin beta
+
       - name: Test bounded release input helper
         run: python3 -m unittest discover -s .github/scripts/tests -v
 
       - name: Run lint, formatting, unsigned release build and unit tests
-        env:
-          SPOTLESS_RATCHET_REF: ${{ github.event.pull_request.base.sha }}
-        run: |
-          ./gradlew lintDebug spotlessCheck assembleRelease testDebugUnitTest --stacktrace \\
-            -PspotlessRatchetFrom="$SPOTLESS_RATCHET_REF"
+        run: ./gradlew lintDebug spotlessCheck assembleRelease testDebugUnitTest --stacktrace -PspotlessRatchetFrom=origin/beta
 
       - name: Upload unit-test reports
         if: always()
