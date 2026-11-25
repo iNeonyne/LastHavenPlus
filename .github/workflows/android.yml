@@ -4,6 +4,16 @@ on:
   push:
     branches: [main, beta]
     tags: ["v*"]
+    # Documentation-only edits do not need an Android build. Workflow/config/source
+    # changes still run the complete verification pipeline.
+    paths-ignore:
+      - "*.md"
+      - "**/*.md"
+  pull_request:
+    branches: [beta]
+    paths-ignore:
+      - "*.md"
+      - "**/*.md"
   workflow_dispatch:
     inputs:
       release_version:
@@ -19,9 +29,56 @@ permissions:
   contents: write
 
 jobs:
+  # PR validation is intentionally read-only and does not access signing secrets
+  # or upload/publish APKs. The normal beta push pipeline performs signed checks.
+  pull_request_validation:
+    if: github.event_name == 'pull_request'
+    name: PR build and unit tests (unsigned)
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+    steps:
+      - name: Check out PR source
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 25
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "25"
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+        with:
+          packages: platform-tools
+
+      - name: Install Android 37.2 platform
+        run: sdkmanager "platforms;android-37.2" "build-tools;37.0.0"
+
+      - name: Set up Gradle Wrapper
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: wrapper
+          validate-wrappers: true
+
+      - name: Build unsigned release variant and run unit tests
+        run: ./gradlew assembleRelease testDebugUnitTest --stacktrace
+
+      - name: Upload unit-test reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pr-unit-test-reports-${{ github.event.pull_request.number }}
+          path: |
+            app/build/test-results/testDebugUnitTest/*.xml
+            app/build/reports/tests/testDebugUnitTest/
+          if-no-files-found: ignore
+          retention-days: 14
+
   create_tag:
     name: Create release tag
-    if: (github.event_name == 'workflow_dispatch' && inputs.release_version != '') || (github.event_name == 'push' && github.ref == 'refs/heads/main' && contains(github.event.head_commit.message, '[release:'))
+    if: (github.event_name == 'workflow_dispatch' && inputs.release_version != '' && github.ref == 'refs/heads/main') || (github.event_name == 'push' && github.ref == 'refs/heads/main' && contains(github.event.head_commit.message, '[release:'))
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -73,14 +130,17 @@ jobs:
 
   build:
     needs: create_tag
-    if: always() && (needs.create_tag.result == 'success' || needs.create_tag.result == 'skipped')
+    if: github.event_name != 'pull_request' && always() && (needs.create_tag.result == 'success' || needs.create_tag.result == 'skipped')
     name: Build and test (arm64)
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     steps:
       - name: Check out source
         uses: actions/checkout@v4
         with:
           ref: ${{ needs.create_tag.outputs.tag_ref || github.ref }}
+          # Full history is only needed to validate release-tag ancestry.
+          fetch-depth: ${{ startsWith(github.ref, 'refs/tags/v') && '0' || '1' }}
 
       - name: Set up JDK 25
         uses: actions/setup-java@v4
@@ -93,19 +153,32 @@ jobs:
         with:
           packages: platform-tools
 
-      - name: Install Android 37 platform
-        run: sdkmanager "platforms;android-37.0" "build-tools;37.0.0"
+      - name: Install Android 37.2 platform
+        run: sdkmanager "platforms;android-37.2" "build-tools;37.0.0"
 
-      - name: Set up Gradle 9.7.1
+      - name: Set up Gradle Wrapper
         uses: gradle/actions/setup-gradle@v4
         with:
-          gradle-version: "9.7.1"
+          gradle-version: wrapper
+          validate-wrappers: true
+
+      - name: Validate release tag belongs to stable main history
+        if: startsWith(github.ref, 'refs/tags/v')
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch origin main --no-tags
+          if ! git merge-base --is-ancestor "$GITHUB_SHA" FETCH_HEAD; then
+            echo "::error::Release tags must point to a commit already contained in stable main."
+            exit 1
+          fi
 
       - name: Resolve version metadata
         id: version
         shell: bash
         env:
           CREATED_TAG_REF: ${{ needs.create_tag.outputs.tag_ref }}
+          GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
           if [[ -n "$CREATED_TAG_REF" ]]; then
@@ -132,6 +205,27 @@ jobs:
             version_code=$((major * 1000000 + minor * 1000 + patch))
             echo "is_release=true" >> "$GITHUB_OUTPUT"
             echo "tag=$tag" >> "$GITHUB_OUTPUT"
+          elif [[ "$GITHUB_REF" == "refs/heads/beta" ]]; then
+            # Beta demo APKs must be installable over the latest stable app without
+            # lowering versionCode. Reuse the stable identity, but keep this a CI
+            # artifact only: is_release remains false, so no tag or release is created.
+            stable_tag="$(gh api "repos/$GITHUB_REPOSITORY/releases/latest" --jq .tag_name)"
+            if [[ ! "$stable_tag" =~ ^v([0-9]+)\.([0-9]+)\.([0-9]+)$ ]]; then
+              echo "::error::Latest stable release tag is not vMAJOR.MINOR.PATCH."
+              exit 1
+            fi
+            major="${BASH_REMATCH[1]}"
+            minor="${BASH_REMATCH[2]}"
+            patch="${BASH_REMATCH[3]}"
+            if (( major > 999 || minor > 999 || patch > 999 )); then
+              echo "::error::Each stable version component must be 999 or lower."
+              exit 1
+            fi
+            version="${stable_tag#v}"
+            version_code=$((major * 1000000 + minor * 1000 + patch))
+            echo "is_release=false" >> "$GITHUB_OUTPUT"
+            echo "tag=" >> "$GITHUB_OUTPUT"
+            echo "Using latest stable version identity for beta demo: $version (versionCode $version_code)"
           else
             version="0.1.0"
             version_code="1"
@@ -166,8 +260,19 @@ jobs:
           APP_VERSION_NAME: ${{ steps.version.outputs.name }}
           APP_VERSION_CODE: ${{ steps.version.outputs.code }}
         run: |
-          gradle assembleRelease testDebugUnitTest --no-daemon --stacktrace \
+          ./gradlew assembleRelease testDebugUnitTest --stacktrace \
             -PappVersionName="$APP_VERSION_NAME" -PappVersionCode="$APP_VERSION_CODE"
+
+      - name: Upload unit-test reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: unit-test-reports-${{ github.run_number }}
+          path: |
+            app/build/test-results/testDebugUnitTest/*.xml
+            app/build/reports/tests/testDebugUnitTest/
+          if-no-files-found: ignore
+          retention-days: 14
 
       - name: Verify signing certificate, ABI and report APK sizes
         shell: bash
@@ -380,3 +485,15 @@ jobs:
             exit 1
           }
           echo "Verified: exactly one APK and one canonical update manifest."
+
+      - name: Publish verified GitHub release
+        if: steps.version.outputs.is_release == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ steps.version.outputs.tag }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          release_id="$(gh api "repos/$GITHUB_REPOSITORY/releases/tags/$RELEASE_TAG" --jq .id)"
+          gh api --method PATCH "repos/$GITHUB_REPOSITORY/releases/$release_id" -F draft=false >/dev/null
+          gh api "repos/$GITHUB_REPOSITORY/releases/tags/$RELEASE_TAG" --jq 'select(.draft == false) | .html_url' | tee -a "$GITHUB_STEP_SUMMARY"

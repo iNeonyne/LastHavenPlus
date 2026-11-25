@@ -1,75 +1,55 @@
 # LastHavenPlus
 
-LastHavenPlus is an Android launcher for the existing LastHaven Wrath of the Lich King browser game. It opens the game in the embedded Cefrium browser; it does not recreate or develop the game.
+LastHavenPlus is an Android launcher for the existing LastHaven Wrath of the Lich King browser game. It hosts the game; it does not recreate or modify the game client.
 
-- **Game:** [alt.lasthavens.com/play](https://alt.lasthavens.com/play)
-- **Latest release:** [v1.0.0](https://github.com/iNeonyne/LastHavenPlus/releases/tag/v1.0.0)
-- **Bug reports and feature requests:** [GitHub Issues](https://github.com/iNeonyne/LastHavenPlus/issues)
+- **Game:** [lasthavens.com/play](https://lasthavens.com/play)
+- **Latest release:** [v2.0.0 on GitHub Releases](https://github.com/iNeonyne/LastHavenPlus/releases/tag/v2.0.0)
 
 ## Compatibility
 
-| Item | Support |
+| Item | Configuration |
 |---|---|
 | Android | Android 10 (API 29) and later |
-| CPU architecture | ARM64 (arm64-v8a) only |
-| Application ID | com.neonyne.lasthavenlauncher |
-| Browser engine | Cefrium 0.21.0 |
-| Chromium | 156.0.8078.96 |
+| CPU architecture | ARM64 only (`arm64-v8a`) |
+| Browser engine | Mozilla GeckoView 160 |
 | UI | Kotlin and Jetpack Compose |
+| Application ID | `com.neonyne.lasthavenlauncher` |
+| Game URL | `https://lasthavens.com/play` |
 
-The application ID and release signing identity are part of update compatibility. Do not change them for routine branding or feature work.
+Preserve the application ID and established release signing identity to maintain update compatibility.
 
 ## Features
 
-- Opens the LastHaven game in a persistent Cefrium browser profile.
-- Provides an in-app exit menu with return, reload, settings/usage, diagnostics and update actions.
-- Reports installed APK size, available Cefrium profile size and app cache size as separate measurements.
-- Reports app-wide network bytes received and sent. These counters include game and updater traffic, not game traffic alone.
-- Keeps bounded diagnostic logs on-device, redacts common sensitive fields and shares logs only when requested.
-- Checks for stable releases and offers a manual choice between a smaller differential update (when compatible) and the full APK. Downloads and installation are user-initiated; updates are never installed automatically.
-- Includes a local ZIP addon library for importing, inspecting, organizing, exporting and removing addon packages. **The current manager does not inject addons into the browser game.** Game integration is tracked separately in [issue #8](https://github.com/iNeonyne/LastHavenPlus/issues/8).
+- **Game hosting:** Process-scoped GeckoRuntime; the GeckoSession is created when Play is selected.
+- **Navigation:** Home screen with Play and Settings; in-game Reload, Home, Return to game, diagnostics, manual update check and Exit actions.
+- **Session handling:** Home detaches the GeckoView while retaining the GeckoSession; the session is closed when the Activity composition is destroyed.
+- **Settings and storage:** Separate installed APK size, app-private data size and cache size. App-private data includes GeckoView data and is not a profile-only measurement.
+- **Network usage:** Android per-app UID counters, including game and updater traffic.
+- **Diagnostics:** Bounded local logs, redaction, viewing, clearing and explicit user-initiated sharing.
+- **Updater:** User-initiated checks, downloads and installer handoff. Redirects and response sizes are bounded; manifests, payload sizes and SHA-256 digests are validated. Differential patch failures fall back to a separately verified full APK. No automatic download or installation.
+- **Addon manager:** Not included. Replacement work remains on hold pending a new owner specification.
 
-## Download and update
+## GeckoView profile transition and testing status
 
-Get the signed ARM64 APK from [GitHub Releases](https://github.com/iNeonyne/LastHavenPlus/releases).
+GeckoView uses its own browser profile. No supported, verified migration of Cefrium cookies or other browser data has been established. Do not copy or delete existing Cefrium profile data as part of this transition. A fresh game login may be required.
 
-The launcher checks for a newer stable release on startup and also provides a manual check. It does not download or install updates without user action. A full APK is published as the fallback; a differential patch is offered only when the installed base version and digest match.
+Persistent GeckoView data across force-stop and app restart—including cookies, LocalStorage, IndexedDB and service workers—has not been confirmed on physical hardware. The v2.0.0 release was approved with physical ARM64 gameplay, profile persistence and update-installation verification still outstanding. CI build and unit-test success does not establish physical-device compatibility.
 
-Install the APK through Android and approve the package installer prompt. Keep the same application installed when updating so its browser profile and game data remain available.
+## Build and test
 
-## Build from source
-
-### Requirements
-
-- JDK 25
-- Gradle 9.7.1
-- Android SDK Platform 37 and Build Tools 37.0.0
-- At least 4 GB of Gradle heap for Cefrium dexing
-
-Cefrium 0.21.0 is pinned across the SDK, Compose integration and Gradle plugin. Its Maven package is resolved from the Codeberg registry.
-
-### Build and test
-
-The Gradle Wrapper is not committed yet. Install the required Gradle version, then run from the repository root:
+Requirements: JDK 25, Gradle 9.7.1 via the committed Gradle Wrapper, Android SDK Platform 37.2 and Android Build Tools 37.0.0.
 
 ```bash
-gradle assembleRelease
-gradle testDebugUnitTest
+./gradlew assembleRelease
+./gradlew testDebugUnitTest
 ```
 
-Release signing requires the established project keystore and credentials. GitHub Actions restores these from repository secrets; the private keystore must not be committed.
+A signed release build requires the established project keystore and credentials. Never commit keystores or signing secrets.
 
-The CI workflow builds the signed, optimized ARM64 release APK and runs the unit test task. See [Actions](https://github.com/iNeonyne/LastHavenPlus/actions) for the latest run. Build reproducibility and wrapper setup are tracked in [issue #4](https://github.com/iNeonyne/LastHavenPlus/issues/4).
+## Release policy
 
-### Official Cefrium references
-
-- [Quickstart](https://cefrium.com/quickstart/)
-- [Releases](https://cefrium.com/releases/)
-- [API documentation](https://cefrium.com/docs/)
-
-## Data and privacy
-
-- Browser cookies, LocalStorage, IndexedDB, service workers and other profile data are stored in Cefrium's persistent app-private profile.
-- Game data is not cleared during startup, update or recovery.
-- Network counters and diagnostic logs stay on-device. Logs are shared only through the user's explicit action.
-- Do not manually delete Cefrium profile files or change the app's signing identity when updating.
+- Package ARM64 only.
+- Preserve application ID and signing identity.
+- Keep update downloads and installation user-initiated.
+- Do not publish debug APKs or incomplete features.
+- Complete the outstanding physical-device verification in follow-up updates.

@@ -119,6 +119,33 @@ class BsdiffPatchTest {
         }
     }
 
+    @Test
+    fun rejectsDecompressedExtraSectionLargerThanOutputBound() {
+        val directory = Files.createTempDirectory("bsdiff-decompression-limit").toFile()
+        try {
+            val oldFile = File(directory, "old.apk").apply { writeBytes(byteArrayOf()) }
+            val control = compressed { writeOffset(0); writeOffset(1); writeOffset(0) }
+            val differences = compressed { }
+            val extra = compressed { write(byteArrayOf(0x41, 0x42)) }
+            val header = ByteArrayOutputStream().apply {
+                write("BSDIFF40".toByteArray(Charsets.US_ASCII))
+                writeOffset(control.size.toLong())
+                writeOffset(differences.size.toLong())
+                writeOffset(1)
+            }.toByteArray()
+            val patchFile = File(directory, "bomb.bsdiff").apply { writeBytes(header + control + differences + extra) }
+            val outputFile = File(directory, "new.apk").apply { writeText("stale output") }
+            try {
+                BsdiffPatch.apply(oldFile, patchFile, outputFile, 1024)
+                throw AssertionError("Expected decompressed section overflow to be rejected")
+            } catch (expected: IllegalArgumentException) {
+                assertEquals(false, outputFile.exists())
+            }
+        } finally {
+            directory.deleteRecursively()
+        }
+    }
+
     private fun compressed(writeContent: ByteArrayOutputStream.() -> Unit): ByteArray {
         val bytes = ByteArrayOutputStream()
         BZip2CompressorOutputStream(bytes).use { compressed ->

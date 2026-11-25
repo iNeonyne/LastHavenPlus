@@ -13,7 +13,11 @@ import java.io.FileOutputStream
 import java.net.HttpURLConnection
 import java.net.URL
 import java.security.MessageDigest
-import java.util.concurrent.Executors
+import java.util.concurrent.ArrayBlockingQueue
+import java.util.concurrent.RejectedExecutionException
+import java.util.concurrent.ThreadPoolExecutor
+import java.util.concurrent.TimeUnit
+import java.util.UUID
 
 data class AppUpdatePatch(
     val downloadUrl: String,
@@ -58,22 +62,48 @@ object AppUpdater {
     private const val RELEASE_CERT_SHA256 =
         "B3BBF7520E77DFC384A60B1EEE6C5F205B978F9B453849E2BE523F642018D263"
 
-    private val executor = Executors.newSingleThreadExecutor()
+    private const val MAX_RELEASE_JSON_BYTES = 2L * 1024L * 1024L
+    private const val MAX_MANIFEST_JSON_BYTES = 128L * 1024L
+    private const val MAX_REDIRECTS = 5
+
+    // A process-scoped worker with an idle timeout and a bounded queue. Duplicate
+    // taps cannot accumulate an unbounded number of network jobs.
+    private val executor = ThreadPoolExecutor(
+        1,
+        1,
+        30L,
+        TimeUnit.SECONDS,
+        ArrayBlockingQueue(1),
+        { runnable -> Thread(runnable, "LastHavenUpdater").apply { isDaemon = true } },
+        ThreadPoolExecutor.AbortPolicy(),
+    ).apply { allowCoreThreadTimeOut(true) }
     private val mainHandler = Handler(Looper.getMainLooper())
+
+    private fun enqueue(appContext: Context, onRejected: () -> Unit, task: () -> Unit) {
+        try {
+            executor.execute { task() }
+        } catch (error: RejectedExecutionException) {
+            Diagnostics.warn(appContext, "Updater", "Updater is busy; request was not queued")
+            mainHandler.post { onRejected() }
+        }
+    }
 
     fun checkForUpdate(context: Context, callback: (UpdateCheckResult) -> Unit) {
         val appContext = context.applicationContext
-        executor.execute {
+        enqueue(appContext, {
+            callback(UpdateCheckResult.Failed("Updater is busy. Try again shortly."))
+        }) {
             val result = try {
                 val releaseConnection = openConnection(RELEASE_API)
                 val release = try {
-                    if (releaseConnection.responseCode == HttpURLConnection.HTTP_NOT_FOUND) {
+                    val responseCode = releaseConnection.responseCode
+                    if (responseCode == HttpURLConnection.HTTP_NOT_FOUND) {
                         null
                     } else {
-                        check(releaseConnection.responseCode == HttpURLConnection.HTTP_OK) {
-                            "GitHub returned HTTP ${releaseConnection.responseCode}"
+                        check(responseCode == HttpURLConnection.HTTP_OK) {
+                            "GitHub returned HTTP $responseCode"
                         }
-                        JSONObject(releaseConnection.inputStream.bufferedReader().use { it.readText() })
+                        JSONObject(releaseConnection.inputStream.use { UpdateNetworkPolicy.readLimitedText(it, MAX_RELEASE_JSON_BYTES) })
                     }
                 } finally {
                     releaseConnection.disconnect()
@@ -107,25 +137,20 @@ object AppUpdater {
                         val manifestUrl = requireGithubUrl(manifestAsset.getString("browser_download_url"))
                         val manifestConnection = openConnection(manifestUrl)
                         val manifest = try {
-                            check(manifestConnection.responseCode == HttpURLConnection.HTTP_OK) {
-                                "Update manifest download failed (HTTP ${manifestConnection.responseCode})"
+                            val responseCode = manifestConnection.responseCode
+                            check(responseCode == HttpURLConnection.HTTP_OK) {
+                                "Update manifest download failed (HTTP $responseCode)"
                             }
-                            JSONObject(manifestConnection.inputStream.bufferedReader().use { it.readText() })
+                            JSONObject(
+                                manifestConnection.inputStream.use {
+                                    UpdateNetworkPolicy.readLimitedText(it, MAX_MANIFEST_JSON_BYTES)
+                                },
+                            )
                         } finally {
                             manifestConnection.disconnect()
                         }
 
-                        check(manifest.optInt("schemaVersion") == 1) {
-                            "Unsupported update manifest version"
-                        }
-                        check(manifest.getString("version") == latestVersion) {
-                            "Update manifest version does not match the release tag"
-                        }
-
                         val target = manifest.getJSONObject("apk")
-                        check(target.getString("name") == APK_ASSET_NAME) {
-                            "Update manifest references an unexpected APK"
-                        }
                         val fullAsset = assetByName[APK_ASSET_NAME]
                             ?: error("Release is missing $APK_ASSET_NAME")
                         val fullUrl = requireGithubUrl(fullAsset.getString("browser_download_url"))
@@ -138,14 +163,20 @@ object AppUpdater {
                         }
 
                         val versionCode = manifest.getLong("versionCode")
-                        check(versionCode == latestVersionCode) {
-                            "Update manifest versionCode does not match the release tag"
-                        }
-                        check(versionCode > packageInfo.longVersionCode) {
-                            "Update versionCode is not newer than the installed app"
-                        }
                         val targetSize = target.getLong("size")
-                        check(targetSize in 1..MAX_APK_BYTES) { "Update APK size is invalid" }
+                        UpdateManifestPolicy.validateApk(
+                            schemaVersion = manifest.optInt("schemaVersion"),
+                            manifestVersion = manifest.getString("version"),
+                            expectedReleaseVersion = latestVersion,
+                            versionCode = versionCode,
+                            expectedVersionCode = latestVersionCode,
+                            installedVersionCode = packageInfo.longVersionCode,
+                            apkName = target.getString("name"),
+                            expectedApkName = APK_ASSET_NAME,
+                            apkSize = targetSize,
+                            releaseAssetSize = fullAsset.getLong("size"),
+                            maximumApkBytes = MAX_APK_BYTES,
+                        )
 
                         val patch = runCatching {
                             manifest.optJSONObject("patch")?.let { patchJson ->
@@ -166,6 +197,9 @@ object AppUpdater {
                                 check(patchSize in 1..MAX_PATCH_BYTES) {
                                     "Differential patch size is invalid"
                                 }
+                                check(patchAsset.getLong("size") == patchSize) {
+                                    "GitHub patch asset size does not match the update manifest"
+                                }
                                 AppUpdatePatch(
                                     downloadUrl = patchUrl,
                                     sha256 = patchSha,
@@ -174,8 +208,12 @@ object AppUpdater {
                                     baseVersionCode = patchJson.getLong("fromVersionCode"),
                                     baseSha256 = requireSha256(patchJson.getString("fromSha256")),
                                 ).takeIf {
-                                    it.baseVersion == currentVersion &&
-                                        it.baseVersionCode == packageInfo.longVersionCode
+                                    UpdateManifestPolicy.isPatchCompatible(
+                                        currentVersion,
+                                        packageInfo.longVersionCode,
+                                        it.baseVersion,
+                                        it.baseVersionCode,
+                                    )
                                 }
                             }
                         }.getOrNull()
@@ -215,73 +253,111 @@ object AppUpdater {
         callback: (Result<Uri>) -> Unit,
     ) {
         val appContext = context.applicationContext
-        executor.execute {
+        enqueue(appContext, {
+            callback(Result.failure(IllegalStateException("Updater is busy. Try again shortly.")))
+        }) {
             val result = runCatching {
-                val updateDirectory = File(appContext.filesDir, "updates").apply { mkdirs() }
-                val finalApk = File(updateDirectory, "LastHavenPlus-update.apk")
-                val temporaryApk = File(updateDirectory, "update.apk.part")
-                temporaryApk.delete()
-
-                val patch = update.patch
-                val installedInfo = installedPackageInfo(appContext)
-                val canUsePatch = preferDelta &&
-                    patch != null &&
-                    installedInfo.versionName == patch.baseVersion &&
-                    installedInfo.longVersionCode == patch.baseVersionCode
-
-                if (canUsePatch) {
-                    val delta = patch ?: error("Differential patch metadata is missing")
-                    val baseApk = File(appContext.applicationInfo.sourceDir)
-                    check(baseApk.isFile && baseApk.canRead()) {
-                        "Installed APK is not accessible; choose the full APK instead"
-                    }
-                    check(sha256(baseApk).equals(delta.baseSha256, true)) {
-                        "Installed APK does not match this patch; choose the full APK instead"
-                    }
-
-                    val patchFile = File(updateDirectory, "update.bsdiff.part")
-                    patchFile.delete()
-                    try {
-                        downloadToFile(
-                            delta.downloadUrl,
-                            delta.sha256,
-                            delta.size,
-                            MAX_PATCH_BYTES,
-                            patchFile,
-                        )
-                        BsdiffPatch.apply(baseApk, patchFile, temporaryApk, MAX_APK_BYTES)
-                    } finally {
-                        patchFile.delete()
-                    }
-                } else {
-                    downloadToFile(
-                        update.downloadUrl,
-                        update.sha256,
-                        update.size,
-                        MAX_APK_BYTES,
-                        temporaryApk,
-                    )
+                val updateDirectory = File(appContext.filesDir, "updates").apply {
+                    check(isDirectory || mkdirs()) { "Could not create the update download directory" }
                 }
-
-                check(temporaryApk.length() == update.size) {
-                    "Reconstructed APK size does not match the release manifest"
-                }
-                check(sha256(temporaryApk).equals(update.sha256, true)) {
-                    "APK checksum verification failed"
-                }
-                verifySignedUpdate(appContext, temporaryApk, update)
-
-                finalApk.delete()
-                check(temporaryApk.renameTo(finalApk)) { "Could not finalize downloaded APK" }
-                FileProvider.getUriForFile(
-                    appContext,
-                    "${appContext.packageName}.updates",
-                    finalApk,
+                UpdateFileCleanup.removeAbandonedPartialFiles(updateDirectory)
+                val temporaryApk = File.createTempFile(
+                    "update-${update.versionCode}-",
+                    ".apk.part",
+                    updateDirectory,
                 )
+                try {
+                    val finalApk = File(
+                        updateDirectory,
+                        "LastHavenPlus-update-${update.versionCode}-${UUID.randomUUID()}.apk",
+                    )
+                    val patch = update.patch
+                    val installedInfo = installedPackageInfo(appContext)
+                    val canUsePatch = preferDelta &&
+                        patch != null &&
+                        installedInfo.versionName == patch.baseVersion &&
+                        installedInfo.longVersionCode == patch.baseVersionCode
+
+                    val verifyCandidate: () -> Unit = {
+                        check(temporaryApk.length() == update.size) {
+                            "Reconstructed APK size does not match the release manifest"
+                        }
+                        check(sha256(temporaryApk).equals(update.sha256, true)) {
+                            "APK checksum verification failed"
+                        }
+                        verifySignedUpdate(appContext, temporaryApk, update)
+                    }
+
+                    UpdateFallback.withFullFallback(
+                        preferDelta = canUsePatch,
+                        deltaAttempt = {
+                            val delta = patch ?: error("Differential patch metadata is missing")
+                            val baseApk = File(appContext.applicationInfo.sourceDir)
+                            check(baseApk.isFile && baseApk.canRead()) {
+                                "Installed APK is not accessible"
+                            }
+                            UpdateNetworkPolicy.verifyBaseApkDigest(
+                                sha256(baseApk),
+                                delta.baseSha256,
+                            )
+
+                            val patchFile = File.createTempFile(
+                                "update-${update.versionCode}-",
+                                ".bsdiff.part",
+                                updateDirectory,
+                            )
+                            try {
+                                downloadToFile(
+                                    delta.downloadUrl,
+                                    delta.sha256,
+                                    delta.size,
+                                    MAX_PATCH_BYTES,
+                                    patchFile,
+                                )
+                                BsdiffPatch.apply(baseApk, patchFile, temporaryApk, MAX_APK_BYTES)
+                                verifyCandidate()
+                                temporaryApk
+                            } finally {
+                                patchFile.delete()
+                            }
+                        },
+                        fullAttempt = {
+                            // Never let a failed or partially reconstructed delta reach the installer.
+                            temporaryApk.delete()
+                            downloadToFile(
+                                update.downloadUrl,
+                                update.sha256,
+                                update.size,
+                                MAX_APK_BYTES,
+                                temporaryApk,
+                            )
+                            verifyCandidate()
+                            temporaryApk
+                        },
+                        onDeltaFailure = { error ->
+                            Diagnostics.warn(
+                                appContext,
+                                "Updater",
+                                "Differential update failed; falling back to full APK: ${error.message}",
+                            )
+                        },
+                    )
+
+                    check(temporaryApk.renameTo(finalApk)) { "Could not finalize downloaded APK" }
+                    FileProvider.getUriForFile(
+                        appContext,
+                        "${appContext.packageName}.updates",
+                        finalApk,
+                    )
+                } finally {
+                    temporaryApk.delete()
+                }
             }
 
             result.onSuccess { Diagnostics.info(appContext, "Updater", "Update download and validation succeeded") }
-                .onFailure { Diagnostics.error(appContext, "Updater", "Update download failed: ${it.message}") }
+                .onFailure {
+                    Diagnostics.error(appContext, "Updater", "Update download failed: ${it.message}")
+                }
             mainHandler.post { callback(result) }
         }
     }
@@ -339,8 +415,9 @@ object AppUpdater {
     ) {
         val connection = openConnection(url)
         try {
-            check(connection.responseCode == HttpURLConnection.HTTP_OK) {
-                "Update download failed (HTTP ${connection.responseCode})"
+            val responseCode = connection.responseCode
+            check(responseCode == HttpURLConnection.HTTP_OK) {
+                "Update download failed (HTTP $responseCode)"
             }
             val contentLength = connection.contentLengthLong
             check(contentLength <= maximumBytes) { "Update file is unexpectedly large" }
@@ -364,12 +441,50 @@ object AppUpdater {
                     output.fd.sync()
                 }
             }
-            check(totalBytes == expectedSize) { "Downloaded file size does not match its manifest" }
             val actual = digest.digest().joinToString("") { "%02x".format(it) }
-            check(actual.equals(expectedSha256, true)) { "Downloaded file checksum verification failed" }
+            UpdateNetworkPolicy.verifyDownload(totalBytes, expectedSize, maximumBytes, actual, expectedSha256)
+        } catch (error: Exception) {
+            destination.delete()
+            throw error
         } finally {
             connection.disconnect()
         }
+    }
+
+    private fun openConnection(url: String): HttpURLConnection {
+        var currentUrl = UpdateNetworkPolicy.requireTrustedConnectionUrl(url)
+        repeat(MAX_REDIRECTS + 1) { redirectCount ->
+            val connection = (URL(currentUrl).openConnection() as HttpURLConnection).apply {
+                requestMethod = "GET"
+                connectTimeout = 15_000
+                readTimeout = 60_000
+                instanceFollowRedirects = false
+                setRequestProperty("Accept", "application/vnd.github+json")
+                setRequestProperty("X-GitHub-Api-Version", "2022-11-28")
+                setRequestProperty("User-Agent", "LastHavenPlus-Android")
+            }
+            val responseCode = try {
+                connection.responseCode
+            } catch (error: Exception) {
+                connection.disconnect()
+                throw error
+            }
+
+            if (UpdateNetworkPolicy.isRedirect(responseCode)) {
+                val location = connection.getHeaderField("Location")
+                connection.disconnect()
+                check(redirectCount < MAX_REDIRECTS) {
+                    "Update server exceeded the redirect limit"
+                }
+                currentUrl = UpdateNetworkPolicy.resolveTrustedRedirect(
+                    currentUrl,
+                    location ?: error("Update server returned a redirect without a location"),
+                )
+            } else {
+                return connection
+            }
+        }
+        error("Update server exceeded the redirect limit")
     }
 
     private fun sha256(file: File): String {
@@ -389,52 +504,20 @@ object AppUpdater {
         MessageDigest.getInstance("SHA-256").digest(certificate)
             .joinToString("") { "%02X".format(it) }
 
-    private fun requireSha256(value: String): String {
-        check(SHA256_PATTERN.matches(value)) { "Invalid SHA-256 value in update manifest" }
-        return value.lowercase()
-    }
+    private fun requireSha256(value: String): String =
+        UpdateVersionPolicy.requireSha256(value)
 
-    private fun requireGithubUrl(value: String): String {
-        check(value.startsWith("https://github.com/")) {
-            "Release assets must be hosted on GitHub"
-        }
-        return value
-    }
+    private fun requireGithubUrl(value: String): String =
+        UpdateVersionPolicy.requireGithubAssetUrl(value)
 
-    private fun openConnection(url: String): HttpURLConnection =
-        (URL(url).openConnection() as HttpURLConnection).apply {
-            requestMethod = "GET"
-            connectTimeout = 15_000
-            readTimeout = 60_000
-            instanceFollowRedirects = true
-            setRequestProperty("Accept", "application/vnd.github+json")
-            setRequestProperty("X-GitHub-Api-Version", "2022-11-28")
-            setRequestProperty("User-Agent", "LastHavenPlus-Android")
-        }
 
-    private fun isValidVersion(version: String): Boolean = VERSION_PATTERN.matches(version)
 
-    private fun versionCodeForVersion(version: String): Long {
-        val parts = VERSION_PATTERN.matchEntire(version)?.groupValues?.drop(1)
-            ?: error("Invalid release version: $version")
-        val values = parts.map { it.toLong() }
-        check(values.all { it <= 999L }) { "Release version components must be 999 or lower" }
-        return values[0] * 1_000_000L + values[1] * 1_000L + values[2]
-    }
+    private fun isValidVersion(version: String): Boolean = UpdateVersionPolicy.isValid(version)
 
-    private fun compareVersions(first: String, second: String): Int {
-        val a = VERSION_PATTERN.matchEntire(first)?.groupValues?.drop(1)
-            ?: error("Invalid installed version: $second")
-        val b = VERSION_PATTERN.matchEntire(second)?.groupValues?.drop(1)
-            ?: error("Invalid release version: $first")
+    private fun versionCodeForVersion(version: String): Long =
+        UpdateVersionPolicy.versionCode(version)
 
-        for (index in 0..2) {
-            val comparison = a[index].toLong().compareTo(b[index].toLong())
-            if (comparison != 0) return comparison
-        }
-        return 0
-    }
+    private fun compareVersions(first: String, second: String): Int =
+        UpdateVersionPolicy.compare(first, second)
 
-    private val VERSION_PATTERN = Regex("v?(\\d+)\\.(\\d+)\\.(\\d+)")
-    private val SHA256_PATTERN = Regex("[a-fA-F0-9]{64}")
 }
