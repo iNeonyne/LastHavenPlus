@@ -62,7 +62,7 @@ A signed release build requires the established project keystore and credentials
 ## Project workflow and records
 
 - `beta` is the development, integration and testing branch; `main` is the stable release branch.
-- Task PRs target `beta`. Chaty alone reviews and merges into beta.
+- Task PRs target `beta`. Chaty and Vibe review and merge into beta (never their own PRs).
 - `ISSUES.md` and GitHub Issues are the task sources of truth.
 - `STATUS.md` records verified, unverified and incomplete work plus exact CI evidence.
 - `AGENTS.md` and `AGENT_WORK.md` define contributor workflow and active assignments.

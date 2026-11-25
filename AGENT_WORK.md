@@ -4,7 +4,7 @@
 
 ## Roles
 
-- **Chaty — roadmap and housekeeping:** owns issue #18 and central tracker/documentation reconciliation, branch audit, CI evidence, PR review and integration. Chaty alone may merge accepted PRs into `beta`.
+- **Chaty & Vibe — roadmap and housekeeping:** own issue #18 and central tracker/documentation reconciliation, branch audit, CI evidence, PR review and integration. Chaty and Vibe may merge accepted (non-self-authored) PRs into `beta`.
 - **Chaty — issue #56 implementation:** completed via PR [#83](https://github.com/iNeonyne/LastHavenPlus/pull/83), merged to beta. Ploy is released from this issue; no overlapping work remains.
 
 ## Active assignments
@@ -51,7 +51,7 @@ Ploy has no active application issue. The remaining supporting features are defe
 
 - Keep one issue per PR and non-overlapping scopes.
 - Contributors work on task branches and open PRs targeting beta.
-- Chaty alone reviews and merges into beta. Owner-authorized stable promotion uses a separate main-based PR that preserves main-only history.
+- Chaty and Vibe review and merge into beta (never their own PRs). Owner-authorized stable promotion uses a separate main-based PR that preserves main-only history.
 - If beta advances, refresh and rerun affected checks before merge.
 - Never force-push shared branches or push directly to beta/main.
 - The owner retains final product and release authority.

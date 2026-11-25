@@ -14,8 +14,8 @@ The active embedded browser engine in `beta` is Mozilla GeckoView 160. Do not ad
 - **`main` is the stable release branch.**
 - Pull requests are the normal integration path for task work. Open PRs against `beta`; do not target `main` for routine development.
 - Parallel agents may work on separate issues only when their file scopes do not overlap. Never let two agents work on the same issue concurrently.
-- Contributors work on dedicated task branches, open PRs targeting `beta`, and provide Chaty the PR link, exact head commit, changed files, test evidence and remaining limitations.
-- **Chaty is the sole orchestrator and integrator.** Chaty reviews PR diffs and CI, resolves conflicts, requests changes, and merges accepted PRs into `beta`. Chaty coordinates verification and release readiness; no other agent may merge or push directly to `beta`.
+- Contributors work on dedicated task branches, open PRs targeting `beta`, and provide a reviewer (Chaty or Vibe) the PR link, exact head commit, changed files, test evidence and remaining limitations.
+- **Chaty and Vibe are the orchestrators and integrators.** They review PR diffs and CI, resolve conflicts, request changes, and merge accepted PRs (never their own) into `beta`, and coordinate verification and release readiness. No other agent or contributor may merge or push directly to `beta`. The repository owner granted Vibe equal integrator authority to Chaty on 2026-11-25.
 - Promote `beta` to `main` only after all release gates pass and the owner explicitly approves. Publishing a release or creating a release tag also requires explicit approval.
 - Never develop routinely on `main`, force-push shared branches or bypass required checks.
 
@@ -27,7 +27,7 @@ Review effort must match risk without removing the review gate:
 - **Standard review:** normal UI, settings, diagnostics and contained application changes. Inspect affected call paths, regression risks, relevant tests and the required unsigned PR build.
 - **Strict review:** GeckoView/session lifecycle, updater/download/patching, storage/profile, network/security, dependencies/toolchain, manifest/permissions, signing and CI/release workflows. Inspect success and failure paths, require focused regression tests, exact-head CI, and relevant post-merge signed/packaging checks. Require physical ARM64 testing for claims that depend on device behavior.
 
-All PRs remain subject to Chaty's review and required CI. “Lightweight” means a smaller review scope, not automatic approval, bypassed CI, or permission to merge. Keep one issue per PR, avoid unrelated cleanup, and keep file ownership non-overlapping. Contributors must provide a concise handoff: outcome, scope/non-goals, changed files, exact head SHA, test commands/results and CI links, limitations, and physical-device status. If `beta` advances, refresh the branch and rerun affected checks before merge.
+All PRs remain subject to Chaty/Vibe review and required CI. “Lightweight” means a smaller review scope, not automatic approval, bypassed CI, or permission to merge. Keep one issue per PR, avoid unrelated cleanup, and keep file ownership non-overlapping. Contributors must provide a concise handoff: outcome, scope/non-goals, changed files, exact head SHA, test commands/results and CI links, limitations, and physical-device status. If `beta` advances, refresh the branch and rerun affected checks before merge.
 
 ## Before changing code
 
@@ -35,11 +35,11 @@ All PRs remain subject to Chaty's review and required CI. “Lightweight” mean
 2. Read the relevant GitHub issue and search open and closed issues for duplicates.
 3. Confirm the issue, owner, exact subtask, allowed files, branch and dependencies in `STATUS.md` before editing.
 4. Read `docs/GECKOVIEW_MIGRATION.md` before changing or debugging GeckoView integration.
-5. Work only within the assigned scope. If the scope or ownership is unclear, stop and ask Chaty to resolve it.
+5. Work only within the assigned scope. If the scope or ownership is unclear, stop and ask Chaty or Vibe to resolve it.
 
 ## Ownership
 
-- Chaty owns intake, triage, issue creation/updates, central documentation, assignments, review, integration, CI coordination and release coordination.
+- Chaty and Vibe own intake, triage, issue creation/updates, central documentation, assignments, review, integration, CI coordination and release coordination.
 - Ploy works only on the assignment explicitly listed in `AGENT_WORK.md`. Ploy must not change central trackers or independently integrate/push to `beta` or `main`.
 - One active owner per issue. A handoff is complete only after the previous owner stops and the assignment/status records are updated.
 - GitHub Issues and `ISSUES.md` are the project task records. TickTick may be used as a supplementary personal task tracker; it is not the source of truth.
