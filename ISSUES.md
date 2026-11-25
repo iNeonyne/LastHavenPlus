@@ -12,18 +12,18 @@
 6. **P2 — Remaining product polish:** #9, #11, #12, #14, #16 and #17 only after core reliability gates.
 7. **P3 — Performance and APK size (#7):** Measure before optimizing; do not expand v2.1.0 scope without owner approval.
 
-**Release roadmap:** [#18 — v2.1.0 reliability, GeckoView verification and addon manager](https://github.com/iNeonyne/LastHavenPlus/issues/18). v2.0.0 is already published; v2.1.0 is a proposed target, not a release commitment.
+**Release roadmap:** [#18 — v2.1.0 reliability and GeckoView verification](https://github.com/iNeonyne/LastHavenPlus/issues/18). The v2.1.0 candidate was promoted to `main` by PR #47; publication is not verified and remains blocked on the physical ARM64 test matrix and final versioned release-artifact checks. The addon manager (#23) is on hold and is not part of active v2.1.0 scope.
 
 ## Backlog index
 
 | Issue | Priority | Summary | Current state |
 |---|---:|---|---|
-| [#4](#issue-4) | P0.1 | Build reproducibility and updater test coverage | Open; wrapper verified, more updater tests and current CI evidence required |
+| [#4](#issue-4) | P0.1 | Build reproducibility and updater test coverage | Open; signed candidate CI verified, final versioned artifact and physical update checks remain |
 | [#5](#issue-5) | P0.2 | Physical ARM64 gameplay and update verification | Open; not yet performed |
 | [#6](#issue-6) | P2 | Settings and safe storage controls | Open; implementation exists, device verification remains |
 | [#7](#issue-7) | P3 | Runtime performance and APK size | Open; measure before optimizing |
 | [#8](#issue-8) | — | Legacy addon manager | Closed — superseded; no planned work |
-| [#9](#issue-9) | P2 | Navigation menu accessibility | Paused pending final #22 UI |
+| [#9](#issue-9) | P2 | Navigation menu accessibility | Open; TalkBack semantics and physical navigation checks remain after #42 |
 | [#10](#issue-10) | P2 | Network data usage | Implemented in source; device verification remains |
 | [#11](#issue-11) | P2 | Privacy-conscious diagnostics | Paused; further tests remain |
 | [#12](#issue-12) | P2 | GeckoView load-error details | Open |
@@ -32,14 +32,14 @@
 | [#15](#issue-15) | P2 | Updater recovery | Open |
 | [#16](#issue-16) | P2 | Gameplay orientation and keep-awake settings | Open |
 | [#17](#issue-17) | P2 | Settings backup and restore | Open |
-| [#18](#issue-18) | Roadmap | v2.1.0 reliability, GeckoView verification and addon manager | Open; proposed release roadmap |
+| [#18](#issue-18) | Roadmap | v2.1.0 release gates and GeckoView verification | Open; candidate promoted, physical and final-artifact gates remain |
 | [#19](#issue-19) | P1 | Opt-in beta release channel | Open |
 | [#20](#issue-20) | P0 | GeckoView technical decision | Research recorded; compatibility verification tracked with #21 |
 | [#21](#issue-21) | P0 | Replace Cefrium with GeckoView | Source migration implemented; physical runtime checks remain |
-| [#22](#issue-22) | P1 | Home screen and Play/Settings navigation | Merged to beta in PR #26; physical verification pending |
+| [#22](#issue-22) | P1 | Home screen and Play/Settings navigation | Closed — source implementation integrated; physical checks tracked in #5/#42 |
 | [#23](#issue-23) | Deferred | Integrate and harden supplied GeckoView addon manager | On hold by owner instruction; do not resume without explicit approval |
 | [#28](https://github.com/iNeonyne/LastHavenPlus/issues/28) | P2 | Storage usage accuracy and iterative directory sizing | Open; not started |
-| [#42](https://github.com/iNeonyne/LastHavenPlus/issues/42) | P1 | v2.1.0 launcher redesign | Implemented in PR #43; physical UI verification remains |
+| [#42](https://github.com/iNeonyne/LastHavenPlus/issues/42) | P1 | v2.1.0 launcher UI verification | Source implementation integrated by PR #43; physical UI verification remains |
 | [#29](https://github.com/iNeonyne/LastHavenPlus/issues/29) | Done | Reconcile beta documentation and CI evidence | Closed as completed after PR #46 merged to beta |
 | [#31](https://github.com/iNeonyne/LastHavenPlus/issues/31) | P0 | Resilient release packaging when differential generation fails | Open; verify current workflow and remaining acceptance criteria |
 
@@ -674,4 +674,4 @@ Preserve archive path/CRC/duplicate/count/expanded-size checks. Keep Android 10/
 ## Issue 31 — P0 — Make release packaging resilient to optional differential update failures
 
 **GitHub:** https://github.com/iNeonyne/LastHavenPlus/issues/31  
-**State:** open; implementation candidate is PR #32 targeting beta. Require exact-head workflow validation and critical review before merge. The full signed APK must remain available if optional differential packaging fails. Preserve signing, ARM64, manifest and artifact-count checks.
+**State:** open; PR #37 merged the optional differential fallback hardening. The later signed beta run #45601558602 passed build, unit tests, established signing-certificate verification and ARM64-only ABI checks for the v2.1.0 candidate (recorded in PR #47). Keep this issue open because that run does not exercise every release-tag optional-delta failure path. Require a separately authorized versioned release-workflow test before closing; do not publish or alter release policy just to test it.
