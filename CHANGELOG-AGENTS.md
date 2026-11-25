@@ -759,3 +759,14 @@ Entry format:
 - **Change:** Consolidated proposed download speed/ETA, inline retry, install-later confirmation, storage preflight, differential/full-size comparison, formatted release notes/history, installed version identity, theme preference, storage loading placeholders, offline hint and restrained haptics into existing issues. No duplicate issues created.
 - **Explicit exclusions:** no launcher HomeScreen work, no pull-to-refresh/update badge on a launcher HomeScreen, no auto-check on launch, no unattended background downloads/automatic installation, and no external browser fallback. The game retains its own home screen; updates remain user-initiated.
 - **Status:** backlog-only triage. No application source changes, assignments, release commitments or device-test claims.
+
+
+## 2026-11-26 — Distinguish game loading, navigation failure and renderer failure (issue #106)
+
+- **Role:** Vibe / game loading and failure UX (owner-approved UI/UX work)
+- **Issue:** #106 — loading, reconnect and load-failure presentation (separate from #107 styling).
+- **Branch:** `vibe/game-load-states-568e1f` → `beta` (PR pending).
+- **Changes:** added `GameLoadPolicy` (pure JVM classifier: Preparing / LoadingGame / RecoverableFailure / RendererFailure / Game) and 12 unit tests covering transitions, failure priority and non-obscuring of loaded gameplay; `GameScreen` now renders the branded initial loading state (previously absent once the Gecko session existed), a dedicated crash renderer-failure screen with an explicit "Restore game" action, and a wider recoverable-failure retry state; `MainActivity` distinguishes `sessionCrashed` (GeckoView `onCrash`/`onKill`) from `pageLoadFailed` (`onPageStop` failure), tracks `hasCompletedLoad` so later in-game navigations never obscure healthy gameplay, and adds a session-recreation restore path that keeps the GeckoRuntime (profile) intact. Loading and failure surfaces expose accessibility content descriptions; Retry/Restore buttons use 48dp minimum height.
+- **GeckoView API use:** only delegates already integrated against 160 (`ProgressDelegate.onPageStart/onPageStop`, `ContentDelegate.onCrash/onKill`); no new engine APIs. Error-category mapping stays with #12 as coordinated.
+- **Scope:** no game/client changes, no session-downgrade behaviors, no automatic retry, no polling, no new navigation destinations; session/profile lifecycle unchanged otherwise.
+- **Verification:** exact-head CI pending on the PR. On-device ARM64 behavior of the crash/restore path and the branded loading state remains unverified and must be confirmed on physical hardware.
