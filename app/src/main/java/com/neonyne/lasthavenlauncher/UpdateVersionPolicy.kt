@@ -1,6 +1,5 @@
 package com.neonyne.lasthavenlauncher
 
-import java.net.URL
 
 internal object UpdateVersionPolicy {
     private val versionPattern = Regex("v?(\\d+)\\.(\\d+)\\.(\\d+)")
@@ -33,11 +32,6 @@ internal object UpdateVersionPolicy {
         return value.lowercase()
     }
 
-    fun requireGithubAssetUrl(value: String): String {
-        val parsed = URL(value)
-        require(parsed.protocol == "https" && parsed.host.equals("github.com", true)) {
-            "Release assets must be hosted on GitHub"
-        }
-        return value
-    }
+    fun requireGithubAssetUrl(value: String): String =
+        UpdateNetworkPolicy.requireGithubAssetUrl(value)
 }
