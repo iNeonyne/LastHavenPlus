@@ -571,3 +571,11 @@ Entry format:
 - **Corrections:** mark issue #29 complete in the backlog; remove its stale active assignment; record completed promotion and verified CI evidence in STATUS; align README, AGENTS and GeckoView notes with the owner's current addon-manager hold instruction.
 - **Scope:** documentation and issue-tracker reconciliation only. No app source, Gradle, CI workflow, signing, release publication or game changes.
 - **Limitations:** physical ARM64 feature-matrix testing remains outstanding. The final v2.1.0 tag/draft/publication state must be verified independently before it is described as published.
+
+
+## 2026-11-25 — Complete repository housekeeping PR #49
+
+- **PR:** [#49](https://github.com/iNeonyne/LastHavenPlus/pull/49), squash-merged to beta.
+- **Merge commit:** `1f661cb6234dcfdfd051d0cb963e739668896a26`.
+- **Outcome:** post-promotion status and CI records reconciled; completed issue #29 removed from active work; addon-manager issue #23 returned to owner-directed hold; issue #31 backlog wording corrected; active assignment cleared.
+- **Validation:** documentation-only diff review. No application tests or physical-device checks were run by this PR.

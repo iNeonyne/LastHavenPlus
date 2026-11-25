@@ -337,3 +337,13 @@
 - **Scope:** repository records and #23 issue status only. No source, build, release, signing or game files.
 - **Verification:** no application tests run; documentation changes require diff/link review. Physical ARM64 feature-matrix verification remains unverified.
 - **Next safe action:** inspect the docs-only diff and submit a PR targeting beta. Do not merge without reviewing the exact diff and CI policy.
+
+
+### 2026-11-25 — Housekeeping PR #49 merged
+
+- **PR:** [#49](https://github.com/iNeonyne/LastHavenPlus/pull/49), squash-merged into `beta`.
+- **Merge commit:** `1f661cb6234dcfdfd051d0cb963e739668896a26`.
+- **Result:** reconciled STATUS, README, AGENTS, ISSUES, AGENT_WORK and GeckoView notes; issue #29 is documented as completed; issue #23 is on hold; issue #31's PR and verification history is corrected.
+- **Tests:** no application tests run; documentation-only. PR validation query returned no PR-triggered workflow runs for the documentation commit. The existing signed beta evidence cited in PR #47 remains the relevant build evidence.
+- **Physical-device status:** full ARM64 feature matrix remains unverified.
+- **Next safe action:** inspect remaining stale branches and release-tag/draft state; do not delete branches without confirming their PR/commit dependencies.
