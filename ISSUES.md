@@ -39,6 +39,7 @@
 | [#23](#issue-23) | Deferred | Addon manager replacement | Owner hold; no work authorized |
 | [#28](https://github.com/iNeonyne/LastHavenPlus/issues/28) | P2 | Storage usage accuracy and iterative directory sizing | Open; not started |
 | [#29](https://github.com/iNeonyne/LastHavenPlus/issues/29) | P1 | Reconcile beta documentation and CI evidence | Open; not started |
+| [#31](https://github.com/iNeonyne/LastHavenPlus/issues/31) | P0 | Release packaging reliability and differential fallback | Active in PR workflow fix; exact-head CI pending |
 
 ---
 
