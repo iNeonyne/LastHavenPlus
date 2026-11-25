@@ -266,3 +266,15 @@
 - **Promotion PR:** [#27](https://github.com/iNeonyne/LastHavenPlus/pull/27) is a draft. A two-parent merge checkpoint includes current main ancestry and preserves the promotion tree; GitHub API reports `mergeable=true`, `mergeable_state=clean`.
 - **Not verified:** physical ARM64 gameplay/profile persistence, process-death installer restoration and actual differential/full update installation.
 - **Next safe action:** keep PR #27 draft until physical device gates and promotion diff checks are complete. Do not merge main or publish a release yet.
+
+
+### 2026-11-25 — Updater hardening candidate and release follow-up triage
+
+- **Starting beta HEAD:** `b7d9f3256527de41a45ff8c935fac510be635a69`.
+- **Branch:** `chaty/fix-updater-hardening`.
+- **Candidate HEAD:** `4b5ecb6d4db4276983f98aff3cfb81d69b8fd882`.
+- **Files changed:** `AppUpdater.kt`, `MainActivity.kt`, `UpdateNetworkPolicy.kt`, `UpdateVersionPolicy.kt`, `UpdateFallback.kt`, `UpdateNetworkPolicyTest.kt`, `UpdateFallbackTest.kt`.
+- **Changes:** Added per-hop HTTPS redirect validation against exact GitHub hosts, bounded JSON response bodies, bounded/idle-retiring updater execution, shared download size/digest validation, unique temporary/final update file names, process-death-safe installer permission handoff state, and diagnostic-failure-safe full APK fallback. Added JVM tests for network policy and fallback resilience.
+- **Issue triage:** Updated physical device issue #5 to the canonical `https://lasthavens.com/play` URL and included updater recovery tests. Created #28 for storage measurement accuracy/iterative traversal and #29 for stale documentation/CI evidence. Existing #4 and #15 remain open.
+- **Verification:** No Gradle build or test command has been run in this environment. Candidate is not integrated; exact-head PR CI is the next verification step.
+- **Next safe action:** Open a PR targeting `beta`, inspect CI for exact candidate SHA, then update #4/#15 and STATUS with evidence. Do not merge to main or publish.
