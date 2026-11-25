@@ -2,19 +2,19 @@
 
 **Last updated:** 2026-11-25  
 **Active branch:** `beta`  
-**Latest application integration commit:** `2e64f56d9dbf82fa0396d8e23b5e52a62506d9ae` (PR [#83](https://github.com/iNeonyne/LastHavenPlus/pull/83), direct launch and overlay).  
-**Beta base for current icon/documentation PR:** `2e64f56d9dbf82fa0396d8e23b5e52a62506d9ae`. **Candidate PR #85 head:** `edf0461a4a6a3ed6d3f6a8a41fc31ab02c2afb55` (pending exact-head CI and merge).  
+**Latest beta integration commit:** `073f839eb3cccd9a13fae09dd091667bb86a1f0c` (PR [#85](https://github.com/iNeonyne/LastHavenPlus/pull/85), approved recreated icon and documentation; includes PR [#83](https://github.com/iNeonyne/LastHavenPlus/pull/83) direct-launch implementation).  
+**Stable promotion commit:** `f22b5c2b92b6f93b201b1a9dc50a8c8095543d76` (PR [#87](https://github.com/iNeonyne/LastHavenPlus/pull/87), selective product/docs promotion to main; stable-only history preserved).  
 **Latest workflow integration:** PR [#54](https://github.com/iNeonyne/LastHavenPlus/pull/54) merged to beta at `b12da7651445d15080e7593d441459a8c8403070`; exact-head unsigned and post-merge signed CI both passed.  
 **Stable documentation:** owner-authorized v2.1.0 corrections are on `main`; README commit `fdae3d90cf3abb209df8a42dd73ed1667bae9808`, CHANGELOG commit `2abe7cc212b67a3b91f5dcdb108aee3a55559e32`.  
 **Stable promotion and publication:** PR [#47](https://github.com/iNeonyne/LastHavenPlus/pull/47) promoted to `main`; tag/release `v2.1.0` is published at `03fcfa9652ce4e7d1034523d640a1693e6e6b9ce`.  
-**Current phase:** v2.1.0 is published; v2.2.0 implementation scope is #56 direct launch/overlay and #84 approved recreated icon. PR #83 is merged; PR #85 adds the icon and aligns documentation. Owner release feedback is collected after publication on the owner's schedule; it is not a release blocker. PR #54 fixed draft asset cleanup/verification by release ID; exact-head unsigned validation and post-merge signed beta validation both passed. The release-ID path still requires a future owner-authorized versioned release run.
+**Current phase:** v2.1.0 remains the latest published release. The v2.2.0 candidate scope (#56 direct launch/overlay and #84 recreated icon) is integrated in beta and selectively promoted to main by PR #87. Beta exact-head PR validation, post-merge quality and signed ARM64 CI passed. Main exact-commit quality and signed build runs are in progress. No v2.2.0 version bump, tag or publication has been created. Owner feedback is collected after release on the owner's schedule and is not a blocker. PR #54 fixed draft asset cleanup/verification by release ID; the release-ID path still needs a future owner-authorized versioned release run.
 **Latest workflow integration:** issue #60 merged by PR [#72](https://github.com/iNeonyne/LastHavenPlus/pull/72) at `82e819a43e6d728a9eb8fea620eca47ac9c998df`. Exact-head PR validation passed in [run #45627915789](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45627915789). Post-merge Android quality run [#45631250015](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45631250015) and beta build run [#45631249817](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45631249817) completed successfully. The beta build verified signed release APK assembly, unit tests, established signing certificate and ARM64-only ABI; release-tag publication steps were skipped.
 
 ## Current source state
 
 - Mozilla GeckoView 160 is the embedded browser engine; Cefrium is removed from the production build.
-- The app opens on a responsive launcher Home screen. Play lazily starts the game; Settings does not initialize GeckoView.
-- Android Back from gameplay opens a full-screen menu with exactly Reload, Settings and Return to game. The persistent top-right Menu button is removed.
+- The app launches directly into the game.
+- Android Back opens a responsive translucent overlay above gameplay with exactly Reload, Settings and Return to game; the game remains mounted behind the menu.
 - Settings, diagnostics and update details are full-screen pages. The existing GeckoSession is retained while its view is detached for launcher navigation.
 - Adaptive launcher icon resources and a resizeable Activity are integrated.
 - The updater remains manual: no automatic downloads or installation.
@@ -33,7 +33,7 @@
 
 PR validation is unsigned and does not access release secrets or publish APKs. A successful PR run does not verify signing, APK ABI contents or release artifacts.
 
-## v2.1.0 UI scope
+## v2.1.0 UI scope (historical; superseded by v2.2.0)
 
 Integrated from PR #43:
 - Responsive branded Home screen and adaptive launcher icon resources.
@@ -62,9 +62,9 @@ The repository owner will install releases and report what works and what does n
 
 - **Roadmap:** GitHub issue #18 is the v2.2.0 planning source of truth. v2.2.0 is a target, not release authorization.
 - **Chaty:** owns issue #18, remaining #70 Markdown lint/stale-reference review and branch audit, central documentation, CI/release coordination, PR review and beta integration. Roadmap/assignment housekeeping merged by PR [#73](https://github.com/iNeonyne/LastHavenPlus/pull/73) at `c16439bfcedc9949d8ec683039fb5df85afea122`.
-- **Ploy:** assigned issue #56 only: direct game launch and responsive in-game overlay, including Settings in both orientations and preserved GeckoSession state. Must submit a focused PR targeting beta; see AGENT_WORK.md.
+- **Chaty:** completed #56 direct launch/overlay in PR #83 and #84 icon integration in PR #85. Both are selectively promoted to main by PR #87.
 - **Owner feedback:** #5/#21 are post-release feedback trackers. The owner will share findings on their own schedule; pending feedback does not block release.
-- **Supersession:** #42's old v2.1.0 Home-screen-first verification is superseded by #56; verify the new UX under #5/#56.
+- **Supersession:** #42's old Home-screen-first scope is superseded by #56. The direct-launch implementation is integrated; optional owner feedback is tracked separately in #5/#21.
 - **CI gate #60:** PR #72 merged at `82e819a43e6d728a9eb8fea620eca47ac9c998df`. Exact PR validation [#45627915789](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45627915789), post-merge quality [#45631250015](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45631250015), and signed beta build [#45631249817](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45631249817) passed. The beta build skipped release-tag publication steps.
 - **Addon Manager #23:** remains on hold; no assignment or implementation without explicit owner approval.
 
@@ -76,12 +76,11 @@ The repository owner will install releases and report what works and what does n
 - `beta-legacy-2026-11-24` is an orphaned legacy snapshot with no common ancestor with current beta. Its tree contains 91 files versus 62 on beta, including old package-name source, an obsolete layout/activity set, old updater/build files and the legacy Addon Manager assets. These are not safe to merge into current beta and are not part of the active product. The branch is retained as a deletion candidate/archive pending explicit owner confirmation; it has not been deleted.
 
 
-## Issue ownership map — 2026-11-25
+## Issue ownership map — 2026-11-25 (post-v2.2.0 integration)
 
-- **Ploy ACTIVE:** #56 direct-launch and responsive overlay. One active issue at a time; all other Ploy work is queued.
-- **Ploy queue:** #9 accessibility → #11 diagnostics tests → #12 GeckoView 160 load errors → #14 connection diagnostics → #16 orientation/keep-awake → #10 persistent network totals → #28 storage accuracy → #6 essential settings/HTTPS URL → #17 settings backup/restore. Start each only after the previous Ploy issue is merged by Chaty. Exact narrow scopes and exclusions are recorded in each issue and AGENT_WORK.md.
+- **#56:** completed and integrated; no active Ploy assignment. Supporting work (#9, #11, #12, #14, #16, #10, #28, #6, #17) is deferred to the v2.3.0 backlog in #86. Do not start a new Ploy task until the owner prioritizes it.
 - **Chaty:** #4/#15 updater reliability, #20 GeckoView dependency record, #31 release workflow, #61–#66 CI/build/security, #70 docs validation, roadmap and integration.
-- **Repository owner:** optional release feedback in #5/#21; #7 measured performance work when scheduled.
+- **Repository owner:** optional release feedback in #5/#21; #7 measured performance work when scheduled using comparable, repeatable measurements.
 - **Owner decision:** #67 license selection. #23 Addon Manager remains ON HOLD and has no assigned agent.
 - Ploy is an internal agent role, not a confirmed GitHub username; assignments are marked in issue bodies, not through an invented GitHub assignee.
 
