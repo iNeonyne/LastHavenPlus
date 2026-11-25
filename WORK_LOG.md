@@ -254,3 +254,15 @@
 - **Unverified:** Physical ARM64 game compatibility, Gecko profile persistence, installer URI restoration after actual process death, real updater installation/fallback, signed artifact contents for the merge commit.
 - **Branch state:** `main` and `beta` remain diverged: beta ahead 166, main ahead 9; merge base `2455c541729d20f00759ac9fa258faaaa473efcf`. Nine main-only commits must be reviewed/reconciled before promotion.
 - **Next safe action:** Verify exact merge commit signed ARM64 CI/artifact; inspect the nine main-only commits; do not promote or publish until all release gates pass.
+
+
+### 2026-11-25 — Signed beta integration verified; main promotion PR prepared
+
+- **Beta merge commit:** `e924c580699ad34f1083d1a9a0fe96901037c0ae`.
+- **CI:** Run [#330](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45518704468) passed signed `assembleRelease`, unit tests, signature verification and ARM64-only ABI check for the exact merge commit.
+- **Version/artifact:** latest stable `1.0.0` / versionCode `1000000`; signed ARM64 artifact uploaded (92,919,786 bytes). No release tag or publication.
+- **Certificate:** matched established SHA-256 `b3bbf7520e77dfc384a60b1eee6c5f205b978f9b453849e2be523f642018d263`.
+- **Main-only history:** reviewed the nine unique main commits: seven remove internal documentation, one corrects the published v1.0.0 changelog, and one enables beta CI. The promotion branch preserves the internal-doc removals, retains the corrected historical v1.0.0 notes and keeps the updated workflow.
+- **Promotion PR:** [#27](https://github.com/iNeonyne/LastHavenPlus/pull/27) is a draft. A two-parent merge checkpoint includes current main ancestry and preserves the promotion tree; GitHub API reports `mergeable=true`, `mergeable_state=clean`.
+- **Not verified:** physical ARM64 gameplay/profile persistence, process-death installer restoration and actual differential/full update installation.
+- **Next safe action:** keep PR #27 draft until physical device gates and promotion diff checks are complete. Do not merge main or publish a release yet.
