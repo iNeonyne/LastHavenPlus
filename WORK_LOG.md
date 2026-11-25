@@ -401,3 +401,13 @@
 - Exact merge commit: `b12da7651445d15080e7593d441459a8c8403070`.
 - Post-merge signed beta run [#45610518305](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45610518305) passed build, unit tests, established signing-certificate verification and ARM64-only ABI checks.
 - This is not a release-tag run; the draft-ID asset cleanup/verification path and differential failure fallback still need a future owner-authorized versioned release test.
+
+
+## 2026-11-25 — Implement issue #60 Android quality gate
+
+- Inspected beta repository instructions, status, backlog, active assignments, Android workflow, Gradle configuration and open issues. Confirmed beta had no `.github/workflows/quality.yml`; the similarly named workflow exists only on main and is not being copied wholesale.
+- Created `chaty/ci-quality-gate` from beta HEAD `36f079445e227583c12b19bde9161844e0e5855d`.
+- Planned a read-only beta PR/push quality job using the existing JDK 25, Android SDK 37.2 / Build Tools 37.0.0 and Gradle Wrapper. It runs Android Lint and incremental Spotless/ktfmt checks.
+- Kept JVM unit tests and Python updater-helper tests in the existing Android PR validation job to avoid duplicate work. Documentation-only edits remain excluded.
+- Updated the beta task records and contributor guidance. No application behavior, release secrets, signing, ABI, main branch or release state is changed.
+- **Verification status:** awaiting exact-head PR CI. The formatting check must also be shown to reject a deliberately misformatted changed Kotlin file before issue #60 can be closed.
