@@ -1,7 +1,7 @@
 plugins {
-  id("com.android.application") version "9.4.0" apply false
-  id("org.jetbrains.kotlin.plugin.compose") version "2.4.10" apply false
-  id("com.diffplug.spotless") version "8.12.0"
+  alias(libs.plugins.android.application) apply false
+  alias(libs.plugins.kotlin.compose) apply false
+  alias(libs.plugins.spotless)
 }
 
 spotless {
@@ -9,11 +9,11 @@ spotless {
 
   kotlin {
     target("app/src/**/*.kt")
-    ktfmt("0.64").googleStyle()
+    ktfmt(libs.versions.ktfmt.get()).googleStyle()
   }
 
   kotlinGradle {
     target("*.gradle.kts", "app/*.gradle.kts")
-    ktfmt("0.64").googleStyle()
+    ktfmt(libs.versions.ktfmt.get()).googleStyle()
   }
 }
