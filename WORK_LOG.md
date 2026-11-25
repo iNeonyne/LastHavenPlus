@@ -325,3 +325,15 @@
 - Merged PR #43 into beta; merge commit `dffca7e67ef4a8dd1bec8777c2c4c8b8a51a0210` is the verified beta branch HEAD.
 - Post-merge signed build run #45601558602 was still in progress at the time of this entry. No signed APK, v2.1.0 tag or release is claimed.
 - Started docs reconciliation issue #29 on branch `chaty/docs-reconciliation-v2.1`. Reconciles current launcher behavior, owner-approved-but-not-implemented XPI scope, CI evidence and outstanding physical-device verification.
+
+
+### 2026-11-25 — Repository housekeeping inspection and reconciliation started
+
+- **Task:** Reconcile repository records after v2.1.0 beta documentation PR #46 and main promotion PR #47.
+- **Starting beta HEAD:** `854fce1b1e2989cb012ebf5a15d196d91ff7cad7` (PR #46 merge).
+- **Files inspected:** README.md, AGENTS.md, STATUS.md, ISSUES.md, AGENT_WORK.md, CHANGELOG-AGENTS.md, WORK_LOG.md and docs/GECKOVIEW_MIGRATION.md; open GitHub issues, pull requests, branch names and relevant PR/issue records.
+- **Findings:** no open PRs returned; issue #29 is closed after PR #46 but remained marked open in STATUS/ISSUES; STATUS still described run #45601558602 as pending despite PR #47 recording it passed; STATUS did not record the completed promotion; AGENT_WORK still assigned the completed #29 task; addon-manager docs and issue #23 still said approved to resume despite the owner's later hold instruction.
+- **Branch:** `chaty/housekeeping-doc-reconciliation` from beta.
+- **Scope:** repository records and #23 issue status only. No source, build, release, signing or game files.
+- **Verification:** no application tests run; documentation changes require diff/link review. Physical ARM64 feature-matrix verification remains unverified.
+- **Next safe action:** inspect the docs-only diff and submit a PR targeting beta. Do not merge without reviewing the exact diff and CI policy.

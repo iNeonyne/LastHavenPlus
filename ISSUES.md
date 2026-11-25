@@ -4,14 +4,13 @@
 
 ## Current priorities
 
-1. **P0 — Release workflow reliability (#31 / PR #32):** PR #32 is open against beta. Review the workflow changes and require exact-head validation before merge.
+1. **P0 — Release workflow reliability (#31):** PR #32 was closed without merge; PR #37 merged the fallback hardening. Keep #31 open until release-workflow fallback behavior is verified on an authorized versioned release build.
 2. **P0 — Physical ARM64 verification (#5):** Gameplay, GeckoView profile persistence, navigation, audio/GPU behavior and same-key updater installation remain unverified on hardware.
 3. **P0 — Updater regression coverage (#4, #15):** Updater hardening is integrated at beta commit `1d6c1ec42becab44735edfd0323dfc60ff4b9f9d`; additional malformed-manifest, digest, patch and interrupted-download tests remain.
-4. **P1 — Addon manager integration (#23):** Owner-approved to resume. XPI audit is recorded; no implementation is integrated yet. Dedicated Home button required; manager must preserve/resume the existing game session.
-5. **P1 — Documentation reconciliation (#29):** README/STATUS/backlog still contain stale v1.0.0 and pre-v2.0.0 release records; reconcile against the published v2.0.0 release and current beta.
-6. **P2 — Storage measurement accuracy (#28):** Audit all app-private data paths and replace recursive directory sizing with iterative traversal.
-7. **P2 — Remaining product polish:** #9, #11, #12, #14, #16 and #17 only after core reliability and addon-manager gates.
-8. **P3 — Performance and APK size (#7):** Measure before optimizing; do not expand v2.1.0 scope without owner approval.
+4. **P1 — Addon manager integration (#23):** On hold by owner instruction. Do not resume or assign work until explicit owner approval.
+5. **P2 — Storage measurement accuracy (#28):** Audit all app-private data paths and replace recursive directory sizing with iterative traversal.
+6. **P2 — Remaining product polish:** #9, #11, #12, #14, #16 and #17 only after core reliability gates.
+7. **P3 — Performance and APK size (#7):** Measure before optimizing; do not expand v2.1.0 scope without owner approval.
 
 **Release roadmap:** [#18 — v2.1.0 reliability, GeckoView verification and addon manager](https://github.com/iNeonyne/LastHavenPlus/issues/18). v2.0.0 is already published; v2.1.0 is a proposed target, not a release commitment.
 
@@ -38,10 +37,10 @@
 | [#20](#issue-20) | P0 | GeckoView technical decision | Research recorded; compatibility verification tracked with #21 |
 | [#21](#issue-21) | P0 | Replace Cefrium with GeckoView | Source migration implemented; physical runtime checks remain |
 | [#22](#issue-22) | P1 | Home screen and Play/Settings navigation | Merged to beta in PR #26; physical verification pending |
-| [#23](#issue-23) | P1 | Integrate and harden supplied GeckoView addon manager | Owner-approved; XPI audit recorded, implementation not started |
+| [#23](#issue-23) | Deferred | Integrate and harden supplied GeckoView addon manager | On hold by owner instruction; do not resume without explicit approval |
 | [#28](https://github.com/iNeonyne/LastHavenPlus/issues/28) | P2 | Storage usage accuracy and iterative directory sizing | Open; not started |
 | [#42](https://github.com/iNeonyne/LastHavenPlus/issues/42) | P1 | v2.1.0 launcher redesign | Implemented in PR #43; physical UI verification remains |
-| [#29](https://github.com/iNeonyne/LastHavenPlus/issues/29) | P1 | Reconcile beta documentation and CI evidence | Open; PR candidate in review |
+| [#29](https://github.com/iNeonyne/LastHavenPlus/issues/29) | Done | Reconcile beta documentation and CI evidence | Closed as completed after PR #46 merged to beta |
 | [#31](https://github.com/iNeonyne/LastHavenPlus/issues/31) | P0 | Resilient release packaging when differential generation fails | Open; verify current workflow and remaining acceptance criteria |
 
 ---
@@ -630,10 +629,10 @@ Fresh launch shows a simple branded home screen with Play and Settings. Do not l
 ## Issue 23 — P1 — Integrate and harden the supplied GeckoView addon manager
 
 **GitHub:** https://github.com/iNeonyne/LastHavenPlus/issues/23  
-**State:** OWNER-APPROVED TO RESUME; XPI audit complete; implementation not started.  
+**State:** ON HOLD by owner instruction (2026-11-25); do not resume without explicit owner approval.  
 **Release target:** proposed v2.1.0 roadmap (#18).
 
-The owner approved the supplied `lasthavens-addon-manager-0.11.0(1).xpi` and specified a dedicated Addon Manager button on launcher Home, not Settings. The manager must not initialize a game session. It must preserve an existing GeckoSession, and its Play action must resume that same session rather than opening a second game instance.
+The owner later placed all addon-manager work on hold. The previous XPI specification and audit are retained as historical context only; do not investigate, assign or implement the manager until the owner explicitly approves resuming it.
 
 ### Required fixes from the XPI audit
 - [ ] Reject oversized import/restore files using `File.size` before `arrayBuffer()` allocation.

@@ -561,3 +561,13 @@ Entry format:
 - Integrated responsive Home redesign, adaptive icon resources, simplified Back menu, full-screen settings/diagnostics/update pages and GeckoSession view-detach retention.
 - Started issue #29 documentation reconciliation on `chaty/docs-reconciliation-v2.1`; no release claims are made until exact post-merge signed ARM64 CI and artifact inspection complete.
 - Recorded owner-reported ARM64 app/GeckoView smoke test without extrapolating to the full GeckoView feature matrix or the new UI.
+
+
+## 2026-11-25 — Repository housekeeping: reconcile post-promotion records
+
+- **Role:** Chaty / repository maintenance.
+- **Base:** beta commit `854fce1b1e2989cb012ebf5a15d196d91ff7cad7` (PR #46 merge).
+- **Evidence checked:** PR #46 merged into beta; PR #47 merged the v2.1.0 candidate into main at `c5f6518e57d614da73642b7dc4c8a21e82e6e9b3`. PR #47 records post-merge beta run #45601558602 as passing build, unit tests, signing-certificate verification and ARM64-only ABI checks.
+- **Corrections:** mark issue #29 complete in the backlog; remove its stale active assignment; record completed promotion and verified CI evidence in STATUS; align README, AGENTS and GeckoView notes with the owner's current addon-manager hold instruction.
+- **Scope:** documentation and issue-tracker reconciliation only. No app source, Gradle, CI workflow, signing, release publication or game changes.
+- **Limitations:** physical ARM64 feature-matrix testing remains outstanding. The final v2.1.0 tag/draft/publication state must be verified independently before it is described as published.
