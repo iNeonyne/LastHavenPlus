@@ -567,4 +567,5 @@ Entry format:
 - **PR:** [#34](https://github.com/iNeonyne/LastHavenPlus/pull/34), targeting beta.
 - **Change:** Added a streamed bounded input helper for the GitHub release-list response (4 MiB), prior APK (256 MiB) and prior manifest (1 MiB); validates HTTPS GitHub asset hosts across redirects; adds unit tests and runs them in PR and signed build jobs.
 - **Supersedes:** PR #32, whose operations had timeouts but no hard byte caps. PR #32 exact-head runs #348/#349 were cancelled.
-- **Verification:** PR #34 exact-head run #351 is in progress for `751102ac2e00b4adb10c0ab8b34ac3017c5f6311`; no pass claimed yet.
+- **Follow-up:** Added previous release tag format and manifest/tag identity checks to prevent untrusted tag strings entering the patch asset path. Expanded tests for streamed downloads with and without Content-Length and rejected redirect hosts.
+- **Verification:** PR #34 run #351 passed for earlier head `751102ac...`; latest exact-head run #352 is in progress for `3103a0c64a4dff784ed019efc35900076f07aea8`. No latest-head pass claimed yet.
