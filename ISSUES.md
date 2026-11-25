@@ -16,11 +16,16 @@
 
 ## Agent work queue
 
-**v2.2.0 implementation:** #56 and #84 are integrated. **Chaty:** owns review, release coordination and #70 documentation validation. **Ploy:** no active assignment; supporting work is deferred to #86 and must not start until owner prioritization. [#9](https://github.com/iNeonyne/LastHavenPlus/issues/9) → [#11](https://github.com/iNeonyne/LastHavenPlus/issues/11) → [#12](https://github.com/iNeonyne/LastHavenPlus/issues/12) → [#14](https://github.com/iNeonyne/LastHavenPlus/issues/14) → [#16](https://github.com/iNeonyne/LastHavenPlus/issues/16) → [#10](https://github.com/iNeonyne/LastHavenPlus/issues/10) → [#28](https://github.com/iNeonyne/LastHavenPlus/issues/28) → [#6](https://github.com/iNeonyne/LastHavenPlus/issues/6) → [#17](https://github.com/iNeonyne/LastHavenPlus/issues/17). All supporting work is deferred to #86; do not start the next issue until the owner prioritizes v2.3.0 work. Each issue retains its own scope and constraints.
+**Chaty:** owns intake, triage, assignments, roadmap and central documentation, CI coordination, PR review and beta integration. Chaty also owns high-risk updater coordination (#4/#15/#31) and documentation validation (#70).
 
-**Chaty:** #70 documentation validation, roadmap/review/integration and release coordination. #4/#15/#31 and supporting work are deferred under #86. **Repository owner:** optional release feedback in #5/#21; #7 performance work requires measured evidence when that work is scheduled. **Repository owner:** #67 license choice. **#23:** ON HOLD; no agent assigned.
+**Vibe:** implementation contributor. Vibe works only on existing issues explicitly assigned by Chaty with the `agent:vibe` label and a scoped GitHub assignment comment. Vibe submits PRs targeting beta and does not merge or change the backlog.
 
-Ploy is an internal agent role, not a confirmed GitHub login; assignment is visible in each issue body. Do not assign an unrelated GitHub account.
+**Current Vibe handoffs:** #106 and #107 have implementation PRs #112 and #113 respectively; both are awaiting Chaty's review. Do not assign overlapping implementation while these PRs remain open.
+
+**Owner-only / blocked:** #5 and #21 await optional owner feedback; #23 is ON HOLD; #19 and #86 are deferred coordination/backlog items; #7 remains deferred until measured work is prioritized. These are not start permissions.
+
+Every actionable issue carries exactly one agent ownership label. New issues are labeled `agent:unassigned`; Chaty selects an owner and changes the label. `agent:unassigned` does not authorize Vibe to begin. See `AGENTS.md` for label transitions and communication requirements.
+
 
 ## Backlog index
 
