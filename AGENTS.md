@@ -74,6 +74,8 @@ Before any XPI install path is integrated, verify the pinned GeckoView 160 exten
 
 - Run the checks relevant to the changed scope and report exact commands/results. Never report a build or test as passing without evidence.
 - PRs targeting `beta` run an unsigned `assembleRelease` plus `testDebugUnitTest` validation with read-only permissions. This job does not access signing secrets or publish APKs. The normal beta push pipeline remains responsible for signed APK, certificate, ABI and artifact checks.
+- The separate quality workflow runs `lintDebug` and Spotless/ktfmt formatting checks on relevant source/build changes targeting `beta`; it uses the same JDK 25, Android SDK 37.2 / Build Tools 37.0.0 and committed Gradle Wrapper. It has read-only permissions and no signing secrets.
+- Kotlin formatting is incremental against the PR base (or previous beta commit on push). Run `./gradlew spotlessApply` to format changed Kotlin/Kotlin Gradle files and `./gradlew spotlessCheck` to verify them. Documentation-only changes do not trigger Android quality/build workflows.
 - Update `STATUS.md` with verified state, unverified behavior, blockers, active ownership and exact CI evidence.
 - Update `ISSUES.md` when task scope/progress changes; do not close an issue merely because documentation changed.
 - Append meaningful work to `CHANGELOG-AGENTS.md` and `WORK_LOG.md`. Preserve the work log as an append-only history.
