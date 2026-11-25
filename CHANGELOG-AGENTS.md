@@ -644,3 +644,11 @@ Entry format:
 - **Design:** Use incremental formatting ratcheted to the PR base or previous beta commit to avoid mass-reformatting legacy files. Documentation-only edits do not trigger quality/build workflows. The existing Android PR job runs lint/format, JVM and Python updater-helper tests together; the post-merge quality workflow repeats only lint/format.
 - **Constraints:** No app source behavior, release signing, secrets, ABI, GeckoView, updater or main changes. No release or publication.
 - **Verification:** Exact-head Actions validation is pending. Do not claim lint/format success until the PR checks complete; a separate intentionally misformatted Kotlin change must be rejected by the formatter check.
+
+
+## 2026-11-25 — Verify Android formatter negative test
+
+- PR #72's deliberately misformatted Kotlin probe was rejected by Spotless in run [#45627319452](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45627319452); the expected formatting diff was present. The run is an intentional negative-test failure, not a passing build.
+- Removed the temporary probe in commit `b93be719e510757036c948d23a8aadf1409b95a2`.
+- Clarified that the existing Android workflow performs PR lint/format/build/tests, while `quality.yml` is a read-only post-merge beta-push lint/format gate.
+- Clean-head validation is still required before merge.
