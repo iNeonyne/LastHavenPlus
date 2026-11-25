@@ -12,158 +12,158 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class UpdateDownloadPolicyTest {
-    @Test
-    fun acceptsExactSizeAndDigest() {
-        withTemporaryFile { file ->
-            val payload = "verified update".toByteArray()
-            UpdateDownloadPolicy.copyAndVerify(
-                input = ByteArrayInputStream(payload),
-                destination = file,
-                expectedSize = payload.size.toLong(),
-                maximumBytes = payload.size.toLong(),
-                expectedSha256 = sha256(payload),
-            )
+  @Test
+  fun acceptsExactSizeAndDigest() {
+    withTemporaryFile { file ->
+      val payload = "verified update".toByteArray()
+      UpdateDownloadPolicy.copyAndVerify(
+        input = ByteArrayInputStream(payload),
+        destination = file,
+        expectedSize = payload.size.toLong(),
+        maximumBytes = payload.size.toLong(),
+        expectedSha256 = sha256(payload),
+      )
 
-            assertTrue(file.isFile)
-            assertEquals(payload.size.toLong(), file.length())
-            assertEquals("verified update", file.readText())
-        }
+      assertTrue(file.isFile)
+      assertEquals(payload.size.toLong(), file.length())
+      assertEquals("verified update", file.readText())
     }
+  }
 
-    @Test
-    fun handlesZeroLengthReadsWithoutDroppingBytes() {
-        withTemporaryFile { file ->
-            val payload = "zero-read-safe".toByteArray()
-            val source = object : InputStream() {
-                private var firstRead = true
-                private var offset = 0
+  @Test
+  fun handlesZeroLengthReadsWithoutDroppingBytes() {
+    withTemporaryFile { file ->
+      val payload = "zero-read-safe".toByteArray()
+      val source = object : InputStream() {
+        private var firstRead = true
+        private var offset = 0
 
-                override fun read(): Int =
-                    if (offset >= payload.size) -1 else payload[offset++].toInt() and 0xff
+        override fun read(): Int =
+          if (offset >= payload.size) -1 else payload[offset++].toInt() and 0xff
 
-                override fun read(buffer: ByteArray, start: Int, length: Int): Int {
-                    if (firstRead) {
-                        firstRead = false
-                        return 0
-                    }
-                    if (offset >= payload.size) return -1
-                    val count = minOf(length, payload.size - offset)
-                    System.arraycopy(payload, offset, buffer, start, count)
-                    offset += count
-                    return count
-                }
-            }
-
-            UpdateDownloadPolicy.copyAndVerify(
-                input = source,
-                destination = file,
-                expectedSize = payload.size.toLong(),
-                maximumBytes = payload.size.toLong(),
-                expectedSha256 = sha256(payload),
-            )
-
-            assertEquals(payload.toList(), file.readBytes().toList())
+        override fun read(buffer: ByteArray, start: Int, length: Int): Int {
+          if (firstRead) {
+            firstRead = false
+            return 0
+          }
+          if (offset >= payload.size) return -1
+          val count = minOf(length, payload.size - offset)
+          System.arraycopy(payload, offset, buffer, start, count)
+          offset += count
+          return count
         }
-    }
+      }
 
-    @Test
-    fun deletesTruncatedDownload() {
-        withTemporaryFile { file ->
-            try {
-                UpdateDownloadPolicy.copyAndVerify(
-                    input = ByteArrayInputStream("short".toByteArray()),
-                    destination = file,
-                    expectedSize = 10,
-                    maximumBytes = 20,
-                    expectedSha256 = sha256("short".toByteArray()),
-                )
-                throw AssertionError("Expected truncated download rejection")
-            } catch (_: IllegalStateException) {
-                assertFalse(file.exists())
-            }
+      UpdateDownloadPolicy.copyAndVerify(
+        input = source,
+        destination = file,
+        expectedSize = payload.size.toLong(),
+        maximumBytes = payload.size.toLong(),
+        expectedSha256 = sha256(payload),
+      )
+
+      assertEquals(payload.toList(), file.readBytes().toList())
+    }
+  }
+
+  @Test
+  fun deletesTruncatedDownload() {
+    withTemporaryFile { file ->
+      try {
+        UpdateDownloadPolicy.copyAndVerify(
+          input = ByteArrayInputStream("short".toByteArray()),
+          destination = file,
+          expectedSize = 10,
+          maximumBytes = 20,
+          expectedSha256 = sha256("short".toByteArray()),
+        )
+        throw AssertionError("Expected truncated download rejection")
+      } catch (_: IllegalStateException) {
+        assertFalse(file.exists())
+      }
+    }
+  }
+
+  @Test
+  fun deletesPartialFileWhenNetworkReadIsInterrupted() {
+    withTemporaryFile { file ->
+      val interrupted = object : InputStream() {
+        private var delivered = false
+
+        override fun read(): Int = throw IOException("connection reset")
+
+        override fun read(buffer: ByteArray, offset: Int, length: Int): Int {
+          if (delivered) throw IOException("connection reset")
+          delivered = true
+          val bytes = "partial".toByteArray()
+          System.arraycopy(bytes, 0, buffer, offset, bytes.size)
+          return bytes.size
         }
+      }
+
+      try {
+        UpdateDownloadPolicy.copyAndVerify(
+          input = interrupted,
+          destination = file,
+          expectedSize = 100,
+          maximumBytes = 200,
+          expectedSha256 = "0".repeat(64),
+        )
+        throw AssertionError("Expected interrupted download rejection")
+      } catch (_: IOException) {
+        assertFalse(file.exists())
+      }
     }
+  }
 
-    @Test
-    fun deletesPartialFileWhenNetworkReadIsInterrupted() {
-        withTemporaryFile { file ->
-            val interrupted = object : InputStream() {
-                private var delivered = false
-
-                override fun read(): Int = throw IOException("connection reset")
-
-                override fun read(buffer: ByteArray, offset: Int, length: Int): Int {
-                    if (delivered) throw IOException("connection reset")
-                    delivered = true
-                    val bytes = "partial".toByteArray()
-                    System.arraycopy(bytes, 0, buffer, offset, bytes.size)
-                    return bytes.size
-                }
-            }
-
-            try {
-                UpdateDownloadPolicy.copyAndVerify(
-                    input = interrupted,
-                    destination = file,
-                    expectedSize = 100,
-                    maximumBytes = 200,
-                    expectedSha256 = "0".repeat(64),
-                )
-                throw AssertionError("Expected interrupted download rejection")
-            } catch (_: IOException) {
-                assertFalse(file.exists())
-            }
-        }
+  @Test
+  fun deletesDownloadWithDigestMismatch() {
+    withTemporaryFile { file ->
+      val payload = "payload".toByteArray()
+      try {
+        UpdateDownloadPolicy.copyAndVerify(
+          input = ByteArrayInputStream(payload),
+          destination = file,
+          expectedSize = payload.size.toLong(),
+          maximumBytes = 100,
+          expectedSha256 = "0".repeat(64),
+        )
+        throw AssertionError("Expected digest mismatch rejection")
+      } catch (_: IllegalStateException) {
+        assertFalse(file.exists())
+      }
     }
+  }
 
-    @Test
-    fun deletesDownloadWithDigestMismatch() {
-        withTemporaryFile { file ->
-            val payload = "payload".toByteArray()
-            try {
-                UpdateDownloadPolicy.copyAndVerify(
-                    input = ByteArrayInputStream(payload),
-                    destination = file,
-                    expectedSize = payload.size.toLong(),
-                    maximumBytes = 100,
-                    expectedSha256 = "0".repeat(64),
-                )
-                throw AssertionError("Expected digest mismatch rejection")
-            } catch (_: IllegalStateException) {
-                assertFalse(file.exists())
-            }
-        }
+  @Test
+  fun deletesDownloadThatExceedsMaximumSize() {
+    withTemporaryFile { file ->
+      val payload = "larger than limit".toByteArray()
+      try {
+        UpdateDownloadPolicy.copyAndVerify(
+          input = ByteArrayInputStream(payload),
+          destination = file,
+          expectedSize = payload.size.toLong(),
+          maximumBytes = 4,
+          expectedSha256 = sha256(payload),
+        )
+        throw AssertionError("Expected size limit rejection")
+      } catch (_: IllegalStateException) {
+        assertFalse(file.exists())
+      }
     }
+  }
 
-    @Test
-    fun deletesDownloadThatExceedsMaximumSize() {
-        withTemporaryFile { file ->
-            val payload = "larger than limit".toByteArray()
-            try {
-                UpdateDownloadPolicy.copyAndVerify(
-                    input = ByteArrayInputStream(payload),
-                    destination = file,
-                    expectedSize = payload.size.toLong(),
-                    maximumBytes = 4,
-                    expectedSha256 = sha256(payload),
-                )
-                throw AssertionError("Expected size limit rejection")
-            } catch (_: IllegalStateException) {
-                assertFalse(file.exists())
-            }
-        }
+  private fun withTemporaryFile(block: (File) -> Unit) {
+    val directory = Files.createTempDirectory("lasthaven-download-test").toFile()
+    try {
+      block(File(directory, "update.apk.part"))
+    } finally {
+      directory.deleteRecursively()
     }
+  }
 
-    private fun withTemporaryFile(block: (File) -> Unit) {
-        val directory = Files.createTempDirectory("lasthaven-download-test").toFile()
-        try {
-            block(File(directory, "update.apk.part"))
-        } finally {
-            directory.deleteRecursively()
-        }
-    }
-
-    private fun sha256(bytes: ByteArray): String =
-        MessageDigest.getInstance("SHA-256").digest(bytes)
-            .joinToString("") { "%02x".format(it) }
+  private fun sha256(bytes: ByteArray): String =
+    MessageDigest.getInstance("SHA-256").digest(bytes)
+      .joinToString("") { "%02x".format(it) }
 }
