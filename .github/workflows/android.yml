@@ -398,7 +398,9 @@ jobs:
             PREVIOUS_APK_URL="$(jq -r '.assets[]? | select(.name == "lasthavenplus-arm64.apk") | .browser_download_url' <<< "$PREVIOUS_RELEASE" | head -n 1)"
             PREVIOUS_MANIFEST_URL="$(jq -r '.assets[]? | select(.name == "lasthavenplus-update.json") | .browser_download_url' <<< "$PREVIOUS_RELEASE" | head -n 1)"
 
-            if [[ -n "$PREVIOUS_TAG" && -n "$PREVIOUS_APK_URL" && "$PREVIOUS_APK_URL" != "null" && -n "$PREVIOUS_MANIFEST_URL" && "$PREVIOUS_MANIFEST_URL" != "null" ]]; then
+            if [[ "$PREVIOUS_TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ &&
+              -n "$PREVIOUS_APK_URL" && "$PREVIOUS_APK_URL" != "null" &&
+              -n "$PREVIOUS_MANIFEST_URL" && "$PREVIOUS_MANIFEST_URL" != "null" ]]; then
               # Release asset downloads are streamed and hard-capped even if Content-Length is absent.
               if timeout 90s python3 .github/scripts/bounded_release_input.py "$PREVIOUS_APK_URL" "$RUNNER_TEMP/previous.apk" 268435456 &&
                 timeout 30s python3 .github/scripts/bounded_release_input.py "$PREVIOUS_MANIFEST_URL" "$RUNNER_TEMP/previous-manifest.json" 1048576; then
@@ -409,6 +411,7 @@ jobs:
                 BASE_SHA="$(sha256sum "$RUNNER_TEMP/previous.apk" | awk '{print $1}')"
 
                 if [[ "$BASE_VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ &&
+                  "$PREVIOUS_TAG" == "v$BASE_VERSION" &&
                   "$BASE_VERSION_CODE" =~ ^[0-9]+$ &&
                   "$BASE_EXPECTED_SHA" =~ ^[0-9a-fA-F]{64}$ &&
                   "$BASE_SHA" == "$BASE_EXPECTED_SHA" ]]; then
