@@ -485,3 +485,14 @@ jobs:
             exit 1
           }
           echo "Verified: exactly one APK and one canonical update manifest."
+
+      - name: Publish verified GitHub release
+        if: steps.version.outputs.is_release == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ steps.version.outputs.tag }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          gh release edit "$RELEASE_TAG" --draft=false
+          gh api "repos/$GITHUB_REPOSITORY/releases/tags/$RELEASE_TAG" --jq 'select(.draft == false) | .html_url' | tee -a "$GITHUB_STEP_SUMMARY"
