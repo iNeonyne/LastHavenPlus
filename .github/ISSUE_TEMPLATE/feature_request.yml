@@ -1,0 +1,59 @@
+name: Feature request
+description: Propose a user-facing capability or improvement
+title: "Feature: "
+labels: []
+body:
+  - type: markdown
+    attributes:
+      value: "Search existing issues first. A request is not automatically approved or scheduled; it will be triaged against the project goal, complexity and release plan."
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem or user need
+      description: What user problem should this solve? Avoid starting with an implementation guess.
+    validations:
+      required: true
+  - type: textarea
+    id: outcome
+    attributes:
+      label: Desired outcome
+      description: Describe the observable result from the user's perspective.
+    validations:
+      required: true
+  - type: textarea
+    id: use_cases
+    attributes:
+      label: Main use cases
+      description: When and how would this be used?
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria
+      description: List observable, testable conditions that define completion.
+      placeholder: |
+        - [ ] ...
+        - [ ] ...
+    validations:
+      required: true
+  - type: textarea
+    id: exclusions
+    attributes:
+      label: Non-goals and constraints
+      description: What should not change? Include compatibility, privacy, storage or performance constraints.
+    validations:
+      required: false
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+    validations:
+      required: false
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Submission checks
+      options:
+        - label: I searched open and closed issues for duplicates.
+          required: true

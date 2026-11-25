@@ -1,0 +1,69 @@
+name: Bug report
+description: Report a reproducible defect in LastHavenPlus
+title: "Bug: "
+labels: []
+body:
+  - type: markdown
+    attributes:
+      value: "Before submitting, search open and closed issues for the same behavior. Remove account details, cookies, tokens, URLs with session parameters, and other secrets from logs/screenshots."
+  - type: textarea
+    id: summary
+    attributes:
+      label: Problem
+      description: What is broken? Describe one observable problem.
+      placeholder: The app...
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Steps to reproduce
+      description: Exact steps, including whether the issue happens every time.
+      placeholder: |
+        1. Open...
+        2. Tap...
+        3. Observe...
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+    validations:
+      required: true
+  - type: input
+    id: app_version
+    attributes:
+      label: App version / build
+      placeholder: "e.g. v1.0.0 or beta commit"
+    validations:
+      required: true
+  - type: input
+    id: device
+    attributes:
+      label: Device and Android version
+      placeholder: "Device model, Android version, ARM64 if known"
+    validations:
+      required: false
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Sanitized logs or screenshots
+      description: Attach only evidence with personal data and session secrets removed.
+    validations:
+      required: false
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Submission checks
+      options:
+        - label: I searched for duplicates.
+          required: true
+        - label: I removed passwords, cookies, tokens and personal data from attachments.
+          required: true

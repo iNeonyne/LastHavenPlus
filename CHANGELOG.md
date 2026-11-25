@@ -24,3 +24,10 @@
 - Cefrium profile size is shown only when its profile directory is present and readable.
 - Physical-device gameplay, GPU, audio, persistence and in-place update verification remain separate checks. Do not treat CI success as device verification.
 - The local ZIP addon manager organizes packages but does not inject addons into the game.
+
+## Unreleased — GeckoView launcher candidate (not yet published)
+
+- Replace the embedded Cefrium engine with Mozilla GeckoView 160.
+- Add a launcher Home screen with lazy Play launch, Settings access and in-game Reload / Home / Return to game navigation.
+- Harden differential updates with bounded BSDIFF decompression, full APK fallback, exact GitHub host validation, saved installer handoff state and GeckoView minification rules.
+- This candidate has passed unsigned PR build and unit tests. Signed ARM64 post-merge verification and physical-device gameplay/profile/update tests remain outstanding. No new release has been published.

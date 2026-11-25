@@ -46,7 +46,8 @@ fun SettingsDialog(context: Context, usageMeter: AppUsageMeter, onDismiss: () ->
             ) {
                 Text("Storage")
                 Text("Installed APK: ${snapshot?.installedApkBytes?.let(::formatBytes) ?: "Measuring…"}")
-                Text("Cefrium game profile: ${snapshot?.cefriumProfileBytes?.let(::formatBytes) ?: "Not available"}")
+                Text("Persistent app data (includes GeckoView): ${snapshot?.persistentDataBytes?.let(::formatBytes) ?: "Measuring…"}")
+                Text("This measures app-private files, including GeckoView data; it is not a profile-only measurement.")
                 Text("App cache: ${snapshot?.cacheBytes?.let(::formatBytes) ?: "Measuring…"}")
                 Text("Network usage")
                 Text("Received since device boot: ${snapshot?.receivedSinceBootBytes?.let(::formatBytes) ?: "Not supported"}")
