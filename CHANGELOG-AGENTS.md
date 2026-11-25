@@ -545,3 +545,16 @@ Entry format:
 - **Change:** Added a `pull_request` trigger for PRs targeting `beta` and a dedicated read-only validation job. It builds the unsigned release variant and runs unit tests without signing secrets or publishing APKs. The full signed build and release-artifact checks remain on branch/tag events.
 - **Why:** Documentation allowing PRs is incomplete unless CI validates them. The PR path must not expose signing secrets or create release artifacts.
 - **Not yet verified:** The workflow change has not completed a GitHub Actions run. Do not claim PR CI is operational until the run is inspected.
+
+
+## 2026-11-25 — Reconcile v2.0.0 release records and establish v2.1.0 baseline
+
+- **Role:** Chaty / documentation reconciliation.
+- **Issue:** [#29](https://github.com/iNeonyne/LastHavenPlus/issues/29).
+- **Branch:** `chaty/v2.1-docs-reconcile`, targeting `beta`.
+- **Verified stable release:** v2.0.0 is published; GitHub release metadata confirms `lasthavenplus-arm64.apk` and `lasthavenplus-update.json`.
+- **Verified beta baseline:** HEAD before this documentation branch was `1f300b90e5aed9a5eaa86e473b746f0841d42b16`; integrated app source commit is `1d6c1ec42becab44735edfd0323dfc60ff4b9f9d`.
+- **CI evidence:** exact updater PR validation #345 and signed ARM64 branch run #346 passed for their respective exact commits. PR #32 exact-head runs #348/#349 were cancelled and remain unverified.
+- **Changes:** Correct README stable release, feature and CI claims; rewrite STATUS with exact commit/CI boundaries and remaining physical-device blockers; align AGENT_WORK with the owner's addon-manager approval and current assignments.
+- **No code changes:** This branch is documentation-only. No addon manager implementation, physical-device testing, beta merge, main promotion or release publication was performed.
+- **Next:** Review documentation PR, merge only after source/evidence consistency check, then continue PR #32 and issue #23 feasibility work.
