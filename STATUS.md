@@ -16,6 +16,8 @@ The active workflow now uses three review depths while preserving one integratio
 Chaty reviews every PR and remains the only beta integrator. Review depth does not waive required CI. Keep PRs focused on one issue; refresh stale branches and rerun affected checks. This policy change is documentation-only; no application behavior or release configuration changed.
 
 
+## Summary
+
 - `beta` is the active development, integration and testing branch. `main` remains the stable release branch.
 - Beta source uses Mozilla GeckoView 160; Cefrium has been removed from the production build.
 - Beta now opens the launcher Home screen. Play lazily starts GeckoView; Settings does not initialize the game. The in-game menu provides Reload, Home and Return to game. The GeckoSession is retained across Home and closed when the Activity composition is destroyed.
