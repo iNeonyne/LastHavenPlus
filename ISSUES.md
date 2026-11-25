@@ -40,8 +40,9 @@
 | [#22](#issue-22) | P1 | Home screen and Play/Settings navigation | Merged to beta in PR #26; physical verification pending |
 | [#23](#issue-23) | P1 | Integrate and harden supplied GeckoView addon manager | Owner-approved; XPI audit recorded, implementation not started |
 | [#28](https://github.com/iNeonyne/LastHavenPlus/issues/28) | P2 | Storage usage accuracy and iterative directory sizing | Open; not started |
-| [#29](https://github.com/iNeonyne/LastHavenPlus/issues/29) | P1 | Reconcile beta documentation and CI evidence | Open; not started |
-| [#31](https://github.com/iNeonyne/LastHavenPlus/issues/31) | P0 | Resilient release packaging when differential generation fails | Open; PR #32 pending exact-head validation |
+| [#42](https://github.com/iNeonyne/LastHavenPlus/issues/42) | P1 | v2.1.0 launcher redesign | Implemented in PR #43; physical UI verification remains |
+| [#29](https://github.com/iNeonyne/LastHavenPlus/issues/29) | P1 | Reconcile beta documentation and CI evidence | Open; PR candidate in review |
+| [#31](https://github.com/iNeonyne/LastHavenPlus/issues/31) | P0 | Resilient release packaging when differential generation fails | Open; verify current workflow and remaining acceptance criteria |
 
 ---
 
@@ -668,7 +669,7 @@ Preserve archive path/CRC/duplicate/count/expanded-size checks. Keep Android 10/
 ## Issue 29 — P1 — Reconcile beta documentation with current source and CI evidence
 
 **GitHub:** https://github.com/iNeonyne/LastHavenPlus/issues/29  
-**State:** open; queued. Reconcile README, STATUS, ISSUES and release-facing claims against current beta source, exact commit CI evidence and outstanding physical-device gates. Preserve historical entries and do not mark hardware tests complete without evidence.
+**State:** open; documentation candidate on `chaty/docs-reconciliation-v2.1`. Reconcile README, STATUS, ISSUES and release-facing claims against PR #43, exact commit CI evidence and outstanding physical-device gates. Keep open until the docs PR is merged and verified.
 
 
 ## Issue 31 — P0 — Make release packaging resilient to optional differential update failures
