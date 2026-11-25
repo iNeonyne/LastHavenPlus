@@ -307,3 +307,13 @@
 - **Change:** At the start of a new explicit download, remove leftover .part files from an interrupted prior process. Verified APK files are intentionally preserved. Added a JVM test covering partial APK/patch deletion and verified APK preservation. Also made response-body reading robust to zero-length reads and tightened fallback diagnostic exception handling.
 - **CI:** PR run [#344](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45521735696) is pending for the code commit. No pass is claimed.
 - **Next safe action:** Inspect CI on the final PR head after this documentation checkpoint. Keep physical update installation under #5.
+
+
+### 2026-11-25 — Apply right-sized PR review policy
+
+- **Starting beta HEAD:** `c925a93fbc039a9985f4a8577c2d3a6958b18dd9`.
+- **Branch:** `chaty/workflow-efficiency-policy`.
+- **Files:** `README.md`, `AGENTS.md`, `AGENT_WORK.md`, `STATUS.md`, `CHANGELOG-AGENTS.md`, `WORK_LOG.md`.
+- **Change:** Added lightweight, standard and strict review levels. Lightweight applies to docs/copy/isolated low-risk changes; standard to contained application changes; strict to GeckoView/session, updater, storage/profile, security/network, toolchain, manifest/signing and CI/release work. All PRs still receive Chaty review and required CI.
+- **Efficiency controls:** Keep one issue per PR, avoid unrelated cleanup and overlapping scopes, require concise evidence-based handoffs, and refresh/retest branches when beta advances.
+- **Verification:** Documentation-only changes; no application build or tests run. Exact-head PR CI is still required by the repository workflow. No branch merge, main promotion, tag or release publication performed.
