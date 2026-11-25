@@ -1,6 +1,6 @@
 # LastHavenPlus release changelog
 
-## v2.1.0 — release candidate (not released)
+## v2.1.0 — 2026-11-25
 
 ### Launcher and navigation
 - Redesign the launcher Home screen with responsive compact and wide layouts.
@@ -10,10 +10,17 @@
 - Replace Settings, diagnostics and update dialogs with full-screen pages.
 - Keep the existing GeckoSession while navigating to launcher pages.
 
-### Verification status
-- PR #43 exact-head unsigned release build and JVM unit tests passed (run #386).
-- Post-merge signed ARM64 packaging, certificate verification and artifact inspection are pending.
-- Physical ARM64 verification of the new UI, session retention and GeckoView feature matrix remains outstanding.
+### Published release artifacts
+- Published GitHub Release: [v2.1.0](https://github.com/iNeonyne/LastHavenPlus/releases/tag/v2.1.0), tag commit `03fcfa9652ce4e7d1034523d640a1693e6e6b9ce`.
+- VersionName `2.1.0`, versionCode `2001000`.
+- Signed ARM64 APK: 96,444,836 bytes; SHA-256 `f65672c8855298764b3345e58694b672c39f35971a39beccb7e4d1feb6310cab`.
+- Signing certificate SHA-256 matched the established identity: `b3bbf7520e77dfc384a60b1eee6c5f205b978f9b453849e2be523f642018d263`.
+- Release metadata contains one canonical APK, one update manifest and one differential patch. The update manifest SHA-256 is `acaf5435905bcf4318388f94e94654ba582e45f1091898ecec8c5027ef54ed62`; the differential patch SHA-256 is `933420bf8115c3411afabbd5916e2799af43cf88c0ec54e2cdf55c152f5b090a`.
+
+### CI and remaining verification
+- Release workflow [run #45603533787](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45603533787) passed unit tests, APK signature verification, established certificate matching, ARM64-only ABI validation, differential generation and release upload/publish steps.
+- The final release-asset lookup step failed with `gh: Not Found (HTTP 404)`. This is a workflow verification failure, not a reported APK-count mismatch; current GitHub release metadata independently confirms the expected three assets. Track the workflow fix under issue #31.
+- Physical ARM64 verification of the new UI, session retention, gameplay and GeckoView feature matrix remains outstanding. CI does not replace device testing.
 
 ## v2.0.0 — 2026-11-25
 
