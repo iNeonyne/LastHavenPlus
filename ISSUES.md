@@ -581,8 +581,8 @@ The stable v2.1.0 release is published. Beta already uses Mozilla GeckoView 160;
 
 ### Current phases
 - [x] Housekeeping, v2.1.0 release record and contributor workflow reconciliation.
-- [ ] **Phase 1 — #56:** Ploy's direct-launch and responsive overlay implementation; preserve the same GeckoSession and support Settings in portrait and landscape.
-- [ ] **Phase 2 — #5/#21:** optional owner feedback on gameplay, GeckoView profile/session, Web APIs, media, permissions and update behavior after release; not a release gate.
+- [x] **Phase 1 — #56:** Chaty's direct-launch and responsive overlay implementation merged via PR #83; automated navigation policy tests pass.
+- [ ] **Phase 2 — #5/#21:** optional owner feedback on gameplay, GeckoView profile/session, Web APIs, media, permissions and update behavior after release; collected on the owner's schedule, not a release gate.
 - [ ] **Phase 3 — #4/#15/#31:** updater regression coverage and release-ID/differential fallback verification in a future owner-authorized release workflow.
 - [ ] **Phase 4 — #9–#17/#28:** accessibility, diagnostics, settings, network/storage accuracy and measured polish in the order recorded in AGENT_WORK.md.
 - [ ] **Phase 5:** v2.2.0 release gates; owner approval is required for promotion, tagging and publication.
