@@ -385,3 +385,12 @@
 - Updated beta-facing release records to distinguish the published artifact from remaining physical ARM64 feature testing.
 - Stable-facing README/CHANGELOG on main remain candidate wording; correcting main requires a separate stable-branch documentation action under repository policy.
 - No app tests or physical-device checks were run for this documentation/record reconciliation.
+
+
+### 2026-11-25 — Stable docs correction and draft-release verification fix
+
+- Corrected stable `main` README and CHANGELOG to record published v2.1.0, its tag, signed ARM64 APK digest and verified release assets. Commits: `fdae3d90cf3abb209df8a42dd73ed1667bae9808`, `2abe7cc212b67a3b91f5dcdb108aee3a55559e32`.
+- Updated issue scopes for #9, #10, #20 and #21. Kept #20 open for remaining artifact/POM/dependency/license/API evidence; kept physical-device issues open.
+- PR #54 merged to beta at `b12da7651445d15080e7593d441459a8c8403070`. It moves legacy-asset cleanup after upload and uses the release action's release ID for cleanup and final asset verification.
+- Exact-head unsigned validation run #45610110307 passed. Post-merge signed beta run #45610518305 is pending; release-tag runtime verification remains untested and no v2.1.0 republish was attempted.
+- Branch audit found 31 refs; three are behind-only with no unique commits, but the available GitHub connector exposes no branch-delete action. Diverged/independent branches were retained.
