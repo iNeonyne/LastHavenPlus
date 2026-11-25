@@ -411,3 +411,12 @@
 - Kept JVM unit tests and Python updater-helper tests in the existing Android PR validation job to avoid duplicate work. Documentation-only edits remain excluded.
 - Updated the beta task records and contributor guidance. No application behavior, release secrets, signing, ABI, main branch or release state is changed.
 - **Verification status:** awaiting exact-head PR CI. The formatting check must also be shown to reject a deliberately misformatted changed Kotlin file before issue #60 can be closed.
+
+
+### 2026-11-25 — Verify formatter rejection and remove test probe
+
+- **Negative test commit:** `e66ca7c2b66a352f49aa630556f6bdfc137a7c40`.
+- **Run:** [#45627319452](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45627319452) completed with the expected failure in `spotlessKotlinCheck`; its diff identified the deliberately misformatted `FormattingProbe.kt` and showed the required normalized output. This proves changed Kotlin formatting violations are rejected. The overall run failure is intentional and is not counted as a passing validation.
+- **Probe removal:** deleted `FormattingProbe.kt` in commit `b93be719e510757036c948d23a8aadf1409b95a2`; no test probe should remain in the final PR tree.
+- **Correction:** `ISSUES.md` now correctly states that PR validation runs in `android.yml`, while `quality.yml` is a post-merge beta-push gate only.
+- **Next:** wait for clean-head Android PR validation and review the exact final diff before considering a beta merge.
