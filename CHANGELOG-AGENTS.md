@@ -3,13 +3,13 @@
 - **Role:** Chaty / updater implementation
 - **Branch:** `chaty/fix-updater-hardening`
 - **Starting beta HEAD:** `b7d9f3256527de41a45ff8c935fac510be635a69`
-- **Candidate HEAD at checkpoint:** `4b5ecb6d4db4276983f98aff3cfb81d69b8fd882`
-- **Files:** `AppUpdater.kt`, `MainActivity.kt`, `UpdateNetworkPolicy.kt`, `UpdateVersionPolicy.kt`, `UpdateFallback.kt`, `UpdateNetworkPolicyTest.kt`, `UpdateFallbackTest.kt`
+- **PR:** [#30](https://github.com/iNeonyne/LastHavenPlus/pull/30), targeting `beta`.\n- **Candidate HEAD at checkpoint:** `c68db2c8704813822c27b86dfb48cffbb84eb87f`
+- **Files:** `AppUpdater.kt`, `MainActivity.kt`, `UpdateNetworkPolicy.kt`, `UpdateVersionPolicy.kt`, `UpdateFallback.kt`, `UpdateNetworkPolicyTest.kt`, `UpdateManifestPolicy.kt`, `UpdateManifestPolicyTest.kt`, `UpdateFallbackTest.kt`
 - **Change:** Replaced automatic redirects with a bounded manual redirect loop that validates each HTTPS destination against exact GitHub hosts; bounded release/manifest JSON bodies; bounded updater queue with an idle-timeout daemon worker and explicit busy callback; centralized downloaded size/SHA-256 checks; staged patch/APK data in unique temporary files and generated unique final APK paths; persisted the pending installer URI before leaving for Android install-permission settings and restored it after process death; prevented diagnostics callback errors from blocking full APK fallback.
-- **Tests added:** Redirect allowlist and rejection cases (including untrusted hosts, credentials, ports and fragments), redirect status codes, response-size limit, download size/digest validation and fallback when diagnostics fails.
-- **Verification:** GitHub Actions has not yet run on this candidate. No build/test pass is claimed. Physical installer handoff and update installation remain unverified.
+- **Tests added:** Redirect allowlist and rejection cases (including untrusted hosts, credentials, ports and fragments), redirect status codes, response-size limit, download size/digest validation, manifest field validation, patch base compatibility/digest validation and fallback when diagnostics fails.
+- **Verification:** Exact-head unsigned build/unit-test run [#340](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45521280150) is pending. No build/test pass is claimed. Physical installer handoff and update installation remain unverified.
 - **Related issues:** #4 updater tests, #15 recovery, #5 physical ARM64 update verification; new backlog issues #28 storage accuracy and #29 documentation reconciliation.
-- **Next:** Open PR to `beta`, inspect exact-head unsigned build/unit-test CI and correct any failures before review/merge.
+- **Next:** Inspect exact-head unsigned build/unit-test CI and correct any failures before review/merge.
 
 ## 2026-11-25 — Verify signed ARM64 beta integration
 
