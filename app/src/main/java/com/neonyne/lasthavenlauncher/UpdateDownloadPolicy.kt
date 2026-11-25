@@ -63,3 +63,4 @@ internal object UpdateDownloadPolicy {
     }
   }
 }
+
