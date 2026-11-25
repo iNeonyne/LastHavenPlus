@@ -83,7 +83,7 @@ fun GameScreen(
             shape = RoundedCornerShape(14.dp),
             colors =
               ButtonDefaults.buttonColors(
-                containerColor = GameAccentColor,
+                containerColor = DesignTokens.gold,
                 contentColor = DesignTokens.goldOnColor,
               ),
           ) {
@@ -111,7 +111,7 @@ fun GameScreen(
             shape = RoundedCornerShape(14.dp),
             colors =
               ButtonDefaults.buttonColors(
-                containerColor = GameAccentColor,
+                containerColor = DesignTokens.gold,
                 contentColor = DesignTokens.goldOnColor,
               ),
           ) {
