@@ -42,6 +42,7 @@ private const val DEFAULT_GAME_URL = "https://lasthavens.com/play"
 private const val PREFERENCES_NAME = "launcher_settings"
 private const val KEY_GAME_URL = "game_url"
 private const val TAG = "LastHavenLauncher"
+private const val STATE_PENDING_UPDATE_URI = "pending_update_uri"
 
 enum class Screen { Home, Game }
 
@@ -51,6 +52,7 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        pendingUpdateUri = savedInstanceState?.getString(STATE_PENDING_UPDATE_URI)?.let(Uri::parse)
         Diagnostics.info(this, "Lifecycle", "Activity created")
         WindowCompat.setDecorFitsSystemWindows(window, true)
 
@@ -115,6 +117,11 @@ class MainActivity : ComponentActivity() {
         })
     }
 
+    override fun onSaveInstanceState(outState: Bundle) {
+        pendingUpdateUri?.let { outState.putString(STATE_PENDING_UPDATE_URI, it.toString()) }
+        super.onSaveInstanceState(outState)
+    }
+
     override fun onResume() {
         super.onResume()
         Diagnostics.info(this, "Lifecycle", "Activity resumed")
@@ -155,6 +162,12 @@ private fun LastHavenApp(
     var isLoading by remember { mutableStateOf(false) }
     var pageLoadFailed by remember { mutableStateOf(false) }
     var hasLoadedGame by remember { mutableStateOf(false) }
+
+    // Preserve the session on Home; close it only when the Activity composition is destroyed.
+    DisposableEffect(session) {
+        val sessionToClose = session
+        onDispose { sessionToClose?.close() }
+    }
 
     val reloadGame: () -> Unit = {
         val current = session
