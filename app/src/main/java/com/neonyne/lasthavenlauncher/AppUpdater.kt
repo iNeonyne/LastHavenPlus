@@ -422,27 +422,13 @@ object AppUpdater {
                 check(contentLength == expectedSize) { "Update file size does not match its manifest" }
             }
 
-            val digest = MessageDigest.getInstance("SHA-256")
-            var totalBytes = 0L
-            connection.inputStream.use { input ->
-                FileOutputStream(destination).use { output ->
-                    val buffer = ByteArray(64 * 1024)
-                    while (true) {
-                        val count = input.read(buffer)
-                        if (count < 0) break
-                        totalBytes += count
-                        check(totalBytes <= maximumBytes) { "Update file is unexpectedly large" }
-                        digest.update(buffer, 0, count)
-                        output.write(buffer, 0, count)
-                    }
-                    output.fd.sync()
-                }
-            }
-            val actual = digest.digest().joinToString("") { "%02x".format(it) }
-            UpdateNetworkPolicy.verifyDownload(totalBytes, expectedSize, maximumBytes, actual, expectedSha256)
-        } catch (error: Exception) {
-            destination.delete()
-            throw error
+            UpdateDownloadPolicy.copyAndVerify(
+                input = connection.inputStream,
+                destination = destination,
+                expectedSize = expectedSize,
+                maximumBytes = maximumBytes,
+                expectedSha256 = expectedSha256,
+            )
         } finally {
             connection.disconnect()
         }
