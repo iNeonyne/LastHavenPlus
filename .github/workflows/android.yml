@@ -496,7 +496,7 @@ jobs:
       - name: Publish signed release and update assets
         id: release
         if: steps.version.outputs.is_release == 'true'
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           tag_name: ${{ steps.version.outputs.tag }}
           generate_release_notes: true
