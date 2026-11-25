@@ -32,17 +32,17 @@
 | [#15](#issue-15) | P2 | Updater recovery | Open |
 | [#16](#issue-16) | P2 | Gameplay orientation and keep-awake settings | Open |
 | [#17](#issue-17) | P2 | Settings backup and restore | Open |
-| [#18](#issue-18) | Roadmap | v2.1.0 post-release verification and reliability | Open; release published, physical and workflow follow-up remains |
+| [#18](#issue-18) | Roadmap | v2.2.0 roadmap and release gates | Open; planning and sequencing updated |
 | [#19](#issue-19) | P1 | Opt-in beta release channel | Open |
 | [#20](#issue-20) | P1 | GeckoView 160 artifact/dependency audit | Decision implemented; POM, transitive dependencies, notices and size evidence remain |
 | [#21](#issue-21) | P0 | GeckoView runtime/profile hardware verification | Migration integrated; physical GeckoView checks remain alongside #5 |
 | [#22](#issue-22) | P1 | Home screen and Play/Settings navigation | Closed — source implementation integrated; physical checks tracked in #5/#42 |
 | [#23](#issue-23) | Deferred | Integrate and harden supplied GeckoView addon manager | On hold by owner instruction; do not resume without explicit approval |
 | [#28](https://github.com/iNeonyne/LastHavenPlus/issues/28) | P2 | Storage usage accuracy and iterative directory sizing | Open; not started |
-| [#42](https://github.com/iNeonyne/LastHavenPlus/issues/42) | P1 | v2.1.0 launcher UI verification | Source implementation integrated by PR #43; physical UI verification remains |
+| [#42](https://github.com/iNeonyne/LastHavenPlus/issues/42) | Superseded | v2.1.0 Home-screen UI verification | Superseded by direct-launch redesign #56; new UX verification belongs to #5/#56 |
 | [#29](https://github.com/iNeonyne/LastHavenPlus/issues/29) | Done | Reconcile beta documentation and CI evidence | Closed as completed after PR #46 merged to beta |
 | [#31](https://github.com/iNeonyne/LastHavenPlus/issues/31) | P0 | Draft release asset verification and differential fallback | PR #54 merged; exact-head unsigned and post-merge signed beta runs passed; live release-ID path/fallback checks remain |
-| [#60](https://github.com/iNeonyne/LastHavenPlus/issues/60) | P2 | Android lint and Kotlin formatting quality gate | PR #72 merged to beta; exact-head PR checks passed; post-merge workflow verification pending |
+| [#56](https://github.com/iNeonyne/LastHavenPlus/issues/56) | P1 | Direct launch and responsive in-game overlay | Active implementation; Ploy assigned, Chaty reviews/integrates |\n| [#60](https://github.com/iNeonyne/LastHavenPlus/issues/60) | Done | Android lint and Kotlin formatting quality gate | PR #72 merged; exact-head PR and post-merge beta quality/build workflows passed |
 
 ---
 
@@ -712,3 +712,12 @@ Add a focused, read-only quality workflow for Android lint and Kotlin formatting
 
 ### Verification
 Record exact branch head, Actions run URLs, lint results, formatter result and limitations here and in STATUS.md. The negative test is recorded separately from the final passing exact-head validation.
+
+
+## v2.2.0 delivery ownership (2026-11-25)
+
+- **Chaty:** owns roadmap #18, central documentation, issue triage, branch audit, CI evidence, PR review and beta integration.
+- **Ploy:** owns implementation of #56 only, on a dedicated branch and PR targeting beta. See AGENT_WORK.md for behavior, file boundaries, exclusions, tests and handoff requirements.
+- **Physical ARM64 verification (#5):** requires owner-provided hardware/results; CI or agent emulation must not be reported as a physical-device pass.
+- **#42:** the old v2.1.0 Home-screen-first acceptance scope is superseded by #56. Do not duplicate its old Home screen/menu implementation.
+- **#60:** exact PR validation passed in run #45627915789; post-merge quality workflow #45631250015 and signed beta build workflow #45631249817 both completed successfully. Issue can be closed as completed.
