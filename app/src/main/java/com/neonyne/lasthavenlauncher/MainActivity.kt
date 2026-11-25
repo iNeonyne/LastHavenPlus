@@ -13,7 +13,10 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.darkColorScheme
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeOut
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -314,7 +317,7 @@ private fun LastHavenApp(
     menuVisible = target.menuVisible
   }
 
-  MaterialTheme(colorScheme = darkColorScheme()) {
+  MaterialTheme(colorScheme = DesignTokens.colorScheme(), shapes = DesignTokens.shapes) {
     when (currentScreen) {
       Screen.Home ->
         HomeScreen(
@@ -340,7 +343,12 @@ private fun LastHavenApp(
             onRetry = reloadGame,
             onRestore = restoreGame,
           )
-          if (menuVisible) {
+          // Restrained overlay dismissal transition; short fade keeps gameplay primary.
+          AnimatedVisibility(
+            visible = menuVisible,
+            enter = fadeIn(tween(140)),
+            exit = fadeOut(tween(120)),
+          ) {
             GameMenuScreen(
               onReload = {
                 reloadGame()

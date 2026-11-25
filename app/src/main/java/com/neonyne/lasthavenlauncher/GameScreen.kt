@@ -28,9 +28,6 @@ import androidx.compose.ui.viewinterop.AndroidView
 import org.mozilla.geckoview.GeckoSession
 import org.mozilla.geckoview.GeckoView
 
-private val GameScrimColor = Color(0xFF080B12)
-private val GameTextColor = Color(0xFFB7C0D0)
-private val GameAccentColor = Color(0xFFE5B85C)
 
 @Composable
 fun GameScreen(
@@ -54,17 +51,17 @@ fun GameScreen(
 
       GameLoadPresentation.Preparing ->
         GameStatusSurface(contentDescription = "Preparing LastHaven") {
-          LinearProgressIndicator()
+          LinearProgressIndicator(color = DesignTokens.gold)
           Spacer(modifier = Modifier.height(16.dp))
-          Text("Preparing game…", color = GameTextColor)
+          Text("Preparing game…", color = DesignTokens.textSecondary)
         }
 
       GameLoadPresentation.LoadingGame ->
         // Restrained branded state for the initial page load only; no fabricated progress.
         GameStatusSurface(contentDescription = "LastHaven is loading") {
-          LinearProgressIndicator(color = GameAccentColor)
+          LinearProgressIndicator(color = DesignTokens.gold)
           Spacer(modifier = Modifier.height(16.dp))
-          Text("Loading LastHaven…", color = GameTextColor)
+          Text("Loading LastHaven…", color = DesignTokens.textSecondary)
         }
 
       GameLoadPresentation.RecoverableFailure ->
@@ -77,7 +74,7 @@ fun GameScreen(
           Spacer(modifier = Modifier.height(8.dp))
           Text(
             "Check your connection and try again.",
-            color = GameTextColor,
+            color = DesignTokens.textSecondary,
             modifier = Modifier.widthIn(max = 320.dp).padding(horizontal = 8.dp),
           )
           Spacer(modifier = Modifier.height(20.dp))
@@ -88,7 +85,7 @@ fun GameScreen(
             colors =
               ButtonDefaults.buttonColors(
                 containerColor = GameAccentColor,
-                contentColor = Color(0xFF17130A),
+                contentColor = DesignTokens.goldOnColor,
               ),
           ) {
             Text("Retry", fontWeight = FontWeight.Bold)
@@ -105,7 +102,7 @@ fun GameScreen(
           Spacer(modifier = Modifier.height(8.dp))
           Text(
             "The game session ended. Restore the game to continue playing.",
-            color = GameTextColor,
+            color = DesignTokens.textSecondary,
             modifier = Modifier.widthIn(max = 320.dp).padding(horizontal = 8.dp),
           )
           Spacer(modifier = Modifier.height(20.dp))
@@ -116,7 +113,7 @@ fun GameScreen(
             colors =
               ButtonDefaults.buttonColors(
                 containerColor = GameAccentColor,
-                contentColor = Color(0xFF17130A),
+                contentColor = DesignTokens.goldOnColor,
               ),
           ) {
             Text("Restore game", fontWeight = FontWeight.Bold)
@@ -133,7 +130,7 @@ private fun GameStatusSurface(
 ) {
   Surface(
     modifier = Modifier.fillMaxSize().semantics { this.contentDescription = contentDescription },
-    color = GameScrimColor,
+    color = DesignTokens.logSurface,
   ) {
     Column(
       modifier = Modifier.fillMaxSize().padding(28.dp),

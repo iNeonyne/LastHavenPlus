@@ -770,3 +770,15 @@ Entry format:
 - **GeckoView API use:** only delegates already integrated against 160 (`ProgressDelegate.onPageStart/onPageStop`, `ContentDelegate.onCrash/onKill`); no new engine APIs. Error-category mapping stays with #12 as coordinated.
 - **Scope:** no game/client changes, no session-downgrade behaviors, no automatic retry, no polling, no new navigation destinations; session/profile lifecycle unchanged otherwise.
 - **Verification:** exact-head CI pending on the PR. On-device ARM64 behavior of the crash/restore path and the branded loading state remains unverified and must be confirmed on physical hardware.
+
+
+## 2026-11-26 — Shared Compose design tokens, restrained haptics and menu fade (issue #107)
+
+- **Role:** Vibe / visual-only polish (owner-approved UI/UX work)
+- **Issue:** #107 — consistent visual language across launcher-owned screens. Visual-only scope; no settings semantics, GeckoView/session, or updater safety changes.
+- **Branch:** `vibe/visual-tokens-568e1f` → `beta`, stacked on PR #112 head `4318891` (same files touched; merge #112 first).
+- **Changes:** added `DesignTokens.kt` — single source of truth for the dark palette (ink/panel/gold accents), surface scrims, corner radii, spacing scale, 48dp minimum touch target, a branded dark `MaterialTheme` color scheme and shapes, plus a `restrainedActionFeedback` helper (system-respecting haptics for explicit Play/Download actions only, API-level gated). Replaced duplicated inline palettes in `HomeScreen`, `SettingsDialogs` (Settings/Diagnostics/Update), `GameScreen` and `GameMenuScreen` with tokens; wired the token theme in `MainActivity`; replaced in-file duplicated `HavenPanel`/`PageBackground`/`GameScrimColor` definitions.
+- **Transitions:** short fade (140ms in/120ms out) on game-menu overlay presentation/dismissal only; no animations during active gameplay, no persistent HUD elements.
+- **Accessibility:** added `DesignTokensTest` with WCAG 2.x relative-luminance contrast checks for all primary token pairs (4.5:1 for text, 3.0:1 for large accent text) plus palette single-source, gradient-stop, scrim alpha and 21:1/1:0 pinned contrast-helper values; Retry/Restore/Reload/menu buttons keep ≥48dp targets.
+- **kftmt:** `HomeScreen.kt` and `SettingsDialogs.kt` were previously outside the ratchet (4-space); touched files are fully converted to ktfmt google style.
+- **Verification:** exact-head CI pending on the PR. Haptic behavior with system haptics disabled, reduced-motion interplay and on-device rendering remain unverified pending physical ARM64 testing.
