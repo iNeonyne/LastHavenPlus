@@ -4,10 +4,12 @@
 **Active branch:** `beta`  
 **Latest beta integration commit:** `073f839eb3cccd9a13fae09dd091667bb86a1f0c` (PR [#85](https://github.com/iNeonyne/LastHavenPlus/pull/85), approved recreated icon and documentation; includes PR [#83](https://github.com/iNeonyne/LastHavenPlus/pull/83) direct-launch implementation).  
 **Stable promotion commit:** `f22b5c2b92b6f93b201b1a9dc50a8c8095543d76` (PR [#87](https://github.com/iNeonyne/LastHavenPlus/pull/87), selective product/docs promotion to main; stable-only history preserved).  
+**v2.2.0 beta validation:** PR #85 exact-head validation [#45657071506](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45657071506) passed lint, formatting, unsigned release build and unit tests. Post-merge beta quality [#45657785104](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45657785104) and signed ARM64 build [#45657785102](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45657785102) passed; signed artifact uploaded; tag/publication steps skipped.
+**v2.2.0 main validation:** selective PR #87 merged at `f22b5c2b92b6f93b201b1a9dc50a8c8095543d76`. Exact main quality [#45658476528](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45658476528) and signed ARM64 build [#45658476677](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45658476677) passed; signed artifact uploaded; tag/publication steps skipped.
 **Latest workflow integration:** PR [#54](https://github.com/iNeonyne/LastHavenPlus/pull/54) merged to beta at `b12da7651445d15080e7593d441459a8c8403070`; exact-head unsigned and post-merge signed CI both passed.  
 **Stable documentation:** owner-authorized v2.1.0 corrections are on `main`; README commit `fdae3d90cf3abb209df8a42dd73ed1667bae9808`, CHANGELOG commit `2abe7cc212b67a3b91f5dcdb108aee3a55559e32`.  
 **Stable promotion and publication:** PR [#47](https://github.com/iNeonyne/LastHavenPlus/pull/47) promoted to `main`; tag/release `v2.1.0` is published at `03fcfa9652ce4e7d1034523d640a1693e6e6b9ce`.  
-**Current phase:** v2.1.0 remains the latest published release. The v2.2.0 candidate scope (#56 direct launch/overlay and #84 recreated icon) is integrated in beta and selectively promoted to main by PR #87. Beta exact-head PR validation, post-merge quality and signed ARM64 CI passed. Main exact-commit quality and signed build runs are in progress. No v2.2.0 version bump, tag or publication has been created. Owner feedback is collected after release on the owner's schedule and is not a blocker. PR #54 fixed draft asset cleanup/verification by release ID; the release-ID path still needs a future owner-authorized versioned release run.
+**Current phase:** v2.1.0 remains the latest published release. The v2.2.0 candidate scope (#56 direct launch/overlay and #84 recreated icon) is integrated in beta and selectively promoted to main by PR #87. Beta exact-head PR validation, post-merge quality and signed ARM64 CI passed. Main exact-commit quality [run #45658476528](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45658476528) and signed ARM64 build [run #45658476677](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45658476677) both passed. The signed artifact was uploaded; release-tag, differential-generation and publication steps were skipped. No v2.2.0 version bump, tag or publication has been created. Owner feedback is collected after release on the owner's schedule and is not a blocker. PR #54 fixed draft asset cleanup/verification by release ID; the release-ID path still needs a future owner-authorized versioned release run.
 **Latest workflow integration:** issue #60 merged by PR [#72](https://github.com/iNeonyne/LastHavenPlus/pull/72) at `82e819a43e6d728a9eb8fea620eca47ac9c998df`. Exact-head PR validation passed in [run #45627915789](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45627915789). Post-merge Android quality run [#45631250015](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45631250015) and beta build run [#45631249817](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45631249817) completed successfully. The beta build verified signed release APK assembly, unit tests, established signing certificate and ARM64-only ABI; release-tag publication steps were skipped.
 
 ## Current source state
@@ -23,6 +25,12 @@
 ## Integration and CI evidence
 
 | Check | Result |
+|---|---|
+| v2.2.0 icon PR #85 | Merged to beta at `073f839eb3cccd9a13fae09dd091667bb86a1f0c`; exact PR CI #45657071506 passed |
+| v2.2.0 beta quality/build | Runs [#45657785104](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45657785104) and [#45657785102](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45657785102) passed; signed ARM64 APK artifact uploaded |
+| v2.2.0 stable promotion PR #87 | Merged to main at `f22b5c2b92b6f93b201b1a9dc50a8c8095543d76`; preserved main-only history |
+| v2.2.0 main quality/build | Runs [#45658476528](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45658476528) and [#45658476677](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45658476677) passed; signed ARM64 APK artifact uploaded; no tag or publication |
+|---|---|
 |---|---|
 | PR #43 head | `505e4fe4b91e0fcfae5aecf58ef9d9376e5598d3` |
 | PR #43 validation | [Run #386](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45600824024) passed unsigned release-variant build and JVM unit tests |
