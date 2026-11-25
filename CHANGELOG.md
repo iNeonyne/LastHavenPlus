@@ -14,7 +14,8 @@
 - PR #43 exact-head unsigned release build and JVM unit tests passed (run #386).
 - Post-merge beta signed build and unit tests passed (run #45601558602).
 - The signed beta APK contained arm64-v8a only and matched the established release certificate SHA-256 b3bbf7520e77dfc384a60b1eee6c5f205b978f9b453849e2be523f642018d263.
-- The beta artifact uses stable version identity 2.0.0; the final 2.1.0 versioned APK must be built from a tag on main.
+- Main promotion commit c5f6518e57d614da73642b7dc4c8a21e82e6e9b3 passed signed build, unit tests, certificate and ARM64-only verification in [run #45602742953](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45602742953).
+- The main branch CI artifact used placeholder version 0.1.0 / versionCode 1 and is not distributable. The final 2.1.0 versioned APK must be built from the v2.1.0 tag.
 - Physical ARM64 verification of the new UI, session retention and GeckoView feature matrix remains outstanding.
 
 ## v2.0.0 — 2026-11-25
