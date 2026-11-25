@@ -441,3 +441,13 @@
 - Full markdownlint CLI was unavailable. Basic style screening found legacy whitespace/repeated-blank-line noise in historical tracker/log files; no mass formatting was applied.
 - No app code, Gradle, CI, release, signing or main changes. No Android tests or device tests were applicable to this docs-only change.
 - **Remaining:** run a full Markdown parser/linter and finish stale-reference review before closing #70.
+
+
+### 2026-11-25 — Reconcile v2.2.0 roadmap and GeckoView issue scopes
+
+- **Starting beta HEAD:** `1adc890343fb4389ad76144eb00fed2ea33e316e` (PR #78).
+- **Branch:** `chaty/docs-roadmap-reconciliation`.
+- **Scope:** replace obsolete Cefrium/Home-screen-first roadmap text in the `ISSUES.md` #18 section; align local #20 and #21 backlog descriptions with their remaining evidence-only and physical-device scopes; clarify the historical branch-audit snapshot and the beta baseline used for this follow-up in `STATUS.md`.
+- **Issue tracker:** update GitHub #20 and #21 descriptions to match the corrected backlog; #18's live GitHub roadmap is already current and remains unchanged.
+- **Constraints:** no source, Gradle, CI, signing, release, game or main changes. #23 remains on hold; #56 remains Ploy's active task.
+- **Verification:** documentation consistency, internal anchors/links and diff review required. Full Markdown lint remains outstanding under #70; no Android or physical-device tests are applicable.
