@@ -188,3 +188,20 @@
 - **Change:** Added a `pull_request` trigger for PRs targeting `beta`. The PR-only job uses read-only repository permissions, builds the unsigned release variant and runs unit tests without loading signing secrets or uploading APKs. The existing branch/tag pipeline retains signed release and artifact verification.
 - **Verification:** Workflow source updated. A successful Actions run has not yet been inspected; no CI pass is claimed.
 - **Safety:** No application source, app ID, release signing identity, `main` or published release changed.
+
+
+### 2026-11-25 — Chaty takes over home/navigation and updater implementation
+
+- **Issues:** #22 home screen/navigation; #4 updater fallback and tests.
+- **Starting branch/commit:** `beta`, `c8eb02a265012d7be898277443a53dd1e3589cad`.
+- **Task branch:** `chaty/home-updater-demo` → `beta`.
+- **Files inspected:** Required project docs, `MainActivity.kt`, `AppUpdater.kt`, `BsdiffPatch.kt`, existing BSDIFF tests, GeckoRuntime provider, Android manifest, Gradle config, CI workflow, release metadata, issues #4/#22 and open PR #25.
+- **Files changed:** `MainActivity.kt`, `HomeScreen.kt`, `GameScreen.kt`, `GameMenuDialog.kt`, `AndroidManifest.xml`, `AppUpdater.kt`, `UpdateFallback.kt`, `UpdateVersionPolicy.kt`, `UpdateFallbackTest.kt`, `UpdateVersionPolicyTest.kt`; project status, assignment, issue, README, changelog and work-log records.
+- **Implementation:** Home is the first destination; Play lazily creates the GeckoRuntime/GeckoSession and loads the configured game URL once. Home detaches the view without closing the session; returning does not issue another `loadUri`. Home Back confirms exit. Gameplay alone enables landscape orientation, immersive system bars and keep-awake. Settings/diagnostics restore normal system UI.
+- **Updater:** Delta patch is attempted only for matching installed version/versionCode; base digest is checked before use. Any delta attempt failure, including patch download, BSDIFF reconstruction, output digest/size or package/signature validation, falls back to the full APK. Temporary files are removed on failures. Release asset URLs and post-response redirect hosts are checked for HTTPS GitHub destinations; manifest asset sizes are compared with GitHub metadata. Full APK validation still checks package name, version, signing certificate and SHA-256 before installer handoff.
+- **Commits:** `c8b51abafb1d806b7fb64677c9d87c68e7970de1`, `32b286fc054b488501dc6c712c1662ed0cd97b12`, `2caa87dff8b88110a709e42bf4518b60891b9932`, `6443048ca2939ae731ed12313f34320cbca9b7a0`, `de2a88536f0ee201ce3059b2cfac52cbd8e274bd`.
+- **PR:** [#26](https://github.com/iNeonyne/LastHavenPlus/pull/26), head at this checkpoint `de2a88536f0ee201ce3059b2cfac52cbd8e274bd`.
+- **CI:** PR runs #313 and #314 were cancelled by later pushes. Run #315 started for the current code head; a completed exact-head result has not yet been inspected. No local Gradle build was run in this environment. Do not report tests as passing.
+- **Superseded handoff:** PR #25 was closed without merging; issue #22 is now owned by Chaty. Ploy has no active assignment.
+- **Limitations:** No physical ARM64 device test; GeckoView game compatibility/profile persistence and actual update install remain unverified. No APK artifact has been produced from this PR-only job.
+- **Next safe action:** Finish documentation commit, inspect the newly triggered PR validation run for the exact final head, correct any real compile/test failures, then review and merge to beta only when green. After merge, inspect the signed ARM64 beta artifact; do not publish a release.

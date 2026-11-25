@@ -1,3 +1,16 @@
+## 2026-11-25 — Chaty takes over home/navigation and updater hardening
+
+- **Role:** Chaty / implementation and integration
+- **Branch:** `chaty/home-updater-demo` targeting `beta`
+- **PR:** [#26](https://github.com/iNeonyne/LastHavenPlus/pull/26)
+- **Files:** `MainActivity.kt`, `HomeScreen.kt`, `GameScreen.kt`, `GameMenuDialog.kt`, `AndroidManifest.xml`, `AppUpdater.kt`, new `UpdateFallback.kt`, new `UpdateVersionPolicy.kt`, updater unit tests, and central project documentation
+- **Change:** Replaced the failed #25 implementation with a Chaty-owned home/navigation implementation. Game initialization is lazy, the existing GeckoSession is retained across Home, and Home Back confirms exit. Orientation, immersive system UI and keep-awake are scoped to gameplay; Settings and diagnostics restore normal system UI. Updater delta failures now fall back to the full APK after re-verifying package identity and signing certificate. Partial files are cleaned; GitHub release URLs/redirect hosts and asset sizes are checked. Added unit tests for fallback policy and version/digest/URL validation.
+- **Why:** The #25 implementation failed PR CI and had compile/navigation/session defects. The updater previously did not fall back to the full APK after a delta download or reconstruction failure.
+- **Verified:** Source changes committed on the task branch; PR #26 targets current beta. PR CI runs #313 and #314 were cancelled by subsequent corrections. Run #315 was triggered for commit `de2a88536f0ee201ce3059b2cfac52cbd8e274bd`; a completed result for the final PR head is still required. No build/test pass is claimed.
+- **Superseded:** PR #25 was closed without merging. Ploy has no active assignment on #22.
+- **Constraints:** No Gradle/AGP/JDK/SDK/GeckoView changes, no app ID or signing changes, no automatic updates, no addon manager work, no main promotion or release publication.
+- **Next:** Inspect PR CI for the exact final head, correct any confirmed failures, then review/merge into beta only after checks pass. Physical ARM64 gameplay and updater installation remain unverified.
+
 ## 2026-11-25 — Bound Android CI runner time and queue optimization verification
 
 - **Role:** Chaty / CI orchestration

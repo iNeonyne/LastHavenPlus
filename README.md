@@ -11,7 +11,7 @@ LastHavenPlus is a lightweight Android launcher for the existing LastHaven Wrath
 
 Development is active on `beta`. The stable release remains on `main`.
 
-The current beta source uses Mozilla GeckoView 160 as its embedded browser engine. The app currently opens the game directly; a separate launcher home screen with Play and Settings is planned in [issue #22](https://github.com/iNeonyne/LastHavenPlus/issues/22) and is not yet complete.
+The current beta source uses Mozilla GeckoView 160 as its embedded browser engine and still opens the game directly. [PR #26](https://github.com/iNeonyne/LastHavenPlus/pull/26) adds the home screen, Play/Settings navigation and updater hardening; it is pending CI/review and is not part of `beta` until merged.
 
 The GeckoView runtime and app shell are implemented in source, but successful CI builds do not establish that the game works correctly on a physical device. Game compatibility, profile persistence and the complete navigation flow still require physical ARM64 testing.
 
@@ -32,12 +32,12 @@ The application ID and established release signing identity must remain unchange
 
 The following describes what is present in the beta source. Runtime behavior that has not been tested on physical ARM64 hardware is explicitly identified as unverified in [STATUS.md](STATUS.md).
 
-- **Game hosting:** A process-scoped GeckoRuntime and GeckoSession host the LastHaven game. The app currently launches the game directly.
-- **Navigation:** The game has a compact exit/navigation menu with reload, return-to-game, settings, diagnostics, update and exit actions. A dedicated app home destination is still being implemented.
+- **Game hosting:** A process-scoped GeckoRuntime and GeckoSession host the LastHaven game. The current beta launches the game directly.
+- **Navigation:** The current beta game menu provides reload, return-to-game, settings, diagnostics, update and exit actions. The dedicated home screen and Home navigation are proposed in PR #26 and remain pending CI/review.
 - **Settings and storage:** Settings report installed APK size, persistent app-private data size and cache size. Persistent data includes GeckoView data; it is not a profile-only measurement.
 - **Network usage:** Android per-app traffic counters report received and sent bytes since boot and, where supported, during the current app session. These totals include game and updater traffic, not just game traffic.
 - **Diagnostics:** Bounded local diagnostic logs support viewing, clearing and explicit user-initiated sharing. Redaction is implemented; see the status report for remaining verification.
-- **Updater:** The app checks stable GitHub releases and provides explicit update download and installer handoff. A compatible differential patch may be offered, with a full APK fallback. Updates are never downloaded or installed automatically.
+- **Updater:** The app checks stable GitHub releases and provides explicit update download and installer handoff. A compatible differential patch may be offered, with a full APK fallback when the patch is unavailable or ineligible. PR #26 extends fallback to patch download/reconstruction/checksum/signature failures and adds policy tests; that change is pending CI/review. Updates are never downloaded or installed automatically.
 - **Addon manager:** No addon manager is included. The previous ZIP package manager was removed at the owner's request and replacement work is on hold pending a new specification. Storing an addon package is not the same as injecting or loading it in the game.
 
 ### GeckoView profile transition
