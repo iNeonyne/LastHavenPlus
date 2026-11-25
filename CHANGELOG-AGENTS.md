@@ -626,3 +626,10 @@ Entry format:
 - **Release workflow:** PR #54 merged at `b12da7651445d15080e7593d441459a8c8403070`. It uses the release action's ID output for post-upload legacy-asset cleanup and final draft verification, avoiding draft-by-tag lookups.
 - **CI:** exact-head unsigned PR run #45610110307 passed bounded-input tests, unsigned release build and JVM unit tests. Post-merge signed beta run #45610518305 is pending. No release-tag job or publication was run.
 - **Branch audit:** 31 branches remain. Three branches are strictly behind beta with no unique commits (`chaty/bound-updater-queue`, `chaty/fix-updater-hardening`, `chaty/home-updater-demo`); branch deletion is not exposed by the connected GitHub integration. Diverged branches with unique commits were preserved.
+
+
+## 2026-11-25 — Confirm post-merge signed CI for PR #54
+
+- Post-merge beta push run [#45610518305](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45610518305) completed successfully for merge commit `b12da7651445d15080e7593d441459a8c8403070`.
+- The merged beta build, unit tests, established signing-certificate verification and ARM64-only ABI checks passed.
+- This push run did not execute the release-tag draft asset lookup. Live release-ID verification and optional differential failure-path testing remain open under #31.
