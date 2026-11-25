@@ -11,7 +11,6 @@ import org.json.JSONObject
 import java.io.File
 import java.io.FileOutputStream
 import java.net.HttpURLConnection
-import java.net.URL
 import java.security.MessageDigest
 import java.util.concurrent.Executors
 
@@ -67,6 +66,7 @@ object AppUpdater {
             val result = try {
                 val releaseConnection = openConnection(RELEASE_API)
                 val release = try {
+                    checkTrustedGithubResponse(releaseConnection)
                     if (releaseConnection.responseCode == HttpURLConnection.HTTP_NOT_FOUND) {
                         null
                     } else {
@@ -107,6 +107,7 @@ object AppUpdater {
                         val manifestUrl = requireGithubUrl(manifestAsset.getString("browser_download_url"))
                         val manifestConnection = openConnection(manifestUrl)
                         val manifest = try {
+                            checkTrustedGithubResponse(manifestConnection)
                             check(manifestConnection.responseCode == HttpURLConnection.HTTP_OK) {
                                 "Update manifest download failed (HTTP ${manifestConnection.responseCode})"
                             }
@@ -235,8 +236,19 @@ object AppUpdater {
                     installedInfo.versionName == patch.baseVersion &&
                     installedInfo.longVersionCode == patch.baseVersionCode
 
-                val patchAttempt = if (canUsePatch) {
-                    runCatching {
+                val verifyCandidate: () -> Unit = {
+                    check(temporaryApk.length() == update.size) {
+                        "Reconstructed APK size does not match the release manifest"
+                    }
+                    check(sha256(temporaryApk).equals(update.sha256, true)) {
+                        "APK checksum verification failed"
+                    }
+                    verifySignedUpdate(appContext, temporaryApk, update)
+                }
+
+                UpdateFallback.withFullFallback(
+                    preferDelta = canUsePatch,
+                    deltaAttempt = {
                         val delta = patch ?: error("Differential patch metadata is missing")
                         val baseApk = File(appContext.applicationInfo.sourceDir)
                         check(baseApk.isFile && baseApk.canRead()) {
@@ -257,41 +269,33 @@ object AppUpdater {
                                 patchFile,
                             )
                             BsdiffPatch.apply(baseApk, patchFile, temporaryApk, MAX_APK_BYTES)
+                            verifyCandidate()
+                            temporaryApk
                         } finally {
                             patchFile.delete()
                         }
-                    }
-                } else {
-                    null
-                }
-
-                if (patchAttempt == null || patchAttempt.isFailure) {
-                    // A delta is an optimization, never a single point of failure.
-                    temporaryApk.delete()
-                    val reason = patchAttempt?.exceptionOrNull()?.message
-                    if (reason != null) {
+                    },
+                    fullAttempt = {
+                        // Never let a failed or partially reconstructed delta reach the installer.
+                        temporaryApk.delete()
+                        downloadToFile(
+                            update.downloadUrl,
+                            update.sha256,
+                            update.size,
+                            MAX_APK_BYTES,
+                            temporaryApk,
+                        )
+                        verifyCandidate()
+                        temporaryApk
+                    },
+                    onDeltaFailure = { error ->
                         Diagnostics.warn(
                             appContext,
                             "Updater",
-                            "Differential update failed; falling back to full APK: $reason",
+                            "Differential update failed; falling back to full APK: ${error.message}",
                         )
-                    }
-                    downloadToFile(
-                        update.downloadUrl,
-                        update.sha256,
-                        update.size,
-                        MAX_APK_BYTES,
-                        temporaryApk,
-                    )
-                }
-
-                check(temporaryApk.length() == update.size) {
-                    "Reconstructed APK size does not match the release manifest"
-                }
-                check(sha256(temporaryApk).equals(update.sha256, true)) {
-                    "APK checksum verification failed"
-                }
-                verifySignedUpdate(appContext, temporaryApk, update)
+                    },
+                )
 
                 finalApk.delete()
                 check(temporaryApk.renameTo(finalApk)) { "Could not finalize downloaded APK" }
@@ -428,18 +432,11 @@ object AppUpdater {
         MessageDigest.getInstance("SHA-256").digest(certificate)
             .joinToString("") { "%02X".format(it) }
 
-    private fun requireSha256(value: String): String {
-        check(SHA256_PATTERN.matches(value)) { "Invalid SHA-256 value in update manifest" }
-        return value.lowercase()
-    }
+    private fun requireSha256(value: String): String =
+        UpdateVersionPolicy.requireSha256(value)
 
-    private fun requireGithubUrl(value: String): String {
-        val parsed = URL(value)
-        check(parsed.protocol == "https" && parsed.host.equals("github.com", true)) {
-            "Release assets must be hosted on GitHub"
-        }
-        return value
-    }
+    private fun requireGithubUrl(value: String): String =
+        UpdateVersionPolicy.requireGithubAssetUrl(value)
 
     private fun openConnection(url: String): HttpURLConnection =
         (URL(url).openConnection() as HttpURLConnection).apply {
@@ -452,29 +449,12 @@ object AppUpdater {
             setRequestProperty("User-Agent", "LastHavenPlus-Android")
         }
 
-    private fun isValidVersion(version: String): Boolean = VERSION_PATTERN.matches(version)
+    private fun isValidVersion(version: String): Boolean = UpdateVersionPolicy.isValid(version)
 
-    private fun versionCodeForVersion(version: String): Long {
-        val parts = VERSION_PATTERN.matchEntire(version)?.groupValues?.drop(1)
-            ?: error("Invalid release version: $version")
-        val values = parts.map { it.toLong() }
-        check(values.all { it <= 999L }) { "Release version components must be 999 or lower" }
-        return values[0] * 1_000_000L + values[1] * 1_000L + values[2]
-    }
+    private fun versionCodeForVersion(version: String): Long =
+        UpdateVersionPolicy.versionCode(version)
 
-    private fun compareVersions(first: String, second: String): Int {
-        val a = VERSION_PATTERN.matchEntire(first)?.groupValues?.drop(1)
-            ?: error("Invalid installed version: $second")
-        val b = VERSION_PATTERN.matchEntire(second)?.groupValues?.drop(1)
-            ?: error("Invalid release version: $first")
+    private fun compareVersions(first: String, second: String): Int =
+        UpdateVersionPolicy.compare(first, second)
 
-        for (index in 0..2) {
-            val comparison = a[index].toLong().compareTo(b[index].toLong())
-            if (comparison != 0) return comparison
-        }
-        return 0
-    }
-
-    private val VERSION_PATTERN = Regex("v?(\\d+)\\.(\\d+)\\.(\\d+)")
-    private val SHA256_PATTERN = Regex("[a-fA-F0-9]{64}")
 }

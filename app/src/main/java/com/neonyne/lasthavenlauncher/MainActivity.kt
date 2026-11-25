@@ -1,6 +1,5 @@
 package com.neonyne.lasthavenlauncher
 
-import android.app.Activity
 import android.content.SharedPreferences
 import android.content.Intent
 import android.net.Uri
@@ -128,7 +127,6 @@ private fun LastHavenApp(
     onInstallUpdate: (Uri) -> Unit,
 ) {
     val context = LocalContext.current
-    val activity = context as? Activity
     val usageMeter = remember { AppUsageMeter(context) }
     val gameUrl = remember {
         preferences.getString(KEY_GAME_URL, DEFAULT_GAME_URL) ?: DEFAULT_GAME_URL
@@ -147,6 +145,7 @@ private fun LastHavenApp(
     var session by remember { mutableStateOf<GeckoSession?>(null) }
     var isLoading by remember { mutableStateOf(false) }
     var pageLoadFailed by remember { mutableStateOf(false) }
+    var hasLoadedGame by remember { mutableStateOf(false) }
 
     val reloadGame: () -> Unit = {
         val current = session
@@ -173,10 +172,14 @@ private fun LastHavenApp(
             session = gameSession
             pageLoadFailed = false
             gameSession.loadUri(gameUrl)
+            hasLoadedGame = true
         } else if (session?.isOpen() != true) {
             val gameRuntime = runtime ?: GeckoRuntimeProvider.get(context).also { runtime = it }
             session?.open(gameRuntime)
-            if (session?.currentUri.isNullOrBlank()) session?.loadUri(gameUrl)
+            if (!hasLoadedGame) {
+                session?.loadUri(gameUrl)
+                hasLoadedGame = true
+            }
         }
         showGameMenu = false
         currentScreen = Screen.Game
