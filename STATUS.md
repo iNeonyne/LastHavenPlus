@@ -104,3 +104,13 @@ Still unverified on physical ARM64 hardware:
 - Current beta is `1c82e8b4aee2b0ce9ef1d9e6a68311dca4eb200b` before this documentation follow-up; no ordinary stale Chaty/Ploy feature branches remain.
 - The six Dependabot branches correspond to six open dependency PRs and are retained until those PRs are resolved.
 - `beta-legacy-2026-11-24` is an orphaned legacy snapshot with no common ancestor with current beta. Its tree contains 91 files versus 62 on beta, including old package-name source, an obsolete layout/activity set, old updater/build files and the legacy Addon Manager assets. These are not safe to merge into current beta and are not part of the active product. The branch is retained as a deletion candidate/archive pending explicit owner confirmation; it has not been deleted.
+
+
+## Issue ownership map — 2026-11-25
+
+- **Ploy ACTIVE:** #56 direct-launch and responsive overlay. One active issue at a time; all other Ploy work is queued.
+- **Ploy queue:** #9 accessibility → #11 diagnostics tests → #12 GeckoView 160 load errors → #14 connection diagnostics → #16 orientation/keep-awake → #10 persistent network totals → #28 storage accuracy → #6 essential settings/HTTPS URL → #17 settings backup/restore. Start each only after the previous Ploy issue is merged by Chaty. Exact narrow scopes and exclusions are recorded in each issue and AGENT_WORK.md.
+- **Chaty:** #4/#15 updater reliability, #20 GeckoView dependency record, #31 release workflow, #61–#66 CI/build/security, #70 docs validation, roadmap and integration.
+- **Chaty + owner/device tester:** #5/#21 physical ARM64 verification; #7 measured performance baseline.
+- **Owner decision:** #67 license selection. #23 Addon Manager remains ON HOLD and has no assigned agent.
+- Ploy is an internal agent role, not a confirmed GitHub username; assignments are marked in issue bodies, not through an invented GitHub assignee.
