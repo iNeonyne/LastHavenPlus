@@ -41,12 +41,16 @@ internal object BsdiffPatch {
             }
 
             val extraLength = patchFile.length() - HEADER_SIZE - controlLength - diffLength
-            val control = openBzipSection(patchFile, HEADER_SIZE.toLong(), controlLength)
-            val diff = openBzipSection(patchFile, HEADER_SIZE + controlLength, diffLength)
+            // A valid patch needs at most one 24-byte control tuple per output byte.
+            // Bound decompressed data too; compressed-input limits alone do not cap expansion.
+            val maxControlBytes = Math.multiplyExact(newSize, CONTROL_BYTES_PER_OUTPUT_BYTE)
+            val control = openBzipSection(patchFile, HEADER_SIZE.toLong(), controlLength, maxControlBytes)
+            val diff = openBzipSection(patchFile, HEADER_SIZE + controlLength, diffLength, newSize)
             val extra = openBzipSection(
                 patchFile,
                 HEADER_SIZE + controlLength + diffLength,
                 extraLength,
+                newSize,
             )
 
             try {
@@ -137,7 +141,7 @@ internal object BsdiffPatch {
         }
     }
 
-    private fun openBzipSection(file: File, offset: Long, length: Long): BzipSection {
+    private fun openBzipSection(file: File, offset: Long, length: Long, maxDecompressedBytes: Long): BzipSection {
         require(length > 0) { "Differential patch contains an empty compressed section" }
         val input = FileInputStream(file)
         try {
@@ -152,7 +156,8 @@ internal object BsdiffPatch {
                 }
             }
             val bounded = BoundedInputStream(input, length)
-            return BzipSection(BZip2CompressorInputStream(bounded, true), bounded)
+            val decompressed = BZip2CompressorInputStream(bounded, true)
+            return BzipSection(DecompressedLimitInputStream(decompressed, maxDecompressedBytes), bounded)
         } catch (error: Exception) {
             input.close()
             throw error
@@ -190,9 +195,37 @@ internal object BsdiffPatch {
     }
 
     private data class BzipSection(
-        val stream: BZip2CompressorInputStream,
+        val stream: InputStream,
         val bounded: BoundedInputStream,
     )
+
+    private class DecompressedLimitInputStream(
+        private val source: InputStream,
+        private val maxBytes: Long,
+    ) : InputStream() {
+        private var emittedBytes = 0L
+        init { require(maxBytes >= 0) { "Invalid decompressed section limit" } }
+        override fun read(): Int {
+            if (emittedBytes == maxBytes) {
+                if (source.read() < 0) return -1
+                throw IllegalArgumentException("Decompressed patch section exceeds its limit")
+            }
+            val value = source.read()
+            if (value >= 0) emittedBytes++
+            return value
+        }
+        override fun read(buffer: ByteArray, offset: Int, length: Int): Int {
+            if (length == 0) return 0
+            if (emittedBytes == maxBytes) return read().let { value ->
+                if (value < 0) -1 else { buffer[offset] = value.toByte(); 1 }
+            }
+            val allowed = minOf(length.toLong(), maxBytes - emittedBytes).toInt()
+            val count = source.read(buffer, offset, allowed)
+            if (count > 0) emittedBytes += count
+            return count
+        }
+        override fun close() = source.close()
+    }
 
     private class BoundedInputStream(
         private val source: InputStream,
@@ -230,5 +263,6 @@ internal object BsdiffPatch {
 
     private const val HEADER_SIZE = 32
     private const val BUFFER_SIZE = 64 * 1024
+    private const val CONTROL_BYTES_PER_OUTPUT_BYTE = 24L
     private val MAGIC = "BSDIFF40".toByteArray(Charsets.US_ASCII)
 }
