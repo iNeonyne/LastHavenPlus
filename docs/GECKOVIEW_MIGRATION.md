@@ -84,7 +84,7 @@ The owner has reported that the app and GeckoView work on an ARM64 device. No de
 
 ## Addon boundary
 
-Issue #23 is owner-approved for investigation/integration of a supplied XPI addon manager. No implementation is integrated yet. Before any install path is added, verify the pinned GeckoView 160 extension APIs, unsigned XPI behavior, install confirmation, session/tab lifecycle and all archive/network security constraints. A WoW 3.3.5a addon ZIP/`.toc` package is not a Firefox WebExtension; GeckoView WebExtension support does not itself load game addons. Do not claim game addon injection.
+Issue #23 and all addon-manager work are on hold by owner instruction (2026-11-25). The previous XPI specification and audit remain historical reference only; do not investigate, assign or implement the manager until the owner explicitly approves resuming it. A WoW 3.3.5a addon ZIP/`.toc` package is not a Firefox WebExtension; GeckoView WebExtension support does not itself load game addons. Do not claim game addon injection.
 
 ## CI evidence and remaining work
 
