@@ -347,3 +347,13 @@
 - **Tests:** no application tests run; documentation-only. PR validation query returned no PR-triggered workflow runs for the documentation commit. The existing signed beta evidence cited in PR #47 remains the relevant build evidence.
 - **Physical-device status:** full ARM64 feature matrix remains unverified.
 - **Next safe action:** inspect remaining stale branches and release-tag/draft state; do not delete branches without confirming their PR/commit dependencies.
+
+
+### 2026-11-25 — Roadmap and branch housekeeping audit
+
+- Updated the backlog's release-roadmap statement: PR #47 promoted the v2.1.0 candidate to `main`; it is not asserted to be published.
+- Kept physical ARM64 feature verification and the exact v2.1.0 tag-build artifact checks as release blockers.
+- Corrected issue #31's signed-beta evidence to cite run #45601558602; release-tag differential fallback behavior remains unverified, so #31 stays open.
+- Reaffirmed issue #23 is on hold and removed addon-manager integration from the active roadmap.
+- Audited 27 branch names and compared the retained Chaty task branches against beta. No open PRs were found. Branch deletion was not performed because the connected GitHub actions do not expose a branch-delete operation; diverged/unique commits must be preserved until safely reviewed and deleted through an authorized GitHub interface.
+- Documentation-only change. No app tests or physical-device checks were run.
