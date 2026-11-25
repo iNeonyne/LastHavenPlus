@@ -18,12 +18,12 @@
 
 | Issue | Priority | Summary | Current state |
 |---|---:|---|---|
-| [#4](#issue-4) | P0.1 | Build reproducibility and updater test coverage | Open; wrapper verified, more updater tests and current CI evidence required |
+| [#4](#issue-4) | P0.1 | Build reproducibility and updater test coverage | Open; signed candidate CI verified, final versioned artifact and physical update checks remain |
 | [#5](#issue-5) | P0.2 | Physical ARM64 gameplay and update verification | Open; not yet performed |
 | [#6](#issue-6) | P2 | Settings and safe storage controls | Open; implementation exists, device verification remains |
 | [#7](#issue-7) | P3 | Runtime performance and APK size | Open; measure before optimizing |
 | [#8](#issue-8) | — | Legacy addon manager | Closed — superseded; no planned work |
-| [#9](#issue-9) | P2 | Navigation menu accessibility | Paused pending final #22 UI |
+| [#9](#issue-9) | P2 | Navigation menu accessibility | Open; TalkBack semantics and physical navigation checks remain after #42 |
 | [#10](#issue-10) | P2 | Network data usage | Implemented in source; device verification remains |
 | [#11](#issue-11) | P2 | Privacy-conscious diagnostics | Paused; further tests remain |
 | [#12](#issue-12) | P2 | GeckoView load-error details | Open |
@@ -32,7 +32,7 @@
 | [#15](#issue-15) | P2 | Updater recovery | Open |
 | [#16](#issue-16) | P2 | Gameplay orientation and keep-awake settings | Open |
 | [#17](#issue-17) | P2 | Settings backup and restore | Open |
-| [#18](#issue-18) | Roadmap | v2.1.0 reliability, GeckoView verification and addon manager | Open; proposed release roadmap |
+| [#18](#issue-18) | Roadmap | v2.1.0 release gates and GeckoView verification | Open; candidate promoted, physical and final-artifact gates remain |
 | [#19](#issue-19) | P1 | Opt-in beta release channel | Open |
 | [#20](#issue-20) | P0 | GeckoView technical decision | Research recorded; compatibility verification tracked with #21 |
 | [#21](#issue-21) | P0 | Replace Cefrium with GeckoView | Source migration implemented; physical runtime checks remain |
