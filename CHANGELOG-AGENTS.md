@@ -680,3 +680,11 @@ Entry format:
 - Ploy's #56 implementation assignment remains active; Chaty retains review/integration and physical verification coordination.
 - Issue #70 remains open for Markdown/link validation and remaining stale-reference review.
 - The legacy beta backup branch is retained pending owner decision because it has no common ancestor with current beta; Dependabot branches are retained for their open PRs.
+
+
+## 2026-11-25 — Branch audit and migration-note reconciliation
+
+- Audited all current branches. Six Dependabot branches map to open dependency PRs and remain active.
+- `beta-legacy-2026-11-24` has no common ancestor with current beta and retains a divergent 91-file legacy tree, including obsolete package/source and Addon Manager assets. It is not safe to merge; retained as an archive/deletion candidate pending owner confirmation.
+- Updated GeckoView migration notes to distinguish the currently shipped v2.1.0 Home-screen-first flow from the not-yet-implemented #56 direct-launch/overlay redesign.
+- No branches deleted, no app code changed, no main changes and no release actions.
