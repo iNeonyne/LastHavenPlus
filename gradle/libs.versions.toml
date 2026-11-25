@@ -6,14 +6,14 @@ ktfmt = "0.64"
 
 geckoview = "160.0.20261116130455"
 
-composeBom = "2026.09.00"
+composeBom = "2026.11.01"
 androidxActivity = "1.13.0"
-androidxAppcompat = "1.7.0"
-androidxBrowser = "1.8.0"
+androidxAppcompat = "1.8.0"
+androidxBrowser = "1.10.0"
 androidxCore = "1.16.0"
-androidxMediarouter = "1.7.0"
+androidxMediarouter = "1.9.0"
 
-commonsCompress = "1.27.1"
+commonsCompress = "1.28.0"
 junit = "4.13.2"
 
 [libraries]
