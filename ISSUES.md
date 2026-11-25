@@ -247,7 +247,7 @@ Establish reproducible performance and APK-size measurements before making furth
 - [ ] Keep differential APK updates as the preferred way to reduce repeat download size when the engine payload is unchanged.
 
 ## Dependencies
-- Complete [#5 owner feedback after release](https://github.com/iNeonyne/Lasthavens-Android/issues/5) and establish a working release build first.
+- The direct-launch core is integrated; proceed with settings work when prioritized, and collect optional owner feedback separately after releases.
 
 ## Constraints
 - No speculative Chromium flags, native-library stripping, asset deletion or engine replacement.
@@ -577,7 +577,7 @@ Allow users to preserve launcher preferences across reinstallations or device ch
 **GitHub:** https://github.com/iNeonyne/LastHavenPlus/issues/18  
 **State:** open; planning and sequencing only. The canonical roadmap, ownership and release gates are maintained in GitHub issue #18.
 
-The stable v2.1.0 release is published. Beta already uses Mozilla GeckoView 160; Cefrium replacement is complete at source/integration level. The v2.2.0 focus is the direct-launch and responsive in-game overlay redesign (#56), followed by owner feedback on runtime/profile/update behavior after release and remaining updater/release reliability work.
+The stable v2.1.0 release is published. Beta already uses Mozilla GeckoView 160; Cefrium replacement is complete at source/integration level. The v2.2.0 implementation scope is the direct-launch and responsive in-game overlay redesign (#56) plus the approved recreated icon (#84), integrated in beta. Optional owner feedback is collected after releases; remaining updater/release reliability work is deferred.
 
 ### Current phases
 - [x] Housekeeping, v2.1.0 release record and contributor workflow reconciliation.
