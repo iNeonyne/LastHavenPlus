@@ -722,9 +722,9 @@ Entry format:
 
 ## 2026-11-25 — Release feedback policy
 
-- Owner decision: physical-device testing is not a release prerequisite or project blocker.
-- Issues #5 and #21 now track optional owner feedback after releases; the owner will test on their own schedule and report observed behavior.
-- Removed device-testing gates from the v2.2.0 roadmap and engineering acceptance criteria. Automated CI, signing, package identity, ABI and artifact checks remain required.
+- Owner decision: release feedback is supplied by the repository owner after publication on their own schedule; it is optional and not a release gate.
+- Issues #5 and #21 now track optional owner feedback after releases and focused follow-up fixes.
+- Updated the v2.2.0 roadmap and engineering acceptance criteria to keep owner feedback separate from automated CI, signing, package identity, ABI and artifact checks.
 - Updated issue index, status and agent instructions to match. Do not hold publication for pending owner feedback.
 
 
