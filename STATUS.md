@@ -71,7 +71,7 @@ Still unverified on physical ARM64 hardware:
 
 ## Open work
 
-- #60: Android lint and Kotlin formatting quality gate; implementation is in progress on `chaty/ci-quality-gate`. Android PR validation now runs lint, formatting, unsigned build, JVM tests and Python updater-helper tests together; the separate post-merge quality workflow repeats only lint/format checks on beta pushes. No CI result is claimed until exact-head Actions completes.
+- #60: Android lint and Kotlin formatting quality gate; implementation is in progress on `chaty/ci-quality-gate` (PR #72). Exact-head baseline validation passed on `07fa36c416aee83a64845cedaf67f2d99c359034` in [run #45625221679](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45625221679). The deliberate misformat probe was rejected specifically by Spotless in [run #45627319452](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45627319452); that run's overall failure is expected for the negative test, not a product-code failure. The probe was removed in commit `b93be719e510757036c948d23a8aadf1409b95a2`. The existing Android PR workflow handles PR lint/format/build/tests; `quality.yml` runs lint/format only on relevant beta pushes. Final clean-head validation is pending.
 - #4/#15: updater regression coverage and physical update verification.
 - #5/#21: physical GeckoView/game compatibility and profile verification.
 - #20: complete remaining GeckoView 160 artifact/POM/dependency/license/API evidence.
