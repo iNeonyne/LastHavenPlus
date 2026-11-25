@@ -178,6 +178,7 @@ jobs:
         shell: bash
         env:
           CREATED_TAG_REF: ${{ needs.create_tag.outputs.tag_ref }}
+          GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
           if [[ -n "$CREATED_TAG_REF" ]]; then
@@ -204,6 +205,27 @@ jobs:
             version_code=$((major * 1000000 + minor * 1000 + patch))
             echo "is_release=true" >> "$GITHUB_OUTPUT"
             echo "tag=$tag" >> "$GITHUB_OUTPUT"
+          elif [[ "$GITHUB_REF" == "refs/heads/beta" ]]; then
+            # Beta demo APKs must be installable over the latest stable app without
+            # lowering versionCode. Reuse the stable identity, but keep this a CI
+            # artifact only: is_release remains false, so no tag or release is created.
+            stable_tag="$(gh api "repos/$GITHUB_REPOSITORY/releases/latest" --jq .tag_name)"
+            if [[ ! "$stable_tag" =~ ^v([0-9]+)\.([0-9]+)\.([0-9]+)$ ]]; then
+              echo "::error::Latest stable release tag is not vMAJOR.MINOR.PATCH."
+              exit 1
+            fi
+            major="${BASH_REMATCH[1]}"
+            minor="${BASH_REMATCH[2]}"
+            patch="${BASH_REMATCH[3]}"
+            if (( major > 999 || minor > 999 || patch > 999 )); then
+              echo "::error::Each stable version component must be 999 or lower."
+              exit 1
+            fi
+            version="${stable_tag#v}"
+            version_code=$((major * 1000000 + minor * 1000 + patch))
+            echo "is_release=false" >> "$GITHUB_OUTPUT"
+            echo "tag=" >> "$GITHUB_OUTPUT"
+            echo "Using latest stable version identity for beta demo: $version (versionCode $version_code)"
           else
             version="0.1.0"
             version_code="1"

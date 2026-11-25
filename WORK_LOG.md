@@ -188,3 +188,56 @@
 - **Change:** Added a `pull_request` trigger for PRs targeting `beta`. The PR-only job uses read-only repository permissions, builds the unsigned release variant and runs unit tests without loading signing secrets or uploading APKs. The existing branch/tag pipeline retains signed release and artifact verification.
 - **Verification:** Workflow source updated. A successful Actions run has not yet been inspected; no CI pass is claimed.
 - **Safety:** No application source, app ID, release signing identity, `main` or published release changed.
+
+
+### 2026-11-25 — Chaty takes over home/navigation and updater implementation
+
+- **Issues:** #22 home screen/navigation; #4 updater fallback and tests.
+- **Starting branch/commit:** `beta`, `c8eb02a265012d7be898277443a53dd1e3589cad`.
+- **Task branch:** `chaty/home-updater-demo` → `beta`.
+- **Files inspected:** Required project docs, `MainActivity.kt`, `AppUpdater.kt`, `BsdiffPatch.kt`, existing BSDIFF tests, GeckoRuntime provider, Android manifest, Gradle config, CI workflow, release metadata, issues #4/#22 and open PR #25.
+- **Files changed:** `MainActivity.kt`, `HomeScreen.kt`, `GameScreen.kt`, `GameMenuDialog.kt`, `AndroidManifest.xml`, `AppUpdater.kt`, `UpdateFallback.kt`, `UpdateVersionPolicy.kt`, `UpdateFallbackTest.kt`, `UpdateVersionPolicyTest.kt`; project status, assignment, issue, README, changelog and work-log records.
+- **Implementation:** Home is the first destination; Play lazily creates the GeckoRuntime/GeckoSession and loads the configured game URL once. Home detaches the view without closing the session; returning does not issue another `loadUri`. Home Back confirms exit. Gameplay alone enables landscape orientation, immersive system bars and keep-awake. Settings/diagnostics restore normal system UI.
+- **Updater:** Delta patch is attempted only for matching installed version/versionCode; base digest is checked before use. Any delta attempt failure, including patch download, BSDIFF reconstruction, output digest/size or package/signature validation, falls back to the full APK. Temporary files are removed on failures. Release asset URLs and post-response redirect hosts are checked for HTTPS GitHub destinations; manifest asset sizes are compared with GitHub metadata. Full APK validation still checks package name, version, signing certificate and SHA-256 before installer handoff.
+- **Commits:** `c8b51abafb1d806b7fb64677c9d87c68e7970de1`, `32b286fc054b488501dc6c712c1662ed0cd97b12`, `2caa87dff8b88110a709e42bf4518b60891b9932`, `6443048ca2939ae731ed12313f34320cbca9b7a0`, `de2a88536f0ee201ce3059b2cfac52cbd8e274bd`.
+- **PR:** [#26](https://github.com/iNeonyne/LastHavenPlus/pull/26), head at this checkpoint `de2a88536f0ee201ce3059b2cfac52cbd8e274bd`.
+- **CI:** PR runs #313 and #314 were cancelled by later pushes. Run #315 started for the current code head; a completed exact-head result has not yet been inspected. No local Gradle build was run in this environment. Do not report tests as passing.
+- **Superseded handoff:** PR #25 was closed without merging; issue #22 is now owned by Chaty. Ploy has no active assignment.
+- **Limitations:** No physical ARM64 device test; GeckoView game compatibility/profile persistence and actual update install remain unverified. No APK artifact has been produced from this PR-only job.
+- **Next safe action:** Finish documentation commit, inspect the newly triggered PR validation run for the exact final head, correct any real compile/test failures, then review and merge to beta only when green. After merge, inspect the signed ARM64 beta artifact; do not publish a release.
+
+
+### 2026-11-25 — PR #26 build and unit-test validation passed
+
+- **PR head tested:** `283d649cd31ae009889d76affb25f655e28d3949`.
+- **CI run:** [#317](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45515320999), job `PR build and unit tests (unsigned)`.
+- **Result:** Passed. Logs show `compileReleaseKotlin`, `compileDebugKotlin`, `compileDebugUnitTestKotlin`, `testDebugUnitTest`, R8/minification, `packageRelease` and `assembleRelease`; final output `BUILD SUCCESSFUL in 2m 7s`. Unit-test report artifact `pr-unit-test-reports-26` (artifact ID `14976459805`) contains reports only, not an APK.
+- **Skipped by design:** `Build and test (arm64)` and `Create release tag` were skipped for the PR event. This run did not use signing secrets, verify the signing certificate, verify final APK ABI contents or test on hardware.
+- **Current live release metadata:** v1.0.0 exposes `lasthavenplus-arm64.apk` (120,381,565 bytes) and `lasthavenplus-update.json` (249 bytes); no differential patch asset is published. The full APK path is available in release metadata; no real download/install was performed.
+- **Next safe action:** Complete final PR diff review, ensure current head checks remain green, merge PR #26 to beta, then inspect the exact beta push run for signed release, package identity, signing certificate, ARM64-only packaging and artifact contents. Do not publish a release or promote main. Physical gameplay/profile/update tests remain unverified.
+
+
+### 2026-11-25 — Preserve stable-install compatibility for beta demo APKs
+
+- **Finding:** The beta branch pipeline previously defaulted to versionName `0.1.0` and versionCode `1`, while the published v1.0.0 APK uses versionCode `1000000`. A signed beta demo built with the old default could be rejected as a downgrade when installed over the user's existing stable app.
+- **Change:** PR #26 updates the `Resolve version metadata` workflow step. On `beta`, it reads the latest published stable release tag using the read-only workflow token, validates the semver tag and computes the same versionCode formula. It explicitly keeps `is_release=false` and an empty release tag, so this creates only the normal signed Actions artifact—no Git tag, update manifest, draft or published release.
+- **Purpose:** Keep the application ID and signing identity stable and avoid a lower versionCode for the demo. The beta APK uses the same version identity as the latest stable release; a later stable release with a higher versionCode can update it normally.
+- **Verification:** Workflow change is on the PR branch and awaits final PR CI. The post-merge beta build must confirm the resolved versionName/versionCode, signer, ARM64-only package and artifact. Same-version replacement and game profile preservation still require physical-device testing.
+
+### 2026-11-25 — P0 hardening added to PR #26
+
+- **Starting branch head:** `a1882b83e414d33091996096256770899bf9959d` on `chaty/home-updater-demo`.
+- **Changes:** Updated `AppUpdater.kt` to use a single queued worker with a 30-second idle timeout; updated `MainActivity.kt` to save/restore `pendingUpdateUri` and close the retained GeckoSession when the Activity composition is destroyed; bounded decompressed BSDIFF streams and added an over-limit regression test; wired `app/proguard-rules.pro` into release minification with GeckoView/SnakeYAML keep rules.
+- **Commits:** `91a87f5d1dd12f1ad13d44ee277e7d1be06bcd8b`, `a2c6bf98b823281a6de236f158be21dc670a1ed3`, `f655d179970f186f5f7f4a7432824dc073128bf1`, `86cb6211a291ebb3ea7a0d1134ed147b8447dfa3`, `269777616947ff3d5f2c6b4fb02924b19d55d6d3`, `f4891ab41b36fead89030a9fccdcabb9927cee8f`.
+- **CI:** Run [#325](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45517931847) is in progress. The unsigned PR build/unit-test job has started; signed ARM64 build and release-tag jobs are skipped by design for PR validation.
+- **Not verified:** No exact-head CI result yet; no physical ARM64 game, process-death installer, GeckoView minified startup or in-place update test has been performed.
+- **Next safe action:** Inspect #325 to completion, address failures, then review PR #26. Do not merge to beta or main, tag or publish without explicit owner approval.
+
+
+### 2026-11-25 — Final P0 PR validation queued
+
+- **PR:** #26, branch `chaty/home-updater-demo` → `beta`.
+- **P0 implementation commit:** `f4891ab41b36fead89030a9fccdcabb9927cee8f`.
+- **Documentation head:** `5255a0aa4670f317b4b0a9b350652da22008c514`.
+- **CI:** Run #325 was cancelled after additional documentation commits. Final-head run [#327](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45518147065) is pending; its job list has not yet populated. No successful build or test is claimed.
+- **Next:** Inspect run #327 (or the replacement run triggered by this checkpoint), then review exact PR diff. No beta merge or main promotion has been performed.

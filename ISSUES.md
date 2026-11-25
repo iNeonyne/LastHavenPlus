@@ -5,10 +5,11 @@
 ## Current priorities
 
 1. **P0 — GeckoView verification and release baseline:** GeckoView 160 is now the engine in beta. CI run #310 passed the signed Android release build, unit tests, signing-certificate and ARM64-only ABI checks for commit `91e21d4bde0a26b8d7cbfd9697615f32c2f57d21`; this is not a physical-device result or a build of the latest beta HEAD.
-2. **P1 — Home screen and navigation (#22):** Ploy owns the home screen, Play/Settings entry points and Reload/Home/Return to game flow. Chaty must not edit the assigned UI files concurrently.
-3. **P0.2 — Physical ARM64 verification (#5):** gameplay, profile persistence, media, navigation and update installation remain unverified until tested on real ARM64 hardware.
-4. **Build reproducibility/updater tests (#4):** Gradle Wrapper is present and pinned. Continue the missing updater edge-case coverage and verify current CI/workflow behavior.
-5. **Deferred:** addon-manager work (#23) remains on hold until the owner supplies a new written specification.
+2. **P0 — Security/lifecycle hardening:** PR #26 adds BSDIFF decompressed-output limits, an idle-timeout updater worker, exact GitHub hostname checks, GeckoSession Activity cleanup, saved installer URI state and GeckoView R8 rules. Run #325 was cancelled by later documentation commits. Final-head run #327 is pending for `5255a0aa4670f317b4b0a9b350652da22008c514`; do not mark complete until exact-head CI passes.
+3. **P1 — Home screen and navigation (#22):** Chaty owns implementation and integration in PR #26. Home Back confirmation and session-preserving Home navigation are implemented in the candidate. Ploy has no active assignment.
+4. **P0.2 — Physical ARM64 verification (#5):** gameplay, profile persistence, media, navigation and update installation remain unverified until tested on real ARM64 hardware.
+5. **Build reproducibility/updater tests (#4):** Gradle Wrapper is present and pinned. Continue the missing updater edge-case coverage and verify current CI/workflow behavior.
+6. **Deferred:** addon-manager work (#23) remains on hold until the owner supplies a new written specification.
 
 ## Backlog index
 
@@ -32,7 +33,7 @@
 | [#19](#issue-19) | P1 | Opt-in beta release channel | Open |
 | [#20](#issue-20) | P0 | GeckoView technical decision | Research recorded; compatibility verification tracked with #21 |
 | [#21](#issue-21) | P0 | Replace Cefrium with GeckoView | Source migration implemented; physical runtime checks remain |
-| [#22](#issue-22) | P1 | Home screen and Play/Settings navigation | Active — Ploy |
+| [#22](#issue-22) | P1 | Home screen and Play/Settings navigation | Active — Chaty, PR #26 CI passed; merge pending |
 | [#23](#issue-23) | Deferred | Addon manager replacement | Owner hold; no work authorized |
 
 ---
@@ -53,7 +54,7 @@ Close only when every acceptance criterion is met and evidence is recorded. If a
 
 ## Issue 4 — P0.1 — Improve build reproducibility and updater test coverage
 
-**Current audit (2026-11-25):** The Gradle Wrapper is present and pinned to Gradle 9.7.1 with a distribution SHA-256. Successful CI run [#310](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45508671565) ran `assembleRelease` and `testDebugUnitTest` for commit `91e21d4bde0a26b8d7cbfd9697615f32c2f57d21`; signing-certificate and ARM64-only ABI verification passed. This evidence does not apply to later workflow commits. The new PR-only validation job still needs an actual pull request run. Keep the issue open for remaining updater edge-case tests and current CI verification.
+**Current audit (2026-11-25):** The Gradle Wrapper is pinned to Gradle 9.7.1 with a distribution SHA-256. Signed CI run [#310](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45508671565) passed release build/tests, signer and ARM64-only ABI checks for commit `91e21d4bde0a26b8d7cbfd9697615f32c2f57d21`; this does not verify current beta HEAD. PR #26 adds P0 security/lifecycle fixes; exact-head run #325 is in progress. PR run [#317](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45515320999) passed `assembleRelease` and `testDebugUnitTest` for PR #26 code SHA `283d649cd31ae009889d76affb25f655e28d3949`, without signing secrets or signed ABI checks. Keep the issue open for remaining updater edge cases, post-merge signed CI and physical update installation.
 
 **GitHub:** https://github.com/iNeonyne/LastHavenPlus/issues/4
 **State:** open
@@ -66,22 +67,22 @@ Harden the existing build and updater without replacing the current update archi
 - [x] Pin the Gradle 9.7.1 distribution SHA-256 in wrapper properties; wrapper validation passed in CI run #247.
 - [x] Commit wrapper JAR and executable `gradlew`; CI wrapper validation passed in run #247.
 - [x] Update GitHub Actions to invoke `./gradlew`; run #247 reached the Gradle build through the wrapper.
-- [ ] Keep the existing JDK, AGP, SDK, Cefrium, signing key, application ID, and arm64-only configuration unless a verified compatibility issue requires a change.
+- [ ] Keep the existing JDK, AGP, SDK, GeckoView, signing key, application ID, and arm64-only configuration unless a verified compatibility issue requires a change.
 - [ ] Verify current beta debug and signed release builds in CI. Run #232 failed Kotlin compilation before APK/signing/ABI verification; historical run #85 is not current-source evidence.
 
-**Beta audit update (2026-11-25):** The Gradle Wrapper is present and pinned to Gradle 9.7.1 with a distribution SHA-256; wrapper validation passed in run #247. Run #247 failed compilation in the legacy `AddonManagerDialog.kt`, which has since been removed. Post-removal run #268 was cancelled by newer pushes and provided no build/test evidence. Current beta run #278 is pending. Keep #4 open for a clean current-beta build and updater edge-case tests.
+**Beta audit update (2026-11-25):** Run #310 verified `assembleRelease`, `testDebugUnitTest`, the established signing certificate and ARM64-only packaging for commit `91e21d4bde0a26b8d7cbfd9697615f32c2f57d21`; it does not verify current beta HEAD. Chaty's PR #26 adds full-APK fallback after delta failure and updater policy tests. PR validation is pending on the final PR head. Keep #4 open until that run passes and physical update installation is tested.
 
 ## Updater and differential-patch tests
 
-**Chaty progress (2026-11-24):** Added three BSDIFF failure-path tests for truncated headers, unsupported patch magic and output-size-limit enforcement. CI run for commit `29dd5aa` is still running; these tests are not marked complete until the run passes. The prior CI run exposed three pre-existing `AddonArchiveInspectorTest` failures that also need diagnosis because they block the shared unit-test task.
+**Chaty progress (2026-11-25):** PR #26 adds unit tests for delta-to-full fallback policy, numeric version/versionCode handling, SHA-256 format validation and trusted GitHub asset URLs. It also changes beta demo artifact versioning to match the latest stable release identity while keeping release publication disabled. Run #317 passed the full PR build/unit-test task for code SHA `283d649cd31ae009889d76affb25f655e28d3949`. The existing BSDIFF tests cover successful reconstruction, truncated headers, unsupported magic and output-size limits. Manifest parsing, actual file digest mismatch, base APK mismatch and interrupted network-download tests remain open.
 - [ ] Add tests for malformed or unsupported update manifests.
-- [ ] Test invalid release version tags and version-code handling.
+- [x] Test invalid release version tags and version-code handling (PR #26; run #317 passed).
 - [ ] Test incorrect APK and patch SHA-256 values.
 - [ ] Test mismatched base APK version, version code, and base digest.
 - [ ] Test corrupted, truncated, and incompatible BSDIFF patches.
 - [ ] Test interrupted/failed downloads and ensure partial files cannot be installed.
-- [ ] Preserve the existing manual, user-confirmed download/install flow.
-- [ ] Keep the full APK fallback when a differential patch is unavailable or fails validation.
+- [x] Preserve the existing manual, user-confirmed download/install flow; no automatic download or installation was added.
+- [x] Keep the full APK fallback when a differential patch is unavailable or fails validation (PR #26 implementation and fallback-policy test passed in run #317).
 
 ## CI verification
 - [ ] Verify release APK package identity in CI.
@@ -608,11 +609,11 @@ Replace Cefrium plugin/dependencies/repository/runtime with one verified stable 
 
 ## Issue 22 — P1 — Add the LastHavenPlus home screen with Play and Settings
 
-**Current assignment:** Ploy owns the home screen and navigation implementation. Required destinations are app home, settings and the existing game; the game menu must provide Reload, Home and Return to game. Home returns to the launcher home screen, and Return to game should preserve the existing GeckoSession. Chaty must not edit Ploy's assigned UI files concurrently.
+**Current assignment:** Chaty owns the home screen and navigation implementation in [PR #26](https://github.com/iNeonyne/LastHavenPlus/pull/26). PR run #317 passed the code build/unit tests; review/merge pending. Ploy has no active assignment on this issue. Required destinations are app home, settings and the existing game; the game menu must provide Reload, Home and Return to game. Home returns to the launcher home screen, and Return to game must preserve the existing GeckoSession.
 
 
 **GitHub:** https://github.com/iNeonyne/LastHavenPlus/issues/22  
-**Internal owner:** Ploy, queued after #21 integration.
+**Internal owner:** Chaty, active. PR #26 is pending CI and review.
 
 Fresh launch shows a simple branded home screen with Play and Settings. Do not load the game until Play is selected. Settings must be usable without starting a browser session. Preserve the Gecko session when navigating home and make immersive/keep-awake behavior gameplay-only. Define and test Back behavior.
 

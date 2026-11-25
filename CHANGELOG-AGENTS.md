@@ -1,3 +1,28 @@
+## 2026-11-25 — Add P0 security and lifecycle hardening to PR #26
+
+- **Role:** Chaty / implementation and integration
+- **Branch:** `chaty/home-updater-demo` → `beta`
+- **PR:** [#26](https://github.com/iNeonyne/LastHavenPlus/pull/26)
+- **P0 code head:** `f4891ab41b36fead89030a9fccdcabb9927cee8f`; **latest docs head:** `5255a0aa4670f317b4b0a9b350652da22008c514`
+- **Files:** `AppUpdater.kt`, `MainActivity.kt`, `BsdiffPatch.kt`, `BsdiffPatchTest.kt`, `app/build.gradle.kts`, new `app/proguard-rules.pro`
+- **Change:** Bound decompressed BSDIFF control/diff/extra output and added an expansion regression test. Replaced the permanent updater worker with a queued worker that retires after 30 seconds idle. Persisted the pending installer URI in Activity saved state. Kept GeckoSession open across Home, but close it when the Activity composition is destroyed. Added GeckoView/R8 and SnakeYAML keep rules and wired them into release minification. Exact-host URL validation and Home Back exit confirmation were already implemented in the PR candidate.
+- **Verification:** Run [#325](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45517931847) was cancelled by subsequent documentation commits. Final-head run [#327](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45518147065) is pending. No build/test pass is claimed yet. Signed branch CI and physical ARM64 testing have not been performed for this candidate.
+- **Constraints:** No changes to application ID, signing identity, GeckoView/Gradle toolchain versions, ABI policy, game URL or game client. No automatic update download/install, addon-manager work, beta merge, main promotion or release publication.
+- **Next:** Inspect run #325, correct any failures, complete PR review, and request owner approval before integration/promotion.
+## 2026-11-25 — Chaty takes over home/navigation and updater hardening
+
+- **Role:** Chaty / implementation and integration
+- **Branch:** `chaty/home-updater-demo` targeting `beta`
+- **PR:** [#26](https://github.com/iNeonyne/LastHavenPlus/pull/26)
+- **Files:** `MainActivity.kt`, `HomeScreen.kt`, `GameScreen.kt`, `GameMenuDialog.kt`, `AndroidManifest.xml`, `AppUpdater.kt`, new `UpdateFallback.kt`, new `UpdateVersionPolicy.kt`, updater unit tests, and central project documentation
+- **Change:** Replaced the failed #25 implementation with a Chaty-owned home/navigation implementation. Game initialization is lazy, the existing GeckoSession is retained across Home, and Home Back confirms exit. Orientation, immersive system UI and keep-awake are scoped to gameplay; Settings and diagnostics restore normal system UI. Updater delta failures now fall back to the full APK after re-verifying package identity and signing certificate. Partial files are cleaned; GitHub release URLs/redirect hosts and asset sizes are checked. Added unit tests for fallback policy and version/digest/URL validation.
+- **Why:** The #25 implementation failed PR CI and had compile/navigation/session defects. The updater previously did not fall back to the full APK after a delta download or reconstruction failure.
+- **Verified:** Source changes committed on the task branch; PR #26 targets current beta. PR runs #313–#316 were cancelled by follow-up pushes. Run [#317](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45515320999) passed `assembleRelease` and `testDebugUnitTest` for code SHA `283d649cd31ae009889d76affb25f655e28d3949`. The later beta-version-resolution workflow change has not yet passed final-head CI. The PR job is unsigned and skips signed ARM64 checks as intended. No physical-device result is claimed.
+- **Superseded:** PR #25 was closed without merging. Ploy has no active assignment on #22.
+- **Additional demo packaging fix:** Beta branch builds resolve the latest published stable tag and reuse its versionName/versionCode, while leaving `is_release=false`. This avoids a lower-versionCode beta APK that Android would reject over the existing stable installation; beta builds remain signed CI artifacts only and do not create a tag, update manifest or GitHub release.
+- **Constraints:** No Gradle/AGP/JDK/SDK/GeckoView changes, no app ID or signing changes, no automatic updates, no addon manager work, no main promotion or release publication.
+- **Next:** Complete final diff review and merge into beta only while the current PR checks are green. Then verify signed ARM64 branch CI. Physical ARM64 gameplay and updater installation remain unverified.
+
 ## 2026-11-25 — Bound Android CI runner time and queue optimization verification
 
 - **Role:** Chaty / CI orchestration
