@@ -14,6 +14,14 @@
 
 **Release roadmap:** [#18 — v2.2.0 roadmap](https://github.com/iNeonyne/LastHavenPlus/issues/18). v2.1.0 is published. v2.2.0 is a planning target, not a release commitment. No tag, promotion, or publication is authorized by this roadmap.
 
+## Agent work queue
+
+**Ploy — one active issue only:** [#56 ACTIVE](https://github.com/iNeonyne/LastHavenPlus/issues/56) → [#9](https://github.com/iNeonyne/LastHavenPlus/issues/9) → [#11](https://github.com/iNeonyne/LastHavenPlus/issues/11) → [#12](https://github.com/iNeonyne/LastHavenPlus/issues/12) → [#14](https://github.com/iNeonyne/LastHavenPlus/issues/14) → [#16](https://github.com/iNeonyne/LastHavenPlus/issues/16) → [#10](https://github.com/iNeonyne/LastHavenPlus/issues/10) → [#28](https://github.com/iNeonyne/LastHavenPlus/issues/28) → [#6](https://github.com/iNeonyne/LastHavenPlus/issues/6) → [#17](https://github.com/iNeonyne/LastHavenPlus/issues/17). Start the next issue only after Chaty has reviewed and merged the previous PR into beta. Each issue contains its own short scope and start condition.
+
+**Chaty:** #4/#15 updater reliability, #20 GeckoView evidence, #31 release workflow, #61–#66 engineering/CI, #70 docs, roadmap/review/integration. **Chaty + owner/device tester:** #5/#21 physical ARM64 checks and #7 performance measurements. **Repository owner:** #67 license choice. **#23:** ON HOLD; no agent assigned.
+
+Ploy is an internal agent role, not a confirmed GitHub login; assignment is visible in each issue body. Do not assign an unrelated GitHub account.
+
 ## Backlog index
 
 | Issue | Priority | Summary | Current state |
