@@ -307,3 +307,14 @@
 - **Change:** At the start of a new explicit download, remove leftover .part files from an interrupted prior process. Verified APK files are intentionally preserved. Added a JVM test covering partial APK/patch deletion and verified APK preservation. Also made response-body reading robust to zero-length reads and tightened fallback diagnostic exception handling.
 - **CI:** PR run [#344](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45521735696) is pending for the code commit. No pass is claimed.
 - **Next safe action:** Inspect CI on the final PR head after this documentation checkpoint. Keep physical update installation under #5.
+
+
+## 2026-11-25 — Start v2.1.0 work: baseline review and documentation reconciliation
+
+- Re-read beta README, AGENTS, STATUS, ISSUES, CHANGELOG-AGENTS, AGENT_WORK and WORK_LOG before changes.
+- Verified v2.0.0 GitHub Release metadata: published, non-draft/non-prerelease, with signed ARM64 APK and update manifest assets.
+- Verified beta HEAD `1f300b90e5aed9a5eaa86e473b746f0841d42b16`; latest integrated application source commit `1d6c1ec42becab44735edfd0323dfc60ff4b9f9d`.
+- Verified updater PR exact-head unsigned CI #345 and signed beta CI #346 passed for their respective exact commits.
+- Reviewed PR #32. Found previous-release APK/manifest downloads and release-list API response have timeouts but no explicit byte caps. Its exact-head Actions #348/#349 were cancelled, and its branch is stale/diverged from current beta. Added a detailed correction comment; formal REQUEST_CHANGES was unavailable because the PR author cannot request changes on their own PR.
+- Created documentation branch `chaty/v2.1-docs-reconcile` from current beta. Updated README, STATUS and AGENT_WORK; appended CHANGELOG and WORK_LOG entries. This work is docs-only and does not change app source.
+- Physical ARM64 testing remains unverified. Addon manager issue #23 is owner-approved but implementation has not started.
