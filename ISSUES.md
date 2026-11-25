@@ -5,8 +5,8 @@
 ## Current priorities
 
 1. **P0 — GeckoView verification and release baseline:** GeckoView 160 is now the engine in beta. CI run #310 passed the signed Android release build, unit tests, signing-certificate and ARM64-only ABI checks for commit `91e21d4bde0a26b8d7cbfd9697615f32c2f57d21`; this is not a physical-device result or a build of the latest beta HEAD.
-2. **P0 — Security/lifecycle hardening:** PR #26 adds BSDIFF decompressed-output limits, an idle-timeout updater worker, exact GitHub hostname checks, GeckoSession Activity cleanup, saved installer URI state and GeckoView R8 rules. Run #325 was cancelled by later documentation commits. Final-head run #327 is pending for `5255a0aa4670f317b4b0a9b350652da22008c514`; do not mark complete until exact-head CI passes.
-3. **P1 — Home screen and navigation (#22):** Chaty owns implementation and integration in PR #26. Home Back confirmation and session-preserving Home navigation are implemented in the candidate. Ploy has no active assignment.
+2. **P0 — Security/lifecycle hardening:** PR #26 is merged into beta at `e924c580699ad34f1083d1a9a0fe96901037c0ae`. Exact-head PR run #329 passed unsigned release build and unit tests. Signed post-merge CI and physical verification remain open.
+3. **P1 — Home screen and navigation (#22):** Implemented and merged in PR #26. PR CI passed; physical navigation/accessibility verification remains open.
 4. **P0.2 — Physical ARM64 verification (#5):** gameplay, profile persistence, media, navigation and update installation remain unverified until tested on real ARM64 hardware.
 5. **Build reproducibility/updater tests (#4):** Gradle Wrapper is present and pinned. Continue the missing updater edge-case coverage and verify current CI/workflow behavior.
 6. **Deferred:** addon-manager work (#23) remains on hold until the owner supplies a new written specification.
@@ -33,7 +33,7 @@
 | [#19](#issue-19) | P1 | Opt-in beta release channel | Open |
 | [#20](#issue-20) | P0 | GeckoView technical decision | Research recorded; compatibility verification tracked with #21 |
 | [#21](#issue-21) | P0 | Replace Cefrium with GeckoView | Source migration implemented; physical runtime checks remain |
-| [#22](#issue-22) | P1 | Home screen and Play/Settings navigation | Active — Chaty, PR #26 CI passed; merge pending |
+| [#22](#issue-22) | P1 | Home screen and Play/Settings navigation | Merged to beta in PR #26; physical verification pending |
 | [#23](#issue-23) | Deferred | Addon manager replacement | Owner hold; no work authorized |
 
 ---
@@ -54,7 +54,7 @@ Close only when every acceptance criterion is met and evidence is recorded. If a
 
 ## Issue 4 — P0.1 — Improve build reproducibility and updater test coverage
 
-**Current audit (2026-11-25):** The Gradle Wrapper is pinned to Gradle 9.7.1 with a distribution SHA-256. Signed CI run [#310](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45508671565) passed release build/tests, signer and ARM64-only ABI checks for commit `91e21d4bde0a26b8d7cbfd9697615f32c2f57d21`; this does not verify current beta HEAD. PR #26 adds P0 security/lifecycle fixes; exact-head run #325 is in progress. PR run [#317](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45515320999) passed `assembleRelease` and `testDebugUnitTest` for PR #26 code SHA `283d649cd31ae009889d76affb25f655e28d3949`, without signing secrets or signed ABI checks. Keep the issue open for remaining updater edge cases, post-merge signed CI and physical update installation.
+**Current audit (2026-11-25):** The Gradle Wrapper is pinned to Gradle 9.7.1 with a distribution SHA-256. Signed CI run [#310](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45508671565) passed release build/tests, signer and ARM64-only ABI checks for commit `91e21d4bde0a26b8d7cbfd9697615f32c2f57d21`; this does not verify current beta HEAD. PR #26 merged to beta at `e924c580699ad34f1083d1a9a0fe96901037c0ae`. Exact-head PR run [#329](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45518210756) passed unsigned release build and unit tests for `3a1396f7364be1e6aa658b3eb67be41549a906fb`; it does not verify signed ARM64 packaging. Keep the issue open for remaining updater edge cases, post-merge signed CI and physical update installation.
 
 **GitHub:** https://github.com/iNeonyne/LastHavenPlus/issues/4
 **State:** open
@@ -70,7 +70,7 @@ Harden the existing build and updater without replacing the current update archi
 - [ ] Keep the existing JDK, AGP, SDK, GeckoView, signing key, application ID, and arm64-only configuration unless a verified compatibility issue requires a change.
 - [ ] Verify current beta debug and signed release builds in CI. Run #232 failed Kotlin compilation before APK/signing/ABI verification; historical run #85 is not current-source evidence.
 
-**Beta audit update (2026-11-25):** Run #310 verified `assembleRelease`, `testDebugUnitTest`, the established signing certificate and ARM64-only packaging for commit `91e21d4bde0a26b8d7cbfd9697615f32c2f57d21`; it does not verify current beta HEAD. Chaty's PR #26 adds full-APK fallback after delta failure and updater policy tests. PR validation is pending on the final PR head. Keep #4 open until that run passes and physical update installation is tested.
+**Beta audit update (2026-11-25):** Run #310 verified `assembleRelease`, `testDebugUnitTest`, the established signing certificate and ARM64-only packaging for commit `91e21d4bde0a26b8d7cbfd9697615f32c2f57d21`; it does not verify current beta HEAD. Chaty's PR #26 adds full-APK fallback after delta failure and updater policy tests. PR run #329 passed the unsigned release build and unit tests for the final PR head. Keep #4 open until post-merge signed CI and physical update installation are verified.
 
 ## Updater and differential-patch tests
 
@@ -609,11 +609,11 @@ Replace Cefrium plugin/dependencies/repository/runtime with one verified stable 
 
 ## Issue 22 — P1 — Add the LastHavenPlus home screen with Play and Settings
 
-**Current assignment:** Chaty owns the home screen and navigation implementation in [PR #26](https://github.com/iNeonyne/LastHavenPlus/pull/26). PR run #317 passed the code build/unit tests; review/merge pending. Ploy has no active assignment on this issue. Required destinations are app home, settings and the existing game; the game menu must provide Reload, Home and Return to game. Home returns to the launcher home screen, and Return to game must preserve the existing GeckoSession.
+**Current assignment:** Chaty owns the home screen and navigation implementation in [PR #26](https://github.com/iNeonyne/LastHavenPlus/pull/26). PR run #317 passed the code build/unit tests; merged to beta at `e924c580699ad34f1083d1a9a0fe96901037c0ae`. Ploy has no active assignment on this issue. Required destinations are app home, settings and the existing game; the game menu must provide Reload, Home and Return to game. Home returns to the launcher home screen, and Return to game must preserve the existing GeckoSession.
 
 
 **GitHub:** https://github.com/iNeonyne/LastHavenPlus/issues/22  
-**Internal owner:** Chaty, active. PR #26 is pending CI and review.
+**Internal owner:** Chaty, active. PR #26 merged to beta at `e924c580699ad34f1083d1a9a0fe96901037c0ae`.
 
 Fresh launch shows a simple branded home screen with Play and Settings. Do not load the game until Play is selected. Settings must be usable without starting a browser session. Preserve the Gecko session when navigating home and make immersive/keep-awake behavior gameplay-only. Define and test Back behavior.
 
@@ -649,3 +649,5 @@ Wait for the owner to provide a new addon-manager specification. Then Chaty will
 
 ---
 ---
+
+**Integration checkpoint (2026-11-25):** PR #26 merged to beta at `e924c580699ad34f1083d1a9a0fe96901037c0ae`. PR run #329 passed unsigned release build and unit tests for the exact PR head. Signed post-merge ARM64 CI and physical device verification remain open. `main` and `beta` are diverged (beta ahead 166, main ahead 9); review the nine main-only commits before any promotion.
