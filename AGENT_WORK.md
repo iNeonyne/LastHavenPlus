@@ -9,7 +9,7 @@ The repository owner makes final product and release decisions. Chaty is the mai
 
 ## Active assignment
 
-- **Chaty — issue #60:** port the Android quality gate to beta and add an incremental Kotlin formatting check. Branch: `chaty/ci-quality-gate`, based on beta commit `36f079445e227583c12b19bde9161844e0e5855d`. Scope: root Gradle Spotless configuration, `.github/workflows/quality.yml`, contributor instructions and workflow/status records. No app behavior, dependencies other than the formatter plugin, signing, release or main-branch changes.
+- **Chaty — issue #60:** port the Android quality gate to beta and add an incremental Kotlin formatting check. Branch: `chaty/ci-quality-gate`, based on beta commit `36f079445e227583c12b19bde9161844e0e5855d`. Scope: root Gradle Spotless configuration, `.github/workflows/android.yml` PR quality steps, `.github/workflows/quality.yml` post-merge beta gate, contributor instructions and workflow/status records. No app behavior, dependencies other than the formatter plugin, signing, release or main-branch changes.
 - **Completed follow-up — issue #31:** PR [#54](https://github.com/iNeonyne/LastHavenPlus/pull/54) merged to beta at `b12da7651445d15080e7593d441459a8c8403070`. Exact-head unsigned validation passed in run [#45610110307](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45610110307). Post-merge signed beta run [#45610518305](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45610518305) passed. The future versioned release-path test remains owner-authorized only.
 - No contributor implementation assignment is active. Ploy has no assignment.
 
