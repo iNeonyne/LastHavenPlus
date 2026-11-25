@@ -123,3 +123,9 @@ Still unverified on physical ARM64 hardware:
 - Found and fixed 20 broken backlog-index fragments in `ISSUES.md` by adding explicit stable anchors for issues #4–#23; see PR #78.
 - A dedicated `markdownlint` CLI was not available in the execution environment. A basic whitespace/fence scan identified historical formatting noise in append-only logs and issue/status records; these were not mass-reformatted.
 - Issue #70 remains open pending a full Markdown parser/linter run and final stale-reference review. Documentation-only change; no application, build, CI, signing, release or device behavior changed.
+
+
+## Dependency refresh review — 2026-11-25
+
+- Issue [#81](https://github.com/iNeonyne/LastHavenPlus/issues/81) tracks a library-only refresh derived from closed Dependabot PRs #68/#69. Candidate versions are AppCompat 1.8.0, MediaRouter 1.9.0, Browser 1.10.0, Compose BOM 2026.11.01 and Commons Compress 1.28.0.
+- Toolchain changes from PRs #68/#71 are excluded pending a coordinated compatibility review. No build/test result is claimed until exact-head CI completes.
