@@ -12,6 +12,7 @@ import org.mozilla.geckoview.GeckoRuntimeSettings
  * because GeckoView child processes also instantiate the Application class.
  */
 object GeckoRuntimeProvider {
+    @Volatile
     private var runtime: GeckoRuntime? = null
 
     @MainThread

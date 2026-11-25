@@ -395,8 +395,9 @@ object AppUpdater {
     }
 
     private fun requireGithubUrl(value: String): String {
-        check(value.startsWith("https://github.com/")) {
-            "Release assets must be hosted on GitHub"
+        val url = URL(value)
+        check(url.protocol == "https" && url.host == "github.com") {
+            "Release assets must be hosted on github.com"
         }
         return value
     }
