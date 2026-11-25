@@ -759,3 +759,14 @@ Entry format:
 - **Change:** Consolidated proposed download speed/ETA, inline retry, install-later confirmation, storage preflight, differential/full-size comparison, formatted release notes/history, installed version identity, theme preference, storage loading placeholders, offline hint and restrained haptics into existing issues. No duplicate issues created.
 - **Explicit exclusions:** no launcher HomeScreen work, no pull-to-refresh/update badge on a launcher HomeScreen, no auto-check on launch, no unattended background downloads/automatic installation, and no external browser fallback. The game retains its own home screen; updates remain user-initiated.
 - **Status:** backlog-only triage. No application source changes, assignments, release commitments or device-test claims.
+
+
+## 2026-11-26 — Establish Chaty and Vibe GitHub-only workflow
+
+- **Role:** Chaty / workflow and documentation owner.
+- **Branch:** `chaty/agent-ownership-labels`, based on beta `6c9dadc31682db75f706435437d77969fb3e505e`.
+- **Model:** Chaty owns intake, triage, assignment, review and beta integration; Vibe implements only existing issues explicitly assigned by Chaty and submits PRs targeting beta. GitHub is the only agent-to-agent communication channel.
+- **Ownership labels:** `agent:unassigned`, `agent:chaty`, `agent:vibe`, `agent:blocked`, `agent:review`, `agent:owner`. The new workflow provisions labels, labels new/reopened issues and offers an opt-in backfill for existing open issues.
+- **Safety:** Vibe cannot merge or push to beta/main. Exactly one implementation owner per issue. Owner-only, blocked and review states are distinct from unassigned work.
+- **Activation caveat:** GitHub issue-event workflows must exist on the repository default branch. The PR targets beta only; automatic issue-open labeling remains inactive until the owner separately approves promotion to the default branch. No main, release, app source or game changes.
+- **Verification:** documentation and workflow source review pending PR CI/merge. No automation run or label backfill is claimed. Physical-device testing is not applicable.
