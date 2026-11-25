@@ -3,10 +3,10 @@
 - **Role:** Chaty / implementation and integration
 - **Branch:** `chaty/home-updater-demo` → `beta`
 - **PR:** [#26](https://github.com/iNeonyne/LastHavenPlus/pull/26)
-- **Head:** `f4891ab41b36fead89030a9fccdcabb9927cee8f`
+- **P0 code head:** `f4891ab41b36fead89030a9fccdcabb9927cee8f`; **latest docs head:** `5255a0aa4670f317b4b0a9b350652da22008c514`
 - **Files:** `AppUpdater.kt`, `MainActivity.kt`, `BsdiffPatch.kt`, `BsdiffPatchTest.kt`, `app/build.gradle.kts`, new `app/proguard-rules.pro`
 - **Change:** Bound decompressed BSDIFF control/diff/extra output and added an expansion regression test. Replaced the permanent updater worker with a queued worker that retires after 30 seconds idle. Persisted the pending installer URI in Activity saved state. Kept GeckoSession open across Home, but close it when the Activity composition is destroyed. Added GeckoView/R8 and SnakeYAML keep rules and wired them into release minification. Exact-host URL validation and Home Back exit confirmation were already implemented in the PR candidate.
-- **Verification:** Exact-head Actions run [#325](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45517931847) is in progress. No build/test pass is claimed yet. Signed branch CI and physical ARM64 testing have not been performed for this candidate.
+- **Verification:** Run [#325](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45517931847) was cancelled by subsequent documentation commits. Final-head run [#327](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45518147065) is pending. No build/test pass is claimed yet. Signed branch CI and physical ARM64 testing have not been performed for this candidate.
 - **Constraints:** No changes to application ID, signing identity, GeckoView/Gradle toolchain versions, ABI policy, game URL or game client. No automatic update download/install, addon-manager work, beta merge, main promotion or release publication.
 - **Next:** Inspect run #325, correct any failures, complete PR review, and request owner approval before integration/promotion.
 ## 2026-11-25 — Chaty takes over home/navigation and updater hardening
