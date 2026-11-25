@@ -11,6 +11,7 @@ import org.json.JSONObject
 import java.io.File
 import java.io.FileOutputStream
 import java.net.HttpURLConnection
+import java.net.URL
 import java.security.MessageDigest
 import java.util.concurrent.Executors
 
@@ -307,7 +308,11 @@ object AppUpdater {
             }
 
             result.onSuccess { Diagnostics.info(appContext, "Updater", "Update download and validation succeeded") }
-                .onFailure { Diagnostics.error(appContext, "Updater", "Update download failed: ${it.message}") }
+                .onFailure {
+                    File(appContext.filesDir, "updates/update.apk.part").delete()
+                    File(appContext.filesDir, "updates/update.bsdiff.part").delete()
+                    Diagnostics.error(appContext, "Updater", "Update download failed: ${it.message}")
+                }
             mainHandler.post { callback(result) }
         }
     }
