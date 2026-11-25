@@ -13,7 +13,9 @@ import java.io.FileOutputStream
 import java.net.HttpURLConnection
 import java.net.URL
 import java.security.MessageDigest
-import java.util.concurrent.Executors
+import java.util.concurrent.LinkedBlockingQueue
+import java.util.concurrent.ThreadPoolExecutor
+import java.util.concurrent.TimeUnit
 
 data class AppUpdatePatch(
     val downloadUrl: String,
@@ -58,7 +60,7 @@ object AppUpdater {
     private const val RELEASE_CERT_SHA256 =
         "B3BBF7520E77DFC384A60B1EEE6C5F205B978F9B453849E2BE523F642018D263"
 
-    private val executor = Executors.newSingleThreadExecutor()
+    private val executor = ThreadPoolExecutor(0, 1, 30L, TimeUnit.SECONDS, LinkedBlockingQueue())
     private val mainHandler = Handler(Looper.getMainLooper())
 
     fun checkForUpdate(context: Context, callback: (UpdateCheckResult) -> Unit) {
