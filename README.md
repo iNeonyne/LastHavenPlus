@@ -62,3 +62,11 @@ A signed release build requires the established project keystore and credentials
 - Never publish debug APKs or incomplete features.
 - CI build/signing/ABI checks do not replace physical ARM64 testing.
 - v2.1.0 is published. Do not republish or replace it without explicit owner approval.
+
+## Project guidance
+
+- [Contributing](CONTRIBUTING.md): development workflow, build checks and release requirements.
+- [Agent instructions](AGENTS.md): repository constraints and owner-controlled integration policy.
+- [Security policy](SECURITY.md): supported versions and private vulnerability reporting guidance.
+- [Reproducible build status](docs/REPRODUCIBLE_BUILDS.md): current guarantees and the verification work still outstanding.
+
