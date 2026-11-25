@@ -91,6 +91,17 @@ Do not add automatic update downloads or installation. Do not publish debug APKs
 
 ## Project workflow and documentation
 
+### Review and CI levels
+
+Review effort is proportional to risk; every PR is still reviewed by Chaty and must pass the applicable required CI checks.
+
+- **Lightweight:** documentation-only, copy/text, or isolated low-risk changes. Keep the diff small, verify links/content, and check that no behavior or security boundary changed.
+- **Standard:** ordinary UI, settings, diagnostics, or isolated application changes. Review affected call paths, regression risks, relevant unit tests and the unsigned PR build.
+- **Strict:** GeckoView/session lifecycle, updater/download/patching, storage/profile handling, networking/security, Gradle/SDK/dependencies, manifest/permissions, signing, CI/release workflows. Review all affected paths and failure cases, require focused regression tests, exact-head CI, and post-merge signed/packaging verification where applicable. Hardware-dependent behavior remains unverified until tested on ARM64 hardware.
+
+Keep PRs to one issue and a focused file scope. Avoid unrelated formatting or cleanup. A PR description should state outcome, scope/non-goals, changed files, tests and links, exact head SHA, known limitations, and device-test status. If a branch falls behind `beta`, refresh it and rerun checks before merge.
+
+
 Read [AGENTS.md](AGENTS.md) and [AGENT_WORK.md](AGENT_WORK.md) before working on the repository.
 
 - **`beta`:** active development, integration and testing branch.

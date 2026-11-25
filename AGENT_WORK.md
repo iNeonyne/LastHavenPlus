@@ -9,6 +9,16 @@ The repository owner makes final product and release decisions. Chaty is the mai
 
 ## Shared workflow
 
+### Right-sized reviews and handoffs
+
+- Use **lightweight review** for documentation-only, wording/copy and isolated low-risk changes; verify factual accuracy, links, scope and that no behavior/security boundary changed.
+- Use **standard review** for contained UI/settings/diagnostics/application changes; inspect affected call paths, regression risks, relevant tests and the required unsigned PR CI.
+- Use **strict review** for GeckoView/session lifecycle, updater/download/patching, storage/profile, network/security, dependencies/toolchain, manifest/permissions, signing and CI/release changes; inspect failure paths, require focused regression tests and exact-head CI, then verify signed packaging after integration where applicable.
+- Every PR still receives Chaty's review and required CI. Review tiers do not waive checks or permit self-merging.
+- Keep PRs focused on one issue. Avoid unrelated cleanup and overlapping file scopes. If `beta` advances, refresh the task branch and rerun affected checks before integration.
+- Handoffs include outcome, scope/non-goals, changed files, exact head SHA, test commands/results and CI links, known limitations, and physical-device testing status.
+
+
 - `beta` is the only active development, integration and testing branch. `main` is stable.
 - Pull requests are allowed and are the standard handoff/integration path. Contributors open PRs targeting `beta` for completed assignments.
 - Parallel work is allowed only for different issues with non-overlapping file scopes. Never work on the same issue concurrently.

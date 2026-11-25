@@ -19,6 +19,16 @@ The active embedded browser engine in `beta` is Mozilla GeckoView 160. Do not ad
 - Promote `beta` to `main` only after all release gates pass and the owner explicitly approves. Publishing a release or creating a release tag also requires explicit approval.
 - Never develop routinely on `main`, force-push shared branches or bypass required checks.
 
+## Review depth and change sizing
+
+Review effort must match risk without removing the review gate:
+
+- **Lightweight review:** documentation-only, wording/copy, or isolated low-risk changes. Verify scope, links, factual accuracy and absence of behavior/security changes.
+- **Standard review:** normal UI, settings, diagnostics and contained application changes. Inspect affected call paths, regression risks, relevant tests and the required unsigned PR build.
+- **Strict review:** GeckoView/session lifecycle, updater/download/patching, storage/profile, network/security, dependencies/toolchain, manifest/permissions, signing and CI/release workflows. Inspect success and failure paths, require focused regression tests, exact-head CI, and relevant post-merge signed/packaging checks. Require physical ARM64 testing for claims that depend on device behavior.
+
+All PRs remain subject to Chaty's review and required CI. “Lightweight” means a smaller review scope, not automatic approval, bypassed CI, or permission to merge. Keep one issue per PR, avoid unrelated cleanup, and keep file ownership non-overlapping. Contributors must provide a concise handoff: outcome, scope/non-goals, changed files, exact head SHA, test commands/results and CI links, limitations, and physical-device status. If `beta` advances, refresh the branch and rerun affected checks before merge.
+
 ## Before changing code
 
 1. Read `README.md`, this file, `AGENT_WORK.md`, `STATUS.md`, the relevant sections of `ISSUES.md`, and the latest entries in `CHANGELOG-AGENTS.md` and `WORK_LOG.md`.

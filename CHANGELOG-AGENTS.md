@@ -545,3 +545,11 @@ Entry format:
 - **Change:** Added a `pull_request` trigger for PRs targeting `beta` and a dedicated read-only validation job. It builds the unsigned release variant and runs unit tests without signing secrets or publishing APKs. The full signed build and release-artifact checks remain on branch/tag events.
 - **Why:** Documentation allowing PRs is incomplete unless CI validates them. The PR path must not expose signing secrets or create release artifacts.
 - **Not yet verified:** The workflow change has not completed a GitHub Actions run. Do not claim PR CI is operational until the run is inspected.
+
+
+## 2026-11-25 — Introduce risk-based review depth
+
+- **Branch:** `chaty/workflow-efficiency-policy` → `beta`.
+- **Change:** Define lightweight, standard and strict review levels for documentation/copy, contained application changes, and high-risk runtime/security/release changes. Every PR remains reviewed by Chaty and subject to required CI; high-risk work retains focused regression, exact-head, signed-package and physical-device gates as applicable.
+- **Efficiency:** Require focused one-issue PRs, concise handoffs and branch refresh/retest when beta advances. Review depth changes effort, not authorization or safety gates.
+- **Scope:** Documentation/workflow policy only. No app source, Gradle, CI workflow, signing, `main`, or release assets changed.
