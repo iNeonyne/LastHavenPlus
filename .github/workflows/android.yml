@@ -494,5 +494,6 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          gh release edit "$RELEASE_TAG" --draft=false
+          release_id="$(gh api "repos/$GITHUB_REPOSITORY/releases/tags/$RELEASE_TAG" --jq .id)"
+          gh api --method PATCH "repos/$GITHUB_REPOSITORY/releases/$release_id" -F draft=false >/dev/null
           gh api "repos/$GITHUB_REPOSITORY/releases/tags/$RELEASE_TAG" --jq 'select(.draft == false) | .html_url' | tee -a "$GITHUB_STEP_SUMMARY"
