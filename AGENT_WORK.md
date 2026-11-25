@@ -27,7 +27,7 @@
 ### Chaty — central ownership workflow
 - **Scope:** two-agent coordination protocol, ownership labels, issue intake automation and project documentation.
 - **Branch:** `chaty/agent-ownership-labels`.
-- **PR:** to be opened against beta.
+- **PR:** [#114](https://github.com/iNeonyne/LastHavenPlus/pull/114), targeting beta.
 - **Constraints:** no app source, Gradle, signing, release, game or main-branch changes.
 - **Activation caveat:** GitHub issue-event workflows run only when the workflow file exists on the repository default branch. This beta PR prepares the workflow and templates; automatic issue-open labeling requires a separately owner-approved promotion to the default branch. Do not promote as part of this task.
 
@@ -55,7 +55,7 @@ Exactly one agent ownership label should be present. Only Chaty changes ownershi
 
 ## Queue and exclusions
 
-- **Chaty-owned coordination:** #4/#15/#31 updater reliability and release verification; #70 documentation validation; roadmap, CI and project-wide records.
+- **Chaty-owned coordination:** #4/#15/#31/#111 updater reliability and release verification; #20 GeckoView dependency audit; #70 documentation validation; roadmap, CI and project-wide records.
 - **Vibe candidate queue:** issues are not assigned merely because they are open or labeled `agent:unassigned`. Chaty must explicitly assign one issue at a time after prioritization and scope review.
 - **Owner-only:** #5/#21 optional post-release owner feedback and #67 license decision. Do not treat missing owner feedback as an engineering or release blocker.
 - **Blocked/deferred:** #23 Addon Manager remains ON HOLD; #19 beta release channel, #86 deferred backlog and #7 measured performance work must not start until the owner prioritizes them.
