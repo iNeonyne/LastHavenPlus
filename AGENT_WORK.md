@@ -30,7 +30,7 @@ The repository owner makes final product and release decisions. Chaty is the mai
 
 ## Chaty — ACTIVE: issue #22 home/navigation and issue #4 updater hardening
 
-**Current PR:** [#26](https://github.com/iNeonyne/LastHavenPlus/pull/26), branch `chaty/home-updater-demo` → `beta`.
+**Integrated PR:** [#26](https://github.com/iNeonyne/LastHavenPlus/pull/26), merged to `beta` at `e924c580699ad34f1083d1a9a0fe96901037c0ae`.
 
 ### Issue #22 — home and navigation
 - Fresh launch opens Home; it must not load the game.
@@ -52,8 +52,8 @@ The repository owner makes final product and release decisions. Chaty is the mai
 - Beta branch demo artifacts must reuse the latest published stable versionName/versionCode so an existing stable install is not treated as a version downgrade. Keep `is_release=false`: no tag, manifest upload or GitHub release may be created by a beta build.
 
 ### Verification and handoff
-- PR run #317 passed `assembleRelease` and `testDebugUnitTest` for code SHA `283d649cd31ae009889d76affb25f655e28d3949`. Any later source change requires a fresh exact-head run; merge only with the current PR checks green.
-- After merge, inspect beta branch CI for signed release build, tests, signer and ARM64-only packaging.
+- PR run #329 passed the unsigned release build and unit tests for PR head `3a1396f7364be1e6aa658b3eb67be41549a906fb`.
+- PR #26 merged to beta at `e924c580699ad34f1083d1a9a0fe96901037c0ae`. Verify signed branch CI, signer, ARM64-only packaging and artifact contents for the exact merge commit.
 - Physical ARM64 gameplay and update installation remain unverified until tested on hardware.
 - Chaty alone reviews and merges to beta. No release tag, main promotion or publication without owner approval.
 
@@ -62,12 +62,12 @@ The repository owner makes final product and release decisions. Chaty is the mai
 - Maintain exclusive ownership of central documentation, `STATUS.md`, `ISSUES.md`, `README.md`, `AGENTS.md`, this file, `CHANGELOG-AGENTS.md` and `WORK_LOG.md`.
 - Verify the CI optimization run associated with commit `54b947279a783c6c382210e65045edd02bd5ee73`; do not claim performance improvement until elapsed time is compared with a suitable baseline.
 - Keep the successful run #308 evidence tied to its actual tested commit `82590635e77c7abfedcaa6fd1fa4ad8c3b5de469`; do not describe it as a build of later documentation/workflow commits.
-- Own the #22/#4 implementation and review in PR #26; coordinate remaining GeckoView physical-device checks.
+- #22/#4 implementation merged in PR #26; coordinate signed post-merge CI, remaining GeckoView physical-device checks and beta-to-main reconciliation.
 - Do not promote `beta` to `main`, create a release tag or publish a release without explicit owner approval.
 
 ## Paused and deferred work
 
 - Issue #9 accessibility follow-up: paused until the home/navigation implementation is integrated and can be checked against the final UI.
-- Issue #11 diagnostics test expansion: paused; resume after PR #26 is integrated or when Chaty explicitly reorders it.
+- Issue #11 diagnostics test expansion: paused; resume after the post-merge verification checkpoint or when Chaty explicitly reorders it.
 - Ploy: no active assignment. Do not work on #22 or PR #25.
 - Issue #23 addon manager: blocked by the owner's hold. Do not begin until a new written specification is supplied.
