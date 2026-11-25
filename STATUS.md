@@ -26,7 +26,7 @@
 | PR #43 merge | `dffca7e67ef4a8dd1bec8777c2c4c8b8a51a0210` |
 | Post-merge beta build | [Run #45601558602](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45601558602) passed build, unit tests, established signing-certificate verification and ARM64-only ABI checks, as recorded in merged PR #47 |
 | Updater tag validation | PR #41 merged at `1d35e520331ca9ffa3a9b41b21402a3110728001`; v2.1.0 tag creation succeeded in release run #45603533787 |
-| v2.1.0 tag release | [Run #45603533787](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45603533787): unit tests, signer, established certificate, ARM64-only ABI, differential generation and upload/publish steps passed; final asset-query step failed with HTTP 404. Current GitHub release metadata confirms the published assets |
+| v2.1.0 tag release | [Run #45603533787](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45603533787): unit tests, signer, established certificate, ARM64-only ABI, differential generation and upload/publish steps passed; final draft-by-tag lookup failed HTTP 404. Release metadata confirms published assets |
 
 PR validation is unsigned and does not access release secrets or publish APKs. A successful PR run does not verify signing, APK ABI contents or release artifacts.
 
@@ -71,13 +71,14 @@ Still unverified on physical ARM64 hardware:
 
 - #4/#15: updater regression coverage and physical update verification.
 - #5/#21: physical GeckoView/game compatibility and profile verification.
-- #20: GeckoView decision/reference record.
+- #20: complete remaining GeckoView 160 artifact/POM/dependency/license/API evidence.
 - #23: addon-manager work on hold by owner instruction; do not resume without explicit approval.
 - #28: storage measurement accuracy.
-- #31: release packaging resilience; confirm remaining acceptance criteria against current workflow.
+- #31: PR #54 merged; exact-head unsigned validation passed in run #45610110307; post-merge signed beta run #45610518305 is pending. Future owner-authorized release run must exercise draft-ID cleanup/verification and differential fallback.
 - #42: v2.1.0 launcher UI verification; source implementation is integrated by PR #43, physical UI checks remain.
 - #22: Home/Play/Settings source implementation closed as complete; physical navigation/session checks remain under #5/#42.
 - #9/#11/#12/#14/#16/#17: remaining accessibility, diagnostics, load-error, connection, gameplay and backup work.
+- Stable README/CHANGELOG are reconciled on main; no release was created or republished during housekeeping.
 
 ## Branch policy
 
