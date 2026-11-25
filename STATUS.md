@@ -2,10 +2,11 @@
 
 **Last updated:** 2026-11-25  
 **Active branch:** `beta`  
-**Latest application integration commit:** `854fce1b1e2989cb012ebf5a15d196d91ff7cad7` (PR [#46](https://github.com/iNeonyne/LastHavenPlus/pull/46)).  
-**Latest repository maintenance:** PR [#52](https://github.com/iNeonyne/LastHavenPlus/pull/52) merged into beta at `0c7e009ff05a397101fb510e6997a50804342b2a`. PR #51 reconciled the roadmap and backlog.  
-**Stable promotion and publication:** PR [#47](https://github.com/iNeonyne/LastHavenPlus/pull/47) promoted the candidate to `main`; PR [#48](https://github.com/iNeonyne/LastHavenPlus/pull/48) prepared tag `v2.1.0`, which is now published at commit `03fcfa9652ce4e7d1034523d640a1693e6e6b9ce`.  
-**Current phase:** v2.1.0 is published. Physical ARM64 feature verification remains outstanding, and release workflow run #45603533787 needs a follow-up for its final asset-query HTTP 404.
+**Latest application integration commit:** `dffca7e67ef4a8dd1bec8777c2c4c8b8a51a0210` (PR [#43](https://github.com/iNeonyne/LastHavenPlus/pull/43)); PR #46 was documentation-only.  
+**Latest workflow integration:** PR [#54](https://github.com/iNeonyne/LastHavenPlus/pull/54) merged to beta at `b12da7651445d15080e7593d441459a8c8403070`; exact-head unsigned and post-merge signed CI both passed.  
+**Stable documentation:** owner-authorized v2.1.0 corrections are on `main`; README commit `fdae3d90cf3abb209df8a42dd73ed1667bae9808`, CHANGELOG commit `2abe7cc212b67a3b91f5dcdb108aee3a55559e32`.  
+**Stable promotion and publication:** PR [#47](https://github.com/iNeonyne/LastHavenPlus/pull/47) promoted to `main`; tag/release `v2.1.0` is published at `03fcfa9652ce4e7d1034523d640a1693e6e6b9ce`.  
+**Current phase:** v2.1.0 is published. Physical ARM64 feature verification remains outstanding. PR #54 fixed draft asset cleanup/verification by release ID; exact-head unsigned validation and post-merge signed beta validation both passed. The release-ID path still requires a future owner-authorized versioned release run.
 
 ## Current source state
 
@@ -26,7 +27,7 @@
 | PR #43 merge | `dffca7e67ef4a8dd1bec8777c2c4c8b8a51a0210` |
 | Post-merge beta build | [Run #45601558602](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45601558602) passed build, unit tests, established signing-certificate verification and ARM64-only ABI checks, as recorded in merged PR #47 |
 | Updater tag validation | PR #41 merged at `1d35e520331ca9ffa3a9b41b21402a3110728001`; v2.1.0 tag creation succeeded in release run #45603533787 |
-| v2.1.0 tag release | [Run #45603533787](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45603533787): unit tests, signer, established certificate, ARM64-only ABI, differential generation and upload/publish steps passed; final asset-query step failed with HTTP 404. Current GitHub release metadata confirms the published assets |
+| v2.1.0 tag release | [Run #45603533787](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45603533787): unit tests, signer, established certificate, ARM64-only ABI, differential generation and upload/publish steps passed; final draft-by-tag lookup failed HTTP 404. Release metadata confirms published assets |
 
 PR validation is unsigned and does not access release secrets or publish APKs. A successful PR run does not verify signing, APK ABI contents or release artifacts.
 
@@ -71,13 +72,14 @@ Still unverified on physical ARM64 hardware:
 
 - #4/#15: updater regression coverage and physical update verification.
 - #5/#21: physical GeckoView/game compatibility and profile verification.
-- #20: GeckoView decision/reference record.
+- #20: complete remaining GeckoView 160 artifact/POM/dependency/license/API evidence.
 - #23: addon-manager work on hold by owner instruction; do not resume without explicit approval.
 - #28: storage measurement accuracy.
-- #31: release packaging resilience; confirm remaining acceptance criteria against current workflow.
+- #31: PR #54 merged; exact-head unsigned validation passed in run #45610110307; post-merge signed beta run [#45610518305](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45610518305) passed build, unit tests, established signing-certificate verification and ARM64-only ABI checks. Future owner-authorized release run must exercise draft-ID cleanup/verification and differential fallback.
 - #42: v2.1.0 launcher UI verification; source implementation is integrated by PR #43, physical UI checks remain.
 - #22: Home/Play/Settings source implementation closed as complete; physical navigation/session checks remain under #5/#42.
 - #9/#11/#12/#14/#16/#17: remaining accessibility, diagnostics, load-error, connection, gameplay and backup work.
+- Stable README/CHANGELOG are reconciled on main; no release was created or republished during housekeeping.
 
 ## Branch policy
 

@@ -9,7 +9,10 @@ The repository owner makes final product and release decisions. Chaty is the mai
 
 ## Active assignment
 
-No contributor implementation assignment is currently active. Chaty completed repository housekeeping PR [#49](https://github.com/iNeonyne/LastHavenPlus/pull/49), merged at `1f661cb6234dcfdfd051d0cb963e739668896a26`. The next assignment must be explicitly scoped in this file before work begins.
+- **Chaty — issue #31:** release workflow draft-asset verification and optional differential fallback follow-up. PR [#54](https://github.com/iNeonyne/LastHavenPlus/pull/54) merged to beta at `b12da7651445d15080e7593d441459a8c8403070`. Exact-head unsigned validation passed in run [#45610110307](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45610110307). Post-merge signed beta run [#45610518305](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45610518305) passed.
+- No contributor implementation assignment is active. Ploy has no assignment.
+
+The next assignment must be explicitly scoped in this file before work begins.
 
 ## Shared workflow
 
