@@ -28,7 +28,7 @@ Ploy is an internal agent role, not a confirmed GitHub login; assignment is visi
 |---|---:|---|---|
 | [#4](#issue-4) | P0.1 | Build reproducibility and updater test coverage | Open; signed ARM64 CI verified, automated updater edge-case coverage remains |
 | [#5](#issue-5) | Feedback | Owner feedback — gameplay and update behavior after release | Open; owner will provide release feedback on their own schedule; not a release blocker |
-| [#6](#issue-6) | P2 | [PLOY QUEUED 9] Essential launcher settings and safe storage controls | Open; implementation exists, automated verification remains |
+| [#6](#issue-6) | P2 | [PLOY QUEUED 9] Essential launcher settings and safe storage controls | Open; includes version identity, theme preference and accessible storage loading-state candidates |
 | [#7](#issue-7) | P3 | Runtime performance and APK size | Open; measure before optimizing |
 | [#8](#issue-8) | — | Legacy addon manager | Closed — superseded; no planned work |
 | [#9](#issue-9) | P2 | [PLOY QUEUED 2] Overlay accessibility and navigation | Open; TalkBack semantics and automated navigation coverage remain for the #56 overlay |
@@ -37,7 +37,7 @@ Ploy is an internal agent role, not a confirmed GitHub login; assignment is visi
 | [#12](#issue-12) | P2 | [PLOY QUEUED 4] GeckoView load-error details | Open |
 | [#13](#issue-13) | — | Accessible names / legacy addon-manager compile work | Closed — consolidated into #9 |
 | [#14](#issue-14) | P2 | [PLOY QUEUED 5] Connection diagnostics | Open |
-| [#15](#issue-15) | P2 | Updater recovery and download progress visibility | Open; recovery, accurate progress/stage reporting and persistent UI status remain |
+| [#15](#issue-15) | P2 | Updater recovery and download progress visibility | Open; adds measurable speed/ETA, inline retry, install-later confirmation, storage preflight, package-size comparison and release-note/history UX |
 | [#16](#issue-16) | P2 | [PLOY QUEUED 6] Gameplay orientation and keep-awake settings | Open |
 | [#17](#issue-17) | P2 | [PLOY QUEUED 10] Settings backup and restore | Open |
 | [#18](#issue-18) | Roadmap | v2.2.0 roadmap and release gates | Open; planning and sequencing updated |
@@ -55,7 +55,7 @@ Ploy is an internal agent role, not a confirmed GitHub login; assignment is visi
 | [#84](https://github.com/iNeonyne/LastHavenPlus/issues/84) | Done | Approved recreated LastHavens-inspired launcher icon | PR #85 merged to beta; PR #87 promoted icon to main; beta CI passed |
 | [#86](https://github.com/iNeonyne/LastHavenPlus/issues/86) | Deferred | v2.3.0 deferred reliability, updater and supporting-feature backlog | Open coordination index; linked issues remain the detailed sources of truth |
 | [#106](https://github.com/iNeonyne/LastHavenPlus/issues/106) | P2 | Gameplay loading, reconnect and load-failure UX | Open; deferred candidate; coordinate with #12 |
-| [#107](https://github.com/iNeonyne/LastHavenPlus/issues/107) | P3 | Consistent visual design and interaction polish | Open; deferred visual-only candidate; no home screen |
+| [#107](https://github.com/iNeonyne/LastHavenPlus/issues/107) | P3 | Consistent visual design and interaction polish | Open; deferred; includes restrained haptics and theme-token coordination; no home screen |
 
 ---
 
@@ -816,3 +816,15 @@ Improve the existing direct-launch game loading and failure experience with a re
 **State:** open; deferred candidate under #86
 
 Create a small shared Compose design system and apply it to existing launcher-owned screens (in-game overlay, Settings, Diagnostics and Update). Improve hierarchy, spacing, touch targets, contrast, responsive layouts and restrained transitions. Keep fullscreen gameplay unobstructed. No home screen, persistent gameplay HUD, game-client changes or functional behavior changes in this visual-only task. Coordinate with #6/#9/#11/#12/#14/#15 and add layout/screenshot checks where feasible.
+
+
+## Owner-requested UX triage — 2026-11-26
+
+The additional UX proposal was reviewed and consolidated into existing issues rather than creating duplicate tasks:
+
+- **#15 (with #4):** measurable download bytes/percentage/speed/ETA, inline retry and full-APK retry, explicit ready-to-install / install-later state, storage preflight, differential-vs-full size savings, formatted release notes and prior-release history.
+- **#6:** installed versionName/versionCode, optional Dark/Light/System theme for launcher-owned screens (Dark default), and accessible storage loading placeholders.
+- **#14:** reliable offline hint and user-triggered connection check; no background polling.
+- **#107:** restrained haptic feedback and shared theme-token coordination.
+
+**Explicit exclusions:** no new launcher HomeScreen, HomeScreen pull-to-refresh or update badge (the game has its own home screen); no automatic update check on launch; no unattended/background download or automatic installation; no external-browser fallback. Update checks and downloads remain explicitly user-initiated. Android's package installer confirmation remains mandatory. All work is deferred under #86 pending owner prioritization.
