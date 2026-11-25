@@ -4,7 +4,7 @@
 
 ## Current priorities — v2.2.0
 
-1. **Deferred to v2.3.0 (#4, #15, #31):** complete automated updater regression coverage and future owner-authorized release-ID/differential fallback verification. No remaining updater work is a v2.2.0 implementation task.
+1. **Deferred to v2.3.0 (#4, #15, #31):** complete automated updater regression coverage, accurate download progress/stage visibility (including navigation-persistent status and evaluation of Android progress notifications), and future owner-authorized release-ID/differential fallback verification. No remaining updater work is a v2.2.0 implementation task.
 2. **P1 — v2.2.0 launcher experience (#56, #84):** direct launch, responsive in-game overlay, session-preserving navigation and the approved recreated icon are integrated in beta and selectively promoted to main. No further v2.2.0 feature work is active.
 3. **Deferred to v2.3.0 (#86):** accessibility, diagnostics, settings, storage/network accuracy, updater recovery and release engineering follow-ups. Owner feedback is tracked separately after releases.
 4. **P1/P2 — Engineering reliability (#60 complete; #61–#66):** keep CI hardening and dependency review separate from product work; no unverified toolchain upgrades.
@@ -37,7 +37,7 @@ Ploy is an internal agent role, not a confirmed GitHub login; assignment is visi
 | [#12](#issue-12) | P2 | [PLOY QUEUED 4] GeckoView load-error details | Open |
 | [#13](#issue-13) | — | Accessible names / legacy addon-manager compile work | Closed — consolidated into #9 |
 | [#14](#issue-14) | P2 | [PLOY QUEUED 5] Connection diagnostics | Open |
-| [#15](#issue-15) | P2 | Updater recovery | Open |
+| [#15](#issue-15) | P2 | Updater recovery and download progress visibility | Open; recovery, accurate progress/stage reporting and persistent UI status remain |
 | [#16](#issue-16) | P2 | [PLOY QUEUED 6] Gameplay orientation and keep-awake settings | Open |
 | [#17](#issue-17) | P2 | [PLOY QUEUED 10] Settings backup and restore | Open |
 | [#18](#issue-18) | Roadmap | v2.2.0 roadmap and release gates | Open; planning and sequencing updated |
@@ -497,6 +497,17 @@ Ensure a failed or interrupted update never leaves the user with a corrupted dow
 - On delta failure, cleanly fall back to the verified full APK where available.
 - Provide actionable Retry / download full package guidance and clean up abandoned temporary files safely.
 - Record redacted failure reasons through the existing diagnostics logger.
+
+## Download progress and visibility follow-up (2026-11-26)
+
+The owner reported that the UI did not clearly show that an update download was underway. The current Update screen exposes only an indeterminate progress bar while that screen is open; it has no byte/percentage reporting or persistent app-wide status. This work is deferred to v2.3.0 and is tracked in GitHub issue #15.
+
+- [ ] Report received/total bytes and percentage when content length is trustworthy; otherwise show indeterminate progress.
+- [ ] Show clear stages for differential download, full-APK fallback, retrying, verification and ready-to-install.
+- [ ] Preserve visible progress/status when navigating away from and back to the Update screen.
+- [ ] Evaluate a user-initiated Android progress notification for long downloads, respecting Android notification permissions/channels.
+- [ ] Test progress, unknown lengths, stage transitions, retry/fallback, completion and cleanup.
+- [ ] Keep downloads user-initiated and installation explicitly user-confirmed; no automatic downloading or installation.
 
 ## Acceptance criteria
 - Automated tests cover interruption, truncated/corrupt files, checksum mismatch, signature mismatch, delta failure/full fallback, and storage errors.
