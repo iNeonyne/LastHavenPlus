@@ -262,9 +262,7 @@ private fun SettingsPageFrame(
   onBack: () -> Unit,
   content: @Composable () -> Unit,
 ) {
-  BoxWithConstraints(
-    modifier = Modifier.fillMaxSize().background(DesignTokens.ink),
-  ) {
+  BoxWithConstraints(modifier = Modifier.fillMaxSize().background(DesignTokens.ink)) {
     val widthDp = maxWidth.value.toInt()
     val maxContentWidth = LauncherLayoutPolicy.settingsContentMaxWidthDp(widthDp).dp
     val horizontalPadding = LauncherLayoutPolicy.pageHorizontalPaddingDp(widthDp).dp

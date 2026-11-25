@@ -9,9 +9,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 
 /**
- * LastHavenPlus visual design tokens (#107). Restrained dark interface with LastHaven gold
- * accents. Launcher-owned screens must consume these instead of inline colors so contrast,
- * spacing and shapes stay consistent; the game itself is never styled from here.
+ * LastHavenPlus visual design tokens (#107). Restrained dark interface with LastHaven gold accents.
+ * Launcher-owned screens must consume these instead of inline colors so contrast, spacing and
+ * shapes stay consistent; the game itself is never styled from here.
  */
 object DesignTokens {
   val ink = Color(0xFF080D18)
@@ -40,48 +40,50 @@ object DesignTokens {
   val spaceScreen = 28.dp
   val minTouchTarget = 48.dp
 
-  val shapes = Shapes(
-    extraSmall = RoundedCornerShape(8.dp),
-    small = RoundedCornerShape(cornerButton),
-    medium = RoundedCornerShape(cornerCard),
-    large = RoundedCornerShape(cornerDialog),
-    extraLarge = RoundedCornerShape(cornerBadge),
-  )
+  val shapes =
+    Shapes(
+      extraSmall = RoundedCornerShape(8.dp),
+      small = RoundedCornerShape(cornerButton),
+      medium = RoundedCornerShape(cornerCard),
+      large = RoundedCornerShape(cornerDialog),
+      extraLarge = RoundedCornerShape(cornerBadge),
+    )
 
-  fun colorScheme() = darkColorScheme(
-    primary = gold,
-    onPrimary = goldOnColor,
-    secondary = gold,
-    onSecondary = goldOnColor,
-    background = ink,
-    onBackground = textPrimary,
-    surface = panel,
-    onSurface = textPrimary,
-    surfaceVariant = panelBright,
-    onSurfaceVariant = textSecondary,
-    error = Color(0xFFED8796),
-  )
+  fun colorScheme() =
+    darkColorScheme(
+      primary = gold,
+      onPrimary = goldOnColor,
+      secondary = gold,
+      onSecondary = goldOnColor,
+      background = ink,
+      onBackground = textPrimary,
+      surface = panel,
+      onSurface = textPrimary,
+      surfaceVariant = panelBright,
+      onSurfaceVariant = textSecondary,
+      error = Color(0xFFED8796),
+    )
 
-  fun homeGradient() =
-    listOf(gradientTop, ink, gradientBottom)
+  fun homeGradient() = listOf(gradientTop, ink, gradientBottom)
 }
 
 /**
- * Restrained haptic feedback for explicit launcher-owned actions (Play, Download) only.
- * Delegates to the system haptic setting; never fires for passive state changes.
+ * Restrained haptic feedback for explicit launcher-owned actions (Play, Download) only. Delegates
+ * to the system haptic setting; never fires for passive state changes.
  */
 fun restrainedActionFeedback(view: View) {
-  val constant = if (android.os.Build.VERSION.SDK_INT >= 30) {
-    HapticFeedbackConstants.CONFIRM
-  } else {
-    HapticFeedbackConstants.VIRTUAL_KEY
-  }
+  val constant =
+    if (android.os.Build.VERSION.SDK_INT >= 30) {
+      HapticFeedbackConstants.CONFIRM
+    } else {
+      HapticFeedbackConstants.VIRTUAL_KEY
+    }
   view.performHapticFeedback(constant)
 }
 
 /**
- * WCAG 2.x relative contrast ratio helper. Exposed for the design-token contrast tests so
- * color pair accessibility is checked mechanically instead of by eye.
+ * WCAG 2.x relative contrast ratio helper. Exposed for the design-token contrast tests so color
+ * pair accessibility is checked mechanically instead of by eye.
  */
 fun relativeLuminance(color: Long): Double {
   fun channel(value: Long): Double {

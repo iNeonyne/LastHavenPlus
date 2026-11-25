@@ -43,9 +43,7 @@ fun GameMenuScreen(
       shadowElevation = 16.dp,
     ) {
       Column(
-        modifier =
-          Modifier.fillMaxWidth()
-            .padding(horizontal = 22.dp, vertical = 20.dp),
+        modifier = Modifier.fillMaxWidth().padding(horizontal = 22.dp, vertical = 20.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
       ) {

@@ -28,7 +28,6 @@ import androidx.compose.ui.viewinterop.AndroidView
 import org.mozilla.geckoview.GeckoSession
 import org.mozilla.geckoview.GeckoView
 
-
 @Composable
 fun GameScreen(
   session: GeckoSession?,

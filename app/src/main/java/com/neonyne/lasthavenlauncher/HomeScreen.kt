@@ -58,7 +58,7 @@ fun HomeScreen(
   BoxWithConstraints(
     modifier =
       Modifier.fillMaxSize()
-        .background(Brush.verticalGradient(colors = DesignTokens.homeGradient())),
+        .background(Brush.verticalGradient(colors = DesignTokens.homeGradient()))
   ) {
     val availableWidth = maxWidth
     val availableHeight = maxHeight
