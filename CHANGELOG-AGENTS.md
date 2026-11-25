@@ -718,3 +718,11 @@ Entry format:
 - **Files changed:** `MainActivity.kt`, `GameMenuScreen.kt`, `GameScreen.kt`; central assignment/docs updated on the task branch.
 - **Verification:** source review only so far. No Gradle build, tests, CI or physical ARM64 checks are claimed. Exact-head validation and overlay-on-GeckoView rendering check remain required.
 - **Constraints:** no game/client, updater, GeckoView dependency, Gradle/toolchain, application ID, signing, ABI, main, release or Addon Manager changes.
+
+
+## 2026-11-25 — Release feedback policy
+
+- Owner decision: physical-device testing is not a release prerequisite or project blocker.
+- Issues #5 and #21 now track optional owner feedback after releases; the owner will test on their own schedule and report observed behavior.
+- Removed device-testing gates from the v2.2.0 roadmap and engineering acceptance criteria. Automated CI, signing, package identity, ABI and artifact checks remain required.
+- Updated issue index, status and agent instructions to match. Do not hold publication for pending owner feedback.
