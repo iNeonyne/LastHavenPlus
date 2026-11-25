@@ -29,7 +29,7 @@ The existing GeckoSession is retained when its view is detached for launcher nav
 
 ## Planned UX redesign — issue #56
 
-The Home-screen-first flow described above is the **current v2.1.0 beta/stable baseline**, not the next UX target. The owner has requested a direct-launch experience with a responsive in-game overlay; implementation is assigned to Ploy under issue #56 and is not yet integrated. Until that work is reviewed and merged, do not describe the overlay as implemented. The new flow must preserve the existing GeckoSession and profile, support Settings in portrait and landscape, restore landscape gameplay, and keep Addon Manager out of scope while #23 remains on hold.
+The Home-screen-first flow described above is the **current v2.1.0 beta/stable baseline**, not the next UX target. The owner has requested a direct-launch experience with a responsive in-game overlay; implementation is being developed by Chaty under issue #56 on `chaty/issue-56-direct-launch-overlay`; it is not yet integrated into beta. Until that work is reviewed and merged, do not describe the overlay as implemented. The new flow must preserve the existing GeckoSession and profile, support Settings in portrait and landscape, restore landscape gameplay, and keep Addon Manager out of scope while #23 remains on hold.
 
 ## Build configuration and identity
 
