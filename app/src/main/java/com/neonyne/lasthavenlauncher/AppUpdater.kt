@@ -138,10 +138,14 @@ object AppUpdater {
                         val manifestConnection = openConnection(manifestUrl)
                         val manifest = try {
                             val responseCode = manifestConnection.responseCode
-                                    check(responseCode == HttpURLConnection.HTTP_OK) {
+                            check(responseCode == HttpURLConnection.HTTP_OK) {
                                 "Update manifest download failed (HTTP $responseCode)"
                             }
-                            JSONObject(manifestConnection.inputStream.use { UpdateNetworkPolicy.readLimitedText(it, MAX_MANIFEST_JSON_BYTES) })
+                            JSONObject(
+                                manifestConnection.inputStream.use {
+                                    UpdateNetworkPolicy.readLimitedText(it, MAX_MANIFEST_JSON_BYTES)
+                                },
+                            )
                         } finally {
                             manifestConnection.disconnect()
                         }
@@ -256,94 +260,95 @@ object AppUpdater {
                 val updateDirectory = File(appContext.filesDir, "updates").apply {
                     check(isDirectory || mkdirs()) { "Could not create the update download directory" }
                 }
+                UpdateFileCleanup.removeAbandonedPartialFiles(updateDirectory)
                 val temporaryApk = File.createTempFile(
                     "update-${update.versionCode}-",
                     ".apk.part",
                     updateDirectory,
                 )
                 try {
-                val finalApk = File(
-                    updateDirectory,
-                    "LastHavenPlus-update-${update.versionCode}-${UUID.randomUUID()}.apk",
-                )
-                val patch = update.patch
-                val installedInfo = installedPackageInfo(appContext)
-                val canUsePatch = preferDelta &&
-                    patch != null &&
-                    installedInfo.versionName == patch.baseVersion &&
-                    installedInfo.longVersionCode == patch.baseVersionCode
+                    val finalApk = File(
+                        updateDirectory,
+                        "LastHavenPlus-update-${update.versionCode}-${UUID.randomUUID()}.apk",
+                    )
+                    val patch = update.patch
+                    val installedInfo = installedPackageInfo(appContext)
+                    val canUsePatch = preferDelta &&
+                        patch != null &&
+                        installedInfo.versionName == patch.baseVersion &&
+                        installedInfo.longVersionCode == patch.baseVersionCode
 
-                val verifyCandidate: () -> Unit = {
-                    check(temporaryApk.length() == update.size) {
-                        "Reconstructed APK size does not match the release manifest"
-                    }
-                    check(sha256(temporaryApk).equals(update.sha256, true)) {
-                        "APK checksum verification failed"
-                    }
-                    verifySignedUpdate(appContext, temporaryApk, update)
-                }
-
-                UpdateFallback.withFullFallback(
-                    preferDelta = canUsePatch,
-                    deltaAttempt = {
-                        val delta = patch ?: error("Differential patch metadata is missing")
-                        val baseApk = File(appContext.applicationInfo.sourceDir)
-                        check(baseApk.isFile && baseApk.canRead()) {
-                            "Installed APK is not accessible"
+                    val verifyCandidate: () -> Unit = {
+                        check(temporaryApk.length() == update.size) {
+                            "Reconstructed APK size does not match the release manifest"
                         }
-                        UpdateNetworkPolicy.verifyBaseApkDigest(
-                            sha256(baseApk),
-                            delta.baseSha256,
-                        )
+                        check(sha256(temporaryApk).equals(update.sha256, true)) {
+                            "APK checksum verification failed"
+                        }
+                        verifySignedUpdate(appContext, temporaryApk, update)
+                    }
 
-                        val patchFile = File.createTempFile(
-                            "update-${update.versionCode}-",
-                            ".bsdiff.part",
-                            updateDirectory,
-                        )
-                        try {
-                            downloadToFile(
-                                delta.downloadUrl,
-                                delta.sha256,
-                                delta.size,
-                                MAX_PATCH_BYTES,
-                                patchFile,
+                    UpdateFallback.withFullFallback(
+                        preferDelta = canUsePatch,
+                        deltaAttempt = {
+                            val delta = patch ?: error("Differential patch metadata is missing")
+                            val baseApk = File(appContext.applicationInfo.sourceDir)
+                            check(baseApk.isFile && baseApk.canRead()) {
+                                "Installed APK is not accessible"
+                            }
+                            UpdateNetworkPolicy.verifyBaseApkDigest(
+                                sha256(baseApk),
+                                delta.baseSha256,
                             )
-                            BsdiffPatch.apply(baseApk, patchFile, temporaryApk, MAX_APK_BYTES)
+
+                            val patchFile = File.createTempFile(
+                                "update-${update.versionCode}-",
+                                ".bsdiff.part",
+                                updateDirectory,
+                            )
+                            try {
+                                downloadToFile(
+                                    delta.downloadUrl,
+                                    delta.sha256,
+                                    delta.size,
+                                    MAX_PATCH_BYTES,
+                                    patchFile,
+                                )
+                                BsdiffPatch.apply(baseApk, patchFile, temporaryApk, MAX_APK_BYTES)
+                                verifyCandidate()
+                                temporaryApk
+                            } finally {
+                                patchFile.delete()
+                            }
+                        },
+                        fullAttempt = {
+                            // Never let a failed or partially reconstructed delta reach the installer.
+                            temporaryApk.delete()
+                            downloadToFile(
+                                update.downloadUrl,
+                                update.sha256,
+                                update.size,
+                                MAX_APK_BYTES,
+                                temporaryApk,
+                            )
                             verifyCandidate()
                             temporaryApk
-                        } finally {
-                            patchFile.delete()
-                        }
-                    },
-                    fullAttempt = {
-                        // Never let a failed or partially reconstructed delta reach the installer.
-                        temporaryApk.delete()
-                        downloadToFile(
-                            update.downloadUrl,
-                            update.sha256,
-                            update.size,
-                            MAX_APK_BYTES,
-                            temporaryApk,
-                        )
-                        verifyCandidate()
-                        temporaryApk
-                    },
-                    onDeltaFailure = { error ->
-                        Diagnostics.warn(
-                            appContext,
-                            "Updater",
-                            "Differential update failed; falling back to full APK: ${error.message}",
-                        )
-                    },
-                )
+                        },
+                        onDeltaFailure = { error ->
+                            Diagnostics.warn(
+                                appContext,
+                                "Updater",
+                                "Differential update failed; falling back to full APK: ${error.message}",
+                            )
+                        },
+                    )
 
-                check(temporaryApk.renameTo(finalApk)) { "Could not finalize downloaded APK" }
-                FileProvider.getUriForFile(
-                    appContext,
-                    "${appContext.packageName}.updates",
-                    finalApk,
-                )
+                    check(temporaryApk.renameTo(finalApk)) { "Could not finalize downloaded APK" }
+                    FileProvider.getUriForFile(
+                        appContext,
+                        "${appContext.packageName}.updates",
+                        finalApk,
+                    )
                 } finally {
                     temporaryApk.delete()
                 }

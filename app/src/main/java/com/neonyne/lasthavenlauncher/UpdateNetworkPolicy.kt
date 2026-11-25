@@ -64,7 +64,14 @@ internal object UpdateNetworkPolicy {
         while (true) {
             val count = input.read(buffer)
             if (count < 0) break
-            if (count == 0) continue
+            if (count == 0) {
+                val singleByte = input.read()
+                if (singleByte < 0) break
+                total++
+                check(total <= maximumBytes) { "Update server response is too large" }
+                output.write(singleByte)
+                continue
+            }
             total += count
             check(total <= maximumBytes) { "Update server response is too large" }
             output.write(buffer, 0, count)

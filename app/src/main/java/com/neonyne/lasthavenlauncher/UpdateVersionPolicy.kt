@@ -1,6 +1,5 @@
 package com.neonyne.lasthavenlauncher
 
-
 internal object UpdateVersionPolicy {
     private val versionPattern = Regex("v?(\\d+)\\.(\\d+)\\.(\\d+)")
     private val sha256Pattern = Regex("[a-fA-F0-9]{64}")
