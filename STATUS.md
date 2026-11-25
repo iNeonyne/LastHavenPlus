@@ -4,7 +4,7 @@
 **Active branch:** `beta`  
 **Latest integrated beta HEAD:** `1d6c1ec42becab44735edfd0323dfc60ff4b9f9d`  
 **Stable main HEAD:** `5405a88d77176be28babeafbe473ed8c1bad75f9` (v2.0.0 promotion).  
-**Phase:** Updater hardening PR #30 is merged into beta. Signed ARM64 build, unit tests, established signing certificate and ABI verification passed in run [#346](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45522408962) for exact beta HEAD `1d6c1ec`. The v2.0.0 release workflow run [#347](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45522976094) was cancelled while differential packaging was in progress; the signed APK exists as an Actions artifact but no published GitHub Release asset was verified. Issue #31 tracks making optional differential generation bounded and non-blocking; Chaty's fix is in `chaty/fix-release-workflow-timeouts`, with PR validation pending. Physical ARM64 gameplay, profile persistence and update installation remain unverified as owner-approved follow-up work.
+**Phase:** Updater hardening PR #30 is merged into beta. Signed ARM64 build, unit tests, established signing certificate and ABI verification passed in run [#346](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45522408962) for exact beta HEAD `1d6c1ec`. The v2.0.0 release workflow run [#347](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45522976094) was cancelled while differential packaging was in progress; the signed APK exists as an Actions artifact but no published GitHub Release asset was verified. Issue #31 tracks making optional differential generation bounded and non-blocking; Chaty's fix is PR [#32](https://github.com/iNeonyne/LastHavenPlus/pull/32), and exact-head unsigned validation is running in [Actions #348](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45524663665). Physical ARM64 gameplay, profile persistence and update installation remain unverified as owner-approved follow-up work.
 
 ## Summary
 
@@ -21,12 +21,12 @@
 | Active branch | `beta` |
 | Stable branch | `main` |
 | Latest integrated beta HEAD | `1d6c1ec42becab44735edfd0323dfc60ff4b9f9d` |
-| Latest successful PR validation | [#329](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45518210756) — unsigned build and unit tests for PR head `3a1396f7364be1e6aa658b3eb67be41549a906fb` |
+| Latest successful PR validation | [#345](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45521843766) — unsigned build and unit tests for updater PR #30 exact head |
 | Commit tested by run #310 | `91e21d4bde0a26b8d7cbfd9697615f32c2f57d21` |
 | CI result | `assembleRelease`, `testDebugUnitTest`, release signature verification and ARM64-only ABI verification succeeded |
 | Signed APK artifact | `lasthavenplus-release-signed-arm64` uploaded; workflow job passed |
 | Earlier measured APK size | Run #308: 92,850,795 bytes |
-| Post-merge signed CI | [Run #330](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45518704468) passed for merge commit `e924c580699ad34f1083d1a9a0fe96901037c0ae`; it does not test later beta docs/workflow HEAD `b7d9f32` |
+| Post-merge signed CI | [Run #346](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45522408962) passed for exact beta HEAD `1d6c1ec42becab44735edfd0323dfc60ff4b9f9d`; run #347 for v2.0.0 was cancelled before release publication |
 | Release state | v2.0.0 commit is on `main`; run #347 was cancelled before publication. Signed APK artifact exists in Actions only; GitHub Release asset not verified. |
 
 PR run #329 passed the unsigned release build and unit tests for PR head `3a1396f7364be1e6aa658b3eb67be41549a906fb`. Post-merge run [#330](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45518704468) then passed the signed optimized release build, unit tests, signing-certificate verification and ARM64-only packaging for exact merge commit `e924c580699ad34f1083d1a9a0fe96901037c0ae`. The beta artifact used versionName `1.0.0` / versionCode `1000000`; release-tag and publication steps were skipped.
