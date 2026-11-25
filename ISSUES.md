@@ -201,7 +201,7 @@ Add essential launcher settings and safe storage visibility after the core game 
 
 ## Dependencies
 - The navigation/menu entry point from #9 is already implemented.
-- Physical-device verification is a release/verification gate, not a blocker to developing and unit-testing settings functionality; keep owner feedback is collected after releases.
+- Use automated validation for settings functionality; owner feedback is collected after releases and is not a release gate.
 - Do not implement cache clearing or game-data clearing until the pinned GeckoView API and lifecycle requirements are verified.
 
 ## Constraints
@@ -301,7 +301,7 @@ Add a small, game-focused navigation menu that appears when the user attempts to
 - [x] Keep the menu compact and usable in the existing fullscreen/game layout.
 
 ## Acceptance criteria
-Attempting to leave the app opens the menu; all four actions work as described; controls expose meaningful accessible names; returning to the game preserves the current session and browser state. Physical-automated verification remains pending.
+Attempting to leave the app opens the menu; all four actions work as described; controls expose meaningful accessible names; returning to the game preserves the current session and browser state. Automated verification remains pending.
 
 ## Roadmap
 - **Target:** v1.2.0 — remaining accessibility and automated verification.
@@ -505,7 +505,7 @@ Ensure a failed or interrupted update never leaves the user with a corrupted dow
 ## Roadmap
 - **Target:** v1.1.0.
 - **Roadmap:** https://github.com/iNeonyne/LastHavenPlus/issues/18
-- Move to a later release if acceptance criteria or required device verification are incomplete; do not ship partial implementations.
+- Move unfinished functionality to a later release when appropriate; owner feedback is not a release prerequisite.
 
 ---
 
@@ -651,7 +651,7 @@ See the GitHub issue #18 for the full phase checklist and release gates. `AGENT_
 **State:** open; optional post-release owner feedback.  
 **Owners:** Chaty coordinates; repository owner/device tester supplies hardware evidence.
 
-**Current status (2026-11-25):** GeckoView 160 is integrated in beta and shipped in v2.1.0; Cefrium is removed from the production build. The older engine-migration implementation scope is complete and must not be repeated here. CI verifies builds/tests and selected packaging properties, not physical GeckoView behavior.
+**Current status (2026-11-25):** GeckoView 160 is integrated in beta and shipped in v2.1.0; Cefrium is removed from the production build. The older engine-migration implementation scope is complete and must not be repeated here. CI verifies automated build, test and packaging behavior; optional runtime feedback is collected from the owner after releases.
 
 ### Feedback areas
 - Record device model, Android version, exact app commit/version and APK digest.
@@ -714,7 +714,7 @@ Preserve archive path/CRC/duplicate/count/expanded-size checks. Keep Android 10/
 **Integration checkpoint (2026-11-25):** PR #26 merged to beta at `e924c580699ad34f1083d1a9a0fe96901037c0ae`. PR run #329 passed unsigned release build and unit tests for the exact PR head. Signed post-merge ARM64 CI and owner feedback remains optional. `main` and `beta` are diverged (beta ahead 166, main ahead 9); review the nine main-only commits before any promotion.
 
 
-**Post-merge CI (2026-11-25):** Run [#330](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45518704468) passed signed optimized release build, unit tests, established certificate verification and ARM64-only packaging for `e924c580699ad34f1083d1a9a0fe96901037c0ae`. Artifact upload succeeded. Physical updater installation and device gameplay remain open.
+**Post-merge CI (2026-11-25):** Run [#330](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45518704468) passed signed optimized release build, unit tests, established certificate verification and ARM64-only packaging for `e924c580699ad34f1083d1a9a0fe96901037c0ae`. Artifact upload succeeded. Optional owner feedback on gameplay and update behavior is collected after releases.
 
 
 ---
@@ -778,6 +778,6 @@ Record exact branch head, Actions run URLs, lint results, formatter result and l
 
 - **Chaty:** owns roadmap #18, central documentation, issue triage, branch audit, CI evidence, PR review and beta integration.
 - **Ploy:** owns implementation of #56 only, on a dedicated branch and PR targeting beta. See AGENT_WORK.md for behavior, file boundaries, exclusions, tests and handoff requirements.
-- **Physical ARM64 verification (#5):** is optional post-release feedback; the owner will share findings on their own schedule and it is not a release gate.
+- **Owner release feedback (#5/#21):** optional post-publication feedback; the owner will share findings on their own schedule and it is not a release gate.
 - **#42:** the old v2.1.0 Home-screen-first acceptance scope is superseded by #56. Do not duplicate its old Home screen/menu implementation.
 - **#60:** exact PR validation passed in run #45627915789; post-merge quality workflow #45631250015 and signed beta build workflow #45631249817 both completed successfully. Issue can be closed as completed.
