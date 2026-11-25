@@ -67,12 +67,13 @@ object AppUpdater {
             val result = try {
                 val releaseConnection = openConnection(RELEASE_API)
                 val release = try {
+                    val responseCode = releaseConnection.responseCode
                     checkTrustedGithubResponse(releaseConnection)
-                    if (releaseConnection.responseCode == HttpURLConnection.HTTP_NOT_FOUND) {
+                    if (responseCode == HttpURLConnection.HTTP_NOT_FOUND) {
                         null
                     } else {
-                        check(releaseConnection.responseCode == HttpURLConnection.HTTP_OK) {
-                            "GitHub returned HTTP ${releaseConnection.responseCode}"
+                        check(responseCode == HttpURLConnection.HTTP_OK) {
+                            "GitHub returned HTTP $responseCode"
                         }
                         JSONObject(releaseConnection.inputStream.bufferedReader().use { it.readText() })
                     }
@@ -108,9 +109,10 @@ object AppUpdater {
                         val manifestUrl = requireGithubUrl(manifestAsset.getString("browser_download_url"))
                         val manifestConnection = openConnection(manifestUrl)
                         val manifest = try {
+                            val responseCode = manifestConnection.responseCode
                             checkTrustedGithubResponse(manifestConnection)
-                            check(manifestConnection.responseCode == HttpURLConnection.HTTP_OK) {
-                                "Update manifest download failed (HTTP ${manifestConnection.responseCode})"
+                            check(responseCode == HttpURLConnection.HTTP_OK) {
+                                "Update manifest download failed (HTTP $responseCode)"
                             }
                             JSONObject(manifestConnection.inputStream.bufferedReader().use { it.readText() })
                         } finally {
@@ -370,9 +372,10 @@ object AppUpdater {
     ) {
         val connection = openConnection(url)
         try {
+            val responseCode = connection.responseCode
             checkTrustedGithubResponse(connection)
-            check(connection.responseCode == HttpURLConnection.HTTP_OK) {
-                "Update download failed (HTTP ${connection.responseCode})"
+            check(responseCode == HttpURLConnection.HTTP_OK) {
+                "Update download failed (HTTP $responseCode)"
             }
             val contentLength = connection.contentLengthLong
             check(contentLength <= maximumBytes) { "Update file is unexpectedly large" }
