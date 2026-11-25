@@ -312,7 +312,7 @@
 ## 2026-11-25 — Start v2.1.0 work: baseline review and documentation reconciliation
 
 - Re-read beta README, AGENTS, STATUS, ISSUES, CHANGELOG-AGENTS, AGENT_WORK and WORK_LOG before changes.
-- Verified v2.0.0 GitHub Release metadata: published, non-draft/non-prerelease, with signed ARM64 APK and update manifest assets.
+- Verified v2.0.0 GitHub Release metadata: published, non-draft/non-prerelease, with ARM64 APK and update manifest assets.
 - Verified beta HEAD `1f300b90e5aed9a5eaa86e473b746f0841d42b16`; latest integrated application source commit `1d6c1ec42becab44735edfd0323dfc60ff4b9f9d`.
 - Verified updater PR exact-head unsigned CI #345 and signed beta CI #346 passed for their respective exact commits.
 - Reviewed PR #32. Found previous-release APK/manifest downloads and release-list API response have timeouts but no explicit byte caps. Its exact-head Actions #348/#349 were cancelled, and its branch is stale/diverged from current beta. Added a detailed correction comment; formal REQUEST_CHANGES was unavailable because the PR author cannot request changes on their own PR.
@@ -325,5 +325,5 @@
 - Review found PR #32 only time-bounded the previous APK/manifest downloads and release-list API response. It did not cap bytes, so oversized responses could still consume excessive disk/network resources.
 - Formal REQUEST_CHANGES could not be submitted because Chaty is the PR author; detailed correction was recorded in the PR conversation.
 - Created replacement PR [#34](https://github.com/iNeonyne/LastHavenPlus/pull/34) from current beta. Added a streamed size-limited downloader (4 MiB release-list JSON, 256 MiB prior APK, 1 MiB manifest), strict HTTPS GitHub asset host validation, regression tests, and CI test steps.
-- Exact-head Actions [#351](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45527186955) is running for `751102ac2e00b4adb10c0ab8b34ac3017c5f6311`. Do not report success until it completes.
+- Exact-head Actions #351 passed for earlier head `751102ac...`. Added previous-release tag format and manifest/tag identity checks plus tests for unknown Content-Length streaming, declared oversized responses and redirect-host rejection. Latest head `3103a0c64a4dff784ed019efc35900076f07aea8` is being validated in [run #352](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45527536278); do not report success until it completes.
 - PR #32 is superseded; do not merge it. No release publication, main promotion or app-source change was made by this workflow task.
