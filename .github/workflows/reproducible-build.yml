@@ -83,10 +83,6 @@ jobs:
           fi
           mkdir -p .reproducible/apk
           cp "${apks[0]}" .reproducible/apk/unsigned.apk
-          if find app/build/outputs/apk/release -maxdepth 1 -type f -name '*signed*.apk' | grep -q .; then
-            echo "::error::A signed APK unexpectedly appeared in this unsigned build."
-            exit 1
-          fi
           if "$ANDROID_HOME/build-tools/37.0.0/apksigner" verify .reproducible/apk/unsigned.apk >/dev/null 2>&1; then
             echo "::error::The reproducibility input unexpectedly contains a signed APK."
             exit 1
