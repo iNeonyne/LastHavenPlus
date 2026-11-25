@@ -12,7 +12,7 @@
 ### Chaty — v2.2.0 roadmap and immediate housekeeping
 - **Completed:** roadmap and central tracker reconciliation merged by PR [#73](https://github.com/iNeonyne/LastHavenPlus/pull/73) at `c16439bfcedc9949d8ec683039fb5df85afea122`.
 - **Closed:** #42 as superseded by #56; #60 as completed after exact-head and post-merge CI evidence.
-- **Still owned by Chaty:** finish #70 Markdown syntax/lint validation; keep #4/#15/#31 and supporting feature work tracked in the v2.3.0 backlog #86; maintain CI/release records. Branch inventory/diff audit and #56/#84 integration are complete.
+- **Still owned by Chaty:** finish #70 Markdown syntax/lint validation; coordinate #4/#15/#31 and supporting work through v2.3.0 backlog #86 when prioritized; maintain CI/release records. Branch inventory/diff audit, #56/#84 integration and selective main promotion are complete.
 - **Exclusions:** no new feature work outside the owner-approved v2.2.0 scope, no version bump/tag/publication without explicit approval, no Addon Manager work.
 - **Evidence:** post-merge quality run #45631250015 and signed beta build #45631249817 passed; the build skipped release-tag publication steps.
 
@@ -24,20 +24,20 @@
 
 Ploy has no active application issue. The remaining supporting features are deferred to v2.3.0 under #86. **Do not start queued work until the owner prioritizes and assigns it.**
 
-**Queued work (strict order; do not start early):**
+**Deferred candidate queue (not assigned; do not start):**
 
 | Order | Issue | Status | Start condition / narrow scope |
 |---:|---|---|---|
 | 1 | [#56](https://github.com/iNeonyne/LastHavenPlus/issues/56) | COMPLETE | Direct launch, responsive overlay and session-preserving navigation integrated |
 | 2 | [#9](https://github.com/iNeonyne/LastHavenPlus/issues/9) | QUEUED | Deferred to v2.3.0; start only after owner prioritization: overlay accessibility semantics, TalkBack order/labels and automated navigation coverage |
 | 3 | [#11](https://github.com/iNeonyne/LastHavenPlus/issues/11) | QUEUED | Deferred to v2.3.0; diagnostics redaction, bounded rotation/size and failure-path tests only |
-| 4 | [#12](https://github.com/iNeonyne/LastHavenPlus/issues/12) | QUEUED | After #11 merge: safe GeckoView 160 load-error category mapping and tests |
+| 4 | [#12](https://github.com/iNeonyne/LastHavenPlus/issues/12) | QUEUED | Deferred to v2.3.0; safe GeckoView 160 load-error category mapping and tests |
 | 5 | [#14](https://github.com/iNeonyne/LastHavenPlus/issues/14) | QUEUED | Deferred to v2.3.0; explicit user-triggered DNS/HTTPS reachability diagnostics |
-| 6 | [#16](https://github.com/iNeonyne/LastHavenPlus/issues/16) | QUEUED | After #14 and #56: persisted gameplay orientation/keep-awake preferences and lifecycle cleanup |
-| 7 | [#10](https://github.com/iNeonyne/LastHavenPlus/issues/10) | QUEUED | After #16: persistent app-wide per-UID network totals; no telemetry or game-only attribution |
-| 8 | [#28](https://github.com/iNeonyne/LastHavenPlus/issues/28) | QUEUED | After #10: accurate APK/data/cache reporting and iterative bounded storage traversal |
+| 6 | [#16](https://github.com/iNeonyne/LastHavenPlus/issues/16) | QUEUED | Deferred to v2.3.0; persisted gameplay orientation/keep-awake preferences and lifecycle cleanup |
+| 7 | [#10](https://github.com/iNeonyne/LastHavenPlus/issues/10) | QUEUED | Deferred to v2.3.0; persistent app-wide per-UID network totals; no telemetry or game-only attribution |
+| 8 | [#28](https://github.com/iNeonyne/LastHavenPlus/issues/28) | QUEUED | Deferred to v2.3.0; accurate APK/data/cache reporting and iterative bounded storage traversal |
 | 9 | [#6](https://github.com/iNeonyne/LastHavenPlus/issues/6) | QUEUED | Deferred to v2.3.0; essential settings surface and editable HTTPS game-URL validation/persistence only; #16/#28/#19 remain separate |
-| 10 | [#17](https://github.com/iNeonyne/LastHavenPlus/issues/17) | QUEUED | After #6: versioned import/export of an allowlist of non-sensitive launcher preferences |
+| 10 | [#17](https://github.com/iNeonyne/LastHavenPlus/issues/17) | QUEUED | Deferred to v2.3.0; versioned import/export of an allowlist of non-sensitive launcher preferences |
 
 **Not assigned to Ploy:** #4/#15 updater code and recovery (Chaty; overlapping high-risk updater scope); #5/#21 optional owner release feedback (not an engineering or release blocker); #20 GeckoView dependency record, #31 release workflow, #61–#66 CI/build/security tasks, #70 documentation validation (Chaty); #7 requires comparable, repeatable measurements; #19 is deferred and coordinated by Chaty; #67 requires the repository owner's license decision.
 
