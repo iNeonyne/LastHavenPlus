@@ -1,6 +1,6 @@
 # Agent work assignments — LastHavenPlus
 
-**Baseline:** `beta` at `073f839eb3cccd9a13fae09dd091667bb86a1f0c` after v2.2.0 scope integration.
+**Baseline:** `beta` at `932e3ba65f6c8445eafe0ba466ca3952c67bd017` after PR #99 Gradle version-catalog integration.
 
 ## Roles
 
@@ -10,7 +10,7 @@
 ## Active assignments
 
 ### Chaty — v2.2.0 roadmap and immediate housekeeping
-- **Completed:** roadmap and central tracker reconciliation merged by PR [#73](https://github.com/iNeonyne/LastHavenPlus/pull/73) at `c16439bfcedc9949d8ec683039fb5df85afea122`.
+- **Completed:** roadmap and central tracker reconciliation merged by PR [#73](https://github.com/iNeonyne/LastHavenPlus/pull/73) at `c16439bfcedc9949d8ec683039fb5df85afea122`; Gradle version catalog for #64 merged by PR [#99](https://github.com/iNeonyne/LastHavenPlus/pull/99) at `932e3ba65f6c8445eafe0ba466ca3952c67bd017`.
 - **Closed:** #42 as superseded by #56; #60 as completed after exact-head and post-merge CI evidence.
 - **Still owned by Chaty:** finish #70 Markdown syntax/lint validation; coordinate #4/#15/#31 and supporting work through v2.3.0 backlog #86 when prioritized; maintain CI/release records. Branch inventory/diff audit, #56/#84 integration and selective main promotion are complete.
 - **Exclusions:** no new feature work outside the owner-approved v2.2.0 scope, no version bump/tag/publication without explicit approval, no Addon Manager work.
