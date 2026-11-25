@@ -4,7 +4,7 @@
 
 ## Current priorities
 
-1. **P0 — Release workflow reliability (#31):** PR #32 was closed without merge; PR #37 merged the fallback hardening. Keep #31 open until release-workflow fallback behavior is verified on an authorized versioned release build.
+1. **P0 — Release workflow reliability (#31):** PR #37 merged the fallback hardening. v2.1.0 is published; its release run's final asset lookup returned HTTP 404 despite the expected assets now being present. Fix that verification path and test optional differential fallback behavior without republishing v2.1.0.
 2. **P0 — Physical ARM64 verification (#5):** Gameplay, GeckoView profile persistence, navigation, audio/GPU behavior and same-key updater installation remain unverified on hardware.
 3. **P0 — Updater regression coverage (#4, #15):** Updater hardening is integrated at beta commit `1d6c1ec42becab44735edfd0323dfc60ff4b9f9d`; additional malformed-manifest, digest, patch and interrupted-download tests remain.
 4. **P1 — Addon manager integration (#23):** On hold by owner instruction. Do not resume or assign work until explicit owner approval.
@@ -12,14 +12,14 @@
 6. **P2 — Remaining product polish:** #9, #11, #12, #14, #16 and #17 only after core reliability gates.
 7. **P3 — Performance and APK size (#7):** Measure before optimizing; do not expand v2.1.0 scope without owner approval.
 
-**Release roadmap:** [#18 — v2.1.0 reliability and GeckoView verification](https://github.com/iNeonyne/LastHavenPlus/issues/18). The v2.1.0 candidate was promoted to `main` by PR #47; publication is not verified and remains blocked on the physical ARM64 test matrix and final versioned release-artifact checks. The addon manager (#23) is on hold and is not part of active v2.1.0 scope.
+**Release roadmap:** [#18 — v2.1.0 post-release verification and reliability](https://github.com/iNeonyne/LastHavenPlus/issues/18). v2.1.0 is published at [GitHub Releases](https://github.com/iNeonyne/LastHavenPlus/releases/tag/v2.1.0). The signed ARM64 APK and release assets are present; physical ARM64 gameplay/profile/UI/update verification remains outstanding. The addon manager (#23) is on hold and is not part of active scope.
 
 ## Backlog index
 
 | Issue | Priority | Summary | Current state |
 |---|---:|---|---|
-| [#4](#issue-4) | P0.1 | Build reproducibility and updater test coverage | Open; signed candidate CI verified, final versioned artifact and physical update checks remain |
-| [#5](#issue-5) | P0.2 | Physical ARM64 gameplay and update verification | Open; not yet performed |
+| [#4](#issue-4) | P0.1 | Build reproducibility and updater test coverage | Open; v2.1.0 signed ARM64 artifact verified, physical update and remaining updater tests remain |
+| [#5](#issue-5) | P0.2 | Physical ARM64 gameplay and update verification | Open; owner smoke test reported, full feature matrix remains unverified |
 | [#6](#issue-6) | P2 | Settings and safe storage controls | Open; implementation exists, device verification remains |
 | [#7](#issue-7) | P3 | Runtime performance and APK size | Open; measure before optimizing |
 | [#8](#issue-8) | — | Legacy addon manager | Closed — superseded; no planned work |
@@ -32,7 +32,7 @@
 | [#15](#issue-15) | P2 | Updater recovery | Open |
 | [#16](#issue-16) | P2 | Gameplay orientation and keep-awake settings | Open |
 | [#17](#issue-17) | P2 | Settings backup and restore | Open |
-| [#18](#issue-18) | Roadmap | v2.1.0 release gates and GeckoView verification | Open; candidate promoted, physical and final-artifact gates remain |
+| [#18](#issue-18) | Roadmap | v2.1.0 post-release verification and reliability | Open; release published, physical and workflow follow-up remains |
 | [#19](#issue-19) | P1 | Opt-in beta release channel | Open |
 | [#20](#issue-20) | P0 | GeckoView technical decision | Research recorded; compatibility verification tracked with #21 |
 | [#21](#issue-21) | P0 | Replace Cefrium with GeckoView | Source migration implemented; physical runtime checks remain |
@@ -41,7 +41,7 @@
 | [#28](https://github.com/iNeonyne/LastHavenPlus/issues/28) | P2 | Storage usage accuracy and iterative directory sizing | Open; not started |
 | [#42](https://github.com/iNeonyne/LastHavenPlus/issues/42) | P1 | v2.1.0 launcher UI verification | Source implementation integrated by PR #43; physical UI verification remains |
 | [#29](https://github.com/iNeonyne/LastHavenPlus/issues/29) | Done | Reconcile beta documentation and CI evidence | Closed as completed after PR #46 merged to beta |
-| [#31](https://github.com/iNeonyne/LastHavenPlus/issues/31) | P0 | Resilient release packaging when differential generation fails | Open; verify current workflow and remaining acceptance criteria |
+| [#31](https://github.com/iNeonyne/LastHavenPlus/issues/31) | P0 | Resilient release packaging and asset verification | Open; final release asset lookup failed HTTP 404; delta fallback failure paths remain to verify |
 
 ---
 

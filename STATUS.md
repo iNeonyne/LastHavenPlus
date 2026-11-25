@@ -3,9 +3,9 @@
 **Last updated:** 2026-11-25  
 **Active branch:** `beta`  
 **Latest application integration commit:** `854fce1b1e2989cb012ebf5a15d196d91ff7cad7` (PR [#46](https://github.com/iNeonyne/LastHavenPlus/pull/46)).  
-**Latest repository maintenance:** PR [#51](https://github.com/iNeonyne/LastHavenPlus/pull/51) merged into beta at `b711af8e9c0dd35032edc21a1c3f7faacd4c343c`. PR #49 is the preceding documentation reconciliation checkpoint.  
-**Stable promotion:** PR [#47](https://github.com/iNeonyne/LastHavenPlus/pull/47) merged v2.1.0 candidate into `main` at `c5f6518e57d614da73642b7dc4c8a21e82e6e9b3`. Main subsequently received release-preparation commits; draft/tag/publication state is not asserted by this beta status record.  
-**Current phase:** v2.1.0 candidate promoted to `main`; physical ARM64 verification and final release gates remain outstanding. Promotion is not the same as publication.
+**Latest repository maintenance:** PR [#52](https://github.com/iNeonyne/LastHavenPlus/pull/52) merged into beta at `0c7e009ff05a397101fb510e6997a50804342b2a`. PR #51 reconciled the roadmap and backlog.  
+**Stable promotion and publication:** PR [#47](https://github.com/iNeonyne/LastHavenPlus/pull/47) promoted the candidate to `main`; PR [#48](https://github.com/iNeonyne/LastHavenPlus/pull/48) prepared tag `v2.1.0`, which is now published at commit `03fcfa9652ce4e7d1034523d640a1693e6e6b9ce`.  
+**Current phase:** v2.1.0 is published. Physical ARM64 feature verification remains outstanding, and release workflow run #45603533787 needs a follow-up for its final asset-query HTTP 404.
 
 ## Current source state
 
@@ -25,8 +25,8 @@
 | PR #43 validation | [Run #386](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45600824024) passed unsigned release-variant build and JVM unit tests |
 | PR #43 merge | `dffca7e67ef4a8dd1bec8777c2c4c8b8a51a0210` |
 | Post-merge beta build | [Run #45601558602](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45601558602) passed build, unit tests, established signing-certificate verification and ARM64-only ABI checks, as recorded in merged PR #47 |
-| Updater tag validation | PR #41 merged at `1d35e520331ca9ffa3a9b41b21402a3110728001`; its PR validation passed, but exact post-merge run evidence must be checked separately |
-| Last known signed ARM64 verification | Run #330 passed for older commit `e924c580699ad34f1083d1a9a0fe96901037c0ae`; it is not evidence for the v2.1.0 candidate |
+| Updater tag validation | PR #41 merged at `1d35e520331ca9ffa3a9b41b21402a3110728001`; v2.1.0 tag creation succeeded in release run #45603533787 |
+| v2.1.0 tag release | [Run #45603533787](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45603533787): unit tests, signer, established certificate, ARM64-only ABI, differential generation and upload/publish steps passed; final asset-query step failed with HTTP 404. Current GitHub release metadata confirms the published assets |
 
 PR validation is unsigned and does not access release secrets or publish APKs. A successful PR run does not verify signing, APK ABI contents or release artifacts.
 
@@ -63,9 +63,9 @@ Still unverified on physical ARM64 hardware:
 
 1. Signed beta evidence for run #45601558602 is recorded in PR #47; artifact SHA-256: `0e1407a809897bd134817f7427bc5dbfea04344345c2ee0d8a4a9ffc945aec8e`; established signing certificate SHA-256: `b3bbf7520e77dfc384a60b1eee6c5f205b978f9b453849e2be523f642018d263`.
 2. PR #47 promoted the candidate to `main` while preserving stable history and stable-facing documentation policy. Do not repeat or overwrite this promotion.
-3. Confirm the current `main` release tag/draft/published state and exact-main release workflow evidence before making any release-status claim.
+3. Investigate and fix the final release-asset query failure in run #45603533787; do not recreate or republish v2.1.0 merely to retry verification.
 4. Complete and record the required physical ARM64 feature matrix. The owner's earlier smoke-test report is not a substitute for the matrix.
-5. Verify the final versioned v2.1.0 APK identity, signature and ARM64-only contents from the exact release-tag build.
+5. The versioned v2.1.0 APK is published: versionCode 2001000, signed with the established certificate and packaged arm64-v8a only. The workflow verified these checks and uploaded the release assets; its final API lookup failed, while current release metadata confirms the expected APK, manifest and patch.
 
 ## Open work
 
@@ -81,4 +81,4 @@ Still unverified on physical ARM64 hardware:
 
 ## Branch policy
 
-`beta` is development/integration; `main` is stable. Task PRs target beta; Chaty alone merges beta PRs. The v2.1.0 candidate was promoted by PR #47. Promotion does not authorize publication; release gates and explicit owner approval still apply.
+`beta` is development/integration; `main` is stable. Task PRs target beta; Chaty alone merges beta PRs. The v2.1.0 candidate was promoted by PR #47 and published as tag/release `v2.1.0` by the owner-approved release workflow. Do not create another tag or republish without explicit owner approval.
