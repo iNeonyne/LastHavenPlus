@@ -237,12 +237,13 @@ private fun LastHavenApp(
 
     val openSettings: (Screen) -> Unit = { returnTo ->
         settingsReturnScreen = returnTo
-        menuVisible = false
-        currentScreen = Screen.Settings
+        val target = LauncherNavigationPolicy.openSettings()
+        currentScreen = target.screen
+        menuVisible = target.menuVisible
     }
 
-    val gameplayActive = currentScreen == Screen.Game
-    val immersiveGameplay = gameplayActive && !menuVisible
+    val gameplayActive = LauncherNavigationPolicy.isGameplay(currentScreen)
+    val immersiveGameplay = LauncherNavigationPolicy.isImmersiveGameplay(currentScreen, menuVisible)
     SideEffect { onGameplayUiChanged(gameplayActive, immersiveGameplay) }
     DisposableEffect(Unit) {
         onDispose { onGameplayUiChanged(false, false) }
@@ -255,17 +256,15 @@ private fun LastHavenApp(
     }
 
     BackHandler(enabled = currentScreen != Screen.Home || menuVisible) {
-        if (currentScreen == Screen.Game) {
-            menuVisible = !menuVisible
-        } else {
-            currentScreen = when (currentScreen) {
-                Screen.Settings -> settingsReturnScreen
-                Screen.Diagnostics -> diagnosticsReturnScreen
-                Screen.Update -> updateReturnScreen
-                Screen.Home, Screen.Game -> Screen.Game
-            }
-            menuVisible = false
-        }
+        val target = LauncherNavigationPolicy.onBack(
+            currentScreen = currentScreen,
+            menuVisible = menuVisible,
+            settingsReturnScreen = settingsReturnScreen,
+            diagnosticsReturnScreen = diagnosticsReturnScreen,
+            updateReturnScreen = updateReturnScreen,
+        )
+        currentScreen = target.screen
+        menuVisible = target.menuVisible
     }
 
     MaterialTheme(colorScheme = darkColorScheme()) {
@@ -286,9 +285,18 @@ private fun LastHavenApp(
                 )
                 if (menuVisible) {
                     GameMenuScreen(
-                        onReload = reloadGame,
+                        onReload = {
+                            reloadGame()
+                            val target = LauncherNavigationPolicy.afterReload()
+                            currentScreen = target.screen
+                            menuVisible = target.menuVisible
+                        },
                         onSettings = { openSettings(Screen.Game) },
-                        onReturnToGame = { menuVisible = false },
+                        onReturnToGame = {
+                            val target = LauncherNavigationPolicy.returnToGame()
+                            currentScreen = target.screen
+                            menuVisible = target.menuVisible
+                        },
                     )
                 }
             }
