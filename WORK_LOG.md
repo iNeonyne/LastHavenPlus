@@ -288,3 +288,13 @@
 - **CI:** Exact-head run [#340](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45521280150) is pending. No pass claimed.
 - **Correction:** Two new policy files were briefly created on main by a contents-API call without an explicit branch parameter; both were immediately deleted. A compare against the pre-change main commit confirms zero file differences; main's tree is unchanged. All intended policy files are present on the PR branch.
 - **Next safe action:** Wait for run #340, inspect logs/results and review the final PR head before merging into beta.
+
+
+### 2026-11-25 — Finalize updater candidate documentation checkpoint
+
+- **PR:** [#30](https://github.com/iNeonyne/LastHavenPlus/pull/30), targeting beta.
+- **Latest candidate before this documentation checkpoint:** `df82f40feca9eed7af318403e93a284ec692edad`.
+- **Tests in scope:** URL/redirect allowlist, bounded response parsing, download size/digest, release manifest schema and metadata, patch base compatibility/digest, and full-APK fallback resilience.
+- **CI:** Unsigned PR build and unit-test validation is pending for the latest PR head. No pass is claimed.
+- **Main safety:** The unintended temporary files were deleted from main; comparing main against its pre-incident HEAD shows zero changed files. Main's content tree is restored.
+- **Next safe action:** Inspect exact-head CI, correct any failures, review PR #30 and only then merge to beta. Physical updater installation remains unverified under #5.
