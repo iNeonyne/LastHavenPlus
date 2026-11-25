@@ -2,40 +2,44 @@
 
 ## Least-privilege permissions
 
-- Workflow-level `permissions` is `contents: read`. Jobs must declare any write scope they need.
-- Only `create_tag` (tag create/retarget/delete-draft) and `publish_release` (release publish and asset cleanup) hold `contents: write`.
-- Pull-request validation and the quality gate are read-only, never access signing secrets, and never publish artifacts outside CI artifact storage.
+- Workflow-level permissions default to `contents: read`.
+- In `.github/workflows/android.yml`, only `create_tag` and `publish_release` receive `contents: write`; build and PR-validation jobs are read-only.
+- `.github/workflows/quality.yml` is read-only.
+- `.github/workflows/agent-ownership.yml` grants only `issues: write` to the issue-labeling job.
+- Pull-request validation does not reference Android signing secrets. It builds an unsigned release APK and uploads test reports only to GitHub Actions artifact storage. It does not publish GitHub releases or signed APKs.
 
 ## Immutable action pins
 
-Every third-party action is pinned to a full commit SHA with a trailing comment naming the release tag or version the SHA corresponds to, for example:
+All third-party `uses:` references in the three workflows are pinned to full commit SHAs. The values below were checked against the corresponding upstream tag refs on 2026-11-26. The Gradle v4 tag is annotated; its peeled commit is listed.
 
-```yaml
-uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
-```
-
-Pinned actions as of 2026-11-25:
-
-| Action | Pinned version | Notes |
+| Action | Release tag | Verified commit SHA |
 | --- | --- | --- |
-| `actions/checkout` | v4 | |
-| `actions/setup-java` | v6.3.0 | |
-| `actions/upload-artifact` | v4 | |
-| `actions/download-artifact` | v4 | publish job only |
-| `android-actions/setup-android` | v3 | |
-| `gradle/actions/setup-gradle` | v4 | |
-| `softprops/action-gh-release` | v3.0.4 | upgraded from v2 (final v2 release 2.6.2 is unmaintained and uses the deprecated Node 20 runtime); v3 keeps the `id` output and honors `draft: true` by leaving reused drafts unpublished |
+| `actions/checkout` | v7.0.1 | `3d3c42e5aac5ba805825da76410c181273ba90b1` |
+| `actions/setup-java` | v6.3.0 | `d1374f8ac74474200d16ef8ecee22c7ae7a51880` |
+| `android-actions/setup-android` | v3 | `9fc6c4e9069bf8d3d10b2204b1fb8f6ef7065407` |
+| `gradle/actions/setup-gradle` | v4 (v4.4.3) | `ed408507eac070d1f99cc633dbcf757c94c7933a` |
+| `actions/upload-artifact` | v7.0.2 | `cf430e030ddbb5b0abf93d22962f4752f3646cd9` |
+| `actions/download-artifact` | v4 | `d3f86a106a0bac45b974a628896c90dbdf5c8093` |
+| `softprops/action-gh-release` | v3.0.4 | `8a0cd651e5b2365bd640854a3fa5dfc70e4875f3` |
+
+The ownership workflow currently uses no third-party actions. A matching tag ref establishes that the pin points at the named upstream release; it is not by itself a claim that every upstream tag is cryptographically signed.
+
+## Automated updates
+
+`.github/dependabot.yml` enables weekly GitHub Actions dependency checks, targets `beta`, and limits the number of open update PRs to three. Dependabot updates must still be reviewed; automation does not authorize merging.
 
 ## Update procedure
 
-1. Dependabot opens `github-actions` update PRs against the pinned SHAs with a limit of 3 open PRs and a weekly schedule (`.github/dependabot.yml` lives on the default branch, so its settings apply repository-wide). Review the PR before its bump.
-2. Verify the target release: read the upstream release notes/changelog, confirm the release is not a prerelease (unless intentionally adopted) and check for breaking changes in behavior used by our workflows (outputs such as `id`, `draft` semantics, inputs).
-3. Resolve the immutable commit SHA of the target tag. For lightweight tags `refs/tags/<tag>` is already the commit; for annotated tags use the peeled ref:
+1. Review the Dependabot PR and identify the upstream action release it proposes.
+2. Read the upstream release notes/changelog. Confirm the release is intentional (including prerelease status) and check breaking changes in workflow inputs, outputs, runtime requirements, and behavior used here.
+3. Resolve the tag to its immutable commit SHA. For a lightweight tag, the ref points directly to the commit. For an annotated tag, peel it to the commit:
 
    ```sh
    git ls-remote https://github.com/<owner>/<repo>.git "refs/tags/<tag>^{}"
    ```
 
-4. Update the `uses:` line to the new SHA and update the trailing tag comment so the comment always matches the pinned SHA.
-5. For release-affecting actions (`softprops/action-gh-release`), verify changed outputs or draft/publish behavior against the steps that validate release assets before merging, and keep release changes out of unrelated bug-fix PRs.
-6. CI must pass (PR validation on a beta PR) before merging the update.
+4. Independently verify the tag ref and peeled commit through the upstream GitHub repository. Update the `uses:` SHA and trailing version comment together.
+5. For release-affecting actions (especially `softprops/action-gh-release`), verify outputs such as `id`, draft/publish semantics, and asset behavior against the calling workflow. Keep such changes isolated from unrelated fixes.
+6. Run the full PR validation against `beta`. Review exact-head CI and workflow permissions before Chaty merges.
+
+Never put signing secrets in pull-request validation, broaden build/test token permissions, or merge a workflow/action update solely because Dependabot opened it.
