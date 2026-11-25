@@ -781,3 +781,13 @@ Record exact branch head, Actions run URLs, lint results, formatter result and l
 - **Physical ARM64 verification (#5):** requires owner-provided hardware/results; CI or agent emulation must not be reported as a physical-device pass.
 - **#42:** the old v2.1.0 Home-screen-first acceptance scope is superseded by #56. Do not duplicate its old Home screen/menu implementation.
 - **#60:** exact PR validation passed in run #45627915789; post-merge quality workflow #45631250015 and signed beta build workflow #45631249817 both completed successfully. Issue can be closed as completed.
+
+
+## Updater reliability follow-up — PR candidate (2026-11-25)
+
+- **Issues:** #4 and #15; Chaty owns the shared implementation scope.
+- **Branch:** `chaty/issue-4-interrupted-download-tests`, based on beta `01af3f488225eaa5321b994a3957e53dcdb70c55`.
+- Streamed download writing and size/SHA-256 verification are isolated in a testable helper used by the existing updater.
+- New JVM tests cover successful exact-size payloads, truncated streams, simulated network interruption, digest mismatch and maximum-size rejection; failure paths must delete the staged file.
+- **Status:** PR validation pending. Keep #4/#15 open until exact-head CI and remaining device/release-workflow evidence are complete.
+- No automatic downloads or installation; the existing user-initiated flow and full-APK fallback remain.
