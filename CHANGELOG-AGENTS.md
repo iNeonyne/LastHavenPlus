@@ -568,4 +568,4 @@ Entry format:
 - **Change:** Added a streamed bounded input helper for the GitHub release-list response (4 MiB), prior APK (256 MiB) and prior manifest (1 MiB); validates HTTPS GitHub asset hosts across redirects; adds unit tests and runs them in PR and signed build jobs.
 - **Supersedes:** PR #32, whose operations had timeouts but no hard byte caps. PR #32 exact-head runs #348/#349 were cancelled.
 - **Follow-up:** Added previous release tag format and manifest/tag identity checks to prevent untrusted tag strings entering the patch asset path. Expanded tests for streamed downloads with and without Content-Length and rejected redirect hosts.
-- **Verification:** PR #34 run #351 passed for earlier head `751102ac...`; latest exact-head run #352 is in progress for `3103a0c64a4dff784ed019efc35900076f07aea8`. No latest-head pass claimed yet.
+- **Verification:** PR #34 run #351 passed for earlier head `751102ac...`; run #353 failed in a test assertion, which was corrected. Run #354 was cancelled after the fix; latest exact-head run #355 is in progress for `91de158273b3abcb7f3442aed24f25a3ac7a3439`. No latest-head pass claimed yet.
