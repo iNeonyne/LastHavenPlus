@@ -617,3 +617,12 @@ Entry format:
 - **CI caveat:** release workflow run #45603533787 passed unit tests, signature/certificate/ABI verification, differential generation and asset upload/publish steps, but its final release asset query failed with HTTP 404. Current release metadata independently confirms the expected assets. Issue #31 tracks the workflow follow-up.
 - **Docs correction:** update beta README/CHANGELOG/STATUS/ISSUES to record v2.1.0 as published rather than a candidate. The stable-facing README/CHANGELOG on main still need a separately authorized documentation correction; routine task PRs remain targeted to beta.
 - **Physical-device status:** full ARM64 gameplay/profile/UI/update matrix remains unverified. Do not treat release CI as device evidence.
+
+
+## 2026-11-25 — Stable documentation and release-workflow housekeeping
+
+- **Stable docs:** owner-authorized updates to `main` README and CHANGELOG now identify v2.1.0 as published. Commits: `fdae3d90cf3abb209df8a42dd73ed1667bae9808` and `2abe7cc212b67a3b91f5dcdb108aee3a55559e32`. Verified against the published release metadata and signed ARM64 artifact evidence.
+- **Issue triage:** #9 and #10 titles now describe accessibility/navigation and app-wide network usage verification; #20 is narrowed to the remaining GeckoView artifact/dependency audit; #21 tracks physical GeckoView runtime/profile checks. #22 and #29 remain closed; #23 remains on hold.
+- **Release workflow:** PR #54 merged at `b12da7651445d15080e7593d441459a8c8403070`. It uses the release action's ID output for post-upload legacy-asset cleanup and final draft verification, avoiding draft-by-tag lookups.
+- **CI:** exact-head unsigned PR run #45610110307 passed bounded-input tests, unsigned release build and JVM unit tests. Post-merge signed beta run #45610518305 is pending. No release-tag job or publication was run.
+- **Branch audit:** 31 branches remain. Three branches are strictly behind beta with no unique commits (`chaty/bound-updater-queue`, `chaty/fix-updater-hardening`, `chaty/home-updater-demo`); branch deletion is not exposed by the connected GitHub integration. Diverged branches with unique commits were preserved.
