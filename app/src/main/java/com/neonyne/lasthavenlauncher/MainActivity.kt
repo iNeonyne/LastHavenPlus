@@ -27,6 +27,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.core.view.WindowCompat
@@ -292,7 +294,7 @@ private fun LastHavenApp(
                         }
                         Text(update.releaseNotes, maxLines = 8)
                         if (isDownloadingUpdate) {
-                            LinearProgressIndicator(modifier = androidx.compose.ui.Modifier.fillMaxWidth())
+                            LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
                             Text(if (downloadingDelta) "Downloading smaller update…" else "Downloading full APK…")
                         }
                     }
@@ -318,7 +320,7 @@ private fun LastHavenApp(
                     }
                 },
                 dismissButton = {
-                    Column(horizontalAlignment = androidx.compose.ui.Alignment.End) {
+                    Column(horizontalAlignment = Alignment.End) {
                         if (update.patch != null) {
                             TextButton(
                                 enabled = !isDownloadingUpdate,
