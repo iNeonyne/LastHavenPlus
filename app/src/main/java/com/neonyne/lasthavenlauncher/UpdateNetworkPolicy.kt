@@ -72,6 +72,12 @@ internal object UpdateNetworkPolicy {
         return output.toString(Charsets.UTF_8.name())
     }
 
+    fun verifyBaseApkDigest(actualSha256: String, expectedSha256: String) {
+        check(actualSha256.equals(expectedSha256, ignoreCase = true)) {
+            "Installed APK does not match the patch base"
+        }
+    }
+
     fun verifyDownload(
         actualSize: Long,
         expectedSize: Long,
