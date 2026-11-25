@@ -394,3 +394,10 @@
 - PR #54 merged to beta at `b12da7651445d15080e7593d441459a8c8403070`. It moves legacy-asset cleanup after upload and uses the release action's release ID for cleanup and final asset verification.
 - Exact-head unsigned validation run #45610110307 passed. Post-merge signed beta run #45610518305 is pending; release-tag runtime verification remains untested and no v2.1.0 republish was attempted.
 - Branch audit found 31 refs; three are behind-only with no unique commits, but the available GitHub connector exposes no branch-delete action. Diverged/independent branches were retained.
+
+
+### 2026-11-25 — Verify post-merge signed beta build for PR #54
+
+- Exact merge commit: `b12da7651445d15080e7593d441459a8c8403070`.
+- Post-merge signed beta run [#45610518305](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45610518305) passed build, unit tests, established signing-certificate verification and ARM64-only ABI checks.
+- This is not a release-tag run; the draft-ID asset cleanup/verification path and differential failure fallback still need a future owner-authorized versioned release test.
