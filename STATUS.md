@@ -3,8 +3,7 @@
 **Last updated:** 2026-11-25  
 **Active branch:** `beta`  
 **Latest application integration commit:** `dffca7e67ef4a8dd1bec8777c2c4c8b8a51a0210` (PR [#43](https://github.com/iNeonyne/LastHavenPlus/pull/43)); PR #46 was documentation-only.  
-**Latest beta HEAD:** `b12da7651445d15080e7593d441459a8c8403070` (PR #54 merge).  
-**Latest repository maintenance:** PR [#54](https://github.com/iNeonyne/LastHavenPlus/pull/54) merged to beta at `b12da7651445d15080e7593d441459a8c8403070`.  
+**Latest workflow integration:** PR [#54](https://github.com/iNeonyne/LastHavenPlus/pull/54) merged to beta at `b12da7651445d15080e7593d441459a8c8403070`; exact-head unsigned and post-merge signed CI both passed.  
 **Stable documentation:** owner-authorized v2.1.0 corrections are on `main`; README commit `fdae3d90cf3abb209df8a42dd73ed1667bae9808`, CHANGELOG commit `2abe7cc212b67a3b91f5dcdb108aee3a55559e32`.  
 **Stable promotion and publication:** PR [#47](https://github.com/iNeonyne/LastHavenPlus/pull/47) promoted to `main`; tag/release `v2.1.0` is published at `03fcfa9652ce4e7d1034523d640a1693e6e6b9ce`.  
 **Current phase:** v2.1.0 is published. Physical ARM64 feature verification remains outstanding. PR #54 fixed draft asset cleanup/verification by release ID; exact-head unsigned validation and post-merge signed beta validation both passed. The release-ID path still requires a future owner-authorized versioned release run.
