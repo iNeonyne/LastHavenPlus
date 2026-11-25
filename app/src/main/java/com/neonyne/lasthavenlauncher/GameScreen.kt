@@ -28,14 +28,13 @@ fun GameScreen(
     isLoading: Boolean,
     pageLoadFailed: Boolean,
     onReload: () -> Unit,
-    onShowMenu: () -> Unit,
 ) {
     Box(modifier = Modifier.fillMaxSize()) {
         if (session != null) {
             AndroidView(
                 factory = { viewContext -> GeckoView(viewContext).apply { setSession(session) } },
                 modifier = Modifier.fillMaxSize(),
-                // Detach the view but keep the GeckoSession open when navigating Home.
+                // Detach the view but keep the GeckoSession open when navigating to another screen.
                 onRelease = { view -> view.releaseSession() },
             )
         } else {
@@ -53,9 +52,7 @@ fun GameScreen(
         }
 
         if (isLoading && !pageLoadFailed && session != null) {
-            LinearProgressIndicator(
-                modifier = Modifier.align(Alignment.TopCenter).fillMaxWidth(),
-            )
+            LinearProgressIndicator(modifier = Modifier.align(Alignment.TopCenter).fillMaxWidth())
         }
 
         if (pageLoadFailed && session != null) {
@@ -77,10 +74,5 @@ fun GameScreen(
                 }
             }
         }
-
-        androidx.compose.material3.TextButton(
-            onClick = onShowMenu,
-            modifier = Modifier.align(Alignment.TopEnd).padding(12.dp),
-        ) { Text("Menu") }
     }
 }
