@@ -14,20 +14,6 @@ on:
       - "gradle.properties"
       - ".github/scripts/**"
       - ".github/workflows/quality.yml"
-  pull_request:
-    branches: [beta]
-    paths:
-      - "app/src/**"
-      - "app/build.gradle.kts"
-      - "app/proguard-rules.pro"
-      - "build.gradle.kts"
-      - "settings.gradle.kts"
-      - "gradle/**"
-      - "gradlew"
-      - "gradle.properties"
-      - ".github/scripts/**"
-      - ".github/workflows/quality.yml"
-
 permissions:
   contents: read
 
@@ -37,7 +23,7 @@ concurrency:
 
 jobs:
   quality:
-    name: Android lint and Kotlin formatting
+    name: Post-merge Android lint and Kotlin formatting
     runs-on: ubuntu-latest
     timeout-minutes: 35
     permissions:
@@ -70,7 +56,7 @@ jobs:
 
       - name: Run Android Lint and Kotlin formatting check
         env:
-          SPOTLESS_RATCHET_REF: ${{ github.event_name == 'pull_request' && github.event.pull_request.base.sha || github.event.before }}
+          SPOTLESS_RATCHET_REF: ${{ github.event.before }}
         run: |
           set -euo pipefail
           if [[ ! "$SPOTLESS_RATCHET_REF" =~ ^[0-9a-f]{40}$ ]] || [[ "$SPOTLESS_RATCHET_REF" =~ ^0{40}$ ]]; then
