@@ -633,3 +633,22 @@ Entry format:
 - Post-merge beta push run [#45610518305](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45610518305) completed successfully for merge commit `b12da7651445d15080e7593d441459a8c8403070`.
 - The merged beta build, unit tests, established signing-certificate verification and ARM64-only ABI checks passed.
 - This push run did not execute the release-tag draft asset lookup. Live release-ID verification and optional differential failure-path testing remain open under #31.
+
+
+## 2026-11-25 — Add beta Android quality gate and incremental Kotlin formatting
+
+- **Role:** Chaty / CI workflow implementation
+- **Issue:** [#60](https://github.com/iNeonyne/LastHavenPlus/issues/60)
+- **Branch:** `chaty/ci-quality-gate` from beta `36f079445e227583c12b19bde9161844e0e5855d`
+- **Scope:** Add a read-only Android quality workflow for relevant beta pushes and extend the existing PR workflow with lint/format checks; configure pinned Spotless 8.12.0 with ktfmt 0.64; document local formatting/lint commands and split responsibilities between Android PR validation and the quality workflow.
+- **Design:** Use incremental formatting ratcheted to the PR base or previous beta commit to avoid mass-reformatting legacy files. Documentation-only edits do not trigger quality/build workflows. The existing Android PR job runs lint/format, JVM and Python updater-helper tests together; the post-merge quality workflow repeats only lint/format.
+- **Constraints:** No app source behavior, release signing, secrets, ABI, GeckoView, updater or main changes. No release or publication.
+- **Verification:** Exact-head Actions validation is pending. Do not claim lint/format success until the PR checks complete; a separate intentionally misformatted Kotlin change must be rejected by the formatter check.
+
+
+## 2026-11-25 — Verify Android formatter negative test
+
+- PR #72's deliberately misformatted Kotlin probe was rejected by Spotless in run [#45627319452](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45627319452); the expected formatting diff was present. The run is an intentional negative-test failure, not a passing build.
+- Removed the temporary probe in commit `b93be719e510757036c948d23a8aadf1409b95a2`.
+- Clarified that the existing Android workflow performs PR lint/format/build/tests, while `quality.yml` is a read-only post-merge beta-push lint/format gate.
+- Clean-head validation is still required before merge.

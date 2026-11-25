@@ -7,6 +7,7 @@
 **Stable documentation:** owner-authorized v2.1.0 corrections are on `main`; README commit `fdae3d90cf3abb209df8a42dd73ed1667bae9808`, CHANGELOG commit `2abe7cc212b67a3b91f5dcdb108aee3a55559e32`.  
 **Stable promotion and publication:** PR [#47](https://github.com/iNeonyne/LastHavenPlus/pull/47) promoted to `main`; tag/release `v2.1.0` is published at `03fcfa9652ce4e7d1034523d640a1693e6e6b9ce`.  
 **Current phase:** v2.1.0 is published. Physical ARM64 feature verification remains outstanding. PR #54 fixed draft asset cleanup/verification by release ID; exact-head unsigned validation and post-merge signed beta validation both passed. The release-ID path still requires a future owner-authorized versioned release run.
+**Active workflow task:** issue #60 is being implemented on `chaty/ci-quality-gate`, based on beta HEAD `36f079445e227583c12b19bde9161844e0e5855d`. The branch adds lint/format checks to existing read-only Android PR validation and a post-merge beta quality workflow with incremental Spotless/ktfmt; exact-head CI is pending.
 
 ## Current source state
 
@@ -70,6 +71,7 @@ Still unverified on physical ARM64 hardware:
 
 ## Open work
 
+- #60: Android lint and Kotlin formatting quality gate; implementation is in progress on `chaty/ci-quality-gate` (PR #72). Exact-head baseline validation passed on `07fa36c416aee83a64845cedaf67f2d99c359034` in [run #45625221679](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45625221679). The deliberate misformat probe was rejected specifically by Spotless in [run #45627319452](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45627319452); that run's overall failure is expected for the negative test, not a product-code failure. The probe was removed in commit `b93be719e510757036c948d23a8aadf1409b95a2`. The existing Android PR workflow handles PR lint/format/build/tests; `quality.yml` runs lint/format only on relevant beta pushes. Final clean-head validation is pending.
 - #4/#15: updater regression coverage and physical update verification.
 - #5/#21: physical GeckoView/game compatibility and profile verification.
 - #20: complete remaining GeckoView 160 artifact/POM/dependency/license/API evidence.

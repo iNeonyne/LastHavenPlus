@@ -42,6 +42,7 @@
 | [#42](https://github.com/iNeonyne/LastHavenPlus/issues/42) | P1 | v2.1.0 launcher UI verification | Source implementation integrated by PR #43; physical UI verification remains |
 | [#29](https://github.com/iNeonyne/LastHavenPlus/issues/29) | Done | Reconcile beta documentation and CI evidence | Closed as completed after PR #46 merged to beta |
 | [#31](https://github.com/iNeonyne/LastHavenPlus/issues/31) | P0 | Draft release asset verification and differential fallback | PR #54 merged; exact-head unsigned and post-merge signed beta runs passed; live release-ID path/fallback checks remain |
+| [#60](https://github.com/iNeonyne/LastHavenPlus/issues/60) | P2 | Android lint and Kotlin formatting quality gate | In progress on beta; lint + incremental Spotless/ktfmt workflow being added |
 
 ---
 
@@ -675,3 +676,39 @@ Preserve archive path/CRC/duplicate/count/expanded-size checks. Keep Android 10/
 
 **GitHub:** https://github.com/iNeonyne/LastHavenPlus/issues/31  
 **State:** open; PR #37 merged the optional differential fallback hardening. The later signed beta run #45601558602 passed build, unit tests, established signing-certificate verification and ARM64-only ABI checks for the v2.1.0 candidate (recorded in PR #47). Keep this issue open because that run does not exercise every release-tag optional-delta failure path. Require a separately authorized versioned release-workflow test before closing; do not publish or alter release policy just to test it.
+
+
+---
+
+## Issue 60 — P2 — Make Android lint and Kotlin formatting a reliable quality gate
+
+**GitHub:** https://github.com/iNeonyne/LastHavenPlus/issues/60  
+**Owner:** Chaty  
+**Branch:** `chaty/ci-quality-gate` → `beta`
+
+### Goal
+Add a focused, read-only quality workflow for Android lint and Kotlin formatting without duplicating the existing Android PR build/test job.
+
+### Scope
+- Add `.github/workflows/quality.yml` for relevant source/build changes pushed to beta. PR validation is handled by the existing `android.yml` workflow.
+- Run `lintDebug` and a pinned Spotless/ktfmt `spotlessCheck`.
+- Use the existing JDK 25, Android SDK 37.2 / Build Tools 37.0.0 and committed Gradle Wrapper.
+- Apply formatting incrementally against `origin/beta` for PR validation and the previous beta commit for post-merge pushes, so legacy formatting is not rewritten in a giant unrelated diff.
+- Keep workflow permissions read-only; do not expose signing secrets or upload/publish APKs.
+- Upload Android Lint reports. Existing Android PR validation remains responsible for unsigned build, JVM unit tests, Python updater-helper tests and their reports.
+- Ignore documentation-only edits.
+
+### Non-goals
+- No application behavior, GeckoView, ABI, signing, updater or release-policy changes.
+- No changes to main. No release, tag or publication.
+- No broad formatting rewrite of legacy Kotlin files.
+
+### Acceptance criteria
+- Exact-head Android PR validation passes `lintDebug`, `spotlessCheck`, the unsigned release build, JVM unit tests and Python updater-helper tests.
+- A deliberately misformatted changed Kotlin file fails the formatting check; the formatter command is documented.
+- Android PR validation continues to run the unsigned build, JVM tests and Python helper tests.
+- Quality job uses read-only permissions and no release secrets.
+- Documentation accurately describes which workflow runs which checks.
+
+### Verification
+Record exact branch head, Actions run URLs, lint results, formatter result and limitations here and in STATUS.md. The negative test is recorded separately from the final passing exact-head validation.
