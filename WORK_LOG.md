@@ -451,3 +451,13 @@
 - **Issue tracker:** update GitHub #20 and #21 descriptions to match the corrected backlog; #18's live GitHub roadmap is already current and remains unchanged.
 - **Constraints:** no source, Gradle, CI, signing, release, game or main changes. #23 remains on hold; #56 remains Ploy's active task.
 - **Verification:** documentation consistency, internal anchors/links and diff review required. Full Markdown lint remains outstanding under #70; no Android or physical-device tests are applicable.
+
+
+### 2026-11-25 — Add updater interrupted-download regression coverage
+
+- **Issue:** #4 and #15; Chaty owns the shared updater scope.
+- **Branch:** `chaty/issue-4-interrupted-download-tests`, created from beta `01af3f488225eaa5321b994a3957e53dcdb70c55`.
+- Refactored the existing download stream copy/size/digest validation into `UpdateDownloadPolicy`; the app updater continues to use the same staged download, checksum, signing validation and installer flow.
+- Added JVM tests for exact valid payload, truncated stream, simulated connection reset, checksum mismatch and over-limit payload. All invalid paths assert the partial file is deleted.
+- PR validation has not yet run. Do not merge until exact-head lint, formatting, unsigned release build and JVM tests pass.
+- No physical-device test, installer behavior, profile preservation or release-tag differential runtime claim is made.
