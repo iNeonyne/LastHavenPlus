@@ -390,9 +390,9 @@ jobs:
               if curl --fail --location --silent --show-error --connect-timeout 15 --max-time 90 "$PREVIOUS_APK_URL" -o "$RUNNER_TEMP/previous.apk" &&
                 curl --fail --location --silent --show-error --connect-timeout 15 --max-time 30 "$PREVIOUS_MANIFEST_URL" -o "$RUNNER_TEMP/previous-manifest.json"; then
 
-                BASE_VERSION="$(jq -r '.version // empty' "$RUNNER_TEMP/previous-manifest.json")"
-                BASE_VERSION_CODE="$(jq -r '.versionCode // empty' "$RUNNER_TEMP/previous-manifest.json")"
-                BASE_EXPECTED_SHA="$(jq -r '.apk.sha256 // empty' "$RUNNER_TEMP/previous-manifest.json")"
+                BASE_VERSION="$(jq -r '.version // empty' "$RUNNER_TEMP/previous-manifest.json" 2>/dev/null || true)"
+                BASE_VERSION_CODE="$(jq -r '.versionCode // empty' "$RUNNER_TEMP/previous-manifest.json" 2>/dev/null || true)"
+                BASE_EXPECTED_SHA="$(jq -r '.apk.sha256 // empty' "$RUNNER_TEMP/previous-manifest.json" 2>/dev/null || true)"
                 BASE_SHA="$(sha256sum "$RUNNER_TEMP/previous.apk" | awk '{print $1}')"
 
                 if [[ "$BASE_VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ &&
