@@ -223,3 +223,12 @@
 - **Change:** PR #26 updates the `Resolve version metadata` workflow step. On `beta`, it reads the latest published stable release tag using the read-only workflow token, validates the semver tag and computes the same versionCode formula. It explicitly keeps `is_release=false` and an empty release tag, so this creates only the normal signed Actions artifact—no Git tag, update manifest, draft or published release.
 - **Purpose:** Keep the application ID and signing identity stable and avoid a lower versionCode for the demo. The beta APK uses the same version identity as the latest stable release; a later stable release with a higher versionCode can update it normally.
 - **Verification:** Workflow change is on the PR branch and awaits final PR CI. The post-merge beta build must confirm the resolved versionName/versionCode, signer, ARM64-only package and artifact. Same-version replacement and game profile preservation still require physical-device testing.
+
+### 2026-11-25 — P0 hardening added to PR #26
+
+- **Starting branch head:** `a1882b83e414d33091996096256770899bf9959d` on `chaty/home-updater-demo`.
+- **Changes:** Updated `AppUpdater.kt` to use a single queued worker with a 30-second idle timeout; updated `MainActivity.kt` to save/restore `pendingUpdateUri` and close the retained GeckoSession when the Activity composition is destroyed; bounded decompressed BSDIFF streams and added an over-limit regression test; wired `app/proguard-rules.pro` into release minification with GeckoView/SnakeYAML keep rules.
+- **Commits:** `91a87f5d1dd12f1ad13d44ee277e7d1be06bcd8b`, `a2c6bf98b823281a6de236f158be21dc670a1ed3`, `f655d179970f186f5f7f4a7432824dc073128bf1`, `86cb6211a291ebb3ea7a0d1134ed147b8447dfa3`, `269777616947ff3d5f2c6b4fb02924b19d55d6d3`, `f4891ab41b36fead89030a9fccdcabb9927cee8f`.
+- **CI:** Run [#325](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45517931847) is in progress. The unsigned PR build/unit-test job has started; signed ARM64 build and release-tag jobs are skipped by design for PR validation.
+- **Not verified:** No exact-head CI result yet; no physical ARM64 game, process-death installer, GeckoView minified startup or in-place update test has been performed.
+- **Next safe action:** Inspect #325 to completion, address failures, then review PR #26. Do not merge to beta or main, tag or publish without explicit owner approval.
