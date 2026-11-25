@@ -572,46 +572,31 @@ Allow users to preserve launcher preferences across reinstallations or device ch
 
 <a id="issue-18"></a>
 
-## Issue 18 — Roadmap — GeckoView migration, home screen and addon manager
+## Issue 18 — Roadmap — v2.2.0 direct-launch experience and reliability
 
 **GitHub:** https://github.com/iNeonyne/LastHavenPlus/issues/18  
-**State:** open
+**State:** open; planning and sequencing only. The canonical roadmap, ownership and release gates are maintained in GitHub issue #18.
 
-The next major beta change replaces Cefrium with Mozilla GeckoView and adds a home screen with Play and Settings. The previous addon manager has been removed; a replacement is blocked pending a new owner specification. Current beta source still uses Cefrium.
+The stable v2.1.0 release is published. Beta already uses Mozilla GeckoView 160; Cefrium replacement is complete at source/integration level. The v2.2.0 focus is the direct-launch and responsive in-game overlay redesign (#56), followed by physical ARM64 runtime/profile/update verification and remaining updater/release reliability work.
 
-### Phase 0 — Restore beta baseline
-- [ ] #9 Finish the exit-menu accessibility follow-up (Ploy); The previous AddonManager compile blocker was removed with the legacy manager; post-removal CI is still unverified.
-- [ ] #4 Restore clean CI and complete updater edge-case tests. Keep application ID, signing identity and arm64-v8a configuration unchanged.
+### Current phases
+- [x] Housekeeping, v2.1.0 release record and contributor workflow reconciliation.
+- [ ] **Phase 1 — #56:** Ploy's direct-launch and responsive overlay implementation; preserve the same GeckoSession and support Settings in portrait and landscape.
+- [ ] **Phase 2 — #5/#21:** physical ARM64 gameplay, GeckoView profile/session, Web APIs, media, permissions and same-key update verification. CI is not device evidence.
+- [ ] **Phase 3 — #4/#15/#31:** updater regression coverage and release-ID/differential fallback verification in a future owner-authorized release workflow.
+- [ ] **Phase 4 — #9–#17/#28:** accessibility, diagnostics, settings, network/storage accuracy and measured polish in the order recorded in AGENT_WORK.md.
+- [ ] **Phase 5:** v2.2.0 release gates; owner approval is required for promotion, tagging and publication.
 
-### Phase 1 — GeckoView engine migration
-- [ ] #20 Verify stable dependency/version, official APIs, runtime/session lifecycle, persistent profile strategy, delegates, Java compatibility, ARM64 packaging, APK size and LastHaven requirements. Deliver `docs/GECKOVIEW_MIGRATION.md`.
-- [ ] #21 Remove Cefrium and replace it with one pinned stable GeckoView engine. Do not add System WebView or a second/fallback engine.
-- [ ] Keep the old Cefrium profile untouched until a safe cleanup/preservation policy is verified. Do not assume its format is portable to GeckoView; re-login may be necessary.
-- [ ] Validate WebGL/WebGL2, WebAssembly, WebSockets, touch, fullscreen, audio, permissions, cookies, LocalStorage, IndexedDB, service workers, lifecycle/crash recovery and same-key updates on physical ARM64 hardware.
+### Deferred and protected scope
+- **#23 Addon Manager: ON HOLD.** Do not investigate, assign or implement without fresh explicit owner approval.
+- **#19 beta release channel:** not a v2.2.0 prerequisite.
+- Do not modify the game, application ID, release signing identity, GeckoView engine or update-consent policy as incidental roadmap work.
+- No automatic downloads/installations, debug APK publication, or unapproved release activity.
 
-### Phase 2 — Home screen
-- [ ] #22 Launch into a simple home screen with a Play button and Settings entry; do not load the game until Play is selected.
-- [ ] Preserve the active Gecko session when navigating between gameplay and home.
-- [ ] Apply immersive mode/keep-awake only while gameplay is active; restore normal system UI on home/settings.
-
-### Phase 3 — Addon manager (blocked)
-- [ ] #23 Wait for the owner to provide a new written addon-manager specification.
-- [ ] Design and review the replacement before implementation. The previous ZIP manager code, tests and UI have been removed.
-- [ ] Do not recreate the previous storage model, package manager or injection hooks without explicit direction.
-
-### Phase 4 — Regression and release gates
-- [ ] #5 Physical ARM64 gameplay and same-key update verification on GeckoView.
-- [ ] Complete applicable settings (#6), diagnostics (#11/#12), navigation/accessibility (#9), orientation (#16), updater recovery (#15), backup (#17) and performance (#7) checks.
-- [ ] Clean CI on the exact candidate commit: build, tests, signed APK, package identity, signing certificate, ARM64-only ABI, artifact count and updater manifest/checksum.
-- [ ] Record exact build, commit, CI run, APK digest, device and test outcomes in STATUS.md.
-
-### Stable promotion policy
-- `beta` is the active development/integration/testing branch; `main` is stable.
-- Task changes enter `beta` through PRs. Chaty alone reviews and merges; no contributor may push directly to `beta`.
-- Promote only after every applicable gate passes and the user explicitly approves. Publishing/tagging requires separate explicit approval.
-- No debug APKs, partial features, automatic update downloads/installs, app ID changes or signing-key changes.
+See the GitHub issue #18 for the full phase checklist and release gates. `AGENT_WORK.md` is the current assignment queue; do not infer assignments from this historical index.
 
 ---
+
 <a id="issue-19"></a>
 
 ## Issue 19 — P1 — Add an opt-in beta release channel to the updater
@@ -634,29 +619,55 @@ The next major beta change replaces Cefrium with Mozilla GeckoView and adds a ho
 
 <a id="issue-20"></a>
 
-## Issue 20 — P0 — Verify GeckoView migration decision and stable artifact
-
-**Current audit (2026-11-25):** GeckoView 160 ARM64 artifact/API research is recorded in `docs/GECKOVIEW_MIGRATION.md`. The engine is now integrated in beta. Remaining build/runtime and physical-device checks are tracked under #21 and #5; do not describe the research decision alone as proof of game compatibility.
-
+## Issue 20 — P1 — Complete the GeckoView 160 artifact and dependency evidence record
 
 **GitHub:** https://github.com/iNeonyne/LastHavenPlus/issues/20  
-**Internal owner:** Ploy, queued after #9 and #11.
+**State:** open; remaining documentation/research only.  
+**Owner:** Chaty.
 
-Docs-only research. Verify current stable GeckoView coordinates/version through Mozilla's official Maven repository and official Javadocs; document Java compatibility, runtime/session/view lifecycle, persistent profile behavior, required delegates, ARM64/native packaging, APK size, game Web APIs and the Cefrium profile transition risk. Deliver `docs/GECKOVIEW_MIGRATION.md`. Do not change source/build files. WoW addon ZIP packages are not Gecko WebExtensions.
+**Current status (2026-11-25):** GeckoView 160 ARM64 is already integrated in beta and shipped in v2.1.0. This issue is not a migration blocker and does not authorize dependency or toolchain changes.
+
+### Remaining scope
+- Record the exact pinned artifact POM and transitive dependency inventory.
+- Record applicable license and notice obligations.
+- Cross-check project-used API names against the pinned artifact's official Javadocs/API documentation.
+- Record measured APK-size impact using comparable verified artifacts/builds, or explicitly document why a reliable comparison is unavailable.
+
+### Exclusions
+- Do not restart or re-implement the Cefrium migration.
+- Do not change GeckoView, Gradle, AGP, JDK, Android SDK, Build Tools, signing or ABI configuration.
+- Do not infer physical game compatibility from dependency research or CI; that remains under #5/#21.
+- No game/client changes, Addon Manager work (#23 remains on hold), release, tag or main promotion.
+
+**Completion evidence:** update `docs/GECKOVIEW_MIGRATION.md` with official references, artifact-specific findings and unresolved limitations; keep this issue open until each remaining item is evidenced.
 
 ---
 
 <a id="issue-21"></a>
 
-## Issue 21 — P0 — Replace Cefrium with Mozilla GeckoView
-
-**Current audit (2026-11-25):** The beta source now uses GeckoView 160 and no Cefrium production integration. CI run #310 passed the signed release build, unit-test task, signing-certificate and ARM64-only ABI checks for its tested commit. Physical ARM64 gameplay, Gecko profile persistence, permissions/media and update behavior remain unverified. Do not close this issue based on CI alone.
-
+## Issue 21 — P0 — Verify GeckoView 160 runtime and profile behavior on physical ARM64 hardware
 
 **GitHub:** https://github.com/iNeonyne/LastHavenPlus/issues/21  
-**Internal owner:** Chaty, queued after #4 is clean and #20 is reviewed.
+**State:** open; physical-device verification only.  
+**Owners:** Chaty coordinates; repository owner/device tester supplies hardware evidence.
 
-Replace Cefrium plugin/dependencies/repository/runtime with one verified stable GeckoView release. Implement one process-scoped runtime, managed session/view, safe public delegates and a persistent browser profile. Remove Cefrium source/build references; no dual engine. Preserve app ID, release signing identity, ARM64-only ABI and manual updater flow. Keep existing Cefrium profile files untouched; do not claim portable profile migration. Test build/unit/release verification and physical-device requirements separately.
+**Current status (2026-11-25):** GeckoView 160 is integrated in beta and shipped in v2.1.0; Cefrium is removed from the production build. The older engine-migration implementation scope is complete and must not be repeated here. CI verifies builds/tests and selected packaging properties, not physical GeckoView behavior.
+
+### Remaining physical ARM64 checks
+- Record device model, Android version, exact app commit/version and APK digest.
+- Verify GeckoRuntime/GeckoSession lifecycle, cold start, pause/resume, renderer recovery and session restoration.
+- Verify login and persistent cookies/site data across force-stop/restart and same-key update.
+- Verify WebGL/WebGL2, WebAssembly, WebSockets, touch/IME, audio, fullscreen and required permission prompts.
+- Verify the new direct-launch/overlay experience after #56 is integrated; coordinate UI-specific checks with #5.
+- Record pass/fail results and sanitized evidence in `STATUS.md`.
+
+### Exclusions
+- No Cefrium removal or GeckoView migration implementation work.
+- No claim of physical compatibility based on CI, emulator tests or an undetailed owner smoke-test report.
+- Do not copy/delete Cefrium profile data or assume cross-engine profile portability.
+- No changes to application identity, signing, ABI, updater policy or game/client; #23 Addon Manager remains on hold.
+
+**Completion:** close only after the required physical checks are performed on real ARM64 hardware and the exact device/build evidence is recorded. End-to-end updater installation remains tracked under #5/#4.
 
 ---
 
