@@ -42,7 +42,7 @@
 | [#42](https://github.com/iNeonyne/LastHavenPlus/issues/42) | P1 | v2.1.0 launcher UI verification | Source implementation integrated by PR #43; physical UI verification remains |
 | [#29](https://github.com/iNeonyne/LastHavenPlus/issues/29) | Done | Reconcile beta documentation and CI evidence | Closed as completed after PR #46 merged to beta |
 | [#31](https://github.com/iNeonyne/LastHavenPlus/issues/31) | P0 | Draft release asset verification and differential fallback | PR #54 merged; exact-head unsigned and post-merge signed beta runs passed; live release-ID path/fallback checks remain |
-| [#60](https://github.com/iNeonyne/LastHavenPlus/issues/60) | P2 | Android lint and Kotlin formatting quality gate | In progress on beta; lint + incremental Spotless/ktfmt workflow being added |
+| [#60](https://github.com/iNeonyne/LastHavenPlus/issues/60) | P2 | Android lint and Kotlin formatting quality gate | PR #72 merged to beta; exact-head PR checks passed; post-merge workflow verification pending |
 
 ---
 
