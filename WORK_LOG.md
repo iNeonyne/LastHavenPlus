@@ -451,3 +451,8 @@
 - **Issue tracker:** update GitHub #20 and #21 descriptions to match the corrected backlog; #18's live GitHub roadmap is already current and remains unchanged.
 - **Constraints:** no source, Gradle, CI, signing, release, game or main changes. #23 remains on hold; #56 remains Ploy's active task.
 - **Verification:** documentation consistency, internal anchors/links and diff review required. Full Markdown lint remains outstanding under #70; no Android or physical-device tests are applicable.
+
+
+## 2026-11-25 — Closed Dependabot PR reassessment / issue #81
+
+Reassessed closed unmerged PRs #57, #58, #59, #68, #69 and #71 against current beta. The library-only portion of #68 and #69 is isolated under issue #81: AppCompat 1.8.0, MediaRouter 1.9.0, Browser 1.10.0, Compose BOM 2026.11.01 and Commons Compress 1.28.0. AGP/Kotlin/Gradle changes are excluded pending a coordinated compatibility plan. Action major-version changes are deferred to issue #63's SHA-pinning/security scope; Gradle Actions v6 carries new caching license terms. No closed PR was reopened or merged. Exact-head validation remains pending.
