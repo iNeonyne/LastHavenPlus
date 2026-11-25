@@ -69,7 +69,7 @@ Close only when every acceptance criterion is met and evidence is recorded. If a
 
 ---
 
-<a id="issue-## Issue 4 — P0.1 — Improve build reproducibility and updater test coverage"></a>
+<a id="issue-4"></a>
 
 ## Issue 4 — P0.1 — Improve build reproducibility and updater test coverage
 
@@ -124,7 +124,7 @@ A clean checkout builds through the committed, pinned wrapper; updater edge case
 
 ---
 
-<a id="issue-## Issue 5 — P0.2 — Verify LastHaven gameplay and update behavior on a physical arm64 device"></a>
+<a id="issue-5"></a>
 
 ## Issue 5 — P0.2 — Verify LastHaven gameplay and update behavior on a physical arm64 device
 
@@ -170,7 +170,7 @@ The core game flow and same-key in-place update are verified on real arm64 hardw
 
 ---
 
-<a id="issue-## Issue 6 — P2 — Add minimal launcher settings and safe storage controls"></a>
+<a id="issue-6"></a>
 
 ## Issue 6 — P2 — Add minimal launcher settings and safe storage controls
 
@@ -221,7 +221,7 @@ Essential settings work on a physical arm64 device; URL validation and explicit 
 
 ---
 
-<a id="issue-## Issue 7 — P3 — Measure runtime performance and evaluate APK size improvements"></a>
+<a id="issue-7"></a>
 
 ## Issue 7 — P3 — Measure runtime performance and evaluate APK size improvements
 
@@ -265,7 +265,7 @@ A repeatable baseline is recorded, and every accepted optimization has measured 
 
 ---
 
-<a id="issue-## Issue 8 — Superseded — Legacy addon manager removed; future scope waits for owner spec (#23)"></a>
+<a id="issue-8"></a>
 
 ## Issue 8 — Superseded — Legacy addon manager removed; future scope waits for owner spec (#23)
 
@@ -275,7 +275,7 @@ A repeatable baseline is recorded, and every accepted optimization has measured 
 The previous ZIP addon manager was removed from beta at the owner's request on 2026-11-25. Its former implementation checklist is obsolete. Do not restore it or continue the former game-injection approach. A new design will be written only after the owner provides a replacement specification; see #23.
 
 ---
-<a id="issue-## Issue 9 — P2 — Add a compact game navigation and exit menu"></a>
+<a id="issue-9"></a>
 
 ## Issue 9 — P2 — Add a compact game navigation and exit menu
 
@@ -310,7 +310,7 @@ Attempting to leave the app opens the menu; all four actions work as described; 
 
 ---
 
-<a id="issue-## Issue 10 — P2 — Track game network data usage"></a>
+<a id="issue-10"></a>
 
 ## Issue 10 — P2 — Track game network data usage
 
@@ -345,7 +345,7 @@ Users can inspect trustworthy sent/received app totals, understand what is inclu
 
 ---
 
-<a id="issue-## Issue 11 — P2 — Add privacy-conscious app and updater logs"></a>
+<a id="issue-11"></a>
 
 ## Issue 11 — P2 — Add privacy-conscious app and updater logs
 
@@ -382,7 +382,7 @@ Users can inspect and explicitly share useful diagnostics without exposing authe
 
 ---
 
-<a id="issue-## Issue 12 — P2 — Surface actionable GeckoView load-error details"></a>
+<a id="issue-12"></a>
 
 ## Issue 12 — P2 — Surface actionable GeckoView load-error details
 
@@ -416,7 +416,7 @@ Common load failures are distinguishable to users/support using verified GeckoVi
 
 ---
 
-<a id="issue-## Issue 13 — P2 — Add accessible names to launcher actions"></a>
+<a id="issue-13"></a>
 
 ## Issue 13 — P2 — Add accessible names to launcher actions
 
@@ -447,7 +447,7 @@ Every actionable control has a clear, non-duplicated accessible name and sensibl
 
 ---
 
-<a id="issue-## Issue 14 — P2 — Add connection diagnostics"></a>
+<a id="issue-14"></a>
 
 ## Issue 14 — P2 — Add connection diagnostics
 
@@ -478,7 +478,7 @@ Help users identify whether a loading or connection problem is caused by their d
 
 ---
 
-<a id="issue-## Issue 15 — P2 — Make updater recovery safer"></a>
+<a id="issue-15"></a>
 
 ## Issue 15 — P2 — Make updater recovery safer
 
@@ -509,7 +509,7 @@ Ensure a failed or interrupted update never leaves the user with a corrupted dow
 
 ---
 
-<a id="issue-## Issue 16 — P2 — Add gameplay orientation and keep-awake settings"></a>
+<a id="issue-16"></a>
 
 ## Issue 16 — P2 — Add gameplay orientation and keep-awake settings
 
@@ -539,7 +539,7 @@ Let users choose portrait or landscape gameplay and control whether the display 
 
 ---
 
-<a id="issue-## Issue 17 — P2 — Back up and restore launcher settings"></a>
+<a id="issue-17"></a>
 
 ## Issue 17 — P2 — Back up and restore launcher settings
 
@@ -570,7 +570,7 @@ Allow users to preserve launcher preferences across reinstallations or device ch
 
 ---
 
-<a id="issue-## Issue 18 — Roadmap — GeckoView migration, home screen and addon manager"></a>
+<a id="issue-18"></a>
 
 ## Issue 18 — Roadmap — GeckoView migration, home screen and addon manager
 
@@ -612,7 +612,7 @@ The next major beta change replaces Cefrium with Mozilla GeckoView and adds a ho
 - No debug APKs, partial features, automatic update downloads/installs, app ID changes or signing-key changes.
 
 ---
-<a id="issue-## Issue 19 — P1 — Add an opt-in beta release channel to the updater"></a>
+<a id="issue-19"></a>
 
 ## Issue 19 — P1 — Add an opt-in beta release channel to the updater
 
@@ -632,7 +632,7 @@ The next major beta change replaces Cefrium with Mozilla GeckoView and adds a ho
 
 **Dependency:** #4. Coordinate with #6; Chaty owns the updater channel control and Ploy must not duplicate it.
 
-<a id="issue-## Issue 20 — P0 — Verify GeckoView migration decision and stable artifact"></a>
+<a id="issue-20"></a>
 
 ## Issue 20 — P0 — Verify GeckoView migration decision and stable artifact
 
@@ -646,7 +646,7 @@ Docs-only research. Verify current stable GeckoView coordinates/version through 
 
 ---
 
-<a id="issue-## Issue 21 — P0 — Replace Cefrium with Mozilla GeckoView"></a>
+<a id="issue-21"></a>
 
 ## Issue 21 — P0 — Replace Cefrium with Mozilla GeckoView
 
@@ -660,7 +660,7 @@ Replace Cefrium plugin/dependencies/repository/runtime with one verified stable 
 
 ---
 
-<a id="issue-## Issue 22 — P1 — Add the LastHavenPlus home screen with Play and Settings"></a>
+<a id="issue-22"></a>
 
 ## Issue 22 — P1 — Add the LastHavenPlus home screen with Play and Settings
 
@@ -674,7 +674,7 @@ Fresh launch shows a simple branded home screen with Play and Settings. Do not l
 
 ---
 
-<a id="issue-## Issue 23 — P1 — Integrate and harden the supplied GeckoView addon manager"></a>
+<a id="issue-23"></a>
 
 ## Issue 23 — P1 — Integrate and harden the supplied GeckoView addon manager
 
