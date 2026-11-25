@@ -736,3 +736,17 @@ Entry format:
 - Owner-authorized selective promotion PR #87 merged to main at `f22b5c2b92b6f93b201b1a9dc50a8c8095543d76`, preserving stable-only history and excluding internal project records.
 - Post-merge main quality and signed build runs are recorded in STATUS.md. No version bump, tag or publication was created.
 - Issues #5/#21 are optional post-release owner-feedback intake. Remaining feature and engineering work is deferred to v2.3.0 issue #86.
+
+
+## 2026-11-25 — Review and integrate Gradle version catalog (PR #99)
+
+- **Role:** Chaty / PR review and beta integration.
+- **Issue:** #64 — centralize dependency and plugin versions.
+- **PR:** [#99](https://github.com/iNeonyne/LastHavenPlus/pull/99), targeting `beta`.
+- **PR head:** `278a2615261d2b5ffc63038ef4192902af630c24`.
+- **Merge commit:** `932e3ba65f6c8445eafe0ba466ca3952c67bd017` (squash merge).
+- **Files:** `gradle/libs.versions.toml`, `build.gradle.kts`, `app/build.gradle.kts`.
+- **Review:** confirmed the catalog aliases preserve the prior pinned versions and dependency coordinates. No application source, package identity, signing configuration, GeckoView version or ABI policy changes.
+- **CI:** exact PR-head run [#45686955854](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45686955854) passed lint, formatting, unsigned release build, JVM unit tests and updater-helper tests. Signed ARM64 packaging and post-merge checks are not yet verified for the merge commit.
+- **Integration:** merged by Chaty after the PR branch was confirmed current with beta. GitHub confirms `beta` HEAD equals the merge commit.
+- **Next:** verify the post-merge beta quality/build runs when available; update STATUS with exact results. No release, tag or stable promotion performed.
