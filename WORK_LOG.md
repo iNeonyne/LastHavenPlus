@@ -317,3 +317,11 @@
 - **Change:** Added lightweight, standard and strict review levels. Lightweight applies to docs/copy/isolated low-risk changes; standard to contained application changes; strict to GeckoView/session, updater, storage/profile, security/network, toolchain, manifest/signing and CI/release work. All PRs still receive Chaty review and required CI.
 - **Efficiency controls:** Keep one issue per PR, avoid unrelated cleanup and overlapping scopes, require concise evidence-based handoffs, and refresh/retest branches when beta advances.
 - **Verification:** Documentation-only changes; no application build or tests run. Exact-head PR CI is still required by the repository workflow. No branch merge, main promotion, tag or release publication performed.
+
+
+## 2026-11-25 — PR #43 integration and v2.1.0 documentation
+
+- PR #43 exact-head validation run #386 passed for `505e4fe4b91e0fcfae5aecf58ef9d9376e5598d3`.
+- Merged PR #43 into beta; merge commit `dffca7e67ef4a8dd1bec8777c2c4c8b8a51a0210` is the verified beta branch HEAD.
+- Post-merge signed build run #45601558602 was still in progress at the time of this entry. No signed APK, v2.1.0 tag or release is claimed.
+- Started docs reconciliation issue #29 on branch `chaty/docs-reconciliation-v2.1`. Reconciles current launcher behavior, owner-approved-but-not-implemented XPI scope, CI evidence and outstanding physical-device verification.
