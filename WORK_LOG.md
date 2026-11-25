@@ -241,3 +241,16 @@
 - **Documentation head:** `5255a0aa4670f317b4b0a9b350652da22008c514`.
 - **CI:** Run #325 was cancelled after additional documentation commits. Final-head run [#327](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45518147065) is pending; its job list has not yet populated. No successful build or test is claimed.
 - **Next:** Inspect run #327 (or the replacement run triggered by this checkpoint), then review exact PR diff. No beta merge or main promotion has been performed.
+
+### 2026-11-25 — PR #26 merged into beta
+
+- **Issue/task:** #22 home/navigation and #4 updater hardening/P0 blockers.
+- **Branch and merge commit:** `beta`, `e924c580699ad34f1083d1a9a0fe96901037c0ae`.
+- **PR:** [#26](https://github.com/iNeonyne/LastHavenPlus/pull/26), merged using GitHub merge commit.
+- **PR head:** `3a1396f7364be1e6aa658b3eb67be41549a906fb`.
+- **Files:** `.github/workflows/android.yml`, central docs/agent assignments, `app/build.gradle.kts`, `app/proguard-rules.pro`, `AndroidManifest.xml`, `AppUpdater.kt`, `BsdiffPatch.kt`, `GameMenuDialog.kt`, `GameScreen.kt`, `HomeScreen.kt`, `MainActivity.kt`, `UpdateFallback.kt`, `UpdateVersionPolicy.kt`, and corresponding updater/BSDIFF tests.
+- **CI:** PR run [#329](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45518210756) passed the unsigned release build and unit tests for the exact PR head. Signed ARM64 branch CI for the merge commit is not yet verified.
+- **Integration verification:** GitHub reported the PR merged; merge commit SHA recorded. No release tag or publication created. No direct push to `main`.
+- **Unverified:** Physical ARM64 game compatibility, Gecko profile persistence, installer URI restoration after actual process death, real updater installation/fallback, signed artifact contents for the merge commit.
+- **Branch state:** `main` and `beta` remain diverged: beta ahead 166, main ahead 9; merge base `2455c541729d20f00759ac9fa258faaaa473efcf`. Nine main-only commits must be reviewed/reconciled before promotion.
+- **Next safe action:** Verify exact merge commit signed ARM64 CI/artifact; inspect the nine main-only commits; do not promote or publish until all release gates pass.
