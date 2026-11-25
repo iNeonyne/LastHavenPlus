@@ -430,3 +430,14 @@
 - **Negative test:** [run #45627319452](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45627319452) intentionally failed at Spotless for a deliberately misformatted Kotlin probe; the probe was removed before merge.
 - **Post-merge verification:** quality workflow [#45631250015](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45631250015) and existing beta build workflow [#45631249817](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45631249817) started for the exact merge SHA. Their results are pending at this log entry.
 - **Scope:** no app behavior or game changes; no `main` update, release tag or publication. The beta build workflow's release-publication steps are conditional on an explicit versioned release; this ordinary beta push is not a release.
+
+
+## 2026-11-25 — Issue #70 Markdown link audit
+
+- **Branch:** `chaty/issue-70-markdown-links`, based on beta `409206a01d5f3789002a0aabc95012ecaff2449f`.
+- **PR:** [#78](https://github.com/iNeonyne/LastHavenPlus/pull/78), targeting beta.
+- Found 20 broken internal backlog links in `ISSUES.md` (#4–#23) and added explicit anchors.
+- Verified all 20 fragments against the branch contents. Checked all 11 Markdown files for relative target existence and balanced fenced code blocks; no missing relative targets or unclosed fences.
+- Full markdownlint CLI was unavailable. Basic style screening found legacy whitespace/repeated-blank-line noise in historical tracker/log files; no mass formatting was applied.
+- No app code, Gradle, CI, release, signing or main changes. No Android tests or device tests were applicable to this docs-only change.
+- **Remaining:** run a full Markdown parser/linter and finish stale-reference review before closing #70.
