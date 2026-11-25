@@ -58,6 +58,23 @@ class UpdateFallbackTest {
         assertFalse(deltaAttempted)
     }
 
+    @Test
+    fun diagnosticFailureDoesNotPreventFullApkFallback() {
+        var fullAttempted = false
+        val result = UpdateFallback.withFullFallback(
+            preferDelta = true,
+            deltaAttempt = { error("corrupt patch") },
+            fullAttempt = {
+                fullAttempted = true
+                "verified-full-apk"
+            },
+            onDeltaFailure = { error("diagnostics unavailable") },
+        )
+
+        assertEquals("verified-full-apk", result)
+        assertTrue(fullAttempted)
+    }
+
     @Test(expected = IllegalStateException::class)
     fun fullApkFailureIsNotSuppressed() {
         UpdateFallback.withFullFallback(
