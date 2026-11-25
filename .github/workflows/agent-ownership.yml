@@ -38,8 +38,15 @@ jobs:
             local color="$2"
             local description="$3"
             if ! gh api --paginate "repos/$GITHUB_REPOSITORY/labels?per_page=100" --jq '.[].name' | grep -Fx "$name" >/dev/null; then
-              gh api --method POST "repos/$GITHUB_REPOSITORY/labels" \
-                -f "name=$name" -f "color=$color" -f "description=$description" >/dev/null
+              # Two simultaneous issue events can race to create the same label.
+              # Recheck after a failed POST so an already-created label is treated as success.
+              if ! gh api --method POST "repos/$GITHUB_REPOSITORY/labels" \
+                -f "name=$name" -f "color=$color" -f "description=$description" >/dev/null; then
+                if ! gh api --paginate "repos/$GITHUB_REPOSITORY/labels?per_page=100" --jq '.[].name' | grep -Fx "$name" >/dev/null; then
+                  echo "::error::Could not create or find label: $name"
+                  return 1
+                fi
+              fi
             fi
           }
 
