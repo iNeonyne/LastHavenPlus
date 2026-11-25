@@ -673,3 +673,13 @@ Wait for the owner to provide a new addon-manager specification. Then Chaty will
 
 **GitHub:** https://github.com/iNeonyne/LastHavenPlus/issues/29  
 **State:** open; queued. Reconcile README, STATUS, ISSUES and release-facing claims against current beta source, exact commit CI evidence and outstanding physical-device gates. Preserve historical entries and do not mark hardware tests complete without evidence.
+
+
+---
+
+## Issue 31 — P0 — Make release packaging resilient to optional differential update failures
+
+**GitHub:** https://github.com/iNeonyne/LastHavenPlus/issues/31  
+**State:** open; implementation in `chaty/fix-release-workflow-timeouts`, PR pending
+
+The signed full APK is the required release payload. Differential patch creation is an optimization and must not block release publication. Bound the optional GitHub API, prior-release downloads, package installation, patch generation and reconstruction operations. Missing tools, malformed or incompatible prior assets, timeouts and failed reconstruction must fall back to the full APK. Always generate the canonical update manifest and retain final signature, ARM64 and single-APK asset verification.
