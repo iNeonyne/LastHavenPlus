@@ -2,7 +2,7 @@
 
 **Current branch:** `beta`  
 **Current engine:** Mozilla GeckoView 160, ARM64 artifact  
-**Last reviewed:** 2026-11-26
+**Last reviewed:** 2026-11-25
 
 This document records the GeckoView integration as it exists in beta. It supplements, but does not replace, Mozilla's documentation.
 
@@ -51,30 +51,32 @@ Preserve:
 - Upstream revision: `mozilla-release` `b1145b0710192f716be5f59f5b2dfeed650d5294` (recorded in the artifact POM's SCM block).
 - License declared in the POM: [Mozilla Public License 2.0](http://mozilla.org/MPL/2.0/).
 
-### POM-declared dependencies (fetched 2026-11-26)
+### Gradle module metadata dependency inventory (reviewed 2026-11-25)
 
-| Group:artifact | Version | Scope | Project-side note |
-|---|---|---|---|
-| `org.jetbrains.kotlin:kotlin-stdlib` | 2.4.21 | compile | Catalog (#99) pins Kotlin 2.4.10; Gradle resolves the higher runtime version |
-| `androidx.annotation:annotation` | 1.11.0 | runtime | |
-| `androidx.annotation:annotation-experimental` | 1.6.0 | runtime | |
-| `androidx.collection:collection` | 1.7.0 | runtime | |
-| `androidx.core:core` | 1.19.1 | runtime | Catalog (#99) pins `androidxCore` 1.16.0; Gradle resolves 1.19.1 |
-| `androidx.lifecycle:lifecycle-common` | 2.11.0 | runtime | |
-| `androidx.lifecycle:lifecycle-process` | 2.11.0 | runtime | |
-| `com.google.android.gms:play-services-fido` | 21.3.1 | runtime | Google Play Services SDK terms apply |
-| `org.yaml:snakeyaml` | 2.2 | runtime | |
-| `androidx.media3:media3-common` | 1.11.1 | runtime | media3 family pulled for playback support |
-| `androidx.media3:media3-datasource` | 1.11.1 | runtime | |
-| `androidx.media3:media3-decoder` | 1.11.1 | runtime | |
-| `androidx.media3:media3-exoplayer` | 1.11.1 | runtime | |
-| `androidx.media3:media3-exoplayer-hls` | 1.11.1 | runtime | |
+| Group:artifact | Version | Project-side note |
+|---|---|---|
+| `org.jetbrains.kotlin:kotlin-stdlib` | 2.4.21 | Catalog (#99) pins Kotlin 2.4.10; Gradle resolves the higher runtime version |
+| `androidx.annotation:annotation` | 1.11.0 | |
+| `androidx.annotation:annotation-experimental` | 1.6.0 | |
+| `androidx.collection:collection` | 1.7.0 | |
+| `androidx.core:core` | 1.19.1 | Catalog (#99) pins `androidxCore` 1.16.0; Gradle resolves 1.19.1 |
+| `androidx.lifecycle:lifecycle-common` | 2.11.0 | |
+| `androidx.lifecycle:lifecycle-process` | 2.11.0 | |
+| `com.google.android.gms:play-services-fido` | 21.3.1 | Google Play Services SDK terms apply |
+| `org.yaml:snakeyaml` | 2.2 | |
+| `androidx.media3:media3-common` | 1.11.1 | media3 family pulled for playback support |
+| `androidx.media3:media3-datasource` | 1.11.1 | |
+| `androidx.media3:media3-decoder` | 1.11.1 | |
+| `androidx.media3:media3-exoplayer` | 1.11.1 | |
+| `androidx.media3:media3-exoplayer-hls` | 1.11.1 | |
 
-Resolution caveat: this is the POM's declared list, not a resolved-by-Gradle dump (the audit environment has no JDK/Android SDK). When the toolchain is available, capture `./gradlew app:dependencies --configuration releaseRuntimeClasspath` as the authoritative resolved set and reconcile it against the #99 version catalog, so consumer pins are never lowered below GeckoView's runtime requirements.
+Resolution caveat: this inventory is based on the artifact's Gradle module metadata; the POM itself defers dependency declarations to that metadata. It is not a resolved-by-Gradle dump (the audit environment has no JDK/Android SDK). Issue #20 remains incomplete until `./gradlew app:dependencies --configuration releaseRuntimeClasspath` is captured as the authoritative resolved set and reconciled against the #99 version catalog, so consumer pins are never lowered below GeckoView's runtime requirements.
 
 ### License and notice obligations
 
-- GeckoView is MPL 2.0. Binary distribution (our APK) must ship the MPL 2.0 notice text and identified source location with the app (MPL 2.0 section 3.4); this is not yet packaged in the APK and is an outstanding obligation, best resolved together with the #67 license work.
+- GeckoView is MPL 2.0. For executable-form distribution, MPL 2.0 §3.2 requires the corresponding Source Code Form also be made available as described in §3.1, and recipients must be told how to obtain it by reasonable means and in a timely manner. Verify the exact GeckoView 160 source revision/archive and provide an accessible recipient-facing route before distributing the APK.
+- MPL 2.0 §3.4 preserves license and other notices contained in the Source Code Form; it does not independently require bundling the full license text or a source location in the APK. Do not remove or alter the existing notices.
+- This is separate from choosing a license for LastHavenPlus under #67; resolving #67 does not replace GeckoView's MPL obligations.
 - Transitive dependencies are licensed independently (Apache 2.0 for androidx media3/annotation/collection/core/lifecycle and kotlin-stdlib; snakeyaml Apache 2.0; play-services-fido under Google's Play Services SDK terms). Verify each artifact's own POM before making any redistribution claim; none of this changes our apps' runtime behavior.
 
 ### Used-API cross-check against official documentation
@@ -102,7 +104,7 @@ Javadoc caveat: the snapshot is 163, not 160. No behavioral differences were obs
 
 ### Measured APK-size impact
 
-Sizes from GitHub release asset metadata (`assets[].size`), fetched 2026-11-26:
+Sizes from GitHub release asset metadata (`assets[].size`), fetched 2026-11-25:
 
 | Release | Engine | APK bytes | MiB |
 |---|---|---:|---:|
