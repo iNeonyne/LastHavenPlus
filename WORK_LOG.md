@@ -307,3 +307,15 @@
 - **Change:** At the start of a new explicit download, remove leftover .part files from an interrupted prior process. Verified APK files are intentionally preserved. Added a JVM test covering partial APK/patch deletion and verified APK preservation. Also made response-body reading robust to zero-length reads and tightened fallback diagnostic exception handling.
 - **CI:** PR run [#344](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45521735696) is pending for the code commit. No pass is claimed.
 - **Next safe action:** Inspect CI on the final PR head after this documentation checkpoint. Keep physical update installation under #5.
+
+
+### 2026-11-25 — Harden optional differential release packaging
+
+- **Issue:** [#31](https://github.com/iNeonyne/LastHavenPlus/issues/31).
+- **Branch / base:** `chaty/fix-release-workflow-timeouts`, created from beta `1d6c1ec42becab44735edfd0323dfc60ff4b9f9d`.
+- **Inspected:** `README.md`, `AGENTS.md`, `STATUS.md`, `ISSUES.md`, `CHANGELOG-AGENTS.md`, `AGENT_WORK.md`, `WORK_LOG.md`, and `.github/workflows/android.yml` on beta; current main/beta refs; release run #347 and open issue/PR search.
+- **Finding:** Run #347 was cancelled while its differential-package step was active. The step ran unbounded `apt-get update` and package installation before preparing its release payload. It also used unbounded previous-release downloads. The full signed APK artifact had already been uploaded; no GitHub Release was published.
+- **Change:** Reordered the step to stage the full APK first; bounded release lookup, asset downloads, apt operations, BSDIFF and BSPATCH; made delta generation optional; invalid/missing prior assets and failed operations fall back to the full APK; always create and sanity-check the update manifest. Added GitHub issue #31 and updated project trackers.
+- **Commits:** Workflow `3358bd75c5f5a2e756882bf8306cfe9d9b351dbf`; follow-up malformed-manifest tolerance `0327b7ef02af7c9e52b80d168a38e720f71d8834`; documentation commits follow on this branch.
+- **Tests:** No local YAML/actionlint or shell execution has been performed. Exact-head PR validation is required; no pass is claimed.
+- **Next safe action:** Review final diff, open PR targeting `beta`, inspect exact-head Actions validation and signed beta workflow after merge. Do not rerun or publish v2.0.0 until the workflow fix is integrated and verified.
