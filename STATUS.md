@@ -7,6 +7,7 @@
 **Stable documentation:** owner-authorized v2.1.0 corrections are on `main`; README commit `fdae3d90cf3abb209df8a42dd73ed1667bae9808`, CHANGELOG commit `2abe7cc212b67a3b91f5dcdb108aee3a55559e32`.  
 **Stable promotion and publication:** PR [#47](https://github.com/iNeonyne/LastHavenPlus/pull/47) promoted to `main`; tag/release `v2.1.0` is published at `03fcfa9652ce4e7d1034523d640a1693e6e6b9ce`.  
 **Current phase:** v2.1.0 is published. Physical ARM64 feature verification remains outstanding. PR #54 fixed draft asset cleanup/verification by release ID; exact-head unsigned validation and post-merge signed beta validation both passed. The release-ID path still requires a future owner-authorized versioned release run.
+**Active workflow task:** issue #60 is being implemented on `chaty/ci-quality-gate`, based on beta HEAD `36f079445e227583c12b19bde9161844e0e5855d`. The branch adds a read-only beta quality workflow and incremental Spotless/ktfmt checks; exact-head CI is pending.
 
 ## Current source state
 
@@ -70,6 +71,7 @@ Still unverified on physical ARM64 hardware:
 
 ## Open work
 
+- #60: Android lint and Kotlin formatting quality gate; implementation is in progress on `chaty/ci-quality-gate`. Existing Android PR validation already runs JVM unit tests and Python updater-helper tests; the new quality job adds lint and formatting without duplicating those test jobs. No CI result is claimed until exact-head Actions completes.
 - #4/#15: updater regression coverage and physical update verification.
 - #5/#21: physical GeckoView/game compatibility and profile verification.
 - #20: complete remaining GeckoView 160 artifact/POM/dependency/license/API evidence.
