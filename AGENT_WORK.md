@@ -51,7 +51,7 @@ The repository owner makes final product and release decisions. Chaty is the mai
 - Do not change the updater architecture or signing identity.
 
 ### Verification and handoff
-- PR validation must pass for the exact final head SHA.
+- PR run #317 passed `assembleRelease` and `testDebugUnitTest` for code SHA `283d649cd31ae009889d76affb25f655e28d3949`. Any later source change requires a fresh exact-head run; merge only with the current PR checks green.
 - After merge, inspect beta branch CI for signed release build, tests, signer and ARM64-only packaging.
 - Physical ARM64 gameplay and update installation remain unverified until tested on hardware.
 - Chaty alone reviews and merges to beta. No release tag, main promotion or publication without owner approval.

@@ -205,3 +205,13 @@
 - **Superseded handoff:** PR #25 was closed without merging; issue #22 is now owned by Chaty. Ploy has no active assignment.
 - **Limitations:** No physical ARM64 device test; GeckoView game compatibility/profile persistence and actual update install remain unverified. No APK artifact has been produced from this PR-only job.
 - **Next safe action:** Finish documentation commit, inspect the newly triggered PR validation run for the exact final head, correct any real compile/test failures, then review and merge to beta only when green. After merge, inspect the signed ARM64 beta artifact; do not publish a release.
+
+
+### 2026-11-25 — PR #26 build and unit-test validation passed
+
+- **PR head tested:** `283d649cd31ae009889d76affb25f655e28d3949`.
+- **CI run:** [#317](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45515320999), job `PR build and unit tests (unsigned)`.
+- **Result:** Passed. Logs show `compileReleaseKotlin`, `compileDebugKotlin`, `compileDebugUnitTestKotlin`, `testDebugUnitTest`, R8/minification, `packageRelease` and `assembleRelease`; final output `BUILD SUCCESSFUL in 2m 7s`. Unit-test report artifact `pr-unit-test-reports-26` (artifact ID `14976459805`) contains reports only, not an APK.
+- **Skipped by design:** `Build and test (arm64)` and `Create release tag` were skipped for the PR event. This run did not use signing secrets, verify the signing certificate, verify final APK ABI contents or test on hardware.
+- **Current live release metadata:** v1.0.0 exposes `lasthavenplus-arm64.apk` (120,381,565 bytes) and `lasthavenplus-update.json` (249 bytes); no differential patch asset is published. The full APK path is available in release metadata; no real download/install was performed.
+- **Next safe action:** Complete final PR diff review, ensure current head checks remain green, merge PR #26 to beta, then inspect the exact beta push run for signed release, package identity, signing certificate, ARM64-only packaging and artifact contents. Do not publish a release or promote main. Physical gameplay/profile/update tests remain unverified.

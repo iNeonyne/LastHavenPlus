@@ -3,7 +3,7 @@
 **Last updated:** 2026-11-25  
 **Active branch:** `beta`  
 **Latest inspected beta HEAD:** `c8eb02a265012d7be898277443a53dd1e3589cad`  
-**Phase:** GeckoView 160 is integrated in source. Chaty owns home/navigation (#22) and updater hardening (#4) in [PR #26](https://github.com/iNeonyne/LastHavenPlus/pull/26); final PR CI is pending. Physical ARM64 gameplay, profile persistence and update installation remain unverified.
+**Phase:** GeckoView 160 is integrated in beta. Chaty's #22/#4 implementation in [PR #26](https://github.com/iNeonyne/LastHavenPlus/pull/26) passed PR build/unit-test CI on code SHA `283d649cd31ae009889d76affb25f655e28d3949`; review/merge and post-merge signed CI remain. Physical ARM64 gameplay, profile persistence and update installation remain unverified.
 
 ## Summary
 
@@ -25,7 +25,7 @@
 | CI result | `assembleRelease`, `testDebugUnitTest`, release signature verification and ARM64-only ABI verification succeeded |
 | Signed APK artifact | `lasthavenplus-release-signed-arm64` uploaded; workflow job passed |
 | Earlier measured APK size | Run #308: 92,850,795 bytes |
-| PR workflow change | Run [#311](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45511064839) succeeded on a push and skipped the PR-only job; PR #26 is exercising the PR path |
+| PR workflow change | Run [#311](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45511064839) succeeded on a push and skipped PR validation; PR run [#317](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45515320999) passed for code SHA `283d649cd31ae009889d76affb25f655e28d3949` |
 | Release state | No promotion to `main` or new release publication performed |
 
 Run #310 is the latest successful Android run inspected. It verifies the signed ARM64 release build and unit tests for commit `91e21d4bde0a26b8d7cbfd9697615f32c2f57d21`, not the current documentation/workflow HEAD. Its total elapsed time was 3m44s, compared with 5m02s for run #308; this is an observed one-run comparison, not a controlled benchmark. Run #311 is validating the updated workflow on a push. The PR-only job is correctly skipped for that push and remains unverified until an actual PR triggers it.
@@ -35,7 +35,7 @@ Run #310 is the latest successful Android run inspected. It verifies the signed 
 | Area | Source state | Verification boundary |
 |---|---|---|
 | Browser engine | GeckoView 160 ARM64 artifact configured; Cefrium removed from production source/build | CI run #310 built and verified a later beta commit; the latest documentation/workflow commits still need their own checks |
-| Runtime/session | Lazy process-scoped GeckoRuntime, GeckoSession and GeckoView host | Source inspected; lifecycle and persistence on hardware unverified |
+| Runtime/session | Current beta creates the process-scoped GeckoRuntime/GeckoSession at startup; PR #26 defers initialization until Play and retains the session across Home | PR source compiled; lifecycle and persistence on hardware unverified |
 | Game launch | Current beta loads `https://lasthavens.com/play` directly at app launch | CI build evidence exists for run #310; real gameplay unverified; PR #26 changes startup to Home |
 | Navigation menu | Current beta menu includes Reload, Return to game, Settings, diagnostics, update and Exit paths | PR #26 adds Home and Return to game navigation; final CI and physical navigation remain unverified |
 | Settings/storage | Shows APK size, persistent app-private data size and cache size separately | Source inspected; physical values unverified; app-private data is not an exact Gecko profile-only measurement |
@@ -53,11 +53,11 @@ Run #310 is the latest successful Android run inspected. It verifies the signed 
 - GeckoView gameplay on real ARM64 hardware: WebGL/WebAssembly, WebSockets, touch/input, fullscreen, audio, login and reconnect.
 - GeckoView cookies, LocalStorage, IndexedDB, Cache Storage, service workers and authentication persistence across force-stop/restart and same-key update.
 - GeckoView process recovery, permissions, prompts, media and external-response handling under real game behavior.
-- Home-screen/navigation implementation in PR #26 pending final CI and review.
+- PR #26 home-screen/navigation implementation passed code build/unit-test CI; integration/review remains pending.
 - Physical settings/storage values, network counters and diagnostic behavior.
 - Physical differential update and full APK fallback installation.
 - Accessibility/TalkBack and focus order on physical hardware.
-- New updater fallback/version/digest/URL tests in PR #26 pending CI; manifest/network integration and physical update behavior still need verification.
+- New updater fallback/version/digest/URL tests in PR #26 passed CI; manifest/network integration and physical update behavior still need verification.
 
 ## CI failures and missing evidence
 
@@ -71,8 +71,8 @@ Run #310 is the latest successful Android run inspected. It verifies the signed 
 
 | Owner | Issue/task | Scope |
 |---|---|---|
-| Chaty | #22 — home screen and navigation | Owns implementation and integration in PR #26; exact final head CI and review pending |
-| Chaty | #4 — build/updater verification | Updater fallback and policy tests included in PR #26; CI and hardware update verification pending |
+| Chaty | #22 — home screen and navigation | Owns implementation in PR #26; code build/unit-test CI passed, review/merge pending |
+| Chaty | #4 — build/updater verification | Fallback/version/digest/URL tests passed in PR #317; additional edge cases and hardware update verification remain |
 | Ploy | No active assignment | Do not start work until Chaty explicitly assigns a separate issue |
 | Owner hold | #23 — addon manager | No work until a new written specification is provided |
 
@@ -80,7 +80,7 @@ Per the owner's instruction, Ploy has no active assignment on #22. Chaty owns th
 
 ## Pull request validation
 
-PRs targeting `beta` now have a dedicated CI job that builds the unsigned release variant and runs unit tests with read-only permissions. It does not access signing secrets or publish APKs. The normal branch pipeline remains responsible for signed release, certificate, ARM64 ABI and artifact verification. Push run #311 succeeded but skipped the PR-only job. PR #26 triggered PR runs #313 and #314, both cancelled by follow-up commits; a final run on the latest PR head is required before claiming the PR workflow passes.
+PRs targeting `beta` now have a dedicated CI job that builds the unsigned release variant and runs unit tests with read-only permissions. It does not access signing secrets or publish APKs. The normal branch pipeline remains responsible for signed release, certificate, ARM64 ABI and artifact verification. Push run #311 succeeded but skipped the PR-only job. PR #26 runs #313–#316 were cancelled by follow-up commits. Run #317 passed the unsigned release build and unit tests for code SHA `283d649cd31ae009889d76affb25f655e28d3949`. Signed release, signer and ARM64 ABI checks were skipped as intended on the PR event and must be verified after merge.
 
 ## Release blockers
 
@@ -94,6 +94,6 @@ Do not promote `beta` to `main`, create a release tag or publish a release witho
 
 ## Next actions
 
-1. Inspect the final PR #26 CI run and fix any confirmed failures before merge.
-2. After merge, verify the exact beta HEAD and signed ARM64 artifact; do not publish a release.
+1. Complete final PR #26 diff review and merge to beta only while required checks are green.
+2. Verify the exact beta HEAD and signed ARM64 artifact; do not publish a release.
 3. Arrange real ARM64 device testing and record the device, Android version, tested commit, APK SHA-256 and individual results.
