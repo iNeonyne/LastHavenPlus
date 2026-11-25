@@ -127,6 +127,20 @@ class BoundedDownloadTests(unittest.TestCase):
             self.assertEqual(response.bytes_read, 0)
             self.assertFalse(os.path.exists(destination))
 
+    def test_download_enforces_stream_limit_when_content_length_is_false(self):
+        with tempfile.TemporaryDirectory() as directory:
+            destination = os.path.join(directory, "asset.bin")
+            response = FakeResponse(b"123456789", {"Content-Length": "1"})
+            with patch.object(bounded, "build_opener", return_value=FakeOpener(response)):
+                with self.assertRaisesRegex(ValueError, "exceeds"):
+                    bounded.download_bounded(
+                        "https://github.com/owner/repo/releases/download/v1/asset.bin",
+                        destination,
+                        8,
+                    )
+            self.assertFalse(os.path.exists(destination))
+            self.assertFalse(os.path.exists(destination + ".part"))
+
     def test_redirect_rejects_unapproved_host(self):
         handler = bounded.SafeRedirectHandler()
         with self.assertRaises(ValueError):
