@@ -99,6 +99,17 @@ class UpdateNetworkPolicyTest {
     }
 
     @Test
+    fun rejectsInstalledBaseApkDigestMismatch() {
+        UpdateNetworkPolicy.verifyBaseApkDigest("a".repeat(64), "A".repeat(64))
+        try {
+            UpdateNetworkPolicy.verifyBaseApkDigest("a".repeat(64), "b".repeat(64))
+            throw AssertionError("Expected base APK digest mismatch rejection")
+        } catch (_: IllegalStateException) {
+            // Expected.
+        }
+    }
+
+    @Test
     fun verifiesDownloadedSizeAndDigest() {
         UpdateNetworkPolicy.verifyDownload(10, 10, 100, "a".repeat(64), "A".repeat(64))
         listOf(
