@@ -670,3 +670,13 @@ Entry format:
 - Reconciled #42 as superseded by #56; new UI physical verification remains under #5/#56.
 - Verified issue #60 post-merge quality run #45631250015 and signed beta build run #45631249817 both completed successfully after PR #72. Release-tag publication steps were skipped.
 - Preserved #23 Addon Manager hold and physical ARM64 verification blockers.
+
+
+## 2026-11-25 — Roadmap housekeeping integration
+
+- PR [#73](https://github.com/iNeonyne/LastHavenPlus/pull/73) squash-merged to beta at `c16439bfcedc9949d8ec683039fb5df85afea122`.
+- Updated the v2.2.0 roadmap, agent ownership and central tracker records.
+- Closed #42 as superseded by #56 and #60 as completed after exact-head and post-merge CI evidence.
+- Ploy's #56 implementation assignment remains active; Chaty retains review/integration and physical verification coordination.
+- Issue #70 remains open for Markdown/link validation and remaining stale-reference review.
+- The legacy beta backup branch is retained pending owner decision because it has no common ancestor with current beta; Dependabot branches are retained for their open PRs.
