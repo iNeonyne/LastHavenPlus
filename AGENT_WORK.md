@@ -9,15 +9,7 @@ The repository owner makes final product and release decisions. Chaty is the mai
 
 ## Active assignment
 
-### Chaty — repository housekeeping and documentation reconciliation
-
-**Branch:** `chaty/housekeeping-doc-reconciliation`  
-**Base:** beta at `854fce1b1e2989cb012ebf5a15d196d91ff7cad7`  
-**Scope:** reconcile status/backlog/agent instructions with merged PRs #46/#47, update stale assignment and release evidence, and align addon-manager hold language across documentation.
-
-**Exclusions:** no application source, Gradle, signing, release workflow, game client or addon-manager implementation changes. Do not close physical test issues without evidence. Do not publish a release or change `main`.
-
-**Verification:** docs-only diff review, validate links and ensure no claim exceeds source/CI/device evidence. PR targets beta; Chaty reviews and merges.
+No contributor implementation assignment is currently active. Chaty completed repository housekeeping PR [#49](https://github.com/iNeonyne/LastHavenPlus/pull/49), merged at `1f661cb6234dcfdfd051d0cb963e739668896a26`. The next assignment must be explicitly scoped in this file before work begins.
 
 ## Shared workflow
 
