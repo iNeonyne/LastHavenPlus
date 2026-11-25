@@ -54,7 +54,8 @@ The repository owner makes final product and release decisions. Chaty is the mai
 ### Verification and handoff
 - PR run #329 passed the unsigned release build and unit tests for PR head `3a1396f7364be1e6aa658b3eb67be41549a906fb`.
 - PR #26 merged to beta at `e924c580699ad34f1083d1a9a0fe96901037c0ae`. Verify signed branch CI, signer, ARM64-only packaging and artifact contents for the exact merge commit.
-- Physical ARM64 gameplay and update installation remain unverified until tested on hardware.
+- Physical ARM64 gameplay, profile persistence, process-death installer restoration and update installation remain unverified until tested on hardware.
+- Draft beta-to-main promotion PR [#27](https://github.com/iNeonyne/LastHavenPlus/pull/27) preserves main-only internal-document removals and the historical v1.0.0 changelog; do not merge until physical gates pass.
 - Chaty alone reviews and merges to beta. No release tag, main promotion or publication without owner approval.
 
 ## Chaty — integration and release coordination
