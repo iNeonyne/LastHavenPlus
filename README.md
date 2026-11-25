@@ -3,8 +3,8 @@
 LastHavenPlus is an Android launcher for the existing LastHaven Wrath of the Lich King browser game. It hosts the game; it does not recreate or modify the game client.
 
 - **Game:** [lasthavens.com/play](https://lasthavens.com/play)
-- **Latest published release:** [v2.0.0 on GitHub Releases](https://github.com/iNeonyne/LastHavenPlus/releases/tag/v2.0.0)
-- **v2.1.0:** promotion candidate; publication follows final release verification.
+- **Latest published release:** [v2.1.0 on GitHub Releases](https://github.com/iNeonyne/LastHavenPlus/releases/tag/v2.1.0)
+- **v2.1.0:** published 2026-11-25.
 
 ## Compatibility
 
@@ -19,7 +19,7 @@ LastHavenPlus is an Android launcher for the existing LastHaven Wrath of the Lic
 
 Preserve the application ID and established release signing identity to maintain update compatibility.
 
-## Features in the v2.1.0 candidate
+## Features in the published v2.1.0 release
 
 - **Launcher Home:** Responsive compact and wide layouts with Play, Settings and update entry points. Play lazily creates the GeckoView session; Settings does not initialize the game.
 - **Gameplay menu:** Android Back opens a full-screen menu with exactly Reload, Settings and Return to game. The persistent top-right Menu button is removed.
@@ -29,7 +29,7 @@ Preserve the application ID and established release signing identity to maintain
 - **Network usage:** Android per-UID counters include both game and updater traffic; they are not game-only totals.
 - **Diagnostics:** Bounded local diagnostic logs support viewing, clearing and explicit user-initiated sharing.
 - **Updater:** Checks, downloads and installation remain user-initiated. Metadata, payload size and digest are validated; differential failures retain a verified full-APK fallback. Android's package installer controls installation.
-- **Addon manager:** Not included. The owner has approved investigation of a supplied XPI manager under issue #23, but no implementation is integrated.
+- **Addon manager:** Not included; work is on hold under issue #23 pending renewed explicit owner approval.
 
 ## GeckoView profile transition and testing
 
@@ -48,6 +48,12 @@ Requirements: JDK 25, Gradle 9.7.1 via the committed Gradle Wrapper, Android SDK
 
 A signed release build requires the established project keystore and credentials. Never commit keystores or signing secrets.
 
+## Published v2.1.0 artifact
+
+- Tag: `v2.1.0` at commit `03fcfa9652ce4e7d1034523d640a1693e6e6b9ce`.
+- APK: `lasthavenplus-arm64.apk`, 96,444,836 bytes; SHA-256 `f65672c8855298764b3345e58694b672c39f35971a39beccb7e4d1feb6310cab`.
+- The release contains one ARM64 APK, one update manifest and one differential patch. The release workflow verified the established signing certificate and `arm64-v8a`-only packaging.
+
 ## Release policy
 
 - Package ARM64 only.
@@ -55,4 +61,4 @@ A signed release build requires the established project keystore and credentials
 - Keep update checks, downloads and installation user-initiated.
 - Never publish debug APKs or incomplete features.
 - CI build/signing/ABI checks do not replace physical ARM64 testing.
-- The v2.1.0 candidate remains unpublished until release gates are complete.
+- v2.1.0 is published. Do not republish or replace it without explicit owner approval.
