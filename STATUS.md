@@ -97,3 +97,10 @@ Still unverified on physical ARM64 hardware:
 - **Supersession:** #42's old v2.1.0 Home-screen-first verification is superseded by #56; verify the new UX under #5/#56.
 - **CI gate #60:** PR #72 merged at `82e819a43e6d728a9eb8fea620eca47ac9c998df`. Exact PR validation [#45627915789](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45627915789), post-merge quality [#45631250015](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45631250015), and signed beta build [#45631249817](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45631249817) passed. The beta build skipped release-tag publication steps.
 - **Addon Manager #23:** remains on hold; no assignment or implementation without explicit owner approval.
+
+
+## Branch audit — 2026-11-25
+
+- Current beta is `1c82e8b4aee2b0ce9ef1d9e6a68311dca4eb200b` before this documentation follow-up; no ordinary stale Chaty/Ploy feature branches remain.
+- The six Dependabot branches correspond to six open dependency PRs and are retained until those PRs are resolved.
+- `beta-legacy-2026-11-24` is an orphaned legacy snapshot with no common ancestor with current beta. Its tree contains 91 files versus 62 on beta, including old package-name source, an obsolete layout/activity set, old updater/build files and the legacy Addon Manager assets. These are not safe to merge into current beta and are not part of the active product. The branch is retained as a deletion candidate/archive pending explicit owner confirmation; it has not been deleted.
