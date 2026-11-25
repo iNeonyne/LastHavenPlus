@@ -3,7 +3,7 @@
 **Last updated:** 2026-11-25  
 **Active branch:** `beta`  
 **Latest integrated beta HEAD:** `e924c580699ad34f1083d1a9a0fe96901037c0ae`  
-**Phase:** PR #26 is merged into beta at `e924c580699ad34f1083d1a9a0fe96901037c0ae`. It integrates the home/navigation flow, updater fallback and P0 hardening. Exact-head PR run #329 passed the unsigned release build and unit tests for `3a1396f7364be1e6aa658b3eb67be41549a906fb`. The merge commit's signed branch CI has not yet been verified. Physical ARM64 gameplay, profile persistence and update installation remain unverified. `main` and `beta` are still diverged (beta ahead 166, behind 9); promotion is blocked pending reconciliation and release gates.
+**Phase:** PR #26 is merged into beta at `e924c580699ad34f1083d1a9a0fe96901037c0ae`. It integrates the home/navigation flow, updater fallback and P0 hardening. Exact-head PR run #329 passed the unsigned release build and unit tests for `3a1396f7364be1e6aa658b3eb67be41549a906fb`. The merge commit's signed branch CI passed run #330, including release build, tests, signing-certificate and ARM64-only packaging. Physical ARM64 gameplay, profile persistence and update installation remain unverified. `main` and `beta` are still diverged (beta ahead 166, behind 9); promotion is blocked pending reconciliation and release gates.
 
 ## Summary
 
@@ -25,10 +25,10 @@
 | CI result | `assembleRelease`, `testDebugUnitTest`, release signature verification and ARM64-only ABI verification succeeded |
 | Signed APK artifact | `lasthavenplus-release-signed-arm64` uploaded; workflow job passed |
 | Earlier measured APK size | Run #308: 92,850,795 bytes |
-| Post-merge signed CI | Not yet verified for merge commit `e924c580699ad34f1083d1a9a0fe96901037c0ae`; PR run #329 is unsigned and does not satisfy this gate |
+| Post-merge signed CI | [Run #330](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45518704468) passed for merge commit `e924c580699ad34f1083d1a9a0fe96901037c0ae`; release build, unit tests, signing certificate and ARM64-only packaging succeeded |
 | Release state | No promotion to `main` or new release publication performed |
 
-PR run #329 completed successfully for the exact PR head `3a1396f7364be1e6aa658b3eb67be41549a906fb`: unsigned release build and unit tests passed. It does not include signing secrets, signed ARM64 packaging or release artifact checks. Run #310 remains historical evidence only for its older beta commit. The exact merge commit still needs signed branch CI verification.
+PR run #329 passed the unsigned release build and unit tests for PR head `3a1396f7364be1e6aa658b3eb67be41549a906fb`. Post-merge run [#330](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45518704468) then passed the signed optimized release build, unit tests, signing-certificate verification and ARM64-only packaging for exact merge commit `e924c580699ad34f1083d1a9a0fe96901037c0ae`. The beta artifact used versionName `1.0.0` / versionCode `1000000`; release-tag and publication steps were skipped.
 
 ## Implemented in beta source
 
@@ -43,9 +43,9 @@ PR run #329 completed successfully for the exact PR head `3a1396f7364be1e6aa658b
 | Diagnostics | Bounded local logs, viewer/share/clear and redaction logic | Source inspected; expanded tests and hardware behavior remain |
 | Updater | Stable startup/manual checks, explicit download choice and Android installer handoff | Source inspected; physical install flow remains unverified |
 | Differential updater | Base identity/digest checks, bounded BSDIFF output, final APK verification and full APK fallback after delta failure | PR build/tests passed; physical update remains unverified |
-| Packaging | Gradle Wrapper pinned to Gradle 9.7.1; app configured for ARM64 only | Wrapper validation and ARM64-only APK verification passed in run #310 |
+| Packaging | Gradle Wrapper pinned to Gradle 9.7.1; app configured for ARM64 only | Signed release build and ARM64-only APK verification passed in run #330 for merge commit `e924c580699ad34f1083d1a9a0fe96901037c0ae` |
 | Application identity | `com.neonyne.lasthavenlauncher` | Preserve unchanged |
-| Release signing | Established signing identity configured in CI | Matched in run #310 for its tested commit |
+| Release signing | Established signing identity configured in CI | Exact expected certificate SHA-256 matched in run #330 for merge commit `e924c580699ad34f1083d1a9a0fe96901037c0ae` |
 | Addon manager | No implementation present; legacy ZIP manager removed | Replacement prohibited until owner supplies a new specification |
 
 ## Incomplete and unverified
@@ -53,11 +53,11 @@ PR run #329 completed successfully for the exact PR head `3a1396f7364be1e6aa658b
 - GeckoView gameplay on real ARM64 hardware: WebGL/WebAssembly, WebSockets, touch/input, fullscreen, audio, login and reconnect.
 - GeckoView cookies, LocalStorage, IndexedDB, Cache Storage, service workers and authentication persistence across force-stop/restart and same-key update.
 - GeckoView process recovery, permissions, prompts, media and external-response handling under real game behavior.
-- PR #26 home-screen/navigation implementation is merged into beta. PR run #329 passed unsigned build and unit tests; physical behavior remains unverified.
+- PR #26 home-screen/navigation implementation is merged into beta. PR run #329 passed unsigned build/unit tests; signed run #330 passed the minified release build, signing and ARM64 packaging. Physical behavior remains unverified.
 - Physical settings/storage values, network counters and diagnostic behavior.
 - Physical differential update and full APK fallback installation.
 - Accessibility/TalkBack and focus order on physical hardware.
-- Updater fallback/version/digest/URL tests passed in PR run #329. Manifest/network integration and physical update behavior still need verification.
+- Updater fallback/version/digest/URL tests passed in PR run #329 and the signed release build passed in run #330. Manifest/network integration and physical update behavior still need verification.
 
 ## CI failures and missing evidence
 
@@ -80,19 +80,19 @@ Per the owner's instruction, Ploy has no active assignment on #22. Chaty owns th
 
 ## Pull request validation
 
-PRs targeting `beta` use an unsigned release build and unit-test job with read-only permissions; it does not access signing secrets or publish APKs. PR #26 run [#329](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45518210756) passed for head `3a1396f7364be1e6aa658b3eb67be41549a906fb`. The merge commit is `e924c580699ad34f1083d1a9a0fe96901037c0ae`. Signed release, signer, ARM64 ABI and artifact verification must be checked on the exact post-merge beta commit; PR validation does not satisfy those gates.
+PRs targeting `beta` use an unsigned release build and unit-test job with read-only permissions; it does not access signing secrets or publish APKs. PR #26 run [#329](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45518210756) passed for head `3a1396f7364be1e6aa658b3eb67be41549a906fb`. The merge commit is `e924c580699ad34f1083d1a9a0fe96901037c0ae`. Signed run #330 passed release build, unit tests, certificate verification, ARM64-only ABI check and artifact upload for that exact commit. The release-tag and publication jobs were skipped as intended.
 
 ## P0 implementation status in beta
 
 | Finding | Candidate implementation | Verification state |
 |---|---|---|
-| BSDIFF decompression expansion | Per-section decompressed-output caps plus an over-limit regression test | PR run #329 passed; deeper adversarial coverage remains advisable |
+| BSDIFF decompression expansion | Per-section decompressed-output caps plus an over-limit regression test | PR run #329 and signed release build #330 passed; deeper adversarial coverage remains advisable |
 | Updater worker lifetime | Queued worker retires after 30 seconds idle | Source reviewed; PR run #329 passed |
 | GitHub URL validation | HTTPS URL requires exact `github.com` hostname; redirect hosts use an exact allowlist | URL unit tests and PR run #329 passed |
 | GeckoSession lifecycle | Preserved across Home; closed when Activity composition is destroyed | Source reviewed; physical lifecycle unverified |
 | Home Back | BackHandler opens exit confirmation | Source reviewed; physical interaction unverified |
 | Pending installer URI | Saved/restored through Activity instance state | Source reviewed; process-death flow unverified on device |
-| GeckoView R8 rules | Keep rules wired into minified release build | PR run #329 unsigned release build passed; signed/minified device startup unverified |
+| GeckoView R8 rules | Keep rules wired into minified release build | Signed/minified release build passed in run #330; GeckoView runtime startup on physical hardware remains unverified |
 
 The updater is process-scoped; its worker thread now times out after idle rather than remaining alive indefinitely. It is not shut down after each check, because later update operations must remain usable.
 
@@ -122,3 +122,16 @@ Do not promote `beta` to `main`, create a release tag or publish a release witho
 - **Merge commit / beta HEAD at integration:** `e924c580699ad34f1083d1a9a0fe96901037c0ae`.
 - **Post-merge signed CI:** Not verified by the available run evidence; do not infer success from PR run #329.
 - **Main comparison:** beta ahead 166, main ahead 9; merge base `2455c541729d20f00759ac9fa258faaaa473efcf`. Main promotion is not safe until the nine main-only commits are reviewed and reconciled.
+
+
+### Signed post-merge verification — run #330
+
+- **Commit:** `e924c580699ad34f1083d1a9a0fe96901037c0ae`.
+- **Run:** [#330](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45518704468), completed successfully.
+- **Build/tests:** `assembleRelease` and `testDebugUnitTest` passed with release minification enabled.
+- **Signing:** APK signature verification passed; certificate SHA-256 matched the established identity `b3bbf7520e77dfc384a60b1eee6c5f205b978f9b453849e2be523f642018d263`.
+- **ABI:** APK contained `arm64-v8a` only.
+- **Version:** beta artifact resolved latest stable identity `1.0.0` / `1000000`; tag creation, draft release and publication steps were skipped.
+- **Artifact:** `lasthavenplus-release-signed-arm64`, 92,919,786 bytes; artifact ZIP digest `67d9183585f451d062f217ff5106844de2f68501352fa3ad7e56db3faf6c41ca`.
+- **Not verified:** physical ARM64 gameplay, GeckoView profile persistence, process-death installer restoration and real update installation.
+- **Promotion:** Draft PR [#27](https://github.com/iNeonyne/LastHavenPlus/pull/27) is open and cleanly mergeable; it remains draft until physical verification is complete.
