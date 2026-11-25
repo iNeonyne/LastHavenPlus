@@ -75,7 +75,8 @@ Still unverified on physical ARM64 hardware:
 - #23: addon-manager work on hold by owner instruction; do not resume without explicit approval.
 - #28: storage measurement accuracy.
 - #31: release packaging resilience; confirm remaining acceptance criteria against current workflow.
-- #42: launcher redesign; implemented by PR #43, physical UI checks remain.
+- #42: v2.1.0 launcher UI verification; source implementation is integrated by PR #43, physical UI checks remain.
+- #22: Home/Play/Settings source implementation closed as complete; physical navigation/session checks remain under #5/#42.
 - #9/#11/#12/#14/#16/#17: remaining accessibility, diagnostics, load-error, connection, gameplay and backup work.
 
 ## Branch policy
