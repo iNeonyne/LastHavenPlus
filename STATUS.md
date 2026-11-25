@@ -64,7 +64,7 @@ Run #310 is the latest successful Android run inspected. It verifies the signed 
 - Earlier run #302 failed AAR metadata validation because GeckoView 160 requires compile SDK 37.2. The project and workflow were adjusted to use API 37.2.
 - Run #308 subsequently passed `assembleRelease` and `testDebugUnitTest` for commit `82590635e77c7abfedcaa6fd1fa4ad8c3b5de469`; APK ABI and signing checks passed.
 - Run #310 completed successfully after the CI runner-time optimization. Its total elapsed time was 3m44s versus 5m02s for run #308; treat this as an observed comparison only, not a controlled performance benchmark.
-- Run #311 is in progress for the PR-trigger workflow update. Its push event skips the PR-only job; an actual PR run is still required to verify that path.
+- Run #311 completed successfully on a beta push and skipped the PR-only job. PR run #317 then passed the unsigned release build and unit tests for PR #26 code SHA `283d649cd31ae009889d76affb25f655e28d3949`.
 - A passing unit-test task on run #308 does not prove every runtime path is covered or that physical-device behavior works.
 
 ## Active ownership
@@ -80,7 +80,7 @@ Per the owner's instruction, Ploy has no active assignment on #22. Chaty owns th
 
 ## Pull request validation
 
-PRs targeting `beta` now have a dedicated CI job that builds the unsigned release variant and runs unit tests with read-only permissions. It does not access signing secrets or publish APKs. The normal branch pipeline remains responsible for signed release, certificate, ARM64 ABI and artifact verification. Push run #311 succeeded but skipped the PR-only job. PR #26 runs #313–#316 were cancelled by follow-up commits. Run #317 passed the unsigned release build and unit tests for code SHA `283d649cd31ae009889d76affb25f655e28d3949`. Signed release, signer and ARM64 ABI checks were skipped as intended on the PR event and must be verified after merge.
+PRs targeting `beta` now have a dedicated CI job that builds the unsigned release variant and runs unit tests with read-only permissions. It does not access signing secrets or publish APKs. The normal branch pipeline remains responsible for signed release, certificate, ARM64 ABI and artifact verification. Push run #311 succeeded but skipped the PR-only job. PR #26 runs #313–#316 were cancelled by follow-up commits. Run #317 passed the unsigned release build and unit tests for code SHA `283d649cd31ae009889d76affb25f655e28d3949`. Signed release, signer and ARM64 ABI checks were skipped as intended on the PR event and must be verified after merge. Documentation follow-up commit `de790d3b69bde603bd89de70bb5028a8a3578b92` has PR run #318 queued.
 
 ## Release blockers
 
