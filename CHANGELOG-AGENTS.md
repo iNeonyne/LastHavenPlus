@@ -750,3 +750,12 @@ Entry format:
 - **CI:** exact PR-head run [#45686955854](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45686955854) passed lint, formatting, unsigned release build, JVM unit tests and updater-helper tests. Signed ARM64 packaging and post-merge checks are not yet verified for the merge commit.
 - **Integration:** merged by Chaty after the PR branch was confirmed current with beta. GitHub confirms `beta` HEAD equals the merge commit.
 - **Next:** verify the post-merge beta quality/build runs when available; update STATUS with exact results. No release, tag or stable promotion performed.
+
+
+## 2026-11-26 — Triage owner-requested updater and settings UX refinements
+
+- **Role:** Chaty / roadmap and issue triage
+- **Issues updated:** #4/#15 updater progress and recovery, #6 settings, #14 connection diagnostics, #18 roadmap, #86 deferred coordination and #107 visual polish.
+- **Change:** Consolidated proposed download speed/ETA, inline retry, install-later confirmation, storage preflight, differential/full-size comparison, formatted release notes/history, installed version identity, theme preference, storage loading placeholders, offline hint and restrained haptics into existing issues. No duplicate issues created.
+- **Explicit exclusions:** no launcher HomeScreen work, no pull-to-refresh/update badge on a launcher HomeScreen, no auto-check on launch, no unattended background downloads/automatic installation, and no external browser fallback. The game retains its own home screen; updates remain user-initiated.
+- **Status:** backlog-only triage. No application source changes, assignments, release commitments or device-test claims.
