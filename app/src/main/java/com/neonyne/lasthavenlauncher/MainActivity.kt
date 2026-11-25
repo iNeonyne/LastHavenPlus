@@ -10,6 +10,8 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.runtime.Composable
@@ -33,7 +35,7 @@ private const val KEY_GAME_URL = "game_url"
 private const val TAG = "LastHavenLauncher"
 private const val KEY_PENDING_UPDATE_URI = "pending_update_uri"
 
-enum class Screen { Home, Game, GameMenu, Settings, Diagnostics, Update }
+enum class Screen { Home, Game, Settings, Diagnostics, Update }
 
 class MainActivity : ComponentActivity() {
     private var pendingUpdateUri: Uri? = null
@@ -75,9 +77,13 @@ class MainActivity : ComponentActivity() {
             }
             window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         } else {
-            WindowInsetsControllerCompat(window, window.decorView).show(
-                WindowInsetsCompat.Type.systemBars(),
-            )
+            window.statusBarColor = android.graphics.Color.rgb(8, 13, 24)
+            window.navigationBarColor = android.graphics.Color.rgb(8, 13, 24)
+            WindowInsetsControllerCompat(window, window.decorView).apply {
+                isAppearanceLightStatusBars = false
+                isAppearanceLightNavigationBars = false
+                show(WindowInsetsCompat.Type.systemBars())
+            }
             window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         }
     }
@@ -142,10 +148,11 @@ private fun LastHavenApp(
         preferences.getString(KEY_GAME_URL, DEFAULT_GAME_URL) ?: DEFAULT_GAME_URL
     }
 
-    var currentScreen by remember { mutableStateOf(Screen.Home) }
-    var settingsReturnScreen by remember { mutableStateOf(Screen.Home) }
+    var currentScreen by remember { mutableStateOf(Screen.Game) }
+    var menuVisible by remember { mutableStateOf(false) }
+    var settingsReturnScreen by remember { mutableStateOf(Screen.Game) }
     var diagnosticsReturnScreen by remember { mutableStateOf(Screen.Settings) }
-    var updateReturnScreen by remember { mutableStateOf(Screen.Home) }
+    var updateReturnScreen by remember { mutableStateOf(Screen.Game) }
     var availableUpdate by remember { mutableStateOf<AppUpdateInfo?>(null) }
     var updateMessage by remember { mutableStateOf<String?>(null) }
     var isDownloadingUpdate by remember { mutableStateOf(false) }
@@ -197,6 +204,7 @@ private fun LastHavenApp(
                 hasLoadedGame = true
             }
         }
+        menuVisible = false
         currentScreen = Screen.Game
     }
 
@@ -228,10 +236,11 @@ private fun LastHavenApp(
 
     val openSettings: (Screen) -> Unit = { returnTo ->
         settingsReturnScreen = returnTo
+        menuVisible = false
         currentScreen = Screen.Settings
     }
 
-    val gameplayActive = currentScreen == Screen.Game
+    val gameplayActive = currentScreen == Screen.Game && !menuVisible
     DisposableEffect(gameplayActive) {
         onGameplayUiChanged(gameplayActive)
         onDispose {
@@ -240,18 +249,22 @@ private fun LastHavenApp(
     }
 
     LaunchedEffect(Unit) {
-        // Metadata-only startup check. It never downloads or installs an update.
+        // Start/resume the game immediately; the metadata check never downloads or installs.
+        startGame()
         checkForUpdates(false)
     }
 
-    BackHandler(enabled = currentScreen != Screen.Home) {
-        currentScreen = when (currentScreen) {
-            Screen.Game -> Screen.GameMenu
-            Screen.GameMenu -> Screen.Game
-            Screen.Settings -> settingsReturnScreen
-            Screen.Diagnostics -> diagnosticsReturnScreen
-            Screen.Update -> updateReturnScreen
-            Screen.Home -> Screen.Home
+    BackHandler(enabled = currentScreen != Screen.Home || menuVisible) {
+        if (currentScreen == Screen.Game) {
+            menuVisible = !menuVisible
+        } else {
+            currentScreen = when (currentScreen) {
+                Screen.Settings -> settingsReturnScreen
+                Screen.Diagnostics -> diagnosticsReturnScreen
+                Screen.Update -> updateReturnScreen
+                Screen.Home, Screen.Game -> Screen.Game
+            }
+            menuVisible = false
         }
     }
 
@@ -265,21 +278,21 @@ private fun LastHavenApp(
                 onExit = onExit,
             )
 
-            Screen.Game -> GameScreen(
-                session = session,
-                isLoading = isLoading,
-                pageLoadFailed = pageLoadFailed,
-                onReload = reloadGame,
-            )
-
-            Screen.GameMenu -> GameMenuScreen(
-                onReload = {
-                    reloadGame()
-                    currentScreen = Screen.Game
-                },
-                onSettings = { openSettings(Screen.Game) },
-                onReturnToGame = { currentScreen = Screen.Game },
-            )
+            Screen.Game -> Box(modifier = androidx.compose.ui.Modifier.fillMaxSize()) {
+                GameScreen(
+                    session = session,
+                    isLoading = isLoading,
+                    pageLoadFailed = pageLoadFailed,
+                    onReload = reloadGame,
+                )
+                if (menuVisible) {
+                    GameMenuScreen(
+                        onReload = reloadGame,
+                        onSettings = { openSettings(Screen.Game) },
+                        onReturnToGame = { menuVisible = false },
+                    )
+                }
+            }
 
             Screen.Settings -> SettingsScreen(
                 context = context,
