@@ -31,11 +31,11 @@ Preserve the application ID and established release signing identity to maintain
 - **Updater:** Checks, downloads and installation remain user-initiated. Metadata, payload size and digest are validated; differential failures retain a verified full-APK fallback. Android's package installer controls installation.
 - **Addon manager:** Not included; work is on hold under issue #23 pending renewed explicit owner approval.
 
-## GeckoView profile transition and testing
+## GeckoView profile transition
 
 GeckoView uses its own browser profile. No supported, verified migration of Cefrium cookies or other browser data has been established. Do not copy or delete existing Cefrium profile data. A fresh game login may be required.
 
-The owner reports that the app and GeckoView work on an ARM64 device. The device model, Android version, exact tested commit and individual test results have not been recorded. This does not establish full WebGL/WASM, WebSockets, audio, fullscreen, profile persistence, process recovery or updater compatibility, nor does it verify every v2.1.0 UI behavior. CI success does not replace physical-device testing.
+The repository owner evaluates published releases on their own schedule and may report gameplay, profile, browser API, media and updater behavior. Feedback is used to prioritize follow-up fixes.
 
 ## Build and test
 
@@ -47,6 +47,16 @@ Requirements: JDK 25, Gradle 9.7.1 via the committed Gradle Wrapper, Android SDK
 ```
 
 A signed release build requires the established project keystore and credentials. Never commit keystores or signing secrets.
+
+
+## v2.2.0 candidate changes (not yet published)
+
+The current development candidate includes:
+- Direct launch into the game with a responsive in-game overlay for Reload, Settings and Return to game.
+- Session-preserving navigation between gameplay and Settings.
+- Recreated LastHavens-inspired adaptive launcher artwork. This is newly recreated artwork, not the exact official game icon.
+
+These changes are not part of the published v2.1.0 release. The v2.2.0 version number, tag and publication remain owner-controlled.
 
 ## Published v2.1.0 artifact
 
@@ -60,7 +70,7 @@ A signed release build requires the established project keystore and credentials
 - Preserve application ID and established signing identity.
 - Keep update checks, downloads and installation user-initiated.
 - Never publish debug APKs or incomplete features.
-- CI build/signing/ABI checks do not replace physical ARM64 testing.
+- The repository owner may provide feedback after installing a release; feedback is not a publication prerequisite.
 - v2.1.0 is published. Do not republish or replace it without explicit owner approval.
 
 ## Project guidance

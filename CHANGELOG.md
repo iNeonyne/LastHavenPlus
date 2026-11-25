@@ -1,5 +1,18 @@
 # LastHavenPlus release changelog
 
+## Unreleased — v2.2.0 candidate
+
+### Launcher and navigation
+- Launch directly into the game instead of showing the launcher Home screen first.
+- Add a responsive in-game overlay with Reload, Settings and Return to game.
+- Preserve the existing GeckoSession while navigating to Settings and back to gameplay.
+- Replace the placeholder adaptive launcher foreground with owner-approved recreated LastHavens-inspired artwork (not the exact official game icon).
+
+### Scope
+- Remaining updater, settings, diagnostics and supporting-feature work is deferred to the tracked v2.3.0 backlog.
+- No game/client changes, automatic update downloads/installations, application identity changes or signing changes.
+- This is an unreleased candidate; no v2.2.0 tag or publication is created by this change.
+
 ## v2.1.0 — 2026-11-25
 
 ### Launcher and navigation
