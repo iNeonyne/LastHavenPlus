@@ -722,7 +722,17 @@ Entry format:
 
 ## 2026-11-25 — Release feedback policy
 
-- Owner decision: physical-device testing is not a release prerequisite or project blocker.
-- Issues #5 and #21 now track optional owner feedback after releases; the owner will test on their own schedule and report observed behavior.
-- Removed device-testing gates from the v2.2.0 roadmap and engineering acceptance criteria. Automated CI, signing, package identity, ABI and artifact checks remain required.
+- Owner decision: release feedback is supplied by the repository owner after publication on their own schedule; it is optional and not a release gate.
+- Issues #5 and #21 now track optional owner feedback after releases and focused follow-up fixes.
+- Updated the v2.2.0 roadmap and engineering acceptance criteria to keep owner feedback separate from automated CI, signing, package identity, ABI and artifact checks.
 - Updated issue index, status and agent instructions to match. Do not hold publication for pending owner feedback.
+
+
+## 2026-11-25 — v2.2.0 launcher scope integrated
+
+- PR #85 merged to beta at `073f839eb3cccd9a13fae09dd091667bb86a1f0c`; approved recreated adaptive icon and updated documentation.
+- Exact-head PR validation [#45657071506](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45657071506) passed lint, formatting, unsigned release build and unit tests.
+- Post-merge beta quality [#45657785104](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45657785104) and signed ARM64 build [#45657785102](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45657785102) passed; release-tag and publication steps were skipped.
+- Owner-authorized selective promotion PR #87 merged to main at `f22b5c2b92b6f93b201b1a9dc50a8c8095543d76`, preserving stable-only history and excluding internal project records.
+- Post-merge main quality and signed build runs are recorded in STATUS.md. No version bump, tag or publication was created.
+- Issues #5/#21 are optional post-release owner-feedback intake. Remaining feature and engineering work is deferred to v2.3.0 issue #86.
