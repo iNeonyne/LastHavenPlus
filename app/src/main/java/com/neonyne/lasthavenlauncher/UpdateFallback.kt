@@ -16,7 +16,8 @@ internal object UpdateFallback {
         return try {
             deltaAttempt()
         } catch (error: Exception) {
-            onDeltaFailure(error)
+            // Diagnostics must never prevent the independently verified full APK fallback.
+            runCatching { onDeltaFailure(error) }
             fullAttempt()
         }
     }
