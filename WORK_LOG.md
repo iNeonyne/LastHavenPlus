@@ -357,3 +357,12 @@
 - Reaffirmed issue #23 is on hold and removed addon-manager integration from the active roadmap.
 - Audited 27 branch names and compared the retained Chaty task branches against beta. No open PRs were found. Branch deletion was not performed because the connected GitHub actions do not expose a branch-delete operation; diverged/unique commits must be preserved until safely reviewed and deleted through an authorized GitHub interface.
 - Documentation-only change. No app tests or physical-device checks were run.
+
+
+### 2026-11-25 — Close completed Home implementation and rescope UI follow-up
+
+- Closed #22 as completed: Home/Play/Settings source implementation is integrated in PR #26; the older menu behavior was superseded by #42.
+- Retitled #42 to focus on physical ARM64 verification of the v2.1.0 UI already integrated by PR #43.
+- Replaced the stale #18 roadmap with current candidate-promotion state and the remaining physical-device/final-artifact gates. Addon manager #23 remains on hold.
+- Updated #4/#31 with the signed beta CI evidence from run #45601558602 without claiming physical updater verification or release-tag differential fallback coverage.
+- No app tests or device tests were run for this documentation/issue-tracker work.
