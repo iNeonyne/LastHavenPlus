@@ -690,10 +690,10 @@ Preserve archive path/CRC/duplicate/count/expanded-size checks. Keep Android 10/
 Add a focused, read-only quality workflow for Android lint and Kotlin formatting without duplicating the existing Android PR build/test job.
 
 ### Scope
-- Add `.github/workflows/quality.yml` for relevant source/build changes on PRs to beta and pushes to beta.
+- Add `.github/workflows/quality.yml` for relevant source/build changes pushed to beta. PR validation is handled by the existing `android.yml` workflow.
 - Run `lintDebug` and a pinned Spotless/ktfmt `spotlessCheck`.
 - Use the existing JDK 25, Android SDK 37.2 / Build Tools 37.0.0 and committed Gradle Wrapper.
-- Apply formatting incrementally against the PR base or previous beta commit so legacy formatting is not rewritten in a giant unrelated diff.
+- Apply formatting incrementally against `origin/beta` for PR validation and the previous beta commit for post-merge pushes, so legacy formatting is not rewritten in a giant unrelated diff.
 - Keep workflow permissions read-only; do not expose signing secrets or upload/publish APKs.
 - Upload Android Lint reports. Existing Android PR validation remains responsible for unsigned build, JVM unit tests, Python updater-helper tests and their reports.
 - Ignore documentation-only edits.
@@ -704,11 +704,11 @@ Add a focused, read-only quality workflow for Android lint and Kotlin formatting
 - No broad formatting rewrite of legacy Kotlin files.
 
 ### Acceptance criteria
-- Exact-head PR checks pass `lintDebug` and `spotlessCheck`.
+- Exact-head Android PR validation passes `lintDebug`, `spotlessCheck`, the unsigned release build, JVM unit tests and Python updater-helper tests.
 - A deliberately misformatted changed Kotlin file fails the formatting check; the formatter command is documented.
 - Android PR validation continues to run the unsigned build, JVM tests and Python helper tests.
 - Quality job uses read-only permissions and no release secrets.
 - Documentation accurately describes which workflow runs which checks.
 
 ### Verification
-Record exact branch head, Actions run URLs, lint results, formatter result and any limitations here and in STATUS.md. Do not mark the issue complete until exact-head CI proves the checks.
+Record exact branch head, Actions run URLs, lint results, formatter result and limitations here and in STATUS.md. The negative test is recorded separately from the final passing exact-head validation.
