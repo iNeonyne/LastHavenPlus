@@ -27,7 +27,17 @@ internal object UpdateDownloadPolicy {
                     while (true) {
                         val count = source.read(buffer)
                         if (count < 0) break
-                        if (count == 0) continue
+                        if (count == 0) {
+                            val singleByte = source.read()
+                            if (singleByte < 0) break
+                            totalBytes++
+                            check(totalBytes <= maximumBytes) {
+                                "Update file is unexpectedly large"
+                            }
+                            digest.update(singleByte.toByte())
+                            output.write(singleByte)
+                            continue
+                        }
                         totalBytes += count
                         check(totalBytes <= maximumBytes) {
                             "Update file is unexpectedly large"
