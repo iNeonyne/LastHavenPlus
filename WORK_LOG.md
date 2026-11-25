@@ -451,3 +451,8 @@
 - **Issue tracker:** update GitHub #20 and #21 descriptions to match the corrected backlog; #18's live GitHub roadmap is already current and remains unchanged.
 - **Constraints:** no source, Gradle, CI, signing, release, game or main changes. #23 remains on hold; #56 remains Ploy's active task.
 - **Verification:** documentation consistency, internal anchors/links and diff review required. Full Markdown lint remains outstanding under #70; no Android or physical-device tests are applicable.
+
+
+## 2026-11-25 — Issue #56 direct-launch implementation started
+
+Owner directed Chaty to take over #56 from Ploy. Updated issue ownership to Chaty and created `chaty/issue-56-direct-launch-overlay` from beta `01af3f488225eaa5321b994a3957e53dcdb70c55`. Implemented direct startup, a translucent Back-triggered overlay while retaining the Game destination, separate Settings navigation, landscape gameplay with system bars restored for the menu, status/navigation bar dark scrim outside immersive gameplay, and removal of the persistent page-load progress strip. Updated AGENT_WORK and migration/status records to reflect the takeover. Source review only; tests, CI and physical device verification remain outstanding. No beta/main merge or release action.

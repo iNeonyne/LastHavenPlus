@@ -1,31 +1,35 @@
 # Agent work assignments — LastHavenPlus
 
-**Baseline:** `beta` at `bc270200e86e212b057d19f06616e494aa1ff538` when this assignment was opened. Chaty must refresh against current beta before integration.
+**Baseline:** `beta` at `01af3f488225eaa5321b994a3957e53dcdb70c55` for the owner-directed #56 takeover.
 
 ## Roles
 
 - **Chaty — roadmap and housekeeping:** owns issue #18 and central tracker/documentation reconciliation, branch audit, CI evidence, PR review and integration. Chaty alone may merge accepted PRs into `beta`.
-- **Ploy — issue #56 implementation:** implement the direct-launch and responsive in-game overlay redesign on a dedicated branch and open a PR targeting `beta`. Do not edit central trackers or merge/push to beta/main.
+- **Chaty — issue #56 implementation:** owner-directed takeover from Ploy on 2026-11-25; Chaty implements the direct-launch and responsive in-game overlay on `chaty/issue-56-direct-launch-overlay` and opens a PR targeting `beta`. Ploy must not work on #56 in parallel.
 
 ## Active assignments
 
 ### Chaty — v2.2.0 roadmap and immediate housekeeping
 - **Completed:** roadmap and central tracker reconciliation merged by PR [#73](https://github.com/iNeonyne/LastHavenPlus/pull/73) at `c16439bfcedc9949d8ec683039fb5df85afea122`.
 - **Closed:** #42 as superseded by #56; #60 as completed after exact-head and post-merge CI evidence.
-- **Still owned by Chaty:** finish #70 Markdown syntax/lint validation; coordinate #5/#21/#31/#4 follow-up status; review and integrate Ploy's #56 PR. Branch inventory/diff audit is complete.
+- **Still owned by Chaty:** finish #70 Markdown syntax/lint validation; coordinate #5/#21/#31/#4 follow-up status; implement, review and integrate Chaty's #56 PR. Branch inventory/diff audit is complete.
 - **Exclusions:** no app behavior changes under this housekeeping assignment, no release/tag/publication, no main changes, no Addon Manager work.
 - **Evidence:** post-merge quality run #45631250015 and signed beta build #45631249817 passed; the build skipped release-tag publication steps.
 
-### Ploy — application issue queue (one active issue only)
+### Chaty — active application implementation
 
 **Active assignment: #56 — direct launch and responsive in-game overlay.**  
-Suggested branch: `ploy/issue-56-direct-launch-overlay` (not created yet; create it from the latest `beta` when implementation starts). Open a focused PR targeting `beta`; Chaty reviews and integrates. No other Ploy issue may start until #56 is merged and reviewed.
+Branch: `chaty/issue-56-direct-launch-overlay`, created from beta `01af3f488225eaa5321b994a3957e53dcdb70c55`. Chaty owns implementation and integration. Ploy must not edit #56 concurrently.
+
+### Ploy — application issue queue (one active issue only)
+
+Ploy is released from #56 and has no active application issue until Chaty completes and merges #56. **Do not start queued work early.**
 
 **Queued work (strict order; do not start early):**
 
 | Order | Issue | Status | Start condition / narrow scope |
 |---:|---|---|---|
-| 1 | [#56](https://github.com/iNeonyne/LastHavenPlus/issues/56) | ACTIVE | Direct launch, responsive overlay, preserve same GeckoSession, Settings in both orientations, gameplay/system UI behavior, remove idle progress bar |
+| 1 | [#56](https://github.com/iNeonyne/LastHavenPlus/issues/56) | CHATY ACTIVE | Direct launch, responsive overlay, preserve same GeckoSession, Settings in both orientations, gameplay/system UI behavior, remove idle progress bar |
 | 2 | [#9](https://github.com/iNeonyne/LastHavenPlus/issues/9) | QUEUED | After #56 merge: overlay accessibility semantics, TalkBack order/labels and physical navigation follow-up |
 | 3 | [#11](https://github.com/iNeonyne/LastHavenPlus/issues/11) | QUEUED | After #9 merge: diagnostics redaction, bounded rotation/size and failure-path tests only |
 | 4 | [#12](https://github.com/iNeonyne/LastHavenPlus/issues/12) | QUEUED | After #11 merge: safe GeckoView 160 load-error category mapping and tests |

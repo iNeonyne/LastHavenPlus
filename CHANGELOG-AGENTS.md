@@ -708,3 +708,13 @@ Entry format:
 - **Issue tracker:** update GitHub #20 and #21 descriptions to match the corrected backlog; #18's live GitHub roadmap is already current and remains unchanged.
 - **Constraints:** no source, Gradle, CI, signing, release, game or main changes. #23 remains on hold; #56 remains Ploy's active task.
 - **Verification:** documentation consistency, internal anchors/links and diff review required. Full Markdown lint remains outstanding under #70; no Android or physical-device tests are applicable.
+
+
+## 2026-11-25 — Take over direct-launch overlay implementation (#56)
+
+- **Role:** Chaty / implementation owner, at repository owner's direction; Ploy released from #56 to prevent overlapping work.
+- **Branch:** `chaty/issue-56-direct-launch-overlay`, based on beta `01af3f488225eaa5321b994a3957e53dcdb70c55`.
+- **Source changes:** direct game startup; Back opens/dismisses a translucent overlay over the mounted game; Settings remains a separate responsive destination; gameplay remains landscape while menu restores system bars; Settings restores normal orientation/system UI; persistent page-load progress strip removed.
+- **Files changed:** `MainActivity.kt`, `GameMenuScreen.kt`, `GameScreen.kt`; central assignment/docs updated on the task branch.
+- **Verification:** source review only so far. No Gradle build, tests, CI or physical ARM64 checks are claimed. Exact-head validation and overlay-on-GeckoView rendering check remain required.
+- **Constraints:** no game/client, updater, GeckoView dependency, Gradle/toolchain, application ID, signing, ABI, main, release or Addon Manager changes.
