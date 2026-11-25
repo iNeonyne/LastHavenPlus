@@ -84,7 +84,7 @@ object AppUpdater {
             executor.execute { task() }
         } catch (error: RejectedExecutionException) {
             Diagnostics.warn(appContext, "Updater", "Updater is busy; request was not queued")
-            mainHandler.post(onRejected)
+            mainHandler.post { onRejected() }
         }
     }
 
