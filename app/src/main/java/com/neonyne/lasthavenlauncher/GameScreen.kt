@@ -25,7 +25,6 @@ import org.mozilla.geckoview.GeckoView
 @Composable
 fun GameScreen(
     session: GeckoSession?,
-    isLoading: Boolean,
     pageLoadFailed: Boolean,
     onReload: () -> Unit,
 ) {
@@ -49,10 +48,6 @@ fun GameScreen(
                     Text("Preparing game…", color = Color(0xFFB7C0D0))
                 }
             }
-        }
-
-        if (isLoading && !pageLoadFailed && session != null) {
-            LinearProgressIndicator(modifier = Modifier.align(Alignment.TopCenter).fillMaxWidth())
         }
 
         if (pageLoadFailed && session != null) {
