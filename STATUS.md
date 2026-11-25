@@ -80,7 +80,7 @@ Per the owner's instruction, Ploy has no active assignment on #22. Chaty owns th
 
 ## Pull request validation
 
-PRs targeting `beta` now have a dedicated CI job that builds the unsigned release variant and runs unit tests with read-only permissions. It does not access signing secrets or publish APKs. The normal branch pipeline remains responsible for signed release, certificate, ARM64 ABI and artifact verification. Push run #311 succeeded but skipped the PR-only job. PR #26 runs #313–#316 were cancelled by follow-up commits. Run #317 passed the unsigned release build and unit tests for code SHA `283d649cd31ae009889d76affb25f655e28d3949`. Signed release, signer and ARM64 ABI checks were skipped as intended on the PR event and must be verified after merge. Documentation follow-up commit `de790d3b69bde603bd89de70bb5028a8a3578b92` has PR run #318 queued.
+PRs targeting `beta` now have a dedicated CI job that builds the unsigned release variant and runs unit tests with read-only permissions. It does not access signing secrets or publish APKs. The normal branch pipeline remains responsible for signed release, certificate, ARM64 ABI and artifact verification. Push run #311 succeeded but skipped the PR-only job. PR #26 runs #313–#316 were cancelled by follow-up commits. Run #317 passed the unsigned release build and unit tests for code SHA `283d649cd31ae009889d76affb25f655e28d3949`. Signed release, signer and ARM64 ABI checks were skipped as intended on the PR event and must be verified after merge. Documentation-only follow-ups are tracked in PR #26; the current PR head must have green validation checks before merge.
 
 ## Release blockers
 
