@@ -9,8 +9,8 @@
 3. **P0 — Updater regression coverage (#4, #15):** Updater hardening is integrated at beta commit `1d6c1ec42becab44735edfd0323dfc60ff4b9f9d`; additional malformed-manifest, digest, patch and interrupted-download tests remain.
 4. **P1 — Addon manager integration (#23):** On hold by owner instruction. Do not resume or assign work until explicit owner approval.
 5. **P2 — Storage measurement accuracy (#28):** Audit all app-private data paths and replace recursive directory sizing with iterative traversal.
-7. **P2 — Remaining product polish:** #9, #11, #12, #14, #16 and #17 only after core reliability and addon-manager gates.
-8. **P3 — Performance and APK size (#7):** Measure before optimizing; do not expand v2.1.0 scope without owner approval.
+6. **P2 — Remaining product polish:** #9, #11, #12, #14, #16 and #17 only after core reliability gates.
+7. **P3 — Performance and APK size (#7):** Measure before optimizing; do not expand v2.1.0 scope without owner approval.
 
 **Release roadmap:** [#18 — v2.1.0 reliability, GeckoView verification and addon manager](https://github.com/iNeonyne/LastHavenPlus/issues/18). v2.0.0 is already published; v2.1.0 is a proposed target, not a release commitment.
 
