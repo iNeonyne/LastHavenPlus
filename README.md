@@ -1,9 +1,9 @@
 # LastHavenPlus
 
-LastHavenPlus is an Android launcher for the existing LastHaven Wrath of the Lich King browser game. It hosts the game; it does not recreate or modify the game client.
+LastHavenPlus is an Android launcher for the existing LastHaven Wrath of the Lich King browser game. It hosts the game; it does not recreate, modify or develop the game client.
 
 - **Game:** [lasthavens.com/play](https://lasthavens.com/play)
-- **Latest published release:** [v2.2.0 on GitHub Releases](https://github.com/iNeonyne/LastHavenPlus/releases/tag/v2.2.0)
+- **Latest stable release:** [v2.1.0 on GitHub Releases](https://github.com/iNeonyne/LastHavenPlus/releases/tag/v2.1.0)
 - **Development:** `beta`; stable releases: `main`
 
 ## Compatibility and identity
@@ -19,24 +19,25 @@ LastHavenPlus is an Android launcher for the existing LastHaven Wrath of the Lic
 
 Preserve the application ID and established release signing identity to maintain update compatibility.
 
-## Features in v2.2.0
+## Current beta features
 
-- **Direct launch:** The app opens directly into the game.
-- **In-game menu:** Android Back opens a responsive overlay with Reload, Settings and Return to game.
-- **Session-preserving navigation:** The existing GeckoSession is retained while navigating to Settings and back to gameplay.
-- **Responsive layout:** The in-game menu adapts to available window space; Settings pages cap content width on larger windows.
-- **Launcher icon:** Owner-approved recreated LastHavens-inspired adaptive artwork is included. It is newly recreated artwork, not the exact official game icon.
+These are features integrated into beta and covered by the repository's automated build and test checks where applicable.
+
+- **Direct launch:** The app opens directly into the game. Android Back opens a responsive in-game menu with Reload, Settings and Return to game; Settings does not initialize a separate game session.
+- **Navigation:** Settings, diagnostics and update details are full-screen pages rather than stacked popup dialogs. The existing GeckoSession is retained when the game view is detached for launcher pages.
+- **Responsive layout:** The in-game menu adapts to available window space; settings pages cap content width on larger windows. The Activity is resizeable.
+- **Launcher icon:** Adaptive launcher icon resources are included.
 - **Settings and storage:** Installed APK size, persistent app-private data size and cache size are reported separately. App-private data includes GeckoView data and is not a profile-only measurement.
-- **Network usage:** Android per-UID counters include both game and updater traffic; they are not game-only totals.
+- **Network usage:** Android per-UID counters report app traffic, including both game and updater traffic; they are not game-only totals.
 - **Diagnostics:** Bounded local diagnostic logs support viewing, clearing and explicit user-initiated sharing. Review logs before sharing.
 - **Updater:** Stable release checks and downloads remain user-initiated. Manifest, version, URL, payload and digest validation are applied; differential patch failures retain a verified full-APK fallback. Android's package installer controls installation.
-- **Addon manager:** Not included; work remains on hold under issue #23 pending renewed explicit owner approval.
+- **Addon manager:** On hold by the owner. Do not resume issue #23 or integrate the supplied XPI until the owner explicitly approves resuming it. The legacy ZIP package manager is not part of this app.
 
 ## GeckoView profile transition
 
 GeckoView uses its own browser profile. No supported, verified migration of Cefrium cookies or other browser data has been established. Do not copy or delete existing Cefrium profile data as part of this transition. A fresh game login may be required.
 
-The repository owner evaluates published releases on their own schedule and may report gameplay, profile, browser API, media and updater behavior. Feedback is recorded in GitHub Issues and used to prioritize follow-up fixes.
+The repository owner evaluates releases on their own schedule and may report gameplay, profile, browser API, media and updater behavior. Feedback is recorded in GitHub Issues and used to prioritize follow-up fixes; pending feedback is not a publication prerequisite.
 
 ## Build and test
 
@@ -55,7 +56,8 @@ A signed release build requires the established project keystore and credentials
 - Preserve application ID and established signing identity.
 - Keep update checks, downloads and installation user-initiated.
 - Never publish debug APKs or incomplete features.
-- The repository owner may provide feedback after installing a release; pending feedback is not a publication prerequisite.
+- Promote beta only after release gates pass and the owner explicitly approves.
+- The repository owner may test published releases and report findings on their own schedule. Pending feedback is not a release blocker.
 
 ## Project workflow and records
 
