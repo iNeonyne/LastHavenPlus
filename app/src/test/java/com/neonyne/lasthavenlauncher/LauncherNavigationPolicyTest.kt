@@ -8,13 +8,14 @@ import org.junit.Test
 class LauncherNavigationPolicyTest {
   @Test
   fun backFromGameOpensOverlayWithoutLeavingGame() {
-    val target = LauncherNavigationPolicy.onBack(
-      currentScreen = Screen.Game,
-      menuVisible = false,
-      settingsReturnScreen = Screen.Game,
-      diagnosticsReturnScreen = Screen.Settings,
-      updateReturnScreen = Screen.Game,
-    )
+    val target =
+      LauncherNavigationPolicy.onBack(
+        currentScreen = Screen.Game,
+        menuVisible = false,
+        settingsReturnScreen = Screen.Game,
+        diagnosticsReturnScreen = Screen.Settings,
+        updateReturnScreen = Screen.Game,
+      )
 
     assertEquals(Screen.Game, target.screen)
     assertTrue(target.menuVisible)
@@ -22,13 +23,14 @@ class LauncherNavigationPolicyTest {
 
   @Test
   fun backFromOverlayDismissesIt() {
-    val target = LauncherNavigationPolicy.onBack(
-      currentScreen = Screen.Game,
-      menuVisible = true,
-      settingsReturnScreen = Screen.Game,
-      diagnosticsReturnScreen = Screen.Settings,
-      updateReturnScreen = Screen.Game,
-    )
+    val target =
+      LauncherNavigationPolicy.onBack(
+        currentScreen = Screen.Game,
+        menuVisible = true,
+        settingsReturnScreen = Screen.Game,
+        diagnosticsReturnScreen = Screen.Settings,
+        updateReturnScreen = Screen.Game,
+      )
 
     assertEquals(Screen.Game, target.screen)
     assertFalse(target.menuVisible)
@@ -36,13 +38,14 @@ class LauncherNavigationPolicyTest {
 
   @Test
   fun backFromSettingsReturnsToGame() {
-    val target = LauncherNavigationPolicy.onBack(
-      currentScreen = Screen.Settings,
-      menuVisible = false,
-      settingsReturnScreen = Screen.Game,
-      diagnosticsReturnScreen = Screen.Settings,
-      updateReturnScreen = Screen.Game,
-    )
+    val target =
+      LauncherNavigationPolicy.onBack(
+        currentScreen = Screen.Settings,
+        menuVisible = false,
+        settingsReturnScreen = Screen.Game,
+        diagnosticsReturnScreen = Screen.Settings,
+        updateReturnScreen = Screen.Game,
+      )
 
     assertEquals(Screen.Game, target.screen)
     assertFalse(target.menuVisible)
