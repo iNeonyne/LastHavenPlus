@@ -298,3 +298,12 @@
 - **CI:** Unsigned PR build and unit-test validation is pending for the latest PR head. No pass is claimed.
 - **Main safety:** The unintended temporary files were deleted from main; comparing main against its pre-incident HEAD shows zero changed files. Main's content tree is restored.
 - **Next safe action:** Inspect exact-head CI, correct any failures, review PR #30 and only then merge to beta. Physical updater installation remains unverified under #5.
+
+
+### 2026-11-25 — Add recovery cleanup for interrupted updater downloads
+
+- **PR:** [#30](https://github.com/iNeonyne/LastHavenPlus/pull/30).
+- **Code commit:** `5c51978d1499c369fbc0a4e5801635c08d9b48b1`.
+- **Change:** At the start of a new explicit download, remove leftover .part files from an interrupted prior process. Verified APK files are intentionally preserved. Added a JVM test covering partial APK/patch deletion and verified APK preservation. Also made response-body reading robust to zero-length reads and tightened fallback diagnostic exception handling.
+- **CI:** PR run [#344](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45521735696) is pending for the code commit. No pass is claimed.
+- **Next safe action:** Inspect CI on the final PR head after this documentation checkpoint. Keep physical update installation under #5.

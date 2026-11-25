@@ -32,13 +32,13 @@ The repository owner makes final product and release decisions. Chaty is the mai
 
 **Candidate branch:** `chaty/fix-updater-hardening`  
 **Starting beta HEAD:** `b7d9f3256527de41a45ff8c935fac510be635a69`  
-**Current candidate HEAD:** `df82f40feca9eed7af318403e93a284ec692edad`
+**Current candidate HEAD:** `5c51978d1499c369fbc0a4e5801635c08d9b48b1`
 
 ### Issue #4 — updater correctness and tests
 - Follow redirects manually; validate HTTPS and exact trusted host at every hop; reject userinfo, unexpected ports, fragments, untrusted hosts and redirect chains beyond five hops.
 - Bound release API and update manifest response bodies.
 - Bound queued updater work, return a user-visible busy failure when saturated, and let the worker retire after idle timeout.
-- Verify streamed download size and SHA-256; use unique temporary and final filenames so a failed replacement cannot delete a previously staged verified APK.
+- Verify streamed download size and SHA-256; use unique temporary and final filenames; remove crash-abandoned .part files on the next explicit download without deleting verified APKs.
 - Ensure diagnostics callback failure cannot suppress full APK fallback.
 - Add JVM tests for URL/redirect validation, bounded response bodies, download size/digest checks and fallback resilience.
 - Keep manual user confirmation; no automatic download or installation.

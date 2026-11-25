@@ -3,7 +3,7 @@
 **Last updated:** 2026-11-25  
 **Active branch:** `beta`  
 **Latest integrated beta HEAD:** `b7d9f3256527de41a45ff8c935fac510be635a69`  
-**Phase:** PR #26 is merged into beta at `e924c580699ad34f1083d1a9a0fe96901037c0ae`. The current beta HEAD `b7d9f3256527de41a45ff8c935fac510be635a69` is 12 documentation/workflow commits beyond that merge; the application source is unchanged in that range. Signed run #330 passed for `e924c58`, not the exact current HEAD. Updater hardening is being prepared on `chaty/fix-updater-hardening` at `df82f40feca9eed7af318403e93a284ec692edad` in PR [#30](https://github.com/iNeonyne/LastHavenPlus/pull/30); unsigned PR build and unit-test validation is pending for the latest PR head. Physical ARM64 gameplay, profile persistence and update installation remain unverified. `main` and `beta` remain diverged; promotion is blocked pending reconciliation and release gates.
+**Phase:** PR #26 is merged into beta at `e924c580699ad34f1083d1a9a0fe96901037c0ae`. The current beta HEAD `b7d9f3256527de41a45ff8c935fac510be635a69` is 12 documentation/workflow commits beyond that merge; the application source is unchanged in that range. Signed run #330 passed for `e924c58`, not the exact current HEAD. Updater hardening is being prepared on `chaty/fix-updater-hardening` at `5c51978d1499c369fbc0a4e5801635c08d9b48b1` in PR [#30](https://github.com/iNeonyne/LastHavenPlus/pull/30); unsigned PR build and unit-test validation is pending for the latest PR head. Physical ARM64 gameplay, profile persistence and update installation remain unverified. `main` and `beta` remain diverged; promotion is blocked pending reconciliation and release gates.
 
 ## Summary
 
@@ -100,8 +100,8 @@ The updater is process-scoped; its worker thread now times out after idle rather
 ## Updater hardening candidate — not yet integrated
 
 - **Branch:** `chaty/fix-updater-hardening`
-- **Candidate HEAD:** `df82f40feca9eed7af318403e93a284ec692edad` ([PR #30](https://github.com/iNeonyne/LastHavenPlus/pull/30))
-- **Changes:** manually validate every HTTPS redirect against an exact GitHub host allowlist; cap release/manifest JSON bodies; bound updater work queue and retire idle worker; verify downloaded size and SHA-256 through a shared policy; stage APK and patch files under unique names and clean temporary files; persist installer permission handoff in SharedPreferences so it can be restored after process death; keep full-APK fallback even if diagnostic logging fails.
+- **Code candidate HEAD:** `5c51978d1499c369fbc0a4e5801635c08d9b48b1` ([PR #30](https://github.com/iNeonyne/LastHavenPlus/pull/30))
+- **Changes:** manually validate every HTTPS redirect against an exact GitHub host allowlist; cap release/manifest JSON bodies; bound updater work queue and retire idle worker; verify downloaded size and SHA-256 through a shared policy; stage APK and patch files under unique names, remove crash-abandoned .part files on the next explicit download, and clean temporary files; persist installer permission handoff in SharedPreferences so it can be restored after process death; keep full-APK fallback even if diagnostic logging fails.
 - **Tests added:** trusted redirect host/port/credentials and redirect status tests; response size and downloaded digest/size policy tests; manifest schema/version/name/size/versionCode tests; patch base-version compatibility and base APK digest tests; regression test for diagnostics failure not blocking full APK fallback.
 - **Verification:** Unsigned PR build/unit-test validation is pending for the latest PR head. Do not treat it as integrated or release verified.
 
