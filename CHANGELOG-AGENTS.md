@@ -688,3 +688,13 @@ Entry format:
 - `beta-legacy-2026-11-24` has no common ancestor with current beta and retains a divergent 91-file legacy tree, including obsolete package/source and Addon Manager assets. It is not safe to merge; retained as an archive/deletion candidate pending owner confirmation.
 - Updated GeckoView migration notes to distinguish the currently shipped v2.1.0 Home-screen-first flow from the not-yet-implemented #56 direct-launch/overlay redesign.
 - No branches deleted, no app code changed, no main changes and no release actions.
+
+
+## 2026-11-25 — Repair Markdown backlog anchors
+
+- **Issue:** #70 (Chaty).
+- **PR:** [#78](https://github.com/iNeonyne/LastHavenPlus/pull/78), targeting beta.
+- Added explicit anchors for backlog issues #4–#23 in `ISSUES.md`, fixing 20 broken internal index links.
+- Checked relative Markdown link targets and fenced-code closure across all 11 Markdown files; no missing relative targets or unclosed fences were found.
+- Full markdownlint remains outstanding because the CLI is unavailable in the execution environment. Historical whitespace noise was not mass-reformatted.
+- No application, Gradle, CI, signing, release, main-branch or device behavior changed.

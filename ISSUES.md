@@ -69,6 +69,8 @@ Close only when every acceptance criterion is met and evidence is recorded. If a
 
 ---
 
+<a id="issue-4"></a>
+
 ## Issue 4 — P0.1 — Improve build reproducibility and updater test coverage
 
 **Current audit (2026-11-25):** The Gradle Wrapper is pinned to Gradle 9.7.1 with a distribution SHA-256. Signed CI run [#310](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45508671565) passed release build/tests, signer and ARM64-only ABI checks for commit `91e21d4bde0a26b8d7cbfd9697615f32c2f57d21`; this does not verify current beta HEAD. PR #26 merged to beta at `e924c580699ad34f1083d1a9a0fe96901037c0ae`. Exact-head PR run [#329](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45518210756) passed unsigned release build and unit tests for `3a1396f7364be1e6aa658b3eb67be41549a906fb`; it does not verify signed ARM64 packaging. Keep the issue open for remaining updater edge cases and physical update installation; signed CI is verified by run #330.
@@ -122,6 +124,8 @@ A clean checkout builds through the committed, pinned wrapper; updater edge case
 
 ---
 
+<a id="issue-5"></a>
+
 ## Issue 5 — P0.2 — Verify LastHaven gameplay and update behavior on a physical arm64 device
 
 **GitHub:** https://github.com/iNeonyne/LastHavenPlus/issues/5
@@ -165,6 +169,8 @@ The core game flow and same-key in-place update are verified on real arm64 hardw
 - Scope may move to a later release if acceptance criteria or required physical-device verification are not complete. Do not ship partial implementations.
 
 ---
+
+<a id="issue-6"></a>
 
 ## Issue 6 — P2 — Add minimal launcher settings and safe storage controls
 
@@ -215,6 +221,8 @@ Essential settings work on a physical arm64 device; URL validation and explicit 
 
 ---
 
+<a id="issue-7"></a>
+
 ## Issue 7 — P3 — Measure runtime performance and evaluate APK size improvements
 
 **GitHub:** https://github.com/iNeonyne/LastHavenPlus/issues/7
@@ -257,6 +265,8 @@ A repeatable baseline is recorded, and every accepted optimization has measured 
 
 ---
 
+<a id="issue-8"></a>
+
 ## Issue 8 — Superseded — Legacy addon manager removed; future scope waits for owner spec (#23)
 
 **GitHub:** https://github.com/iNeonyne/LastHavenPlus/issues/8  
@@ -265,6 +275,8 @@ A repeatable baseline is recorded, and every accepted optimization has measured 
 The previous ZIP addon manager was removed from beta at the owner's request on 2026-11-25. Its former implementation checklist is obsolete. Do not restore it or continue the former game-injection approach. A new design will be written only after the owner provides a replacement specification; see #23.
 
 ---
+<a id="issue-9"></a>
+
 ## Issue 9 — P2 — Add a compact game navigation and exit menu
 
 **GitHub:** https://github.com/iNeonyne/LastHavenPlus/issues/9
@@ -298,6 +310,8 @@ Attempting to leave the app opens the menu; all four actions work as described; 
 
 ---
 
+<a id="issue-10"></a>
+
 ## Issue 10 — P2 — Track game network data usage
 
 **GitHub:** https://github.com/iNeonyne/LastHavenPlus/issues/10
@@ -330,6 +344,8 @@ Users can inspect trustworthy sent/received app totals, understand what is inclu
 - Scope may move to a later release if acceptance criteria or required physical-device verification are not complete. Do not ship partial implementations.
 
 ---
+
+<a id="issue-11"></a>
 
 ## Issue 11 — P2 — Add privacy-conscious app and updater logs
 
@@ -366,6 +382,8 @@ Users can inspect and explicitly share useful diagnostics without exposing authe
 
 ---
 
+<a id="issue-12"></a>
+
 ## Issue 12 — P2 — Surface actionable GeckoView load-error details
 
 **GitHub:** https://github.com/iNeonyne/LastHavenPlus/issues/12
@@ -398,6 +416,8 @@ Common load failures are distinguishable to users/support using verified GeckoVi
 
 ---
 
+<a id="issue-13"></a>
+
 ## Issue 13 — P2 — Add accessible names to launcher actions
 
 **GitHub:** https://github.com/iNeonyne/LastHavenPlus/issues/13
@@ -426,6 +446,8 @@ Every actionable control has a clear, non-duplicated accessible name and sensibl
 - Do not ship partial implementations.
 
 ---
+
+<a id="issue-14"></a>
 
 ## Issue 14 — P2 — Add connection diagnostics
 
@@ -456,6 +478,8 @@ Help users identify whether a loading or connection problem is caused by their d
 
 ---
 
+<a id="issue-15"></a>
+
 ## Issue 15 — P2 — Make updater recovery safer
 
 **GitHub:** https://github.com/iNeonyne/LastHavenPlus/issues/15
@@ -485,6 +509,8 @@ Ensure a failed or interrupted update never leaves the user with a corrupted dow
 
 ---
 
+<a id="issue-16"></a>
+
 ## Issue 16 — P2 — Add gameplay orientation and keep-awake settings
 
 **GitHub:** https://github.com/iNeonyne/LastHavenPlus/issues/16
@@ -512,6 +538,8 @@ Let users choose portrait or landscape gameplay and control whether the display 
 - Do not ship partial implementations.
 
 ---
+
+<a id="issue-17"></a>
 
 ## Issue 17 — P2 — Back up and restore launcher settings
 
@@ -541,6 +569,8 @@ Allow users to preserve launcher preferences across reinstallations or device ch
 - Move to a later release if acceptance criteria or required device verification are incomplete; do not ship partial implementations.
 
 ---
+
+<a id="issue-18"></a>
 
 ## Issue 18 — Roadmap — GeckoView migration, home screen and addon manager
 
@@ -582,6 +612,8 @@ The next major beta change replaces Cefrium with Mozilla GeckoView and adds a ho
 - No debug APKs, partial features, automatic update downloads/installs, app ID changes or signing-key changes.
 
 ---
+<a id="issue-19"></a>
+
 ## Issue 19 — P1 — Add an opt-in beta release channel to the updater
 
 **GitHub:** https://github.com/iNeonyne/LastHavenPlus/issues/19
@@ -600,6 +632,8 @@ The next major beta change replaces Cefrium with Mozilla GeckoView and adds a ho
 
 **Dependency:** #4. Coordinate with #6; Chaty owns the updater channel control and Ploy must not duplicate it.
 
+<a id="issue-20"></a>
+
 ## Issue 20 — P0 — Verify GeckoView migration decision and stable artifact
 
 **Current audit (2026-11-25):** GeckoView 160 ARM64 artifact/API research is recorded in `docs/GECKOVIEW_MIGRATION.md`. The engine is now integrated in beta. Remaining build/runtime and physical-device checks are tracked under #21 and #5; do not describe the research decision alone as proof of game compatibility.
@@ -611,6 +645,8 @@ The next major beta change replaces Cefrium with Mozilla GeckoView and adds a ho
 Docs-only research. Verify current stable GeckoView coordinates/version through Mozilla's official Maven repository and official Javadocs; document Java compatibility, runtime/session/view lifecycle, persistent profile behavior, required delegates, ARM64/native packaging, APK size, game Web APIs and the Cefrium profile transition risk. Deliver `docs/GECKOVIEW_MIGRATION.md`. Do not change source/build files. WoW addon ZIP packages are not Gecko WebExtensions.
 
 ---
+
+<a id="issue-21"></a>
 
 ## Issue 21 — P0 — Replace Cefrium with Mozilla GeckoView
 
@@ -624,6 +660,8 @@ Replace Cefrium plugin/dependencies/repository/runtime with one verified stable 
 
 ---
 
+<a id="issue-22"></a>
+
 ## Issue 22 — P1 — Add the LastHavenPlus home screen with Play and Settings
 
 **Current assignment:** Chaty owns the home screen and navigation implementation in [PR #26](https://github.com/iNeonyne/LastHavenPlus/pull/26). PR run #317 passed the code build/unit tests; merged to beta at `e924c580699ad34f1083d1a9a0fe96901037c0ae`. Ploy has no active assignment on this issue. Required destinations are app home, settings and the existing game; the game menu must provide Reload, Home and Return to game. Home returns to the launcher home screen, and Return to game must preserve the existing GeckoSession.
@@ -635,6 +673,8 @@ Replace Cefrium plugin/dependencies/repository/runtime with one verified stable 
 Fresh launch shows a simple branded home screen with Play and Settings. Do not load the game until Play is selected. Settings must be usable without starting a browser session. Preserve the Gecko session when navigating home and make immersive/keep-awake behavior gameplay-only. Define and test Back behavior.
 
 ---
+
+<a id="issue-23"></a>
 
 ## Issue 23 — P1 — Integrate and harden the supplied GeckoView addon manager
 
