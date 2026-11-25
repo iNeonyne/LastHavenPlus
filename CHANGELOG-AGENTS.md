@@ -1,3 +1,13 @@
+## 2026-11-25 — Verify signed ARM64 beta integration
+
+- **Role:** Chaty / integration and release coordination
+- **Commit:** `e924c580699ad34f1083d1a9a0fe96901037c0ae`
+- **Workflow:** [Actions run #330](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45518704468)
+- **Result:** `assembleRelease` and `testDebugUnitTest` passed. Release APK signature verified; certificate SHA-256 matched the established key. Packaged native ABI was exactly `arm64-v8a`.
+- **Version identity:** CI resolved stable `1.0.0` / versionCode `1000000` for the beta demo artifact. Tag creation, draft release, differential release package generation and publication were skipped.
+- **Artifact:** `lasthavenplus-release-signed-arm64`, 92,919,786 bytes; artifact ZIP SHA-256 `67d9183585f451d062f217ff5106844de2f68501352fa3ad7e56db3faf6c41ca`.
+- **Not verified:** physical ARM64 gameplay, profile persistence, process-death installer restoration and actual updater installation.
+- **Next:** Complete physical device gates before promoting to main or publishing.
 ## 2026-11-25 — Merge PR #26 into beta
 
 - **Role:** Chaty / integration owner
