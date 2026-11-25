@@ -3,7 +3,7 @@
 **Last updated:** 2026-11-25  
 **Active branch:** `beta`  
 **Latest inspected beta HEAD:** `c8eb02a265012d7be898277443a53dd1e3589cad`  
-**Phase:** GeckoView 160 is integrated in beta. PR #26 now contains home/navigation and updater work plus P0 hardening for BSDIFF decompression limits, updater worker lifetime, GeckoSession cleanup, pending installer URI restoration and GeckoView R8 rules. Exact-host GitHub URL validation and Home Back confirmation are also present in the PR branch. Exact-head run #325 is in progress for `f4891ab41b36fead89030a9fccdcabb9927cee8f`; no pass is claimed yet. Physical ARM64 gameplay, profile persistence and update installation remain unverified.
+**Phase:** GeckoView 160 is integrated in beta. PR #26 now contains home/navigation and updater work plus P0 hardening for BSDIFF decompression limits, updater worker lifetime, GeckoSession cleanup, pending installer URI restoration and GeckoView R8 rules. Exact-host GitHub URL validation and Home Back confirmation are also present in the PR branch. Run #325 was cancelled by subsequent documentation commits. Final-head validation run #327 is pending for `5255a0aa4670f317b4b0a9b350652da22008c514`; no pass is claimed yet. Physical ARM64 gameplay, profile persistence and update installation remain unverified.
 
 ## Summary
 
@@ -25,7 +25,7 @@
 | CI result | `assembleRelease`, `testDebugUnitTest`, release signature verification and ARM64-only ABI verification succeeded |
 | Signed APK artifact | `lasthavenplus-release-signed-arm64` uploaded; workflow job passed |
 | Earlier measured APK size | Run #308: 92,850,795 bytes |
-| PR workflow change | Run [#325](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45517931847) is validating P0 hardening and latest-stable beta version resolution on PR #26; build/unit-test job is in progress |
+| PR workflow change | Run [#327](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45518147065) is pending for the final PR #26 head `5255a0aa4670f317b4b0a9b350652da22008c514`; run #325 was cancelled by subsequent documentation commits |
 | Release state | No promotion to `main` or new release publication performed |
 
 Run #310 is the latest successful Android run inspected. It verifies the signed ARM64 release build and unit tests for commit `91e21d4bde0a26b8d7cbfd9697615f32c2f57d21`, not the current documentation/workflow HEAD. Its total elapsed time was 3m44s, compared with 5m02s for run #308; this is an observed one-run comparison, not a controlled benchmark. Run #311 is validating the updated workflow on a push. The PR-only job is correctly skipped for that push and remains unverified until an actual PR triggers it.
