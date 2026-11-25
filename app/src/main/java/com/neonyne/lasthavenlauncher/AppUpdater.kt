@@ -9,7 +9,6 @@ import android.os.Looper
 import androidx.core.content.FileProvider
 import org.json.JSONObject
 import java.io.File
-import java.io.FileOutputStream
 import java.net.HttpURLConnection
 import java.net.URL
 import java.security.MessageDigest
