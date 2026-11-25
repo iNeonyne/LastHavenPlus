@@ -91,7 +91,7 @@ Still unverified on physical ARM64 hardware:
 ## v2.2.0 roadmap and active ownership — 2026-11-25
 
 - **Roadmap:** GitHub issue #18 is the v2.2.0 planning source of truth. v2.2.0 is a target, not release authorization.
-- **Chaty:** owns housekeeping, issue #18, central tracker/documentation, CI and branch audit, PR review and beta integration. Active docs PR branch: `chaty/housekeeping-v2.2-roadmap`.
+- **Chaty:** owns issue #18, remaining #70 Markdown/link validation and branch audit, central documentation, CI/release coordination, PR review and beta integration. Roadmap/assignment housekeeping merged by PR [#73](https://github.com/iNeonyne/LastHavenPlus/pull/73) at `c16439bfcedc9949d8ec683039fb5df85afea122`.
 - **Ploy:** assigned issue #56 only: direct game launch and responsive in-game overlay, including Settings in both orientations and preserved GeckoSession state. Must submit a focused PR targeting beta; see AGENT_WORK.md.
 - **Physical device blocker:** #5/#21 remain open. No full ARM64 gameplay/profile/update matrix is verified. Record exact device, Android version, commit/APK digest and per-test outcomes when supplied.
 - **Supersession:** #42's old v2.1.0 Home-screen-first verification is superseded by #56; verify the new UX under #5/#56.

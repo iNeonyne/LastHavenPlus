@@ -9,13 +9,12 @@
 
 ## Active assignments
 
-### Chaty — housekeeping and v2.2.0 roadmap
-- **Issues:** #18, #42, #60, #70; coordinate #5/#21/#31/#4 follow-up status.
-- **Branch:** `chaty/housekeeping-v2.2-roadmap` (documentation and issue metadata only).
-- **Scope:** update the v2.2.0 roadmap, reconcile the stale Home-screen-first issue #42 against #56, close #60 only after exact post-merge CI evidence, correct obsolete workflow language in issue #70, update this assignment file, ISSUES.md, STATUS.md and CHANGELOG-AGENTS.md; audit stale branches without deleting any branch until its diff/reference status is verified.
-- **Exclusions:** no app behavior changes, no release/tag/publication, no main changes, no Addon Manager work.
-- **Tests:** verify Markdown structure and relative links; verify referenced issue/PR/run/commit links and current beta HEAD; confirm CI run #45631249817 and #45631250015 success.
-- **Handoff:** PR targeting beta, changed-file list, commit SHA, checks, remaining limitations.
+### Chaty — v2.2.0 roadmap and immediate housekeeping
+- **Completed:** roadmap and central tracker reconciliation merged by PR [#73](https://github.com/iNeonyne/LastHavenPlus/pull/73) at `c16439bfcedc9949d8ec683039fb5df85afea122`.
+- **Closed:** #42 as superseded by #56; #60 as completed after exact-head and post-merge CI evidence.
+- **Still owned by Chaty:** finish #70 Markdown/link validation and branch audit; coordinate #5/#21/#31/#4 follow-up status; review and integrate Ploy's #56 PR.
+- **Exclusions:** no app behavior changes under this housekeeping assignment, no release/tag/publication, no main changes, no Addon Manager work.
+- **Evidence:** post-merge quality run #45631250015 and signed beta build #45631249817 passed; the build skipped release-tag publication steps.
 
 ### Ploy — issue #56 direct-launch and responsive overlay
 - **Issue:** #56 only. One owner and one active issue; do not work on #5/#21/#42 concurrently.
