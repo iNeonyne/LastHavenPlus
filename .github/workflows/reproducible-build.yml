@@ -57,6 +57,7 @@ jobs:
         run: |
           mkdir -p .reproducible
           uname -a > .reproducible/environment.txt
+          printf '\nRunner image: %s %s\n' "${ImageOS:-unknown}" "${ImageVersion:-unknown}" >> .reproducible/environment.txt
           printf '\nJDK:\n' >> .reproducible/environment.txt
           java -version 2>> .reproducible/environment.txt
           printf '\nGradle wrapper:\n' >> .reproducible/environment.txt
@@ -84,6 +85,10 @@ jobs:
           cp "${apks[0]}" .reproducible/apk/unsigned.apk
           if find app/build/outputs/apk/release -maxdepth 1 -type f -name '*signed*.apk' | grep -q .; then
             echo "::error::A signed APK unexpectedly appeared in this unsigned build."
+            exit 1
+          fi
+          if "$ANDROID_HOME/build-tools/37.0.0/apksigner" verify .reproducible/apk/unsigned.apk >/dev/null 2>&1; then
+            echo "::error::The reproducibility input unexpectedly contains a signed APK."
             exit 1
           fi
           sha256sum .reproducible/apk/unsigned.apk
