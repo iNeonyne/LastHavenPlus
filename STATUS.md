@@ -3,6 +3,7 @@
 **Last updated:** 2026-11-25  
 **Active branch:** `beta`  
 **Latest application integration commit:** `dffca7e67ef4a8dd1bec8777c2c4c8b8a51a0210` (PR [#43](https://github.com/iNeonyne/LastHavenPlus/pull/43)); PR #46 was documentation-only.  
+**Latest verified beta HEAD:** `1adc890343fb4389ad76144eb00fed2ea33e316e` (PR [#78](https://github.com/iNeonyne/LastHavenPlus/pull/78), documentation-only).  
 **Latest workflow integration:** PR [#54](https://github.com/iNeonyne/LastHavenPlus/pull/54) merged to beta at `b12da7651445d15080e7593d441459a8c8403070`; exact-head unsigned and post-merge signed CI both passed.  
 **Stable documentation:** owner-authorized v2.1.0 corrections are on `main`; README commit `fdae3d90cf3abb209df8a42dd73ed1667bae9808`, CHANGELOG commit `2abe7cc212b67a3b91f5dcdb108aee3a55559e32`.  
 **Stable promotion and publication:** PR [#47](https://github.com/iNeonyne/LastHavenPlus/pull/47) promoted to `main`; tag/release `v2.1.0` is published at `03fcfa9652ce4e7d1034523d640a1693e6e6b9ce`.  
@@ -101,7 +102,7 @@ Still unverified on physical ARM64 hardware:
 
 ## Branch audit — 2026-11-25
 
-- Current beta is `1c82e8b4aee2b0ce9ef1d9e6a68311dca4eb200b` before this documentation follow-up; no ordinary stale Chaty/Ploy feature branches remain.
+- The branch inventory/diff review was performed against beta snapshot `1c82e8b4aee2b0ce9ef1d9e6a68311dca4eb200b`; this is a historical audit baseline, not the current beta HEAD. Current beta HEAD is recorded at the top of this file (`1adc890343fb4389ad76144eb00fed2ea33e316e`). No ordinary stale Chaty/Ploy feature branches remained at the time of that inventory.
 - The six Dependabot branches correspond to six open dependency PRs and are retained until those PRs are resolved.
 - `beta-legacy-2026-11-24` is an orphaned legacy snapshot with no common ancestor with current beta. Its tree contains 91 files versus 62 on beta, including old package-name source, an obsolete layout/activity set, old updater/build files and the legacy Addon Manager assets. These are not safe to merge into current beta and are not part of the active product. The branch is retained as a deletion candidate/archive pending explicit owner confirmation; it has not been deleted.
 
