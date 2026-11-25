@@ -12,15 +12,6 @@
 **Current phase:** v2.1.0 remains the latest published release. The v2.2.0 candidate scope (#56 direct launch/overlay and #84 recreated icon) is integrated in beta and selectively promoted to main by PR #87. Beta exact-head PR validation, post-merge quality and signed ARM64 CI passed. Main exact-commit quality [run #45658476528](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45658476528) and signed ARM64 build [run #45658476677](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45658476677) both passed. The signed artifact was uploaded; release-tag, differential-generation and publication steps were skipped. No v2.2.0 version bump, tag or publication has been created. Owner feedback is collected after release on the owner's schedule and is not a blocker. PR #54 fixed draft asset cleanup/verification by release ID; the release-ID path still needs a future owner-authorized versioned release run.
 **Earlier quality-gate integration:** issue #60 merged by PR [#72](https://github.com/iNeonyne/LastHavenPlus/pull/72) at `82e819a43e6d728a9eb8fea620eca47ac9c998df`. Exact-head PR validation passed in [run #45627915789](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45627915789). Post-merge Android quality run [#45631250015](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45631250015) and beta build run [#45631249817](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45631249817) completed successfully. The beta build verified signed release APK assembly, unit tests, established signing certificate and ARM64-only ABI; release-tag publication steps were skipped.
 
-## Agent ownership workflow update — 2026-11-26
-
-- **Coordination model:** two agents only — Chaty (orchestrator/reviewer/integrator) and Vibe (implementation contributor). GitHub Issues, PRs, reviews, commits and Actions are the only agent-to-agent communication channel.
-- **Ownership labels prepared:** `agent:unassigned`, `agent:chaty`, `agent:vibe`, `agent:blocked`, `agent:review` and `agent:owner`. Exactly one ownership label should be present on an issue; only Chaty changes it.
-- **Implementation:** [PR #114](https://github.com/iNeonyne/LastHavenPlus/pull/114) is open from `chaty/agent-ownership-labels`, based on beta HEAD `6c9dadc31682db75f706435437d77969fb3e505e`. The workflow creates missing labels, labels newly opened/reopened issues and supports a controlled backfill of existing open issues.
-- **Activation limitation:** GitHub issue-event workflows run only when the workflow exists on the repository default branch. This beta-only change does not activate automatic labeling until the owner separately approves promotion to the default branch. No main changes or promotion were made.
-- **Current Vibe handoffs:** issue #106 / PR #112 and issue #107 / PR #113 are submitted and awaiting Chaty's review; #113 remains stacked on #112.
-- **Physical ARM64 testing:** unverified for both PRs. No app behavior or release state changed in this workflow task.
-
 ## Latest beta integration — PR #99 (2026-11-25)
 
 - **Issue:** #64 — centralize Gradle dependency and plugin versions.
