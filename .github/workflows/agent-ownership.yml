@@ -84,7 +84,7 @@ jobs:
           while IFS= read -r number; do
             [[ -n "$number" ]] || continue
             case "$number" in
-              5|21) label="agent:owner" ;;
+              5|21|67) label="agent:owner" ;;
               7|19|23|86) label="agent:blocked" ;;
               4|15|18|20|31|70|111) label="agent:chaty" ;;
               106|107) label="agent:review" ;;
