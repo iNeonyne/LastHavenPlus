@@ -1,6 +1,6 @@
 plugins {
-    id("com.android.application")
-    id("org.jetbrains.kotlin.plugin.compose")
+    alias(libs.plugins.android.application)
+    alias(libs.plugins.kotlin.compose)
 }
 
 val releaseStoreFile = System.getenv("ANDROID_KEYSTORE_PATH")
@@ -63,20 +63,20 @@ android {
 }
 
 dependencies {
-    implementation("org.mozilla.geckoview:geckoview-arm64-v8a:160.0.20261116130455")
+    implementation(libs.geckoview.arm64)
 
-    implementation("androidx.appcompat:appcompat:1.7.0")
-    implementation("androidx.mediarouter:mediarouter:1.7.0")
-    implementation("androidx.core:core:1.16.0")
-    implementation("androidx.browser:browser:1.8.0")
-    implementation("androidx.activity:activity-compose:1.13.0")
-    implementation("org.apache.commons:commons-compress:1.27.1")
+    implementation(libs.androidx.appcompat)
+    implementation(libs.androidx.mediarouter)
+    implementation(libs.androidx.core)
+    implementation(libs.androidx.browser)
+    implementation(libs.androidx.activity.compose)
+    implementation(libs.commons.compress)
 
-    testImplementation("junit:junit:4.13.2")
+    testImplementation(libs.junit)
 
-    val composeBom = platform("androidx.compose:compose-bom:2026.09.00")
+    val composeBom = platform(libs.androidx.compose.bom)
     implementation(composeBom)
-    implementation("androidx.compose.ui:ui")
-    implementation("androidx.compose.foundation:foundation")
-    implementation("androidx.compose.material3:material3")
+    implementation(libs.androidx.compose.ui)
+    implementation(libs.androidx.compose.foundation)
+    implementation(libs.androidx.compose.material3)
 }
