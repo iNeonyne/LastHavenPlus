@@ -9,7 +9,7 @@ LastHavenPlus is a lightweight Android launcher for the existing LastHaven Wrath
 
 ## Project state
 
-Development continues on `beta`; `main` is the stable release branch. The published stable release is **v2.0.0**. Its GitHub release metadata confirms the signed ARM64 APK asset `lasthavenplus-arm64.apk` and update manifest `lasthavenplus-update.json`.
+Development continues on `beta`; `main` is the stable release branch. The published stable release is **v2.0.0**. Its GitHub release metadata confirms the ARM64 APK asset `lasthavenplus-arm64.apk` and update manifest `lasthavenplus-update.json`.
 
 The current beta source includes Mozilla GeckoView 160, the launcher Home screen, Play/Settings navigation and updater hardening. Updater hardening was integrated in beta at commit `1d6c1ec42becab44735edfd0323dfc60ff4b9f9d`. Exact-head unsigned PR validation passed in [Actions #345](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45521843766), and the signed ARM64 branch build, unit tests, signing-certificate and ABI checks passed in [Actions #346](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45522408962) for that exact merge commit. The current beta HEAD is `1f300b90e5aed9a5eaa86e473b746f0841d42b16`; the commits after #346 are documentation-only. PR [#32](https://github.com/iNeonyne/LastHavenPlus/pull/32) remains open for release-workflow timeout/fallback hardening and has not passed exact-head CI.
 
@@ -80,7 +80,7 @@ See [STATUS.md](STATUS.md) for exact commits, outstanding checks and blockers.
 
 ## Download and update
 
-Install the signed stable APK from [GitHub Releases](https://github.com/iNeonyne/LastHavenPlus/releases). The published v2.0.0 release includes `lasthavenplus-arm64.apk` and `lasthavenplus-update.json`.
+Install the stable APK from [GitHub Releases](https://github.com/iNeonyne/LastHavenPlus/releases). The published v2.0.0 release includes `lasthavenplus-arm64.apk` and `lasthavenplus-update.json`.
 
 The updater is opt-in: it checks for a newer stable release and lets the user choose whether to download and install it. A differential patch is eligible only when the installed base version and APK digest match. Otherwise, the full APK is used. The downloaded package is checked for digest, package identity, version and signing certificate before Android's installer is opened.
 
