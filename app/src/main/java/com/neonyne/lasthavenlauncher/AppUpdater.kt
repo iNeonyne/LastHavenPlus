@@ -113,10 +113,7 @@ object AppUpdater {
                     UpdateCheckResult.NoUpdate
                 } else {
                     val tag = release.getString("tag_name")
-                    val latestVersion = tag.removePrefix("v")
-                    check(isValidVersion(latestVersion)) {
-                        "Release tag must use vMAJOR.MINOR.PATCH"
-                    }
+                    val latestVersion = UpdateVersionPolicy.releaseVersionFromTag(tag)
 
                     val packageInfo = installedPackageInfo(appContext)
                     val currentVersion = packageInfo.versionName ?: "0.0.0"
@@ -511,8 +508,6 @@ object AppUpdater {
         UpdateVersionPolicy.requireGithubAssetUrl(value)
 
 
-
-    private fun isValidVersion(version: String): Boolean = UpdateVersionPolicy.isValid(version)
 
     private fun versionCodeForVersion(version: String): Long =
         UpdateVersionPolicy.versionCode(version)
