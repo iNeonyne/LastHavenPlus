@@ -16,7 +16,12 @@ internal object UpdateFallback {
         return try {
             deltaAttempt()
         } catch (error: Exception) {
-            onDeltaFailure(error)
+            // Diagnostics must never prevent the independently verified full APK fallback.
+            try {
+                onDeltaFailure(error)
+            } catch (_: Exception) {
+                // Logging is best-effort; the full APK remains the recovery path.
+            }
             fullAttempt()
         }
     }
