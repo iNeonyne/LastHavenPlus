@@ -10,15 +10,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
-import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -27,10 +19,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.unit.dp
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
@@ -44,7 +33,7 @@ private const val KEY_GAME_URL = "game_url"
 private const val TAG = "LastHavenLauncher"
 private const val KEY_PENDING_UPDATE_URI = "pending_update_uri"
 
-enum class Screen { Home, Game }
+enum class Screen { Home, Game, GameMenu, Settings, Diagnostics, Update }
 
 class MainActivity : ComponentActivity() {
     private var pendingUpdateUri: Uri? = null
@@ -154,9 +143,9 @@ private fun LastHavenApp(
     }
 
     var currentScreen by remember { mutableStateOf(Screen.Home) }
-    var showGameMenu by remember { mutableStateOf(false) }
-    var showSettingsDialog by remember { mutableStateOf(false) }
-    var showDiagnosticsDialog by remember { mutableStateOf(false) }
+    var settingsReturnScreen by remember { mutableStateOf(Screen.Home) }
+    var diagnosticsReturnScreen by remember { mutableStateOf(Screen.Settings) }
+    var updateReturnScreen by remember { mutableStateOf(Screen.Home) }
     var availableUpdate by remember { mutableStateOf<AppUpdateInfo?>(null) }
     var updateMessage by remember { mutableStateOf<String?>(null) }
     var isDownloadingUpdate by remember { mutableStateOf(false) }
@@ -168,7 +157,7 @@ private fun LastHavenApp(
     var pageLoadFailed by remember { mutableStateOf(false) }
     var hasLoadedGame by remember { mutableStateOf(false) }
 
-    // Preserve the session on Home; close it only when the Activity composition is destroyed.
+    // Keep the GeckoSession alive while its view is detached for launcher destinations.
     DisposableEffect(session) {
         val sessionToClose = session
         onDispose { sessionToClose?.close() }
@@ -208,24 +197,41 @@ private fun LastHavenApp(
                 hasLoadedGame = true
             }
         }
-        showGameMenu = false
         currentScreen = Screen.Game
     }
 
-    val checkForUpdates: () -> Unit = {
+    val checkForUpdates: (Boolean) -> Unit = { showResult ->
         isCheckingUpdate = true
+        updateMessage = null
         onCheckUpdates { result ->
             isCheckingUpdate = false
             when (result) {
-                is UpdateCheckResult.Available -> availableUpdate = result.update
-                is UpdateCheckResult.Failed -> updateMessage = result.message
-                UpdateCheckResult.NoUpdate -> updateMessage = "You are using the latest version."
+                is UpdateCheckResult.Available -> {
+                    availableUpdate = result.update
+                    updateMessage = null
+                }
+                is UpdateCheckResult.Failed -> {
+                    updateMessage = result.message
+                }
+                UpdateCheckResult.NoUpdate -> {
+                    availableUpdate = null
+                    updateMessage = if (showResult) "You are using the latest version." else null
+                }
             }
         }
     }
 
-    val gameplayActive = currentScreen == Screen.Game &&
-        !showSettingsDialog && !showDiagnosticsDialog
+    val openUpdate: (Screen) -> Unit = { returnTo ->
+        updateReturnScreen = returnTo
+        currentScreen = Screen.Update
+    }
+
+    val openSettings: (Screen) -> Unit = { returnTo ->
+        settingsReturnScreen = returnTo
+        currentScreen = Screen.Settings
+    }
+
+    val gameplayActive = currentScreen == Screen.Game
     DisposableEffect(gameplayActive) {
         onGameplayUiChanged(gameplayActive)
         onDispose {
@@ -234,155 +240,94 @@ private fun LastHavenApp(
     }
 
     LaunchedEffect(Unit) {
-        // A metadata-only check is safe at startup; downloads and installation remain explicit.
-        isCheckingUpdate = true
-        onCheckUpdates { result ->
-            isCheckingUpdate = false
-            when (result) {
-                is UpdateCheckResult.Available -> availableUpdate = result.update
-                is UpdateCheckResult.Failed -> updateMessage = result.message
-                UpdateCheckResult.NoUpdate -> Unit
-            }
+        // Metadata-only startup check. It never downloads or installs an update.
+        checkForUpdates(false)
+    }
+
+    BackHandler(enabled = currentScreen != Screen.Home) {
+        currentScreen = when (currentScreen) {
+            Screen.Game -> Screen.GameMenu
+            Screen.GameMenu -> Screen.Game
+            Screen.Settings -> settingsReturnScreen
+            Screen.Diagnostics -> diagnosticsReturnScreen
+            Screen.Update -> updateReturnScreen
+            Screen.Home -> Screen.Home
         }
     }
 
     MaterialTheme(colorScheme = darkColorScheme()) {
         when (currentScreen) {
             Screen.Home -> HomeScreen(
+                updateVersion = availableUpdate?.version,
                 onStartGame = startGame,
-                onOpenSettings = { showSettingsDialog = true },
+                onOpenSettings = { openSettings(Screen.Home) },
+                onOpenUpdate = { openUpdate(Screen.Home) },
                 onExit = onExit,
             )
+
             Screen.Game -> GameScreen(
                 session = session,
                 isLoading = isLoading,
                 pageLoadFailed = pageLoadFailed,
                 onReload = reloadGame,
-                onShowMenu = { showGameMenu = true },
             )
-        }
 
-        if (currentScreen == Screen.Game) {
-            BackHandler { showGameMenu = true }
-        }
-
-        if (showGameMenu && currentScreen == Screen.Game) {
-            GameMenuDialog(
+            Screen.GameMenu -> GameMenuScreen(
                 onReload = {
-                    showGameMenu = false
                     reloadGame()
+                    currentScreen = Screen.Game
                 },
-                onHome = {
-                    showGameMenu = false
-                    currentScreen = Screen.Home
+                onSettings = { openSettings(Screen.Game) },
+                onReturnToGame = { currentScreen = Screen.Game },
+            )
+
+            Screen.Settings -> SettingsScreen(
+                context = context,
+                usageMeter = usageMeter,
+                isCheckingUpdate = isCheckingUpdate,
+                onBack = { currentScreen = settingsReturnScreen },
+                onOpenDiagnostics = {
+                    diagnosticsReturnScreen = Screen.Settings
+                    currentScreen = Screen.Diagnostics
                 },
-                onReturnToGame = { showGameMenu = false },
-                onSettings = {
-                    showGameMenu = false
-                    showSettingsDialog = true
-                },
-                onDiagnostics = {
-                    showGameMenu = false
-                    showDiagnosticsDialog = true
-                },
+                onOpenUpdates = { openUpdate(Screen.Settings) },
                 onCheckUpdates = {
-                    showGameMenu = false
-                    checkForUpdates()
+                    updateReturnScreen = Screen.Settings
+                    currentScreen = Screen.Update
+                    checkForUpdates(true)
                 },
-                onExit = {
-                    showGameMenu = false
-                    onExit()
-                },
-                onDismiss = { showGameMenu = false },
             )
-        }
 
-        if ((availableUpdate != null)) {
-            val update = availableUpdate!!
-            AlertDialog(
-                onDismissRequest = { if (!isDownloadingUpdate) availableUpdate = null },
-                title = { Text("Update available") },
-                text = {
-                    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                        Text("LastHavenPlus ${update.version} is available.")
-                        if (update.patch != null) {
-                            Text(
-                                "A smaller differential download is available " +
-                                    "(${"%.1f".format(update.patch.size / 1024.0 / 1024.0)} MiB).",
-                            )
-                        }
-                        Text(update.releaseNotes, maxLines = 8)
-                        if (isDownloadingUpdate) {
-                            LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
-                            Text(if (downloadingDelta) "Downloading smaller update…" else "Downloading full APK…")
-                        }
-                    }
-                },
-                confirmButton = {
-                    Button(
-                        enabled = !isDownloadingUpdate,
-                        onClick = {
-                            isDownloadingUpdate = true
-                            downloadingDelta = update.patch != null
-                            onDownloadUpdate(update, update.patch != null) { result ->
-                                isDownloadingUpdate = false
-                                result.onSuccess { uri ->
-                                    availableUpdate = null
-                                    onInstallUpdate(uri)
-                                }.onFailure { error ->
-                                    updateMessage = error.message ?: "Update download failed"
-                                }
+            Screen.Diagnostics -> DiagnosticsScreen(
+                context = context,
+                onBack = { currentScreen = diagnosticsReturnScreen },
+            )
+
+            Screen.Update -> UpdateScreen(
+                update = availableUpdate,
+                message = updateMessage,
+                isChecking = isCheckingUpdate,
+                isDownloading = isDownloadingUpdate,
+                downloadingDelta = downloadingDelta,
+                onBack = { currentScreen = updateReturnScreen },
+                onDownload = { preferDelta ->
+                    val update = availableUpdate
+                    if (update != null) {
+                        isDownloadingUpdate = true
+                        downloadingDelta = preferDelta
+                        updateMessage = null
+                        onDownloadUpdate(update, preferDelta) { result ->
+                            isDownloadingUpdate = false
+                            result.onSuccess { uri ->
+                                availableUpdate = null
+                                onInstallUpdate(uri)
+                            }.onFailure { error ->
+                                updateMessage = error.message ?: "Update download failed"
                             }
-                        },
-                    ) {
-                        Text(if (isDownloadingUpdate) "Downloading…" else if (update.patch != null) "Download smaller update" else "Download update")
-                    }
-                },
-                dismissButton = {
-                    Column(horizontalAlignment = Alignment.End) {
-                        if (update.patch != null) {
-                            TextButton(
-                                enabled = !isDownloadingUpdate,
-                                onClick = {
-                                    isDownloadingUpdate = true
-                                    downloadingDelta = false
-                                    onDownloadUpdate(update, false) { result ->
-                                        isDownloadingUpdate = false
-                                        result.onSuccess { uri ->
-                                            availableUpdate = null
-                                            onInstallUpdate(uri)
-                                        }.onFailure { error ->
-                                            updateMessage = error.message ?: "Full APK download failed"
-                                        }
-                                    }
-                                },
-                            ) { Text("Download full APK instead") }
                         }
-                        TextButton(
-                            enabled = !isDownloadingUpdate,
-                            onClick = { availableUpdate = null },
-                        ) { Text("Later") }
                     }
                 },
             )
-        }
-
-        if (updateMessage != null) {
-            AlertDialog(
-                onDismissRequest = { updateMessage = null },
-                title = { Text("Update check") },
-                text = { Text(updateMessage!!) },
-                confirmButton = {
-                    TextButton(onClick = { updateMessage = null }) { Text("OK") }
-                },
-            )
-        }
-
-        if (showSettingsDialog) {
-            SettingsDialog(context, usageMeter) { showSettingsDialog = false }
-        }
-        if (showDiagnosticsDialog) {
-            DiagnosticsDialog(context) { showDiagnosticsDialog = false }
         }
     }
 }

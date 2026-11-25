@@ -1,5 +1,22 @@
 # LastHavenPlus release changelog
 
+## v2.1.0 — candidate (not yet published)
+
+### Launcher and navigation
+- Redesign the launcher Home screen with responsive compact and wide layouts.
+- Add adaptive launcher icon resources.
+- Remove the persistent gameplay Menu button.
+- Open the game menu with Android Back; retain only Reload, Settings and Return to game.
+- Replace Settings, diagnostics and update dialogs with full-screen pages.
+- Retain the existing GeckoSession while its view is detached for launcher navigation.
+
+### Build verification
+- PR #43 exact-head unsigned release build and JVM unit tests passed (run #386).
+- Post-merge beta signed build and unit tests passed (run #45601558602).
+- The signed beta APK contained arm64-v8a only and matched the established release certificate SHA-256 b3bbf7520e77dfc384a60b1eee6c5f205b978f9b453849e2be523f642018d263.
+- The beta artifact uses stable version identity 2.0.0; the final 2.1.0 versioned APK must be built from a tag on main.
+- Physical ARM64 verification of the new UI, session retention and GeckoView feature matrix remains outstanding.
+
 ## v2.0.0 — 2026-11-25
 
 ### Browser engine and launcher
@@ -16,9 +33,9 @@
 - Keep update checks, downloads and installation user-initiated; Android's package installer remains in control.
 
 ### Compatibility and limitations
-- Keep Android 10/API 29+, ARM64-only packaging, application ID `com.neonyne.lasthavenlauncher` and the established release signing identity.
+- Keep Android 10/API 29+, ARM64-only packaging, application ID com.neonyne.lasthavenlauncher and the established release signing identity.
 - Physical ARM64 gameplay, GeckoView profile persistence, media/fullscreen behavior and real update installation were not completed before this release. Follow-up device verification remains required.
-- Addon manager replacement remains on hold and is not included.
+- Addon manager replacement was not included.
 
 ## v1.0.0 — 2026-11-24
 
