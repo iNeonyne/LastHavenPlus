@@ -278,3 +278,13 @@
 - **Issue triage:** Updated physical device issue #5 to the canonical `https://lasthavens.com/play` URL and included updater recovery tests. Created #28 for storage measurement accuracy/iterative traversal and #29 for stale documentation/CI evidence. Existing #4 and #15 remain open.
 - **Verification:** No Gradle build or test command has been run in this environment. Candidate is not integrated; exact-head PR CI is the next verification step.
 - **Next safe action:** Open a PR targeting `beta`, inspect CI for exact candidate SHA, then update #4/#15 and STATUS with evidence. Do not merge to main or publish.
+
+
+### 2026-11-25 — Extend updater manifest validation coverage
+
+- **PR:** [#30](https://github.com/iNeonyne/LastHavenPlus/pull/30).
+- **Candidate HEAD:** `c68db2c8704813822c27b86dfb48cffbb84eb87f`.
+- **Changes:** Extracted manifest schema/version/versionCode/APK-name/size validation and exact delta base compatibility into a pure policy; added base APK digest validation helper. Added tests for malformed/inconsistent manifest fields, base version/code mismatch and base digest mismatch.
+- **CI:** Exact-head run [#340](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45521280150) is pending. No pass claimed.
+- **Correction:** Two new policy files were briefly created on main by a contents-API call without an explicit branch parameter; both were immediately deleted. A compare against the pre-change main commit confirms zero file differences; main's tree is unchanged. All intended policy files are present on the PR branch.
+- **Next safe action:** Wait for run #340, inspect logs/results and review the final PR head before merging into beta.
