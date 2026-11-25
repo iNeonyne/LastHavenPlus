@@ -90,11 +90,12 @@ Issue #23 and all addon-manager work are on hold by owner instruction (2026-11-2
 
 - PR #43 exact-head unsigned validation passed in [run #386](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45600824024) for `505e4fe4b91e0fcfae5aecf58ef9d9376e5598d3`.
 - PR #43 merged to beta at `dffca7e67ef4a8dd1bec8777c2c4c8b8a51a0210`.
-- Post-merge signed beta run [#45601558602](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45601558602) must be checked for final conclusion, artifact, certificate and ABI verification before release readiness is claimed.
-- The last previously verified signed ARM64 build was run #330 for older commit `e924c580699ad34f1083d1a9a0fe96901037c0ae`; it does not verify the v2.1.0 candidate.
+- Post-merge signed beta run [#45601558602](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45601558602) passed build, unit tests, established signing-certificate verification and ARM64-only ABI checks, as recorded in merged PR #47.
+- Published v2.1.0 tag run [#45603533787](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45603533787) built versionName 2.1.0 / versionCode 2001000; signature, established certificate, ARM64-only ABI, differential generation and asset upload/publish steps passed. The final draft-by-tag lookup failed HTTP 404; PR #54 later changed cleanup and verification to use the release ID output from the release action. PR #54 exact-head validation passed in run #45610110307; post-merge signed beta run #45610518305 is pending.
+- Physical ARM64 game/profile/UI/update verification remains unverified; CI does not replace the device matrix.
 
 Remaining work:
-1. Inspect exact post-merge signed build and artifact.
-2. Complete physical ARM64 game, profile, permission, media, navigation and updater tests.
-3. Inspect the adaptive launcher icon in the built APK.
-4. Review the beta-to-main promotion diff while preserving stable-branch history and stable documentation policy.
+1. Complete physical ARM64 game, profile, permission, media, navigation and updater tests.
+2. Inspect the adaptive launcher icon in the built APK.
+3. Complete the remaining GeckoView 160 artifact/POM/transitive-dependency/license/API audit under issue #20.
+4. Exercise the release-ID draft cleanup/verification path and optional differential fallback failure cases on a future owner-authorized versioned release run; do not republish v2.1.0 for testing.
