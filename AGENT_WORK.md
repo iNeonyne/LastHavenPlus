@@ -1,46 +1,45 @@
 # Agent work assignments — LastHavenPlus
 
-**Baseline:** `beta` at `01af3f488225eaa5321b994a3957e53dcdb70c55` for the owner-directed #56 takeover.
+**Baseline:** `beta` at `073f839eb3cccd9a13fae09dd091667bb86a1f0c` after v2.2.0 scope integration.
 
 ## Roles
 
 - **Chaty — roadmap and housekeeping:** owns issue #18 and central tracker/documentation reconciliation, branch audit, CI evidence, PR review and integration. Chaty alone may merge accepted PRs into `beta`.
-- **Chaty — issue #56 implementation:** owner-directed takeover from Ploy on 2026-11-25; Chaty implements the direct-launch and responsive in-game overlay on `chaty/issue-56-direct-launch-overlay` and opens a PR targeting `beta`. Ploy must not work on #56 in parallel.
+- **Chaty — issue #56 implementation:** completed via PR [#83](https://github.com/iNeonyne/LastHavenPlus/pull/83), merged to beta. Ploy is released from this issue; no overlapping work remains.
 
 ## Active assignments
 
 ### Chaty — v2.2.0 roadmap and immediate housekeeping
 - **Completed:** roadmap and central tracker reconciliation merged by PR [#73](https://github.com/iNeonyne/LastHavenPlus/pull/73) at `c16439bfcedc9949d8ec683039fb5df85afea122`.
 - **Closed:** #42 as superseded by #56; #60 as completed after exact-head and post-merge CI evidence.
-- **Still owned by Chaty:** finish #70 Markdown syntax/lint validation; coordinate #5/#21/#31/#4 follow-up status; implement, review and integrate Chaty's #56 PR. Branch inventory/diff audit is complete.
-- **Exclusions:** no app behavior changes under this housekeeping assignment, no release/tag/publication, no main changes, no Addon Manager work.
+- **Still owned by Chaty:** finish #70 Markdown syntax/lint validation; keep #4/#15/#31 and supporting feature work tracked in the v2.3.0 backlog #86; maintain CI/release records. Branch inventory/diff audit and #56/#84 integration are complete.
+- **Exclusions:** no new feature work outside the owner-approved v2.2.0 scope, no version bump/tag/publication without explicit approval, no Addon Manager work.
 - **Evidence:** post-merge quality run #45631250015 and signed beta build #45631249817 passed; the build skipped release-tag publication steps.
 
-### Chaty — active application implementation
+### Chaty — application implementation status
 
-**Active assignment: #56 — direct launch and responsive in-game overlay.**  
-Branch: `chaty/issue-56-direct-launch-overlay`, created from beta `01af3f488225eaa5321b994a3957e53dcdb70c55`. Chaty owns implementation and integration. Ploy must not edit #56 concurrently.
+**#56 — complete.** Direct launch and responsive overlay merged in PR #83 at `2e64f56d9dbf82fa0396d8e23b5e52a62506d9ae`; approved icon merged in PR #85 at `073f839eb3cccd9a13fae09dd091667bb86a1f0c`. Selective promotion to stable main merged in PR #87 at `f22b5c2b92b6f93b201b1a9dc50a8c8095543d76`. Exact beta PR validation and post-merge quality/signed ARM64 CI passed. Main post-merge CI is tracked in STATUS.md.
 
 ### Ploy — application issue queue (one active issue only)
 
-Ploy is released from #56 and has no active application issue until Chaty completes and merges #56. **Do not start queued work early.**
+Ploy has no active application issue. The remaining supporting features are deferred to v2.3.0 under #86. **Do not start queued work until the owner prioritizes and assigns it.**
 
 **Queued work (strict order; do not start early):**
 
 | Order | Issue | Status | Start condition / narrow scope |
 |---:|---|---|---|
-| 1 | [#56](https://github.com/iNeonyne/LastHavenPlus/issues/56) | CHATY ACTIVE | Direct launch, responsive overlay, preserve same GeckoSession, Settings in both orientations, gameplay/system UI behavior, remove idle progress bar |
-| 2 | [#9](https://github.com/iNeonyne/LastHavenPlus/issues/9) | QUEUED | After #56 merge: overlay accessibility semantics, TalkBack order/labels and automated navigation coverage |
-| 3 | [#11](https://github.com/iNeonyne/LastHavenPlus/issues/11) | QUEUED | After #9 merge: diagnostics redaction, bounded rotation/size and failure-path tests only |
+| 1 | [#56](https://github.com/iNeonyne/LastHavenPlus/issues/56) | COMPLETE | Direct launch, responsive overlay and session-preserving navigation integrated |
+| 2 | [#9](https://github.com/iNeonyne/LastHavenPlus/issues/9) | QUEUED | Deferred to v2.3.0; start only after owner prioritization: overlay accessibility semantics, TalkBack order/labels and automated navigation coverage |
+| 3 | [#11](https://github.com/iNeonyne/LastHavenPlus/issues/11) | QUEUED | Deferred to v2.3.0; diagnostics redaction, bounded rotation/size and failure-path tests only |
 | 4 | [#12](https://github.com/iNeonyne/LastHavenPlus/issues/12) | QUEUED | After #11 merge: safe GeckoView 160 load-error category mapping and tests |
-| 5 | [#14](https://github.com/iNeonyne/LastHavenPlus/issues/14) | QUEUED | After #12 merge: explicit user-triggered DNS/HTTPS reachability diagnostics |
+| 5 | [#14](https://github.com/iNeonyne/LastHavenPlus/issues/14) | QUEUED | Deferred to v2.3.0; explicit user-triggered DNS/HTTPS reachability diagnostics |
 | 6 | [#16](https://github.com/iNeonyne/LastHavenPlus/issues/16) | QUEUED | After #14 and #56: persisted gameplay orientation/keep-awake preferences and lifecycle cleanup |
 | 7 | [#10](https://github.com/iNeonyne/LastHavenPlus/issues/10) | QUEUED | After #16: persistent app-wide per-UID network totals; no telemetry or game-only attribution |
 | 8 | [#28](https://github.com/iNeonyne/LastHavenPlus/issues/28) | QUEUED | After #10: accurate APK/data/cache reporting and iterative bounded storage traversal |
-| 9 | [#6](https://github.com/iNeonyne/LastHavenPlus/issues/6) | QUEUED | After #28: essential settings surface and editable HTTPS game-URL validation/persistence only; #16/#28/#19 remain separate |
+| 9 | [#6](https://github.com/iNeonyne/LastHavenPlus/issues/6) | QUEUED | Deferred to v2.3.0; essential settings surface and editable HTTPS game-URL validation/persistence only; #16/#28/#19 remain separate |
 | 10 | [#17](https://github.com/iNeonyne/LastHavenPlus/issues/17) | QUEUED | After #6: versioned import/export of an allowlist of non-sensitive launcher preferences |
 
-**Not assigned to Ploy:** #4/#15 updater code and recovery (Chaty; overlapping high-risk updater scope); #5/#21 optional owner release feedback (not an engineering or release blocker); #20 GeckoView dependency record, #31 release workflow, #61–#66 CI/build/security tasks, #70 documentation validation (Chaty); #7 requires measured device evidence; #19 is deferred and coordinated by Chaty; #67 requires the repository owner's license decision.
+**Not assigned to Ploy:** #4/#15 updater code and recovery (Chaty; overlapping high-risk updater scope); #5/#21 optional owner release feedback (not an engineering or release blocker); #20 GeckoView dependency record, #31 release workflow, #61–#66 CI/build/security tasks, #70 documentation validation (Chaty); #7 requires comparable, repeatable measurements; #19 is deferred and coordinated by Chaty; #67 requires the repository owner's license decision.
 
 **GitHub assignees:** Ploy is an internal agent role, not a confirmed GitHub account login. Mark assignments in issue bodies and `AGENT_WORK.md`; do not invent a GitHub username or assign an unrelated account.
 
@@ -52,7 +51,7 @@ Ploy is released from #56 and has no active application issue until Chaty comple
 
 - Keep one issue per PR and non-overlapping scopes.
 - Contributors work on task branches and open PRs targeting beta.
-- Chaty alone reviews and merges into beta.
+- Chaty alone reviews and merges into beta. Owner-authorized stable promotion uses a separate main-based PR that preserves main-only history.
 - If beta advances, refresh and rerun affected checks before merge.
 - Never force-push shared branches or push directly to beta/main.
 - The owner retains final product and release authority.
