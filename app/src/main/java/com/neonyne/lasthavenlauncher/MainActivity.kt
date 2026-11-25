@@ -281,7 +281,6 @@ private fun LastHavenApp(
             Screen.Game -> Box(modifier = androidx.compose.ui.Modifier.fillMaxSize()) {
                 GameScreen(
                     session = session,
-                    isLoading = isLoading,
                     pageLoadFailed = pageLoadFailed,
                     onReload = reloadGame,
                 )
