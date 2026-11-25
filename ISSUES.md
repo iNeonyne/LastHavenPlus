@@ -28,18 +28,18 @@ Ploy is an internal agent role, not a confirmed GitHub login; assignment is visi
 |---|---:|---|---|
 | [#4](#issue-4) | P0.1 | Build reproducibility and updater test coverage | Open; v2.1.0 signed ARM64 artifact verified, physical update and remaining updater tests remain |
 | [#5](#issue-5) | P0.2 | Physical ARM64 gameplay and update verification | Open; owner smoke test reported, full feature matrix remains unverified |
-| [#6](#issue-6) | P2 | Settings and safe storage controls | Open; implementation exists, device verification remains |
+| [#6](#issue-6) | P2 | [PLOY QUEUED 9] Essential launcher settings and safe storage controls | Open; implementation exists, device verification remains |
 | [#7](#issue-7) | P3 | Runtime performance and APK size | Open; measure before optimizing |
 | [#8](#issue-8) | — | Legacy addon manager | Closed — superseded; no planned work |
-| [#9](#issue-9) | P2 | Accessibility and navigation verification | Open; TalkBack semantics and physical navigation checks remain for the #56 overlay |
-| [#10](#issue-10) | P2 | App-wide network usage verification | Open; app-wide counters are implemented, physical readings remain to verify |
-| [#11](#issue-11) | P2 | Privacy-conscious diagnostics | Paused; further tests remain |
-| [#12](#issue-12) | P2 | GeckoView load-error details | Open |
+| [#9](#issue-9) | P2 | [PLOY QUEUED 2] Overlay accessibility and navigation | Open; TalkBack semantics and physical navigation checks remain for the #56 overlay |
+| [#10](#issue-10) | P2 | [PLOY QUEUED 7] Persistent app-wide network usage totals | Open; app-wide counters are implemented, physical readings remain to verify |
+| [#11](#issue-11) | P2 | [PLOY QUEUED 3] Privacy-conscious log tests | Paused; further tests remain |
+| [#12](#issue-12) | P2 | [PLOY QUEUED 4] GeckoView load-error details | Open |
 | [#13](#issue-13) | — | Accessible names / legacy addon-manager compile work | Closed — consolidated into #9 |
-| [#14](#issue-14) | P2 | Connection diagnostics | Open |
+| [#14](#issue-14) | P2 | [PLOY QUEUED 5] Connection diagnostics | Open |
 | [#15](#issue-15) | P2 | Updater recovery | Open |
-| [#16](#issue-16) | P2 | Gameplay orientation and keep-awake settings | Open |
-| [#17](#issue-17) | P2 | Settings backup and restore | Open |
+| [#16](#issue-16) | P2 | [PLOY QUEUED 6] Gameplay orientation and keep-awake settings | Open |
+| [#17](#issue-17) | P2 | [PLOY QUEUED 10] Settings backup and restore | Open |
 | [#18](#issue-18) | Roadmap | v2.2.0 roadmap and release gates | Open; planning and sequencing updated |
 | [#19](#issue-19) | P1 | Opt-in beta release channel | Open |
 | [#20](#issue-20) | P1 | GeckoView 160 artifact/dependency audit | Decision implemented; POM, transitive dependencies, notices and size evidence remain |
@@ -50,7 +50,7 @@ Ploy is an internal agent role, not a confirmed GitHub login; assignment is visi
 | [#42](https://github.com/iNeonyne/LastHavenPlus/issues/42) | Superseded | v2.1.0 Home-screen UI verification | Superseded by direct-launch redesign #56; new UX verification belongs to #5/#56 |
 | [#29](https://github.com/iNeonyne/LastHavenPlus/issues/29) | Done | Reconcile beta documentation and CI evidence | Closed as completed after PR #46 merged to beta |
 | [#31](https://github.com/iNeonyne/LastHavenPlus/issues/31) | P0 | Draft release asset verification and differential fallback | PR #54 merged; exact-head unsigned and post-merge signed beta runs passed; live release-ID path/fallback checks remain |
-| [#56](https://github.com/iNeonyne/LastHavenPlus/issues/56) | P1 | Direct launch and responsive in-game overlay | Active implementation; Ploy assigned, Chaty reviews/integrates |
+| [#56](https://github.com/iNeonyne/LastHavenPlus/issues/56) | P1 | [PLOY ACTIVE] Direct launch and responsive in-game overlay | Active implementation; Ploy assigned, Chaty reviews/integrates |
 | [#60](https://github.com/iNeonyne/LastHavenPlus/issues/60) | Done | Android lint and Kotlin formatting quality gate | PR #72 merged; exact-head PR and post-merge beta quality/build workflows passed |
 
 ---
