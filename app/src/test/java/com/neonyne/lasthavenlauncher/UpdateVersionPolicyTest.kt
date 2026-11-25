@@ -32,6 +32,27 @@ class UpdateVersionPolicyTest {
     }
 
     @Test
+    fun parsesOnlyCanonicalStableReleaseTags() {
+        assertEquals("2.3.14", UpdateVersionPolicy.releaseVersionFromTag("v2.3.14"))
+        listOf(
+            "2.3.14",
+            "vv2.3.14",
+            "v2.3",
+            "v2.3.14-beta",
+            "v01.3.14",
+            "v2.3.1000",
+            "v2.3.14/../other",
+        ).forEach { tag ->
+            try {
+                UpdateVersionPolicy.releaseVersionFromTag(tag)
+                throw AssertionError("Expected invalid release tag rejection: $tag")
+            } catch (_: IllegalArgumentException) {
+                // Expected.
+            }
+        }
+    }
+
+    @Test
     fun validatesAndNormalizesSha256() {
         val digest = "A".repeat(64)
         assertEquals("a".repeat(64), UpdateVersionPolicy.requireSha256(digest))
