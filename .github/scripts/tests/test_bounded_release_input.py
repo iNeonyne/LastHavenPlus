@@ -64,6 +64,12 @@ class FakeResponse(io.BytesIO):
     def __init__(self, body, headers):
         super().__init__(body)
         self.headers = headers
+        self.bytes_read = 0
+
+    def read(self, size=-1):
+        chunk = super().read(size)
+        self.bytes_read += len(chunk)
+        return chunk
 
     def getcode(self):
         return 200
@@ -118,7 +124,7 @@ class BoundedDownloadTests(unittest.TestCase):
                         destination,
                         8,
                     )
-            self.assertEqual(response.tell(), 0)
+            self.assertEqual(response.bytes_read, 0)
             self.assertFalse(os.path.exists(destination))
 
     def test_redirect_rejects_unapproved_host(self):
