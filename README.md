@@ -11,7 +11,7 @@ LastHavenPlus is a lightweight Android launcher for the existing LastHaven Wrath
 
 Development is active on `beta`. The stable release remains on `main`.
 
-The current beta source uses Mozilla GeckoView 160 and includes the home screen, Play/Settings navigation and updater hardening merged by [PR #26](https://github.com/iNeonyne/LastHavenPlus/pull/26) at `e924c580699ad34f1083d1a9a0fe96901037c0ae`. Exact-head PR validation passed the unsigned release build and unit tests. The post-merge signed ARM64 branch build and physical-device behavior still require verification. Beta CI is configured to reuse the latest stable versionName/versionCode for its signed demo artifact without creating a GitHub release.
+The current beta source uses Mozilla GeckoView 160 and includes the home screen, Play/Settings navigation and updater hardening merged by [PR #26](https://github.com/iNeonyne/LastHavenPlus/pull/26) at `e924c580699ad34f1083d1a9a0fe96901037c0ae`. Exact-head PR validation passed the unsigned release build and unit tests. The post-merge signed ARM64 build, signing certificate and ARM64-only packaging passed Actions run [#330](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45518704468). Physical-device behavior remains unverified. Beta CI is configured to reuse the latest stable versionName/versionCode for its signed demo artifact without creating a GitHub release.
 
 The GeckoView runtime and app shell are implemented in source, but successful CI builds do not establish that the game works correctly on a physical device. Game compatibility, profile persistence and the complete navigation flow still require physical ARM64 testing.
 
