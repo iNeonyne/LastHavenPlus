@@ -551,7 +551,7 @@ Entry format:
 
 - **Role:** Chaty / CI release workflow reliability.
 - **Issue:** [#31](https://github.com/iNeonyne/LastHavenPlus/issues/31).
-- **Branch:** `chaty/fix-release-workflow-timeouts` (based on beta `1d6c1ec`).
+- **Branch / PR:** `chaty/fix-release-workflow-timeouts`, [PR #32](https://github.com/iNeonyne/LastHavenPlus/pull/32), targeting beta (based on beta `1d6c1ec`).
 - **File:** `.github/workflows/android.yml`.
 - **Change:** Prepare the canonical full signed APK before optional delta work; bound release lookup, previous-asset downloads, apt package operations, BSDIFF generation and reconstruction; skip differential generation on malformed/incompatible previous assets or timeout; always write the canonical update manifest. Existing signing, ABI, and exactly-one-APK publication checks remain required.
-- **Verification:** Workflow PR validation has not yet run. Do not treat the workflow fix as integrated or the v2.0.0 release as published.
+- **Verification:** Exact-head unsigned PR validation is running in [Actions #348](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45524663665); Gradle Wrapper setup is in progress. Do not treat the workflow fix as integrated or the v2.0.0 release as published.
