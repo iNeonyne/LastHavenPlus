@@ -19,7 +19,7 @@
 ### Ploy — application issue queue (one active issue only)
 
 **Active assignment: #56 — direct launch and responsive in-game overlay.**  
-Branch: `ploy/issue-56-direct-launch-overlay`, created from current `beta`. Open a focused PR targeting `beta`; Chaty reviews and integrates. No other Ploy issue may start until #56 is merged and reviewed.
+Suggested branch: `ploy/issue-56-direct-launch-overlay` (not created yet; create it from the latest `beta` when implementation starts). Open a focused PR targeting `beta`; Chaty reviews and integrates. No other Ploy issue may start until #56 is merged and reviewed.
 
 **Queued work (strict order; do not start early):**
 
