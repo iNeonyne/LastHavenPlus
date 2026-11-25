@@ -123,3 +123,14 @@ Still unverified on physical ARM64 hardware:
 - Found and fixed 20 broken backlog-index fragments in `ISSUES.md` by adding explicit stable anchors for issues #4–#23; see PR #78.
 - A dedicated `markdownlint` CLI was not available in the execution environment. A basic whitespace/fence scan identified historical formatting noise in append-only logs and issue/status records; these were not mass-reformatted.
 - Issue #70 remains open pending a full Markdown parser/linter run and final stale-reference review. Documentation-only change; no application, build, CI, signing, release or device behavior changed.
+
+
+## Updater regression work — PR candidate (2026-11-25)
+
+- **Owner:** Chaty; issues #4 and #15 remain one updater implementation scope.
+- **Branch:** `chaty/issue-4-interrupted-download-tests`, based on beta `01af3f488225eaa5321b994a3957e53dcdb70c55`.
+- Extracted streamed payload copying, size/digest verification and partial-file deletion into `UpdateDownloadPolicy`, used by the existing updater download path.
+- Added JVM regression cases for exact-size success, truncated payload, network read interruption, digest mismatch and maximum-size rejection. Each failure case asserts that the staged partial file is removed.
+- **Verification:** exact-head PR validation is pending. Do not mark the tests or updater complete until lint, formatting, unsigned release build and JVM tests pass on the final PR head.
+- **Not covered by this change:** actual Android package-installer handoff, same-key update/profile preservation, release workflow optional-delta failure runtime, and physical ARM64 testing. These remain under #5/#15/#31 as applicable.
+- Manual update check/download/install behavior is unchanged; no background download, automatic installation, signing, application ID, ABI or release workflow changes are included.
