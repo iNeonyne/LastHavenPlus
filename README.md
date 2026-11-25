@@ -11,7 +11,7 @@ LastHavenPlus is a lightweight Android launcher for the existing LastHaven Wrath
 
 Development is active on `beta`. The stable release remains on `main`.
 
-The current beta source uses Mozilla GeckoView 160 as its embedded browser engine and still opens the game directly. [PR #26](https://github.com/iNeonyne/LastHavenPlus/pull/26) adds the home screen, Play/Settings navigation and updater hardening. Its code head passed PR build/unit-test CI; review and merge are pending, so the changes are not part of `beta` yet. The beta branch build is also being adjusted to reuse the latest stable version name/code for its signed demo artifact, avoiding a versionCode downgrade over an existing stable install without creating a GitHub release.
+The current beta source uses Mozilla GeckoView 160 and includes the home screen, Play/Settings navigation and updater hardening merged by [PR #26](https://github.com/iNeonyne/LastHavenPlus/pull/26) at `e924c580699ad34f1083d1a9a0fe96901037c0ae`. Exact-head PR validation passed the unsigned release build and unit tests. The post-merge signed ARM64 branch build and physical-device behavior still require verification. Beta CI is configured to reuse the latest stable versionName/versionCode for its signed demo artifact without creating a GitHub release.
 
 The GeckoView runtime and app shell are implemented in source, but successful CI builds do not establish that the game works correctly on a physical device. Game compatibility, profile persistence and the complete navigation flow still require physical ARM64 testing.
 
@@ -32,12 +32,12 @@ The application ID and established release signing identity must remain unchange
 
 The following describes what is present in the beta source. Runtime behavior that has not been tested on physical ARM64 hardware is explicitly identified as unverified in [STATUS.md](STATUS.md).
 
-- **Game hosting:** A process-scoped GeckoRuntime and GeckoSession host the LastHaven game. The current beta launches the game directly.
-- **Navigation:** The current beta game menu provides reload, return-to-game, settings, diagnostics, update and exit actions. The dedicated home screen and Home navigation are implemented in PR #26; its code head passed PR build/unit-test CI, but the change is not integrated into beta until merge. The beta artifact will retain the latest stable version identity and signing key.
+- **Game hosting:** A process-scoped GeckoRuntime and GeckoSession host the LastHaven game. Game initialization is deferred until Play.
+- **Navigation:** The launcher opens Home with Play and Settings. The game menu provides Reload, Home, Return to game, Settings, diagnostics, manual update check and Exit. Home navigation detaches the GeckoView while preserving its session. These flows passed the PR's unsigned build/unit-test CI; physical interaction remains unverified.
 - **Settings and storage:** Settings report installed APK size, persistent app-private data size and cache size. Persistent data includes GeckoView data; it is not a profile-only measurement.
 - **Network usage:** Android per-app traffic counters report received and sent bytes since boot and, where supported, during the current app session. These totals include game and updater traffic, not just game traffic.
 - **Diagnostics:** Bounded local diagnostic logs support viewing, clearing and explicit user-initiated sharing. Redaction is implemented; see the status report for remaining verification.
-- **Updater:** The app checks stable GitHub releases and provides explicit update download and installer handoff. A compatible differential patch may be offered, with a full APK fallback when the patch is unavailable or ineligible. PR #26 extends fallback to patch download/reconstruction/checksum/signature failures and adds policy tests; its code head passed PR build/unit-test CI, with integration still pending. Updates are never downloaded or installed automatically.
+- **Updater:** The app checks stable GitHub releases and provides explicit update download and installer handoff. Differential patch failures fall back to a separately verified full APK. URL, version, digest and fallback policy tests passed in PR validation. Physical update installation remains unverified. Updates are never downloaded or installed automatically.
 - **Addon manager:** No addon manager is included. The previous ZIP package manager was removed at the owner's request and replacement work is on hold pending a new specification. Storing an addon package is not the same as injecting or loading it in the game.
 
 ### GeckoView profile transition
