@@ -232,3 +232,12 @@
 - **CI:** Run [#325](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45517931847) is in progress. The unsigned PR build/unit-test job has started; signed ARM64 build and release-tag jobs are skipped by design for PR validation.
 - **Not verified:** No exact-head CI result yet; no physical ARM64 game, process-death installer, GeckoView minified startup or in-place update test has been performed.
 - **Next safe action:** Inspect #325 to completion, address failures, then review PR #26. Do not merge to beta or main, tag or publish without explicit owner approval.
+
+
+### 2026-11-25 — Final P0 PR validation queued
+
+- **PR:** #26, branch `chaty/home-updater-demo` → `beta`.
+- **P0 implementation commit:** `f4891ab41b36fead89030a9fccdcabb9927cee8f`.
+- **Documentation head:** `5255a0aa4670f317b4b0a9b350652da22008c514`.
+- **CI:** Run #325 was cancelled after additional documentation commits. Final-head run [#327](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45518147065) is pending; its job list has not yet populated. No successful build or test is claimed.
+- **Next:** Inspect run #327 (or the replacement run triggered by this checkpoint), then review exact PR diff. No beta merge or main promotion has been performed.
