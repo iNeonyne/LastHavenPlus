@@ -39,8 +39,8 @@ python3 -m unittest discover -s .github/scripts/tests -v
 
 - `spotlessApply` formats changed Kotlin and Kotlin Gradle files using the pinned ktfmt style.
 - `spotlessCheck` verifies formatting. CI ratchets formatting against the PR base so unrelated legacy files are not reformatted.
-- Pull requests to beta run an unsigned release build, JVM unit tests and updater-helper tests with read-only permissions.
-- The separate quality workflow runs Android Lint and Kotlin formatting checks on relevant source/build changes.
+- Pull requests to beta run Android Lint, Kotlin formatting, an unsigned release build, JVM unit tests and updater-helper tests with read-only permissions.
+- The separate quality workflow rechecks Android Lint and Kotlin formatting after relevant source/build changes land on beta.
 - Documentation-only edits do not trigger Android build or quality workflows.
 - A signed release requires the established project keystore and credentials. Never commit keystores or signing secrets.
 
