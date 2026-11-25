@@ -608,3 +608,12 @@ Entry format:
 - **Outcome:** corrected the v2.1.0 roadmap and issue #4/#31 evidence; closed completed source task #22; respecified #42 as physical UI verification; kept addon-manager #23 on hold.
 - **Validation:** reviewed the four-file documentation-only diff. No PR workflow runs were returned for the docs-only head. No app tests or physical-device checks were run.
 - **Remaining:** stale/diverged branch pruning is not available through the connected GitHub actions; no branch refs were force-moved or deleted.
+
+
+## 2026-11-25 — Reconcile published v2.1.0 release records
+
+- **Release:** [v2.1.0](https://github.com/iNeonyne/LastHavenPlus/releases/tag/v2.1.0), published 2026-11-25 at tag commit `03fcfa9652ce4e7d1034523d640a1693e6e6b9ce`.
+- **Artifact evidence:** versionCode 2001000; APK 96,444,836 bytes, SHA-256 `f65672c8855298764b3345e58694b672c39f35971a39beccb7e4d1feb6310cab`; established signing certificate matched; ABI exactly `arm64-v8a`. Release metadata contains the APK, update manifest and differential patch.
+- **CI caveat:** release workflow run #45603533787 passed unit tests, signature/certificate/ABI verification, differential generation and asset upload/publish steps, but its final release asset query failed with HTTP 404. Current release metadata independently confirms the expected assets. Issue #31 tracks the workflow follow-up.
+- **Docs correction:** update beta README/CHANGELOG/STATUS/ISSUES to record v2.1.0 as published rather than a candidate. The stable-facing README/CHANGELOG on main still need a separately authorized documentation correction; routine task PRs remain targeted to beta.
+- **Physical-device status:** full ARM64 gameplay/profile/UI/update matrix remains unverified. Do not treat release CI as device evidence.
