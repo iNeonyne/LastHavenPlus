@@ -41,7 +41,7 @@
 | [#28](https://github.com/iNeonyne/LastHavenPlus/issues/28) | P2 | Storage usage accuracy and iterative directory sizing | Open; not started |
 | [#42](https://github.com/iNeonyne/LastHavenPlus/issues/42) | P1 | v2.1.0 launcher UI verification | Source implementation integrated by PR #43; physical UI verification remains |
 | [#29](https://github.com/iNeonyne/LastHavenPlus/issues/29) | Done | Reconcile beta documentation and CI evidence | Closed as completed after PR #46 merged to beta |
-| [#31](https://github.com/iNeonyne/LastHavenPlus/issues/31) | P0 | Resilient release packaging when differential generation fails | Open; verify current workflow and remaining acceptance criteria |
+| [#31](https://github.com/iNeonyne/LastHavenPlus/issues/31) | P0 | Resilient release packaging and asset verification | Open; final release asset lookup failed HTTP 404; delta fallback failure paths remain to verify |
 
 ---
 
