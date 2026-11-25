@@ -5,7 +5,7 @@
 ## Current priorities
 
 1. **P0 — GeckoView verification and release baseline:** GeckoView 160 is now the engine in beta. CI run #310 passed the signed Android release build, unit tests, signing-certificate and ARM64-only ABI checks for commit `91e21d4bde0a26b8d7cbfd9697615f32c2f57d21`; this is not a physical-device result or a build of the latest beta HEAD.
-2. **P0 — Security/lifecycle hardening:** PR #26 adds BSDIFF decompressed-output limits, an idle-timeout updater worker, exact GitHub hostname checks, GeckoSession Activity cleanup, saved installer URI state and GeckoView R8 rules. Run #325 is in progress on head `f4891ab41b36fead89030a9fccdcabb9927cee8f`; do not mark complete until exact-head CI passes.
+2. **P0 — Security/lifecycle hardening:** PR #26 adds BSDIFF decompressed-output limits, an idle-timeout updater worker, exact GitHub hostname checks, GeckoSession Activity cleanup, saved installer URI state and GeckoView R8 rules. Run #325 was cancelled by later documentation commits. Final-head run #327 is pending for `5255a0aa4670f317b4b0a9b350652da22008c514`; do not mark complete until exact-head CI passes.
 3. **P1 — Home screen and navigation (#22):** Chaty owns implementation and integration in PR #26. Home Back confirmation and session-preserving Home navigation are implemented in the candidate. Ploy has no active assignment.
 4. **P0.2 — Physical ARM64 verification (#5):** gameplay, profile persistence, media, navigation and update installation remain unverified until tested on real ARM64 hardware.
 5. **Build reproducibility/updater tests (#4):** Gradle Wrapper is present and pinned. Continue the missing updater edge-case coverage and verify current CI/workflow behavior.
