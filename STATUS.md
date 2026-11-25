@@ -91,7 +91,7 @@ Still unverified on physical ARM64 hardware:
 ## v2.2.0 roadmap and active ownership — 2026-11-25
 
 - **Roadmap:** GitHub issue #18 is the v2.2.0 planning source of truth. v2.2.0 is a target, not release authorization.
-- **Chaty:** owns issue #18, remaining #70 Markdown/link validation and branch audit, central documentation, CI/release coordination, PR review and beta integration. Roadmap/assignment housekeeping merged by PR [#73](https://github.com/iNeonyne/LastHavenPlus/pull/73) at `c16439bfcedc9949d8ec683039fb5df85afea122`.
+- **Chaty:** owns issue #18, remaining #70 Markdown lint/stale-reference review and branch audit, central documentation, CI/release coordination, PR review and beta integration. Roadmap/assignment housekeeping merged by PR [#73](https://github.com/iNeonyne/LastHavenPlus/pull/73) at `c16439bfcedc9949d8ec683039fb5df85afea122`.
 - **Ploy:** assigned issue #56 only: direct game launch and responsive in-game overlay, including Settings in both orientations and preserved GeckoSession state. Must submit a focused PR targeting beta; see AGENT_WORK.md.
 - **Physical device blocker:** #5/#21 remain open. No full ARM64 gameplay/profile/update matrix is verified. Record exact device, Android version, commit/APK digest and per-test outcomes when supplied.
 - **Supersession:** #42's old v2.1.0 Home-screen-first verification is superseded by #56; verify the new UX under #5/#56.
@@ -114,3 +114,11 @@ Still unverified on physical ARM64 hardware:
 - **Chaty + owner/device tester:** #5/#21 physical ARM64 verification; #7 measured performance baseline.
 - **Owner decision:** #67 license selection. #23 Addon Manager remains ON HOLD and has no assigned agent.
 - Ploy is an internal agent role, not a confirmed GitHub username; assignments are marked in issue bodies, not through an invented GitHub assignee.
+
+
+## Documentation validation — issue #70 (2026-11-25)
+
+- Checked all 11 Markdown files in the beta tree for relative link targets and balanced fenced code blocks; no missing relative targets or unclosed fences were found.
+- Found and fixed 20 broken backlog-index fragments in `ISSUES.md` by adding explicit stable anchors for issues #4–#23; see PR #78.
+- A dedicated `markdownlint` CLI was not available in the execution environment. A basic whitespace/fence scan identified historical formatting noise in append-only logs and issue/status records; these were not mass-reformatted.
+- Issue #70 remains open pending a full Markdown parser/linter run and final stale-reference review. Documentation-only change; no application, build, CI, signing, release or device behavior changed.
