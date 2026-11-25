@@ -27,7 +27,7 @@ The beta source has replaced Cefrium with:
 
 The app uses a process-scoped `GeckoRuntime`, a `GeckoSession` and a `GeckoView` host. The runtime is initialized lazily in the foreground app process. The game URL remains `https://lasthavens.com/play`.
 
-The app currently launches the game directly. The separate home screen and Play/Settings navigation are assigned to issue #22; do not mix that UI task with engine lifecycle changes.
+The launcher opens Home first. Play lazily creates/opens the game GeckoSession; Settings does not initialize the game. Home navigation retains the session so Return to game can resume it. These flows are source-integrated; physical ARM64 interaction and persistence remain unverified.
 
 ## Build configuration and identity
 
@@ -88,20 +88,22 @@ Emulator and CI results are useful but do not replace physical ARM64 verificatio
 
 ## Addon boundary
 
-No addon manager implementation is currently included. The former ZIP package manager was removed at the owner's request; issue #23 remains on hold until a new written specification is supplied.
+No addon manager implementation is currently included in beta. On 2026-11-25, the owner approved integrating the supplied LastHavens Addon Manager XPI; the active scope and security audit are tracked in issue #23.
 
-WoW 3.3.5a addon ZIP/`.toc` packages are not Firefox WebExtensions. GeckoView's WebExtension support does not itself provide game addon loading. Do not recreate the removed manager, add package storage or claim game injection without an explicitly approved and independently verified design.
+The manager is a GeckoView built-in WebExtension bundled from APK assets, not a generic browser-extension store. The supplied XPI's `browser.tabs.create()` and `options_ui.open_in_tab` flows require app-owned GeckoSession/tab handling. The manager Play action must be routed to the existing game session; it must not create a second game instance. The launcher entry point is a dedicated Home-screen button, not Settings. Opening the manager must not initialize the game.
+
+Mozilla documents `WebExtensionController.installBuiltIn` / `ensureBuiltIn` for extensions bundled under APK assets, and `WebExtension.TabDelegate` for app-created sessions when an extension requests a new tab. These APIs are visible in GeckoView 159/163 documentation; the exact pinned GeckoView 160 artifact still requires compile-time API verification before implementation. Do not treat a newer Javadoc page as proof of 160 compatibility.
+
+The manager's in-page injection reports requests observed at the game resource layer; this does not prove that Lua code initialized successfully. Preserve this distinction in UI and diagnostics.
 
 ## CI evidence and remaining work
 
-The latest verified successful Android build and unit-test task is [run #310](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45508671565), for commit `91e21d4bde0a26b8d7cbfd9697615f32c2f57d21`. Its signed release build passed signing-certificate and ARM64-only ABI verification.
-
-Run #310 predates the latest beta HEAD and the new PR-only validation job. It verifies the source/build state at its own commit only. The workflow update has a push-triggered verification run in progress, but PR-specific behavior remains unverified until an actual PR triggers it. Check [GitHub Actions](https://github.com/iNeonyne/LastHavenPlus/actions) and `STATUS.md` before making a newer build claim.
+Updater PR validation [run #345](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45521843766) passed for its exact PR head. Signed ARM64 beta build/test/signature/ABI validation [run #346](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45522408962) passed for integrated app commit `1d6c1ec42becab44735edfd0323dfc60ff4b9f9d`. Current beta HEAD `1f300b90e5aed9a5eaa86e473b746f0841d42b16` is documentation-only beyond that application commit. PR #32 was superseded after its exact-head runs were cancelled; replacement PR #34 is adding byte caps and tests. See `STATUS.md` for current run evidence.
 
 Remaining release-readiness work includes:
-1. Verify the latest workflow optimization run and retain all build, test, signing and ABI gates.
-2. Complete and review issue #22 home/navigation implementation.
-3. Perform the full physical ARM64 game, profile, permission, media, navigation and updater test plan.
-4. Update `STATUS.md` with exact current commit and CI run evidence.
+1. Complete PR #34 exact-head CI and review optional differential packaging fallback.
+2. Verify the full physical ARM64 game, profile, permission, media, navigation and updater test plan (#5).
+3. Verify the exact GeckoView 160 WebExtension API and complete issue #23 manager integration only after the design compiles against the pinned artifact.
+4. Keep `STATUS.md` aligned with exact current commit and CI run evidence.
 
 Do not promote `beta` to `main` or publish a release without explicit owner approval.
