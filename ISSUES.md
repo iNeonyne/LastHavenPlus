@@ -4,7 +4,7 @@
 
 ## Current priorities
 
-1. **P0 — Release workflow reliability (#31):** PR #37 differential fallback hardening and PR #54 draft-ID cleanup/verification are integrated. PR #54 exact-head unsigned validation passed; post-merge signed beta validation is pending. Keep #31 open until a future owner-authorized release run exercises the draft-ID path and fallback failure cases.
+1. **P0 — Release workflow reliability (#31):** PR #37 differential fallback hardening and PR #54 draft-ID cleanup/verification are integrated. PR #54 exact-head unsigned validation and post-merge signed beta validation both passed (runs #45610110307 and #45610518305). Keep #31 open until a future owner-authorized release run exercises the draft-ID path and fallback failure cases.
 2. **P0 — Physical ARM64 verification (#5):** Gameplay, GeckoView profile persistence, navigation, audio/GPU behavior and same-key updater installation remain unverified on hardware.
 3. **P0 — Updater regression coverage (#4, #15):** Updater hardening is integrated at beta commit `1d6c1ec42becab44735edfd0323dfc60ff4b9f9d`; additional malformed-manifest, digest, patch and interrupted-download tests remain.
 4. **P1 — Addon manager integration (#23):** On hold by owner instruction. Do not resume or assign work until explicit owner approval.
@@ -41,7 +41,7 @@
 | [#28](https://github.com/iNeonyne/LastHavenPlus/issues/28) | P2 | Storage usage accuracy and iterative directory sizing | Open; not started |
 | [#42](https://github.com/iNeonyne/LastHavenPlus/issues/42) | P1 | v2.1.0 launcher UI verification | Source implementation integrated by PR #43; physical UI verification remains |
 | [#29](https://github.com/iNeonyne/LastHavenPlus/issues/29) | Done | Reconcile beta documentation and CI evidence | Closed as completed after PR #46 merged to beta |
-| [#31](https://github.com/iNeonyne/LastHavenPlus/issues/31) | P0 | Draft release asset verification and differential fallback | PR #54 merged; PR CI passed; post-merge signed run pending; live release-ID path/fallback checks remain |
+| [#31](https://github.com/iNeonyne/LastHavenPlus/issues/31) | P0 | Draft release asset verification and differential fallback | PR #54 merged; exact-head unsigned and post-merge signed beta runs passed; live release-ID path/fallback checks remain |
 
 ---
 
