@@ -318,3 +318,12 @@
 - Reviewed PR #32. Found previous-release APK/manifest downloads and release-list API response have timeouts but no explicit byte caps. Its exact-head Actions #348/#349 were cancelled, and its branch is stale/diverged from current beta. Added a detailed correction comment; formal REQUEST_CHANGES was unavailable because the PR author cannot request changes on their own PR.
 - Created documentation branch `chaty/v2.1-docs-reconcile` from current beta. Updated README, STATUS and AGENT_WORK; appended CHANGELOG and WORK_LOG entries. This work is docs-only and does not change app source.
 - Physical ARM64 testing remains unverified. Addon manager issue #23 is owner-approved but implementation has not started.
+
+
+## 2026-11-25 — Supersede PR #32 with bounded release inputs
+
+- Review found PR #32 only time-bounded the previous APK/manifest downloads and release-list API response. It did not cap bytes, so oversized responses could still consume excessive disk/network resources.
+- Formal REQUEST_CHANGES could not be submitted because Chaty is the PR author; detailed correction was recorded in the PR conversation.
+- Created replacement PR [#34](https://github.com/iNeonyne/LastHavenPlus/pull/34) from current beta. Added a streamed size-limited downloader (4 MiB release-list JSON, 256 MiB prior APK, 1 MiB manifest), strict HTTPS GitHub asset host validation, regression tests, and CI test steps.
+- Exact-head Actions [#351](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45527186955) is running for `751102ac2e00b4adb10c0ab8b34ac3017c5f6311`. Do not report success until it completes.
+- PR #32 is superseded; do not merge it. No release publication, main promotion or app-source change was made by this workflow task.
