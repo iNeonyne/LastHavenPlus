@@ -2,6 +2,7 @@ package com.neonyne.lasthavenlauncher
 
 import android.content.SharedPreferences
 import android.content.Intent
+import android.content.pm.ActivityInfo
 import android.net.Uri
 import android.provider.Settings
 import android.view.WindowManager
@@ -68,6 +69,11 @@ class MainActivity : ComponentActivity() {
 
     private fun setGameplayUi(active: Boolean) {
         gameplayActive = active
+        requestedOrientation = if (active) {
+            ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE
+        } else {
+            ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
+        }
         if (active) {
             WindowInsetsControllerCompat(window, window.decorView).apply {
                 hide(WindowInsetsCompat.Type.systemBars())
@@ -197,11 +203,12 @@ private fun LastHavenApp(
         }
     }
 
-    DisposableEffect(currentScreen) {
-        val gameplay = currentScreen == Screen.Game
-        onGameplayUiChanged(gameplay)
+    val gameplayActive = currentScreen == Screen.Game &&
+        !showSettingsDialog && !showDiagnosticsDialog
+    DisposableEffect(gameplayActive) {
+        onGameplayUiChanged(gameplayActive)
         onDispose {
-            if (gameplay) onGameplayUiChanged(false)
+            if (gameplayActive) onGameplayUiChanged(false)
         }
     }
 
