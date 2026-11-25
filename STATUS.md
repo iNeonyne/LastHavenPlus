@@ -2,7 +2,7 @@
 
 **Last updated:** 2026-11-25  
 **Active branch:** `beta`  
-**Latest beta integration commit:** `073f839eb3cccd9a13fae09dd091667bb86a1f0c` (PR [#85](https://github.com/iNeonyne/LastHavenPlus/pull/85), approved recreated icon and documentation; includes PR [#83](https://github.com/iNeonyne/LastHavenPlus/pull/83) direct-launch implementation).  
+**Latest beta integration commit:** `932e3ba65f6c8445eafe0ba466ca3952c67bd017` (PR [#99](https://github.com/iNeonyne/LastHavenPlus/pull/99), Gradle dependency/plugin version catalog; previous product integration remains PR #85/#83).  
 **Stable promotion commit:** `f22b5c2b92b6f93b201b1a9dc50a8c8095543d76` (PR [#87](https://github.com/iNeonyne/LastHavenPlus/pull/87), selective product/docs promotion to main; stable-only history preserved).  
 **v2.2.0 beta validation:** PR #85 exact-head validation [#45657071506](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45657071506) passed lint, formatting, unsigned release build and unit tests. Post-merge beta quality [#45657785104](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45657785104) and signed ARM64 build [#45657785102](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45657785102) passed; signed artifact uploaded; tag/publication steps skipped.
 **v2.2.0 main validation:** selective PR #87 merged at `f22b5c2b92b6f93b201b1a9dc50a8c8095543d76`. Exact main quality [#45658476528](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45658476528) and signed ARM64 build [#45658476677](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45658476677) passed; signed artifact uploaded; tag/publication steps skipped.
@@ -11,6 +11,16 @@
 **Stable promotion and publication:** PR [#47](https://github.com/iNeonyne/LastHavenPlus/pull/47) promoted to `main`; tag/release `v2.1.0` is published at `03fcfa9652ce4e7d1034523d640a1693e6e6b9ce`.  
 **Current phase:** v2.1.0 remains the latest published release. The v2.2.0 candidate scope (#56 direct launch/overlay and #84 recreated icon) is integrated in beta and selectively promoted to main by PR #87. Beta exact-head PR validation, post-merge quality and signed ARM64 CI passed. Main exact-commit quality [run #45658476528](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45658476528) and signed ARM64 build [run #45658476677](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45658476677) both passed. The signed artifact was uploaded; release-tag, differential-generation and publication steps were skipped. No v2.2.0 version bump, tag or publication has been created. Owner feedback is collected after release on the owner's schedule and is not a blocker. PR #54 fixed draft asset cleanup/verification by release ID; the release-ID path still needs a future owner-authorized versioned release run.
 **Earlier quality-gate integration:** issue #60 merged by PR [#72](https://github.com/iNeonyne/LastHavenPlus/pull/72) at `82e819a43e6d728a9eb8fea620eca47ac9c998df`. Exact-head PR validation passed in [run #45627915789](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45627915789). Post-merge Android quality run [#45631250015](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45631250015) and beta build run [#45631249817](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45631249817) completed successfully. The beta build verified signed release APK assembly, unit tests, established signing certificate and ARM64-only ABI; release-tag publication steps were skipped.
+
+## Latest beta integration — PR #99 (2026-11-25)
+
+- **Issue:** #64 — centralize Gradle dependency and plugin versions.
+- **PR:** [#99](https://github.com/iNeonyne/LastHavenPlus/pull/99), squash-merged to `beta`.
+- **PR head:** `278a2615261d2b5ffc63038ef4192902af630c24`.
+- **Merge commit / verified beta HEAD:** `932e3ba65f6c8445eafe0ba466ca3952c67bd017`; GitHub comparison confirms `beta` is identical to this commit.
+- **Scope:** added `gradle/libs.versions.toml`; converted root and app Gradle scripts to catalog aliases. Existing pinned versions and dependency coordinates were preserved; no app source, application ID, signing identity, GeckoView version or ABI policy changed.
+- **Exact-head PR CI:** [run #45686955854](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45686955854) passed lint, Spotless, unsigned release build, JVM unit tests and Python updater-helper tests for the PR head. Release-tag and signed-build jobs were skipped in PR context, as intended.
+- **Post-merge CI:** not yet verified in the available run evidence. Do not treat the PR run as signed/packaging verification for the merge commit.
 
 ## Current source state
 
