@@ -658,7 +658,7 @@ Entry format:
 
 - PR [#72](https://github.com/iNeonyne/LastHavenPlus/pull/72) squash-merged to beta at `82e819a43e6d728a9eb8fea620eca47ac9c998df` after exact-head PR run [#45627915789](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45627915789) passed lint, formatting, unsigned release build, JVM tests and updater-helper tests.
 - The negative formatter test was rejected as expected in run [#45627319452](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45627319452); its temporary probe was removed before merge.
-- Post-merge quality run [#45631250015](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45631250015) and beta build run [#45631249817](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45631249817) were triggered for the merge SHA and remain pending at this entry.
+- Post-merge quality run [#45631250015](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45631250015) and beta build run [#45631249817](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45631249817) completed successfully for the merge SHA. The beta build verified signing and ARM64 packaging; release-tag publication steps were skipped.
 - No application behavior, `main`, tag, or release publication was changed.
 
 
