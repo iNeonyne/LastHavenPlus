@@ -12,7 +12,7 @@
 ### Chaty — v2.2.0 roadmap and immediate housekeeping
 - **Completed:** roadmap and central tracker reconciliation merged by PR [#73](https://github.com/iNeonyne/LastHavenPlus/pull/73) at `c16439bfcedc9949d8ec683039fb5df85afea122`.
 - **Closed:** #42 as superseded by #56; #60 as completed after exact-head and post-merge CI evidence.
-- **Still owned by Chaty:** finish #70 Markdown/link validation and branch audit; coordinate #5/#21/#31/#4 follow-up status; review and integrate Ploy's #56 PR.
+- **Still owned by Chaty:** finish #70 Markdown syntax/lint validation; coordinate #5/#21/#31/#4 follow-up status; review and integrate Ploy's #56 PR. Branch inventory/diff audit is complete.
 - **Exclusions:** no app behavior changes under this housekeeping assignment, no release/tag/publication, no main changes, no Addon Manager work.
 - **Evidence:** post-merge quality run #45631250015 and signed beta build #45631249817 passed; the build skipped release-tag publication steps.
 
