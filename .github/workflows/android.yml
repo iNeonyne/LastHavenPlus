@@ -493,27 +493,8 @@ jobs:
           test -s release-assets/lasthavenplus-arm64.apk
           test -s release-assets/lasthavenplus-update.json
           echo "Release payload ready: full APK and update manifest."
-      - name: Remove legacy duplicate release assets
-        if: steps.version.outputs.is_release == 'true'
-        env:
-          GH_TOKEN: ${{ github.token }}
-          RELEASE_TAG: ${{ steps.version.outputs.tag }}
-        shell: bash
-        run: |
-          set -euo pipefail
-          release_json="$(gh api "repos/$GITHUB_REPOSITORY/releases/tags/$RELEASE_TAG" 2>/dev/null || true)"
-          if [[ -z "$release_json" ]]; then
-            echo "No existing draft release; nothing to clean."
-            exit 0
-          fi
-          release_id="$(jq -r '.id' <<< "$release_json")"
-          while IFS= read -r asset_id; do
-            [[ -n "$asset_id" ]] || continue
-            echo "Deleting stale legacy asset ID $asset_id"
-            gh api --method DELETE "repos/$GITHUB_REPOSITORY/releases/assets/$asset_id"
-          done < <(jq -r '.assets[] | select(.name == "lasthavenlauncher-arm64.apk" or .name == "lasthavenlauncher-update.json") | .id' <<< "$release_json")
-
       - name: Publish signed release and update assets
+        id: release
         if: steps.version.outputs.is_release == 'true'
         uses: softprops/action-gh-release@v2
         with:
@@ -523,23 +504,48 @@ jobs:
           files: release-assets/*
           fail_on_unmatched_files: true
 
+      - name: Remove legacy duplicate release assets
+        if: steps.version.outputs.is_release == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_ID: ${{ steps.release.outputs.id }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ ! "$RELEASE_ID" =~ ^[0-9]+$ ]]; then
+            echo "::error::Release action did not return a valid release ID for legacy asset cleanup."
+            exit 1
+          fi
+          release_json="$(gh api "repos/$GITHUB_REPOSITORY/releases/$RELEASE_ID")"
+          while IFS= read -r asset_id; do
+            [[ -n "$asset_id" ]] || continue
+            echo "Deleting stale legacy asset ID $asset_id from release $RELEASE_ID"
+            gh api --method DELETE "repos/$GITHUB_REPOSITORY/releases/assets/$asset_id"
+          done < <(jq -r '.assets[] | select(.name == "lasthavenlauncher-arm64.apk" or .name == "lasthavenlauncher-update.json") | .id' <<< "$release_json")
+
       - name: Verify final draft contains exactly one APK
         if: steps.version.outputs.is_release == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
           RELEASE_TAG: ${{ steps.version.outputs.tag }}
+          RELEASE_ID: ${{ steps.release.outputs.id }}
         shell: bash
         run: |
           set -euo pipefail
-          gh api "repos/$GITHUB_REPOSITORY/releases/tags/$RELEASE_TAG" > "$RUNNER_TEMP/final-release.json"
-          jq -e '
+          if [[ ! "$RELEASE_ID" =~ ^[0-9]+$ ]]; then
+            echo "::error::Release action did not return a valid release ID."
+            exit 1
+          fi
+          gh api "repos/$GITHUB_REPOSITORY/releases/$RELEASE_ID" > "$RUNNER_TEMP/final-release.json"
+          jq -e --arg tag "$RELEASE_TAG" '
+            .tag_name == $tag and
             ([.assets[] | select(.name | endswith(".apk"))] | length) == 1 and
             ([.assets[] | select(.name == "lasthavenplus-arm64.apk")] | length) == 1 and
             ([.assets[] | select(.name == "lasthavenplus-update.json")] | length) == 1 and
             ([.assets[] | select(.name == "lasthavenlauncher-arm64.apk" or .name == "lasthavenlauncher-update.json")] | length) == 0
           ' "$RUNNER_TEMP/final-release.json" >/dev/null || {
-            echo "::error::Draft release must contain exactly one APK (lasthavenplus-arm64.apk), one update manifest, and no legacy launcher assets."
+            echo "::error::Release must contain exactly one APK (lasthavenplus-arm64.apk), one update manifest, and no legacy launcher assets."
             jq -r '.assets[].name' "$RUNNER_TEMP/final-release.json"
             exit 1
           }
-          echo "Verified: exactly one APK and one canonical update manifest."
+          echo "Verified release $RELEASE_ID ($RELEASE_TAG): exactly one APK and one canonical update manifest."
