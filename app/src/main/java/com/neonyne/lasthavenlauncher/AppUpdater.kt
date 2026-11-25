@@ -146,17 +146,7 @@ object AppUpdater {
                             manifestConnection.disconnect()
                         }
 
-                        check(manifest.optInt("schemaVersion") == 1) {
-                            "Unsupported update manifest version"
-                        }
-                        check(manifest.getString("version") == latestVersion) {
-                            "Update manifest version does not match the release tag"
-                        }
-
                         val target = manifest.getJSONObject("apk")
-                        check(target.getString("name") == APK_ASSET_NAME) {
-                            "Update manifest references an unexpected APK"
-                        }
                         val fullAsset = assetByName[APK_ASSET_NAME]
                             ?: error("Release is missing $APK_ASSET_NAME")
                         val fullUrl = requireGithubUrl(fullAsset.getString("browser_download_url"))
@@ -169,17 +159,20 @@ object AppUpdater {
                         }
 
                         val versionCode = manifest.getLong("versionCode")
-                        check(versionCode == latestVersionCode) {
-                            "Update manifest versionCode does not match the release tag"
-                        }
-                        check(versionCode > packageInfo.longVersionCode) {
-                            "Update versionCode is not newer than the installed app"
-                        }
                         val targetSize = target.getLong("size")
-                        check(targetSize in 1..MAX_APK_BYTES) { "Update APK size is invalid" }
-                        check(fullAsset.getLong("size") == targetSize) {
-                            "GitHub APK asset size does not match the update manifest"
-                        }
+                        UpdateManifestPolicy.validateApk(
+                            schemaVersion = manifest.optInt("schemaVersion"),
+                            manifestVersion = manifest.getString("version"),
+                            expectedReleaseVersion = latestVersion,
+                            versionCode = versionCode,
+                            expectedVersionCode = latestVersionCode,
+                            installedVersionCode = packageInfo.longVersionCode,
+                            apkName = target.getString("name"),
+                            expectedApkName = APK_ASSET_NAME,
+                            apkSize = targetSize,
+                            releaseAssetSize = fullAsset.getLong("size"),
+                            maximumApkBytes = MAX_APK_BYTES,
+                        )
 
                         val patch = runCatching {
                             manifest.optJSONObject("patch")?.let { patchJson ->
@@ -211,8 +204,12 @@ object AppUpdater {
                                     baseVersionCode = patchJson.getLong("fromVersionCode"),
                                     baseSha256 = requireSha256(patchJson.getString("fromSha256")),
                                 ).takeIf {
-                                    it.baseVersion == currentVersion &&
-                                        it.baseVersionCode == packageInfo.longVersionCode
+                                    UpdateManifestPolicy.isPatchCompatible(
+                                        currentVersion,
+                                        packageInfo.longVersionCode,
+                                        it.baseVersion,
+                                        it.baseVersionCode,
+                                    )
                                 }
                             }
                         }.getOrNull()
@@ -294,9 +291,10 @@ object AppUpdater {
                         check(baseApk.isFile && baseApk.canRead()) {
                             "Installed APK is not accessible"
                         }
-                        check(sha256(baseApk).equals(delta.baseSha256, true)) {
-                            "Installed APK does not match the patch base"
-                        }
+                        UpdateNetworkPolicy.verifyBaseApkDigest(
+                            sha256(baseApk),
+                            delta.baseSha256,
+                        )
 
                         val patchFile = File.createTempFile(
                             "update-${update.versionCode}-",
@@ -340,7 +338,6 @@ object AppUpdater {
                     },
                 )
 
-                finalApk.delete()
                 check(temporaryApk.renameTo(finalApk)) { "Could not finalize downloaded APK" }
                 FileProvider.getUriForFile(
                     appContext,
