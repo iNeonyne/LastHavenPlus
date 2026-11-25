@@ -652,3 +652,11 @@ Entry format:
 - Removed the temporary probe in commit `b93be719e510757036c948d23a8aadf1409b95a2`.
 - Clarified that the existing Android workflow performs PR lint/format/build/tests, while `quality.yml` is a read-only post-merge beta-push lint/format gate.
 - Clean-head validation is still required before merge.
+
+
+## 2026-11-25 — Merge Android quality gate to beta
+
+- PR [#72](https://github.com/iNeonyne/LastHavenPlus/pull/72) squash-merged to beta at `82e819a43e6d728a9eb8fea620eca47ac9c998df` after exact-head PR run [#45627915789](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45627915789) passed lint, formatting, unsigned release build, JVM tests and updater-helper tests.
+- The negative formatter test was rejected as expected in run [#45627319452](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45627319452); its temporary probe was removed before merge.
+- Post-merge quality run [#45631250015](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45631250015) and beta build run [#45631249817](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45631249817) were triggered for the merge SHA and remain pending at this entry.
+- No application behavior, `main`, tag, or release publication was changed.
