@@ -6,6 +6,21 @@ internal object UpdateVersionPolicy {
 
     fun isValid(version: String): Boolean = versionPattern.matches(version)
 
+    /** Accept only canonical stable release tags; reject prefixes, suffixes and path-like tags. */
+    fun releaseVersionFromTag(tag: String): String {
+        val match = Regex("v(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)")
+            .matchEntire(tag)
+            ?: throw IllegalArgumentException("Release tag must use vMAJOR.MINOR.PATCH")
+
+        val version = match.groupValues.drop(1).joinToString(".")
+        try {
+            versionCode(version)
+        } catch (error: Exception) {
+            throw IllegalArgumentException("Release tag contains an invalid version component", error)
+        }
+        return version
+    }
+
     fun versionCode(version: String): Long {
         val parts = versionPattern.matchEntire(version)?.groupValues?.drop(1)
             ?: error("Invalid release version: $version")
