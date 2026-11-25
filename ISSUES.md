@@ -9,7 +9,9 @@
 3. **P1 — Home screen and navigation (#22):** Implemented and merged in PR #26. PR CI passed; physical navigation/accessibility verification remains open.
 4. **P0.2 — Physical ARM64 verification (#5):** gameplay, profile persistence, media, navigation and update installation remain unverified until tested on real ARM64 hardware.
 5. **Build reproducibility/updater tests (#4):** Gradle Wrapper is present and pinned. Updater redirect, response-size, download-integrity and fallback hardening is in candidate PR work; CI evidence pending. Physical installation remains #5.
-6. **P2 — Storage measurement accuracy (#28):** Audit all app-private data paths and replace recursive directory sizing with iterative traversal.\n7. **P1 — Documentation reconciliation (#29):** Correct stale beta HEAD, CI and release-readiness records.\n8. **Deferred:** addon-manager work (#23) remains on hold until the owner supplies a new written specification.
+6. **P2 — Storage measurement accuracy (#28):** Audit all app-private data paths and replace recursive directory sizing with iterative traversal.
+7. **P1 — Documentation reconciliation (#29):** Correct stale beta HEAD, CI and release-readiness records.
+8. **Deferred:** addon-manager work (#23) remains on hold until the owner supplies a new written specification.
 
 ## Backlog index
 
@@ -34,7 +36,9 @@
 | [#20](#issue-20) | P0 | GeckoView technical decision | Research recorded; compatibility verification tracked with #21 |
 | [#21](#issue-21) | P0 | Replace Cefrium with GeckoView | Source migration implemented; physical runtime checks remain |
 | [#22](#issue-22) | P1 | Home screen and Play/Settings navigation | Merged to beta in PR #26; physical verification pending |
-| [#23](#issue-23) | Deferred | Addon manager replacement | Owner hold; no work authorized |\n| [#28](https://github.com/iNeonyne/LastHavenPlus/issues/28) | P2 | Storage usage accuracy and iterative directory sizing | Open; not started |\n| [#29](https://github.com/iNeonyne/LastHavenPlus/issues/29) | P1 | Reconcile beta documentation and CI evidence | Open; not started |
+| [#23](#issue-23) | Deferred | Addon manager replacement | Owner hold; no work authorized |
+| [#28](https://github.com/iNeonyne/LastHavenPlus/issues/28) | P2 | Storage usage accuracy and iterative directory sizing | Open; not started |
+| [#29](https://github.com/iNeonyne/LastHavenPlus/issues/29) | P1 | Reconcile beta documentation and CI evidence | Open; not started |
 
 ---
 
