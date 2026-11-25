@@ -514,6 +514,7 @@ jobs:
           done < <(jq -r '.assets[] | select(.name == "lasthavenlauncher-arm64.apk" or .name == "lasthavenlauncher-update.json") | .id' <<< "$release_json")
 
       - name: Publish signed release and update assets
+        id: release
         if: steps.version.outputs.is_release == 'true'
         uses: softprops/action-gh-release@v2
         with:
@@ -528,18 +529,24 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           RELEASE_TAG: ${{ steps.version.outputs.tag }}
+          RELEASE_ID: ${{ steps.release.outputs.id }}
         shell: bash
         run: |
           set -euo pipefail
-          gh api "repos/$GITHUB_REPOSITORY/releases/tags/$RELEASE_TAG" > "$RUNNER_TEMP/final-release.json"
-          jq -e '
+          if [[ ! "$RELEASE_ID" =~ ^[0-9]+$ ]]; then
+            echo "::error::Release action did not return a valid release ID."
+            exit 1
+          fi
+          gh api "repos/$GITHUB_REPOSITORY/releases/$RELEASE_ID" > "$RUNNER_TEMP/final-release.json"
+          jq -e --arg tag "$RELEASE_TAG" '
+            .tag_name == $tag and
             ([.assets[] | select(.name | endswith(".apk"))] | length) == 1 and
             ([.assets[] | select(.name == "lasthavenplus-arm64.apk")] | length) == 1 and
             ([.assets[] | select(.name == "lasthavenplus-update.json")] | length) == 1 and
             ([.assets[] | select(.name == "lasthavenlauncher-arm64.apk" or .name == "lasthavenlauncher-update.json")] | length) == 0
           ' "$RUNNER_TEMP/final-release.json" >/dev/null || {
-            echo "::error::Draft release must contain exactly one APK (lasthavenplus-arm64.apk), one update manifest, and no legacy launcher assets."
+            echo "::error::Release must contain exactly one APK (lasthavenplus-arm64.apk), one update manifest, and no legacy launcher assets."
             jq -r '.assets[].name' "$RUNNER_TEMP/final-release.json"
             exit 1
           }
-          echo "Verified: exactly one APK and one canonical update manifest."
+          echo "Verified release $RELEASE_ID ($RELEASE_TAG): exactly one APK and one canonical update manifest."
