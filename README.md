@@ -32,7 +32,7 @@ These are source-level features integrated into beta. CI verifies compilation an
 - **Network usage:** Android per-UID counters report app traffic, including both game and updater traffic; they are not game-only totals.
 - **Diagnostics:** Bounded local diagnostic logs support viewing, clearing and explicit user-initiated sharing. Review logs before sharing.
 - **Updater:** Stable release checks and downloads remain user-initiated. Manifest, version, URL, payload and digest validation are applied; differential patch failures retain a verified full-APK fallback. Android's package installer controls installation.
-- **Addon manager:** Not included in this release candidate. The owner approved investigation/integration of the supplied XPI under issue #23; implementation and GeckoView API/security verification are not complete. The old ZIP package manager is not part of this app.
+- **Addon manager:** On hold by the owner. Do not resume issue #23 or integrate the supplied XPI until the owner explicitly approves resuming it. The legacy ZIP package manager is not part of this app.
 
 ## GeckoView profile transition
 
