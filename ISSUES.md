@@ -28,7 +28,7 @@ Ploy is an internal agent role, not a confirmed GitHub login; assignment is visi
 |---|---:|---|---|
 | [#4](#issue-4) | P0.1 | Build reproducibility and updater test coverage | Open; signed ARM64 CI verified, automated updater edge-case coverage remains |
 | [#5](#issue-5) | Feedback | Owner feedback — gameplay and update behavior after release | Open; owner will provide release feedback on their own schedule; not a release blocker |
-| [#6](#issue-6) | P2 | [PLOY QUEUED 9] Essential launcher settings and safe storage controls | Open; implementation exists, device verification remains |
+| [#6](#issue-6) | P2 | [PLOY QUEUED 9] Essential launcher settings and safe storage controls | Open; implementation exists, automated verification remains |
 | [#7](#issue-7) | P3 | Runtime performance and APK size | Open; measure before optimizing |
 | [#8](#issue-8) | — | Legacy addon manager | Closed — superseded; no planned work |
 | [#9](#issue-9) | P2 | [PLOY QUEUED 2] Overlay accessibility and navigation | Open; TalkBack semantics and automated navigation coverage remain for the #56 overlay |
@@ -120,7 +120,7 @@ A clean checkout builds through the committed, pinned wrapper; updater edge case
 ## Roadmap
 - **Target:** v1.0.0 release gate.
 - **Roadmap:** https://github.com/iNeonyne/LastHavenPlus/issues/18
-- Scope may move to a later release if acceptance criteria or required physical-device verification are not complete. Do not ship partial implementations.
+- Scope may move to a later release if acceptance criteria or required automated verification are not complete. Do not ship partial implementations.
 
 ---
 
@@ -135,7 +135,7 @@ A clean checkout builds through the committed, pinned wrapper; updater edge case
 The repository owner will evaluate published releases on their own schedule and report what works and what does not. This feedback is useful for follow-up fixes but does not block publication.
 
 ## Optional release feedback checklist
-- [ ] Install and cold-start the release APK on a physical arm64 device.
+- [ ] Install and cold-start the release APK on a Android release environment.
 - [ ] Confirm GeckoView starts and loads https://lasthavens.com/play.
 - [ ] Verify login and a representative gameplay session.
 - [ ] Verify WebGL/WebGL2 and WebAssembly functionality.
@@ -166,7 +166,7 @@ The core game flow and same-key in-place update are verified on real arm64 hardw
 ## Roadmap
 - **Target:** v1.0.0 release gate.
 - **Roadmap:** https://github.com/iNeonyne/LastHavenPlus/issues/18
-- Scope may move to a later release if acceptance criteria or required physical-device verification are not complete. Do not ship partial implementations.
+- Scope may move to a later release if acceptance criteria or required automated verification are not complete. Do not ship partial implementations.
 
 ---
 
@@ -178,7 +178,7 @@ The core game flow and same-key in-place update are verified on real arm64 hardw
 **State:** open
 
 ## Goal
-Add essential launcher settings and safe storage visibility after the core game flow is verified on a physical arm64 device. The current settings popup is usage-focused and incomplete; the next pass prioritizes working functionality, clarity and task flow rather than visual redesign.
+Add essential launcher settings and safe storage visibility after the core game flow is verified on a Android release environment. The current settings popup is usage-focused and incomplete; the next pass prioritizes working functionality, clarity and task flow rather than visual redesign.
 
 ## Scope
 - [ ] Editable game URL, defaulting to https://lasthavens.com/play.
@@ -189,7 +189,7 @@ Add essential launcher settings and safe storage visibility after the core game 
 - [ ] Fullscreen and orientation controls, only where useful and verified.
 - [ ] Show app version and GeckoView/Chromium engine version.
   - Verify the pinned GeckoView SDK exposes a supported public version API before implementation; do not infer or hardcode a runtime version.
-- [x] Show installed APK size and game/browser profile storage usage, separating cache from persistent game data where Android/GeckoView expose reliable figures (initial implementation; physical-device path validation pending).
+- [x] Show installed APK size and game/browser profile storage usage, separating cache from persistent game data where Android/GeckoView expose reliable figures (initial implementation; automated path validation pending).
 - [x] Add a refresh action and clearly label estimates or unavailable breakdowns.
 - [ ] Inspect the pinned GeckoView API for a safe HTTP-cache and code-cache-only clear operation.
 - [ ] If both cache types can be cleared safely, add a clearly named Clear game cache action.
@@ -201,7 +201,7 @@ Add essential launcher settings and safe storage visibility after the core game 
 
 ## Dependencies
 - The navigation/menu entry point from #9 is already implemented.
-- Physical-device verification is a release/verification gate, not a blocker to developing and unit-testing settings functionality; keep device checks pending until performed.
+- Physical-device verification is a release/verification gate, not a blocker to developing and unit-testing settings functionality; keep owner feedback is collected after releases.
 - Do not implement cache clearing or game-data clearing until the pinned GeckoView API and lifecycle requirements are verified.
 
 ## Constraints
@@ -212,12 +212,12 @@ Add essential launcher settings and safe storage visibility after the core game 
 - Follow AGENTS.md and update STATUS.md and CHANGELOG-AGENTS.md.
 
 ## Acceptance criteria
-Essential settings work on a physical arm64 device; URL validation and explicit apply behavior are tested; storage figures are clearly defined and accurate within Android/GeckoView API limits; cache clearing is limited to verified cache APIs; destructive game-data clearing is separate, confirmed and backed by a verified GeckoView API.
+Essential settings work on a Android release environment; URL validation and explicit apply behavior are tested; storage figures are clearly defined and accurate within Android/GeckoView API limits; cache clearing is limited to verified cache APIs; destructive game-data clearing is separate, confirmed and backed by a verified GeckoView API.
 
 ## Roadmap
 - **Target:** v1.1.0.
 - **Roadmap:** https://github.com/iNeonyne/LastHavenPlus/issues/18
-- Scope may move to a later release if acceptance criteria or required physical-device verification are not complete. Do not ship partial implementations.
+- Scope may move to a later release if acceptance criteria or required automated verification are not complete. Do not ship partial implementations.
 
 ---
 
@@ -247,7 +247,7 @@ Establish reproducible performance and APK-size measurements before making furth
 - [ ] Keep differential APK updates as the preferred way to reduce repeat download size when the engine payload is unchanged.
 
 ## Dependencies
-- Complete [#5 physical-device gameplay verification](https://github.com/iNeonyne/Lasthavens-Android/issues/5) and establish a working release build first.
+- Complete [#5 owner feedback after release](https://github.com/iNeonyne/Lasthavens-Android/issues/5) and establish a working release build first.
 
 ## Constraints
 - No speculative Chromium flags, native-library stripping, asset deletion or engine replacement.
@@ -261,7 +261,7 @@ A repeatable baseline is recorded, and every accepted optimization has measured 
 ## Roadmap
 - **Target:** v1.2.0.
 - **Roadmap:** https://github.com/iNeonyne/LastHavenPlus/issues/18
-- Scope may move to a later release if acceptance criteria or required physical-device verification are not complete. Do not ship partial implementations.
+- Scope may move to a later release if acceptance criteria or required automated verification are not complete. Do not ship partial implementations.
 
 ---
 
@@ -301,10 +301,10 @@ Add a small, game-focused navigation menu that appears when the user attempts to
 - [x] Keep the menu compact and usable in the existing fullscreen/game layout.
 
 ## Acceptance criteria
-Attempting to leave the app opens the menu; all four actions work as described; controls expose meaningful accessible names; returning to the game preserves the current session and browser state. Physical-device verification remains pending.
+Attempting to leave the app opens the menu; all four actions work as described; controls expose meaningful accessible names; returning to the game preserves the current session and browser state. Physical-automated verification remains pending.
 
 ## Roadmap
-- **Target:** v1.2.0 — remaining accessibility and physical-device verification.
+- **Target:** v1.2.0 — remaining accessibility and automated verification.
 - **Roadmap:** https://github.com/iNeonyne/LastHavenPlus/issues/18
 - Do not ship partial implementations.
 
@@ -336,12 +336,12 @@ Give users visibility into how much network data LastHavenPlus and the embedded 
 - Document limitations in the UI and developer notes.
 
 ## Acceptance criteria
-Users can inspect trustworthy sent/received app totals, understand what is included, and refresh/reset only locally stored session statistics if supported. CI and device verification remain pending.
+Users can inspect trustworthy sent/received app totals, understand what is included, and refresh/reset only locally stored session statistics if supported. automated CI verification remains pending.
 
 ## Roadmap
 - **Target:** v1.0.0 verification gate.
 - **Roadmap:** https://github.com/iNeonyne/LastHavenPlus/issues/18
-- Scope may move to a later release if acceptance criteria or required physical-device verification are not complete. Do not ship partial implementations.
+- Scope may move to a later release if acceptance criteria or required automated verification are not complete. Do not ship partial implementations.
 
 ---
 
@@ -636,7 +636,7 @@ See the GitHub issue #18 for the full phase checklist and release gates. `AGENT_
 ### Exclusions
 - Do not restart or re-implement the Cefrium migration.
 - Do not change GeckoView, Gradle, AGP, JDK, Android SDK, Build Tools, signing or ABI configuration.
-- Do not infer physical game compatibility from dependency research or CI; that remains under #5/#21.
+- Do not infer runtime behavior from dependency research or CI; that remains under #5/#21.
 - No game/client changes, Addon Manager work (#23 remains on hold), release, tag or main promotion.
 
 **Completion evidence:** update `docs/GECKOVIEW_MIGRATION.md` with official references, artifact-specific findings and unresolved limitations; keep this issue open until each remaining item is evidenced.
@@ -663,7 +663,7 @@ See the GitHub issue #18 for the full phase checklist and release gates. `AGENT_
 
 ### Exclusions
 - No Cefrium removal or GeckoView migration implementation work.
-- No claim of physical compatibility based on CI, emulator tests or an undetailed owner smoke-test report.
+- No claim of runtime compatibility based on CI, emulator tests or an undetailed owner smoke-test report.
 - Do not copy/delete Cefrium profile data or assume cross-engine profile portability.
 - No changes to application identity, signing, ABI, updater policy or game/client; #23 Addon Manager remains on hold.
 
@@ -711,7 +711,7 @@ Preserve archive path/CRC/duplicate/count/expanded-size checks. Keep Android 10/
 ---
 ---
 
-**Integration checkpoint (2026-11-25):** PR #26 merged to beta at `e924c580699ad34f1083d1a9a0fe96901037c0ae`. PR run #329 passed unsigned release build and unit tests for the exact PR head. Signed post-merge ARM64 CI and physical device verification remain open. `main` and `beta` are diverged (beta ahead 166, main ahead 9); review the nine main-only commits before any promotion.
+**Integration checkpoint (2026-11-25):** PR #26 merged to beta at `e924c580699ad34f1083d1a9a0fe96901037c0ae`. PR run #329 passed unsigned release build and unit tests for the exact PR head. Signed post-merge ARM64 CI and owner feedback remains optional. `main` and `beta` are diverged (beta ahead 166, main ahead 9); review the nine main-only commits before any promotion.
 
 
 **Post-merge CI (2026-11-25):** Run [#330](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45518704468) passed signed optimized release build, unit tests, established certificate verification and ARM64-only packaging for `e924c580699ad34f1083d1a9a0fe96901037c0ae`. Artifact upload succeeded. Physical updater installation and device gameplay remain open.
@@ -729,7 +729,7 @@ Preserve archive path/CRC/duplicate/count/expanded-size checks. Keep Android 10/
 ## Issue 29 — P1 — Reconcile beta documentation with current source and CI evidence
 
 **GitHub:** https://github.com/iNeonyne/LastHavenPlus/issues/29  
-**State:** open; documentation candidate on `chaty/docs-reconciliation-v2.1`. Reconcile README, STATUS, ISSUES and release-facing claims against PR #43, exact commit CI evidence and outstanding physical-device gates. Keep open until the docs PR is merged and verified.
+**State:** open; documentation candidate on `chaty/docs-reconciliation-v2.1`. Reconcile README, STATUS, ISSUES and release-facing claims against PR #43, exact commit CI evidence and outstanding automated gates. Keep open until the docs PR is merged and verified.
 
 
 ## Issue 31 — P0 — Make release packaging resilient to optional differential update failures
