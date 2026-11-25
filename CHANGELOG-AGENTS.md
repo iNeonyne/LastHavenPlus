@@ -633,3 +633,14 @@ Entry format:
 - Post-merge beta push run [#45610518305](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45610518305) completed successfully for merge commit `b12da7651445d15080e7593d441459a8c8403070`.
 - The merged beta build, unit tests, established signing-certificate verification and ARM64-only ABI checks passed.
 - This push run did not execute the release-tag draft asset lookup. Live release-ID verification and optional differential failure-path testing remain open under #31.
+
+
+## 2026-11-25 — Add beta Android quality gate and incremental Kotlin formatting
+
+- **Role:** Chaty / CI workflow implementation
+- **Issue:** [#60](https://github.com/iNeonyne/LastHavenPlus/issues/60)
+- **Branch:** `chaty/ci-quality-gate` from beta `36f079445e227583c12b19bde9161844e0e5855d`
+- **Scope:** Add a read-only Android quality workflow for beta PRs and relevant beta pushes; configure pinned Spotless 8.12.0 with ktfmt 0.64; document local formatting/lint commands and split responsibilities between Android PR validation and the quality workflow.
+- **Design:** Use incremental formatting ratcheted to the PR base or previous beta commit to avoid mass-reformatting legacy files. Documentation-only edits do not trigger quality/build workflows. The existing Android PR job remains the source of JVM and Python updater-helper test results.
+- **Constraints:** No app source behavior, release signing, secrets, ABI, GeckoView, updater or main changes. No release or publication.
+- **Verification:** Exact-head Actions validation is pending. Do not claim lint/format success until the PR checks complete; a separate intentionally misformatted Kotlin change must be rejected by the formatter check.
