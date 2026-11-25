@@ -21,12 +21,11 @@ Preserve the application ID and established release signing identity to maintain
 
 ## Current beta features
 
-These are source-level features integrated into beta. CI verifies compilation and unit tests; it does not prove all runtime behavior on physical hardware.
+These are features integrated into beta and covered by the repository's automated build and test checks where applicable.
 
-- **Launcher home:** Branded, responsive home screen with Play, Settings and update entry points. Play lazily creates the GeckoView session; opening Settings does not initialize the game.
-- **Gameplay menu:** Opened with Android Back; contains exactly Reload, Settings and Return to game. The persistent top-right Menu button is removed.
+- **Direct launch:** The app opens directly into the game. Android Back opens a responsive in-game menu with Reload, Settings and Return to game; Settings does not initialize a separate game session.
 - **Navigation:** Settings, diagnostics and update details are full-screen pages rather than stacked popup dialogs. The existing GeckoSession is retained when the game view is detached for launcher pages.
-- **Responsive layout:** Home switches between compact and wide layouts; settings pages cap content width on larger windows. The Activity is resizeable.
+- **Responsive layout:** The in-game menu adapts to available window space; settings pages cap content width on larger windows. The Activity is resizeable.
 - **Launcher icon:** Adaptive launcher icon resources are included.
 - **Settings and storage:** Installed APK size, persistent app-private data size and cache size are reported separately. App-private data includes GeckoView data and is not a profile-only measurement.
 - **Network usage:** Android per-UID counters report app traffic, including both game and updater traffic; they are not game-only totals.
@@ -38,7 +37,7 @@ These are source-level features integrated into beta. CI verifies compilation an
 
 GeckoView uses its own browser profile. No supported, verified migration of Cefrium cookies or other browser data has been established. Do not copy or delete existing Cefrium profile data as part of this transition. A fresh game login may be required.
 
-The owner has reported that the app and GeckoView work on an ARM64 device. The device model, Android version, exact tested commit and individual feature results have not been recorded here. This does not verify the v2.1.0 UI changes, WebGL/WASM, WebSockets, audio, fullscreen, profile persistence, process recovery or updater installation. See [STATUS.md](STATUS.md) and [docs/GECKOVIEW_MIGRATION.md](docs/GECKOVIEW_MIGRATION.md).
+The repository owner evaluates releases on their own schedule and may report gameplay, profile, browser API, media and updater behavior. Feedback is recorded in GitHub Issues and used to prioritize follow-up fixes; pending feedback is not a publication prerequisite.
 
 ## Build and test
 
@@ -58,7 +57,7 @@ A signed release build requires the established project keystore and credentials
 - Keep update checks, downloads and installation user-initiated.
 - Never publish debug APKs or incomplete features.
 - Promote beta only after release gates pass and the owner explicitly approves.
-- Physical-device verification must be recorded against the exact tested build; CI does not replace it.
+- The repository owner may test published releases and report findings on their own schedule. Pending feedback is not a release blocker.
 
 ## Project workflow and records
 

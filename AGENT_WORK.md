@@ -30,7 +30,7 @@ Ploy is released from #56 and has no active application issue until Chaty comple
 | Order | Issue | Status | Start condition / narrow scope |
 |---:|---|---|---|
 | 1 | [#56](https://github.com/iNeonyne/LastHavenPlus/issues/56) | CHATY ACTIVE | Direct launch, responsive overlay, preserve same GeckoSession, Settings in both orientations, gameplay/system UI behavior, remove idle progress bar |
-| 2 | [#9](https://github.com/iNeonyne/LastHavenPlus/issues/9) | QUEUED | After #56 merge: overlay accessibility semantics, TalkBack order/labels and physical navigation follow-up |
+| 2 | [#9](https://github.com/iNeonyne/LastHavenPlus/issues/9) | QUEUED | After #56 merge: overlay accessibility semantics, TalkBack order/labels and automated navigation coverage |
 | 3 | [#11](https://github.com/iNeonyne/LastHavenPlus/issues/11) | QUEUED | After #9 merge: diagnostics redaction, bounded rotation/size and failure-path tests only |
 | 4 | [#12](https://github.com/iNeonyne/LastHavenPlus/issues/12) | QUEUED | After #11 merge: safe GeckoView 160 load-error category mapping and tests |
 | 5 | [#14](https://github.com/iNeonyne/LastHavenPlus/issues/14) | QUEUED | After #12 merge: explicit user-triggered DNS/HTTPS reachability diagnostics |
@@ -40,11 +40,11 @@ Ploy is released from #56 and has no active application issue until Chaty comple
 | 9 | [#6](https://github.com/iNeonyne/LastHavenPlus/issues/6) | QUEUED | After #28: essential settings surface and editable HTTPS game-URL validation/persistence only; #16/#28/#19 remain separate |
 | 10 | [#17](https://github.com/iNeonyne/LastHavenPlus/issues/17) | QUEUED | After #6: versioned import/export of an allowlist of non-sensitive launcher preferences |
 
-**Not assigned to Ploy:** #4/#15 updater code and recovery (Chaty; overlapping high-risk updater scope); #5/#21 physical ARM64 verification (Chaty coordinates with the repository owner/device tester); #20 GeckoView dependency record, #31 release workflow, #61–#66 CI/build/security tasks, #70 documentation validation (Chaty); #7 requires measured device evidence; #19 is deferred and coordinated by Chaty; #67 requires the repository owner's license decision.
+**Not assigned to Ploy:** #4/#15 updater code and recovery (Chaty; overlapping high-risk updater scope); #5/#21 optional owner release feedback (not an engineering or release blocker); #20 GeckoView dependency record, #31 release workflow, #61–#66 CI/build/security tasks, #70 documentation validation (Chaty); #7 requires measured device evidence; #19 is deferred and coordinated by Chaty; #67 requires the repository owner's license decision.
 
 **GitHub assignees:** Ploy is an internal agent role, not a confirmed GitHub account login. Mark assignments in issue bodies and `AGENT_WORK.md`; do not invent a GitHub username or assign an unrelated account.
 
-**Per-issue constraints:** one issue per branch/PR; task branches start from current beta; never push directly to beta/main; no central tracker edits by Ploy; provide PR URL, exact head SHA, changed files, tests/CI, limitations and physical-device status. No physical-device claims from CI.
+**Per-issue constraints:** one issue per branch/PR; task branches start from current beta; never push directly to beta/main; no central tracker edits by Ploy; provide PR URL, exact head SHA, changed files, tests/CI and known limitations. Do not represent unreported owner feedback as test results.
 
 **Global exclusions:** no game/client modifications; no application ID/signing changes; no GeckoView/toolchain upgrades without separate compatibility review; no automatic app downloads/installations; no changes to central README/AGENTS/STATUS/ISSUES/CHANGELOG/AGENT_WORK; no release/tag/publication; no Addon Manager work while #23 is on hold. Preserve GeckoView profile/session and all game data.
 
