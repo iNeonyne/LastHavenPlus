@@ -375,3 +375,13 @@
 - Closed #22 as completed source implementation; #42 now tracks physical v2.1.0 UI verification.
 - #4/#31 retain open updater/release-workflow work with signed beta CI evidence recorded.
 - Docs-only PR; no app tests or device checks were run. Branch pruning remains deferred because the connected GitHub actions expose no delete-ref operation.
+
+
+### 2026-11-25 — Verify published v2.1.0 and reconcile release records
+
+- GitHub confirms release v2.1.0 is published (not draft/prerelease) from tag commit `03fcfa9652ce4e7d1034523d640a1693e6e6b9ce`.
+- Release run #45603533787 built versionName 2.1.0 / versionCode 2001000; unit tests, signature verification, established certificate match, ARM64-only ABI check, differential generation and release upload/publish steps succeeded.
+- The final release asset query failed with HTTP 404. The current release metadata independently confirms one canonical APK, one update manifest and one differential patch. Issue #31 tracks this workflow verification failure.
+- Updated beta-facing release records to distinguish the published artifact from remaining physical ARM64 feature testing.
+- Stable-facing README/CHANGELOG on main remain candidate wording; correcting main requires a separate stable-branch documentation action under repository policy.
+- No app tests or physical-device checks were run for this documentation/record reconciliation.
