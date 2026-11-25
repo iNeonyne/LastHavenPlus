@@ -13,7 +13,7 @@
 - Beta uses GeckoView 160 and is ARM64-only. The application ID is `com.neonyne.lasthavenlauncher`.
 - Updater hardening from PR #30 is integrated in beta at `1d6c1ec`.
 - Beta HEAD `1f300b9` is a documentation-only commit after the integrated app source commit. The intervening commits do not change application source.
-- PR #32 is open for release-workflow timeout/fallback hardening. It is stale/diverged from current beta and its exact-head Actions runs were cancelled. It is not integrated.
+- PR #32 was superseded. Replacement PR [#34](https://github.com/iNeonyne/LastHavenPlus/pull/34) adds hard streamed byte limits and URL validation for optional differential inputs; exact-head CI is running. PR #34 is not integrated.
 - The owner approved resuming the supplied addon manager. Issue #23 records the audit and scope; no manager code is integrated.
 - No physical ARM64 device verification is claimed.
 
@@ -28,7 +28,7 @@
 | Updater PR validation | [Run #345](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45521843766) passed unsigned release build and unit tests for the exact PR head |
 | Signed beta validation | [Run #346](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45522408962) passed for exact integrated commit `1d6c1ec` |
 | Release workflow retry | Run #347 was cancelled during optional differential packaging; the v2.0.0 GitHub Release is now independently confirmed published with the two assets listed above |
-| PR #32 validation | Runs [#348](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45524663665) and [#349](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45524736933) were cancelled; neither is a passing check |
+| PR #32 validation | PR #32 runs #348/#349 were cancelled; replacement PR #34 run [#351](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45527186955) is in progress for exact head `751102ac2e00b4adb10c0ab8b34ac3017c5f6311` |
 | Physical device | Not performed / unverified |
 
 Run #346 verified the signed optimized release build, unit tests, established signing certificate, ARM64-only package and artifact upload for the exact beta integration commit `1d6c1ec`. It does not verify later documentation-only beta HEAD `1f300b9`. Do not describe CI as physical-device verification.
@@ -53,7 +53,7 @@ Run #346 verified the signed optimized release build, unit tests, established si
 
 ### P0 — release workflow and updater
 
-- [ ] Review and fix PR #32. The current candidate lacks hard byte caps on previous-release asset downloads and release-list API data. Its branch must be refreshed from beta and exact-head CI must pass.
+- [ ] Review PR #34 and exact-head CI. The superseded PR #32 lacked hard byte caps; PR #34 adds bounded streaming reads and regression tests. Do not merge until exact-head CI passes.
 - [ ] Complete updater regression coverage tracked in #4: malformed manifests, digest mismatch, incompatible base APK, corrupted/truncated patches and interrupted downloads at the download boundary.
 - [ ] Verify pending installer recovery, delta/full fallback and same-key in-place update on physical ARM64 hardware (#5).
 
@@ -76,7 +76,7 @@ Run #346 verified the signed optimized release build, unit tests, established si
 
 ### P1 — documentation reconciliation (#29)
 
-- [ ] This documentation candidate updates README, STATUS, AGENT_WORK, CHANGELOG and WORK_LOG. Keep #29 open until the PR is merged and current beta documentation is verified.
+- [ ] This documentation candidate updates README, STATUS, AGENT_WORK, CHANGELOG, WORK_LOG and the GeckoView migration notes. Keep #29 open until the PR is merged and current beta documentation is verified.
 - [ ] Keep the historical changelog intact; add dated corrections rather than rewriting prior history.
 
 ### P2/P3
