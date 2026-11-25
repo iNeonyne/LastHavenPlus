@@ -42,7 +42,8 @@
 | [#42](https://github.com/iNeonyne/LastHavenPlus/issues/42) | Superseded | v2.1.0 Home-screen UI verification | Superseded by direct-launch redesign #56; new UX verification belongs to #5/#56 |
 | [#29](https://github.com/iNeonyne/LastHavenPlus/issues/29) | Done | Reconcile beta documentation and CI evidence | Closed as completed after PR #46 merged to beta |
 | [#31](https://github.com/iNeonyne/LastHavenPlus/issues/31) | P0 | Draft release asset verification and differential fallback | PR #54 merged; exact-head unsigned and post-merge signed beta runs passed; live release-ID path/fallback checks remain |
-| [#56](https://github.com/iNeonyne/LastHavenPlus/issues/56) | P1 | Direct launch and responsive in-game overlay | Active implementation; Ploy assigned, Chaty reviews/integrates |\n| [#60](https://github.com/iNeonyne/LastHavenPlus/issues/60) | Done | Android lint and Kotlin formatting quality gate | PR #72 merged; exact-head PR and post-merge beta quality/build workflows passed |
+| [#56](https://github.com/iNeonyne/LastHavenPlus/issues/56) | P1 | Direct launch and responsive in-game overlay | Active implementation; Ploy assigned, Chaty reviews/integrates |
+| [#60](https://github.com/iNeonyne/LastHavenPlus/issues/60) | Done | Android lint and Kotlin formatting quality gate | PR #72 merged; exact-head PR and post-merge beta quality/build workflows passed |
 
 ---
 
