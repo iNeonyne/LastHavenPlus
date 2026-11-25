@@ -708,3 +708,13 @@ Entry format:
 - **Issue tracker:** update GitHub #20 and #21 descriptions to match the corrected backlog; #18's live GitHub roadmap is already current and remains unchanged.
 - **Constraints:** no source, Gradle, CI, signing, release, game or main changes. #23 remains on hold; #56 remains Ploy's active task.
 - **Verification:** documentation consistency, internal anchors/links and diff review required. Full Markdown lint remains outstanding under #70; no Android or physical-device tests are applicable.
+
+
+## 2026-11-25 — Isolate updater streamed-download verification
+
+- **Issue:** #4 / #15 (Chaty).
+- **Branch:** `chaty/issue-4-interrupted-download-tests`, based on beta `01af3f488225eaa5321b994a3957e53dcdb70c55`.
+- Extracted the updater's streamed file copy, size/digest validation and failed-download cleanup into a focused policy helper without changing the existing network or installation architecture.
+- Added JVM tests for valid payloads, truncation, interrupted reads, digest mismatch and size-limit rejection; failed payloads must leave no staged file.
+- Exact-head PR CI is required before merge. Physical install/profile tests and release-workflow differential fallback runtime verification remain outstanding.
+- No automatic updates, release publication, signing changes, application ID changes or ABI changes.
