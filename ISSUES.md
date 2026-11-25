@@ -12,7 +12,7 @@
 6. **P2 — Remaining product polish:** #9, #11, #12, #14, #16 and #17 only after core reliability gates.
 7. **P3 — Performance and APK size (#7):** Measure before optimizing; do not expand v2.1.0 scope without owner approval.
 
-**Release roadmap:** [#18 — v2.1.0 reliability, GeckoView verification and addon manager](https://github.com/iNeonyne/LastHavenPlus/issues/18). v2.0.0 is already published; v2.1.0 is a proposed target, not a release commitment.
+**Release roadmap:** [#18 — v2.1.0 reliability and GeckoView verification](https://github.com/iNeonyne/LastHavenPlus/issues/18). The v2.1.0 candidate was promoted to `main` by PR #47; publication is not verified and remains blocked on the physical ARM64 test matrix and final versioned release-artifact checks. The addon manager (#23) is on hold and is not part of active v2.1.0 scope.
 
 ## Backlog index
 
@@ -674,4 +674,4 @@ Preserve archive path/CRC/duplicate/count/expanded-size checks. Keep Android 10/
 ## Issue 31 — P0 — Make release packaging resilient to optional differential update failures
 
 **GitHub:** https://github.com/iNeonyne/LastHavenPlus/issues/31  
-**State:** open; implementation candidate is PR #32 targeting beta. Require exact-head workflow validation and critical review before merge. The full signed APK must remain available if optional differential packaging fails. Preserve signing, ARM64, manifest and artifact-count checks.
+**State:** open; PR #37 merged the optional differential fallback hardening. The later signed beta run #45601558602 passed build, unit tests, established signing-certificate verification and ARM64-only ABI checks for the v2.1.0 candidate (recorded in PR #47). Keep this issue open because that run does not exercise every release-tag optional-delta failure path. Require a separately authorized versioned release-workflow test before closing; do not publish or alter release policy just to test it.
