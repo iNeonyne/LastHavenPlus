@@ -66,7 +66,7 @@ See [Mozilla's GeckoView consumer documentation](https://firefox-source-docs.moz
 
 ## Addon boundary
 
-The previous ZIP addon package manager has been removed. The owner has approved investigation/integration of the supplied XPI addon manager under issue #23. This is a separate, bounded task; do not restore the legacy ZIP manager or begin implementation outside an explicit assignment and review.
+The previous ZIP addon package manager has been removed. Issue #23 and all addon-manager work are on hold by owner instruction (2026-11-25). Do not resume investigation, implementation, assignment or review until the owner explicitly approves resuming it. Do not restore the legacy ZIP manager.
 
 Before any XPI install path is integrated, verify the pinned GeckoView 160 extension APIs, unsigned XPI behavior, install confirmation, session/tab lifecycle and archive/network security constraints. A WoW 3.3.5a addon ZIP/`.toc` package is not a Firefox WebExtension. Local package storage is not game injection. Never claim that the launcher loads game addons unless a separately approved implementation is actually verified.
 
