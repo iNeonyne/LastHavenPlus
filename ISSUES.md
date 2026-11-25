@@ -33,25 +33,25 @@ Every actionable issue carries exactly one agent ownership label. New issues are
 |---|---:|---|---|
 | [#4](#issue-4) | P0.1 | Build reproducibility and updater test coverage | Open; signed ARM64 CI verified, automated updater edge-case coverage remains |
 | [#5](#issue-5) | Feedback | Owner feedback — gameplay and update behavior after release | Open; owner will provide release feedback on their own schedule; not a release blocker |
-| [#6](#issue-6) | P2 | [PLOY QUEUED 9] Essential launcher settings and safe storage controls | Open; includes version identity, theme preference and accessible storage loading-state candidates |
+| [#6](#issue-6) | P2 | Essential launcher settings and safe storage controls | Open; includes version identity, theme preference and accessible storage loading-state candidates |
 | [#7](#issue-7) | P3 | Runtime performance and APK size | Open; measure before optimizing |
 | [#8](#issue-8) | — | Legacy addon manager | Closed — superseded; no planned work |
-| [#9](#issue-9) | P2 | [PLOY QUEUED 2] Overlay accessibility and navigation | Open; TalkBack semantics and automated navigation coverage remain for the #56 overlay |
-| [#10](#issue-10) | P2 | [PLOY QUEUED 7] Persistent app-wide network usage totals | Open; app-wide counters are implemented, automated counter tests remain |
-| [#11](#issue-11) | P2 | [PLOY QUEUED 3] Privacy-conscious log tests | Open; queued after #9 |
-| [#12](#issue-12) | P2 | [PLOY QUEUED 4] GeckoView load-error details | Open |
+| [#9](#issue-9) | P2 | Overlay accessibility and navigation | Open; TalkBack semantics and automated navigation coverage remain for the #56 overlay |
+| [#10](#issue-10) | P2 | Persistent app-wide network usage totals | Open; app-wide counters are implemented, automated counter tests remain |
+| [#11](#issue-11) | P2 | Privacy-conscious log tests | Open; queued after #9 |
+| [#12](#issue-12) | P2 | GeckoView load-error details | Open |
 | [#13](#issue-13) | — | Accessible names / legacy addon-manager compile work | Closed — consolidated into #9 |
-| [#14](#issue-14) | P2 | [PLOY QUEUED 5] Connection diagnostics | Open |
+| [#14](#issue-14) | P2 | Connection diagnostics | Open |
 | [#15](#issue-15) | P2 | Updater recovery and download progress visibility | Open; adds measurable speed/ETA, inline retry, install-later confirmation, storage preflight, package-size comparison and release-note/history UX |
-| [#16](#issue-16) | P2 | [PLOY QUEUED 6] Gameplay orientation and keep-awake settings | Open |
-| [#17](#issue-17) | P2 | [PLOY QUEUED 10] Settings backup and restore | Open |
+| [#16](#issue-16) | P2 | Gameplay orientation and keep-awake settings | Open |
+| [#17](#issue-17) | P2 | Settings backup and restore | Open |
 | [#18](#issue-18) | Roadmap | v2.2.0 roadmap and release gates | Open; planning and sequencing updated |
 | [#19](#issue-19) | P1 | Opt-in beta release channel | Open |
 | [#20](#issue-20) | P1 | GeckoView 160 artifact/dependency audit | Decision implemented; POM, transitive dependencies, notices and size evidence remain |
 | [#21](#issue-21) | Feedback | Owner feedback — GeckoView runtime/profile behavior after release | Open; optional owner feedback and reported follow-up defects; not a release blocker |
 | [#22](#issue-22) | Superseded | Home screen and Play/Settings navigation | Replaced by direct-launch/overlay scope #56; owner feedback tracked in #5/#21 |
 | [#23](#issue-23) | Deferred | Integrate and harden supplied GeckoView addon manager | On hold by owner instruction; do not resume without explicit approval |
-| [#28](https://github.com/iNeonyne/LastHavenPlus/issues/28) | P2 | [PLOY QUEUED 8] Storage usage accuracy and iterative directory sizing | Open; queued after #10 |
+| [#28](https://github.com/iNeonyne/LastHavenPlus/issues/28) | P2 | Storage usage accuracy and iterative directory sizing | Open; queued after #10 |
 | [#42](https://github.com/iNeonyne/LastHavenPlus/issues/42) | Superseded | v2.1.0 Home-screen UI verification | Superseded by direct-launch redesign #56; new UX verification belongs to #5/#56 |
 | [#29](https://github.com/iNeonyne/LastHavenPlus/issues/29) | Done | Reconcile beta documentation and CI evidence | Closed as completed after PR #46 merged to beta |
 | [#31](https://github.com/iNeonyne/LastHavenPlus/issues/31) | P0 | Draft release asset verification and differential fallback | PR #54 merged; exact-head unsigned and post-merge signed beta runs passed; live release-ID path/fallback checks remain |
