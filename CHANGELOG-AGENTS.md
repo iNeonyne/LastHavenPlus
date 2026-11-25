@@ -599,3 +599,12 @@ Entry format:
 - **Issue #18:** replaced the stale proposed-scope roadmap with the actual promoted-candidate state, remaining physical-device and final-tag artifact gates, and explicit addon-manager hold.
 - **Issues #4/#31:** updated with the signed beta evidence from run #45601558602. Both remain open because physical update installation and release-tag fallback failure-path verification are outstanding.
 - **Validation:** checked PR #26/#43/#47 merge records, exact CI evidence and current issue states. Documentation/issue metadata only; no application tests or physical-device checks were run.
+
+
+## 2026-11-25 — Merge roadmap and backlog housekeeping PR #51
+
+- **PR:** [#51](https://github.com/iNeonyne/LastHavenPlus/pull/51), squash-merged into beta.
+- **Merge commit:** `b711af8e9c0dd35032edc21a1c3f7faacd4c343c`.
+- **Outcome:** corrected the v2.1.0 roadmap and issue #4/#31 evidence; closed completed source task #22; respecified #42 as physical UI verification; kept addon-manager #23 on hold.
+- **Validation:** reviewed the four-file documentation-only diff. No PR workflow runs were returned for the docs-only head. No app tests or physical-device checks were run.
+- **Remaining:** stale/diverged branch pruning is not available through the connected GitHub actions; no branch refs were force-moved or deleted.

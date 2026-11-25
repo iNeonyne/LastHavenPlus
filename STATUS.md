@@ -3,7 +3,7 @@
 **Last updated:** 2026-11-25  
 **Active branch:** `beta`  
 **Latest application integration commit:** `854fce1b1e2989cb012ebf5a15d196d91ff7cad7` (PR [#46](https://github.com/iNeonyne/LastHavenPlus/pull/46)).  
-**Latest repository maintenance:** PR [#49](https://github.com/iNeonyne/LastHavenPlus/pull/49) merged into beta at `1f661cb6234dcfdfd051d0cb963e739668896a26`.  
+**Latest repository maintenance:** PR [#51](https://github.com/iNeonyne/LastHavenPlus/pull/51) merged into beta at `b711af8e9c0dd35032edc21a1c3f7faacd4c343c`. PR #49 is the preceding documentation reconciliation checkpoint.  
 **Stable promotion:** PR [#47](https://github.com/iNeonyne/LastHavenPlus/pull/47) merged v2.1.0 candidate into `main` at `c5f6518e57d614da73642b7dc4c8a21e82e6e9b3`. Main subsequently received release-preparation commits; draft/tag/publication state is not asserted by this beta status record.  
 **Current phase:** v2.1.0 candidate promoted to `main`; physical ARM64 verification and final release gates remain outstanding. Promotion is not the same as publication.
 
