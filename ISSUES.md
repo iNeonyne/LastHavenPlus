@@ -54,6 +54,8 @@ Ploy is an internal agent role, not a confirmed GitHub login; assignment is visi
 | [#60](https://github.com/iNeonyne/LastHavenPlus/issues/60) | Done | Android lint and Kotlin formatting quality gate | PR #72 merged; exact-head PR and post-merge beta quality/build workflows passed |
 | [#84](https://github.com/iNeonyne/LastHavenPlus/issues/84) | Done | Approved recreated LastHavens-inspired launcher icon | PR #85 merged to beta; PR #87 promoted icon to main; beta CI passed |
 | [#86](https://github.com/iNeonyne/LastHavenPlus/issues/86) | Deferred | v2.3.0 deferred reliability, updater and supporting-feature backlog | Open coordination index; linked issues remain the detailed sources of truth |
+| [#106](https://github.com/iNeonyne/LastHavenPlus/issues/106) | P2 | Gameplay loading, reconnect and load-failure UX | Open; deferred candidate; coordinate with #12 |
+| [#107](https://github.com/iNeonyne/LastHavenPlus/issues/107) | P3 | Consistent visual design and interaction polish | Open; deferred visual-only candidate; no home screen |
 
 ---
 
@@ -795,3 +797,22 @@ Record exact branch head, Actions run URLs, lint results, formatter result and l
 - **Owner release feedback (#5/#21):** optional post-publication feedback; the owner will share findings on their own schedule and it is not a release gate.
 - **#42:** the old v2.1.0 Home-screen-first acceptance scope is superseded by #56. Do not duplicate its old Home screen/menu implementation.
 - **#60:** exact PR validation passed in run #45627915789; post-merge quality workflow #45631250015 and signed beta build workflow #45631249817 both completed successfully. Issue can be closed as completed.
+
+
+<a id="issue-106"></a>
+
+## Issue 106 — P2 — Improve gameplay loading, reconnect and load-failure UX
+
+**GitHub:** https://github.com/iNeonyne/LastHavenPlus/issues/106
+**State:** open; deferred candidate under #86
+
+Improve the existing direct-launch game loading and failure experience with a restrained branded loading state, honest progress only when measurable, clear retry and safe failure presentation. Coordinate GeckoView error categories with #12. Do not add a home screen, browser chrome, background polling, fabricated progress or game-client changes. Preserve GeckoSession/profile state and ensure stale loading UI never obscures successful gameplay. Test loading/error/retry transitions and lifecycle interruption.
+
+<a id="issue-107"></a>
+
+## Issue 107 — P3 — Establish consistent visual design and interaction polish
+
+**GitHub:** https://github.com/iNeonyne/LastHavenPlus/issues/107
+**State:** open; deferred candidate under #86
+
+Create a small shared Compose design system and apply it to existing launcher-owned screens (in-game overlay, Settings, Diagnostics and Update). Improve hierarchy, spacing, touch targets, contrast, responsive layouts and restrained transitions. Keep fullscreen gameplay unobstructed. No home screen, persistent gameplay HUD, game-client changes or functional behavior changes in this visual-only task. Coordinate with #6/#9/#11/#12/#14/#15 and add layout/screenshot checks where feasible.
