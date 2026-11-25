@@ -52,7 +52,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Diagnostics.info(this, "Lifecycle", "Activity created")
-        WindowCompat.setDecorFitsSystemWindows(window, false)
+        WindowCompat.setDecorFitsSystemWindows(window, true)
 
         val preferences = getSharedPreferences(PREFERENCES_NAME, MODE_PRIVATE)
         setContent {
@@ -71,6 +71,7 @@ class MainActivity : ComponentActivity() {
 
     private fun setGameplayUi(active: Boolean) {
         gameplayActive = active
+        WindowCompat.setDecorFitsSystemWindows(window, !active)
         requestedOrientation = if (active) {
             ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE
         } else {
