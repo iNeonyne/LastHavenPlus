@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -39,7 +40,7 @@ enum class Screen { Home, Game, Settings, Diagnostics, Update }
 
 class MainActivity : ComponentActivity() {
     private var pendingUpdateUri: Uri? = null
-    private var gameplayActive = false
+    private var immersiveActive = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -61,15 +62,17 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    private fun setGameplayUi(active: Boolean) {
-        gameplayActive = active
-        WindowCompat.setDecorFitsSystemWindows(window, !active)
-        requestedOrientation = if (active) {
+    private fun setGameplayUi(gameplay: Boolean, immersive: Boolean) {
+        immersiveActive = immersive
+        WindowCompat.setDecorFitsSystemWindows(window, !immersive)
+        requestedOrientation = if (gameplay) {
             ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE
         } else {
             ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
         }
-        if (active) {
+        if (gameplay) window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+        else window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+        if (immersive) {
             WindowInsetsControllerCompat(window, window.decorView).apply {
                 hide(WindowInsetsCompat.Type.systemBars())
                 systemBarsBehavior =
@@ -84,13 +87,12 @@ class MainActivity : ComponentActivity() {
                 isAppearanceLightNavigationBars = false
                 show(WindowInsetsCompat.Type.systemBars())
             }
-            window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         }
     }
 
     override fun onWindowFocusChanged(hasFocus: Boolean) {
         super.onWindowFocusChanged(hasFocus)
-        if (hasFocus && gameplayActive) setGameplayUi(true)
+        if (hasFocus && immersiveActive) setGameplayUi(true, true)
     }
 
     private fun installUpdate(uri: Uri) {
@@ -137,7 +139,7 @@ class MainActivity : ComponentActivity() {
 private fun LastHavenApp(
     preferences: SharedPreferences,
     onExit: () -> Unit,
-    onGameplayUiChanged: (Boolean) -> Unit,
+    onGameplayUiChanged: (Boolean, Boolean) -> Unit,
     onCheckUpdates: ((UpdateCheckResult) -> Unit) -> Unit,
     onDownloadUpdate: (AppUpdateInfo, Boolean, (Result<Uri>) -> Unit) -> Unit,
     onInstallUpdate: (Uri) -> Unit,
@@ -240,12 +242,11 @@ private fun LastHavenApp(
         currentScreen = Screen.Settings
     }
 
-    val gameplayActive = currentScreen == Screen.Game && !menuVisible
-    DisposableEffect(gameplayActive) {
-        onGameplayUiChanged(gameplayActive)
-        onDispose {
-            if (gameplayActive) onGameplayUiChanged(false)
-        }
+    val gameplayActive = currentScreen == Screen.Game
+    val immersiveGameplay = gameplayActive && !menuVisible
+    SideEffect { onGameplayUiChanged(gameplayActive, immersiveGameplay) }
+    DisposableEffect(Unit) {
+        onDispose { onGameplayUiChanged(false, false) }
     }
 
     LaunchedEffect(Unit) {
