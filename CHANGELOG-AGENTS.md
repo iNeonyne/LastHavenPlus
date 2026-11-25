@@ -1,3 +1,15 @@
+## 2026-11-25 — Merge PR #26 into beta
+
+- **Role:** Chaty / integration owner
+- **PR:** [#26](https://github.com/iNeonyne/LastHavenPlus/pull/26)
+- **Target branch:** `beta`
+- **PR head:** `3a1396f7364be1e6aa658b3eb67be41549a906fb`
+- **Merge commit:** `e924c580699ad34f1083d1a9a0fe96901037c0ae`
+- **Scope:** Home/Play/Settings navigation, session-preserving Home flow, Home Back exit confirmation, gameplay-scoped orientation/immersive/keep-awake, updater delta-to-full fallback, exact GitHub URL/redirect checks, BSDIFF decompression limits, updater worker idle timeout, pending installer URI saved state and GeckoView R8 rules.
+- **CI:** PR run [#329](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45518210756) passed unsigned release build and unit tests for the exact PR head. This is not signed ARM64 post-merge evidence.
+- **Not verified:** Physical ARM64 gameplay, Gecko profile persistence, installer process-death restoration, real differential/full update installation and signed artifact checks for the merge commit.
+- **Main promotion:** Not performed. `main` and `beta` are diverged; beta is 166 commits ahead and 9 behind main. The nine main-only commits require review before a safe promotion.
+- **Next:** Verify signed ARM64 CI/artifact for the exact beta merge commit, review main-only commits, then prepare promotion only after release gates.
 ## 2026-11-25 — Add P0 security and lifecycle hardening to PR #26
 
 - **Role:** Chaty / implementation and integration
