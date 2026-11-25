@@ -30,4 +30,4 @@
 - Replace the embedded Cefrium engine with Mozilla GeckoView 160.
 - Add a launcher Home screen with lazy Play launch, Settings access and in-game Reload / Home / Return to game navigation.
 - Harden differential updates with bounded BSDIFF decompression, full APK fallback, exact GitHub host validation, saved installer handoff state and GeckoView minification rules.
-- This candidate has passed unsigned PR build and unit tests. Signed ARM64 post-merge verification and physical-device gameplay/profile/update tests remain outstanding. No new release has been published.
+- The candidate passed unsigned PR build/unit tests and signed ARM64 post-merge verification in run [#330](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45518704468), including certificate and ABI checks. Physical-device gameplay/profile/update tests remain outstanding. No new release has been published.
