@@ -553,3 +553,11 @@ Entry format:
 - **Change:** Define lightweight, standard and strict review levels for documentation/copy, contained application changes, and high-risk runtime/security/release changes. Every PR remains reviewed by Chaty and subject to required CI; high-risk work retains focused regression, exact-head, signed-package and physical-device gates as applicable.
 - **Efficiency:** Require focused one-issue PRs, concise handoffs and branch refresh/retest when beta advances. Review depth changes effort, not authorization or safety gates.
 - **Scope:** Documentation/workflow policy only. No app source, Gradle, CI workflow, signing, `main`, or release assets changed.
+
+
+## 2026-11-25 — v2.1.0 launcher integration and docs reconciliation
+
+- Merged PR #43 into beta at `dffca7e67ef4a8dd1bec8777c2c4c8b8a51a0210` after exact-head unsigned build/unit-test run #386 passed.
+- Integrated responsive Home redesign, adaptive icon resources, simplified Back menu, full-screen settings/diagnostics/update pages and GeckoSession view-detach retention.
+- Started issue #29 documentation reconciliation on `chaty/docs-reconciliation-v2.1`; no release claims are made until exact post-merge signed ARM64 CI and artifact inspection complete.
+- Recorded owner-reported ARM64 app/GeckoView smoke test without extrapolating to the full GeckoView feature matrix or the new UI.
