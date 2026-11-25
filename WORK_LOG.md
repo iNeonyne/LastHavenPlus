@@ -366,3 +366,12 @@
 - Replaced the stale #18 roadmap with current candidate-promotion state and the remaining physical-device/final-artifact gates. Addon manager #23 remains on hold.
 - Updated #4/#31 with the signed beta CI evidence from run #45601558602 without claiming physical updater verification or release-tag differential fallback coverage.
 - No app tests or device tests were run for this documentation/issue-tracker work.
+
+
+### 2026-11-25 — Merge roadmap and backlog housekeeping PR #51
+
+- PR #51 merged to beta at `b711af8e9c0dd35032edc21a1c3f7faacd4c343c`.
+- The v2.1.0 roadmap now records candidate promotion to main, physical ARM64 and final versioned-artifact gates, and the addon-manager hold.
+- Closed #22 as completed source implementation; #42 now tracks physical v2.1.0 UI verification.
+- #4/#31 retain open updater/release-workflow work with signed beta CI evidence recorded.
+- Docs-only PR; no app tests or device checks were run. Branch pruning remains deferred because the connected GitHub actions expose no delete-ref operation.
