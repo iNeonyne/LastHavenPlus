@@ -461,3 +461,5 @@
 - Added JVM tests for exact valid payload, truncated stream, simulated connection reset, checksum mismatch and over-limit payload. All invalid paths assert the partial file is deleted.
 - PR validation has not yet run. Do not merge until exact-head lint, formatting, unsigned release build and JVM tests pass.
 - No physical-device test, installer behavior, profile preservation or release-tag differential runtime claim is made.
+
+- Follow-up hardening also handles streams that return a zero-byte read without spinning or dropping the next byte; a dedicated regression test covers this edge case.
