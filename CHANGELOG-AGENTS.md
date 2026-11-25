@@ -545,3 +545,13 @@ Entry format:
 - **Change:** Added a `pull_request` trigger for PRs targeting `beta` and a dedicated read-only validation job. It builds the unsigned release variant and runs unit tests without signing secrets or publishing APKs. The full signed build and release-artifact checks remain on branch/tag events.
 - **Why:** Documentation allowing PRs is incomplete unless CI validates them. The PR path must not expose signing secrets or create release artifacts.
 - **Not yet verified:** The workflow change has not completed a GitHub Actions run. Do not claim PR CI is operational until the run is inspected.
+
+
+## 2026-11-25 — Make differential release packaging best-effort
+
+- **Role:** Chaty / CI release workflow reliability.
+- **Issue:** [#31](https://github.com/iNeonyne/LastHavenPlus/issues/31).
+- **Branch:** `chaty/fix-release-workflow-timeouts` (based on beta `1d6c1ec`).
+- **File:** `.github/workflows/android.yml`.
+- **Change:** Prepare the canonical full signed APK before optional delta work; bound release lookup, previous-asset downloads, apt package operations, BSDIFF generation and reconstruction; skip differential generation on malformed/incompatible previous assets or timeout; always write the canonical update manifest. Existing signing, ABI, and exactly-one-APK publication checks remain required.
+- **Verification:** Workflow PR validation has not yet run. Do not treat the workflow fix as integrated or the v2.0.0 release as published.
