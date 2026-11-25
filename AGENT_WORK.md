@@ -1,72 +1,79 @@
 # Agent work assignments — LastHavenPlus
 
-The repository owner makes final product and release decisions. Chaty is the main orchestrator and currently owns all active implementation work. Ploy has no active assignment until Chaty explicitly assigns a separate issue.
+The repository owner makes final product and release decisions. Chaty is the main orchestrator and currently owns integration, central documentation, review and release coordination. Ploy has no active assignment.
 
 ## Roles
 
-- **Chaty:** owns intake, issue triage, task assignment, central documentation, review, CI/release coordination and integration. Chaty alone reviews and merges accepted PRs into `beta`.
-- **Ploy:** may implement only a separately assigned issue. There is currently no active Ploy assignment. Ploy must not continue PR #25 or work on issue #22 unless Chaty explicitly reassigns it.
+- **Chaty:** intake, issue triage, task assignment, central documentation, review, CI/release coordination and integration. Chaty alone reviews and merges accepted PRs into `beta`.
+- **Ploy:** may implement only a separately assigned issue. No active Ploy assignment currently exists.
 
 ## Shared workflow
 
 - `beta` is the only active development, integration and testing branch. `main` is stable.
-- Pull requests are allowed and are the standard handoff/integration path. Contributors open PRs targeting `beta` for completed assignments.
-- Parallel work is allowed only for different issues with non-overlapping file scopes. Never work on the same issue concurrently.
-- Any contributor works from a dedicated task branch based on current `beta`, then opens a PR targeting `beta` and hands Chaty the PR link, exact head commit SHA, changed files, test results and limitations.
-- Chaty alone reviews and merges accepted PRs into `beta`; contributors must not merge their own PRs or push directly to `beta`.
-- PR CI for `beta` builds the unsigned release variant and runs unit tests; it does not use signing secrets or publish APKs. Chaty must still verify the full signed build and release gates on the resulting beta commit.
-- Promote to `main` or publish a release only after release gates pass and the owner explicitly approves.
-- GitHub Issues and `ISSUES.md` are the source of truth. TickTick may be used as a supplementary task tracker.
+- Contributors work on dedicated task branches and open PRs targeting `beta`.
+- Parallel work is allowed only for different issues with non-overlapping file scopes.
+- Chaty alone reviews and merges accepted PRs into `beta`; contributors must not merge their own PRs or push directly to `beta` or `main`.
+- PR CI for `beta` builds the unsigned release variant and runs unit tests; it does not use signing secrets or publish APKs. Chaty must verify signed build, signing identity and ARM64 packaging on the integrated beta commit.
+- Promote to `main`, create a tag or publish a release only after release gates pass and the owner explicitly approves.
+- GitHub Issues and `ISSUES.md` are the source of truth. TickTick is supplementary only.
 - Physical-device behavior remains unverified until tested on real ARM64 hardware.
 
 ## Project constraints
 
-- Keep the application ID `com.neonyne.lasthavenlauncher`, established release signing identity and ARM64-only target unchanged.
+- Kotlin and Jetpack Compose; Mozilla GeckoView 160.
+- Android 10/API 29+; ARM64 only (`arm64-v8a`).
+- Preserve application ID `com.neonyne.lasthavenlauncher` and established release signing identity.
 - Do not modify the game/client.
 - Do not add automatic update downloads or installation.
 - Do not ship debug APKs or partially implemented features.
 - Do not change Gradle, AGP, JDK, Android SDK or GeckoView versions without evidence and compatibility validation.
-- Do not restore or work on the removed addon manager. Issue #23 remains on hold pending a new owner specification.
+- Do not silently clear, migrate or overwrite GeckoView profile data or legacy Cefrium data.
+- No analytics or tracking; never log cookies, tokens or session secrets.
+- Do not make speculative performance/build-tool changes; measure before and after.
 
-## Chaty — ACTIVE: updater hardening follow-up (#4 and #15)
+## Chaty — ACTIVE: release-workflow review (#31 / PR #32)
 
-**Candidate branch:** `chaty/fix-updater-hardening`  
-**Starting beta HEAD:** `b7d9f3256527de41a45ff8c935fac510be635a69`  
-**Current candidate HEAD:** `5c51978d1499c369fbc0a4e5801635c08d9b48b1`
+**PR:** https://github.com/iNeonyne/LastHavenPlus/pull/32  
+**Candidate head at review:** `919486d98ef8862ffbb042139589926d617803d4`
 
-### Issue #4 — updater correctness and tests
-- Follow redirects manually; validate HTTPS and exact trusted host at every hop; reject userinfo, unexpected ports, fragments, untrusted hosts and redirect chains beyond five hops.
-- Bound release API and update manifest response bodies.
-- Bound queued updater work, return a user-visible busy failure when saturated, and let the worker retire after idle timeout.
-- Verify streamed download size and SHA-256; use unique temporary and final filenames; remove crash-abandoned .part files on the next explicit download without deleting verified APKs.
-- Ensure diagnostics callback failure cannot suppress full APK fallback.
-- Add JVM tests for URL/redirect validation, bounded response bodies, download size/digest checks and fallback resilience.
-- Keep manual user confirmation; no automatic download or installation.
+Required before merge:
+- Bound release-list API response bytes, not only elapsed time.
+- Bound previous APK and manifest download bytes, not only elapsed time.
+- Preserve safe full-APK fallback on every optional differential failure.
+- Refresh branch from latest beta and resolve docs conflicts.
+- Obtain successful exact-head unsigned PR build/unit-test CI.
+- Retain final signed release, signer, ARM64 and asset-count verification.
 
-### Issue #15 — updater recovery
-- Persist the pending installer URI synchronously before opening Android's unknown-app installation settings.
-- Restore the pending URI from app preferences after Activity/process recreation.
-- Clear the persisted request only after the installer handoff starts successfully.
-- Preserve the existing package identity and release signing checks; never expose a partial APK to the installer.
+PR #32's exact-head Actions runs #348 and #349 were cancelled. No passing validation is claimed.
 
-### Verification and handoff
-- PR [#30](https://github.com/iNeonyne/LastHavenPlus/pull/30) targets beta; the latest unsigned PR build/unit-test validation is pending. Inspect the final run before accepting the changes.
-- Physical same-key installation, permission handoff after force-stop/process death, delta update and full APK fallback remain hardware tests under #5.
-- PR must target `beta`; Chaty alone reviews and merges it.
-- PR #26 already integrated #22 home/navigation and earlier P0 hardening. Physical navigation remains unverified.
-- Draft promotion PR #27 remains unmerged; do not merge it before release gates and owner approval.
+## Chaty — ACTIVE: documentation reconciliation (#29)
 
-## Chaty — integration and release coordination
+Update README, STATUS, ISSUES, AGENT_WORK, CHANGELOG-AGENTS and WORK_LOG against current beta, current source, exact CI evidence and published v2.0.0 release metadata. Preserve historical changelog entries. Keep #29 open until the documentation PR is merged and verified.
 
-- Maintain exclusive ownership of central documentation, `STATUS.md`, `ISSUES.md`, `README.md`, `AGENTS.md`, this file, `CHANGELOG-AGENTS.md` and `WORK_LOG.md`.
-- Verify the CI optimization run associated with commit `54b947279a783c6c382210e65045edd02bd5ee73`; do not claim performance improvement until elapsed time is compared with a suitable baseline.
-- Keep the successful run #308 evidence tied to its actual tested commit `82590635e77c7abfedcaa6fd1fa4ad8c3b5de469`; do not describe it as a build of later documentation/workflow commits.
-- #22/#4 implementation merged in PR #26; coordinate signed post-merge CI, remaining GeckoView physical-device checks and beta-to-main reconciliation.
-- Do not promote `beta` to `main`, create a release tag or publish a release without explicit owner approval.
+## Chaty — PLANNED: addon manager integration (#23)
 
-## Paused and deferred work
+The owner explicitly approved resuming the supplied LastHavens Addon Manager XPI on 2026-11-25. A dedicated Addon Manager button must be on launcher Home, not Settings. Opening the manager must not initialize a game session; the existing game GeckoSession must be retained, and manager Play must resume that same session.
 
-- Issue #9 accessibility follow-up: paused until the home/navigation implementation is integrated and can be checked against the final UI.
-- Issue #11 diagnostics test expansion: paused; resume after the post-merge verification checkpoint or when Chaty explicitly reorders it.
-- Ploy: no active assignment. Do not work on #22 or PR #25.
-- Issue #23 addon manager: blocked by the owner's hold. Do not begin until a new written specification is supplied.
+The XPI audit and complete requirements are in GitHub issue #23. Before implementation:
+1. Verify exact WebExtension APIs against the pinned GeckoView 160 artifact.
+2. Confirm supported built-in installation of the unsigned extension from APK assets.
+3. Design app-owned session/tab delegation and navigation.
+4. Assign separate non-overlapping subissues/files only after feasibility is confirmed.
+
+No addon-manager code has been integrated yet. Do not modify the game client, add automatic app updates or claim addon initialization solely from observed injection requests.
+
+## Owner/device tester — P0: physical ARM64 verification (#5)
+
+Install and test the signed release APK on real ARM64 hardware. Verify gameplay, WebGL/WASM, WebSockets, touch, audio, fullscreen, navigation, profile persistence, process recovery and same-key update installation. Record exact device, Android version, commit, APK digest and outcomes. Do not mark this complete from CI.
+
+## Paused / queued work
+
+- #28 storage measurement accuracy and iterative traversal.
+- #9 accessibility follow-up.
+- #11 diagnostics test expansion and redaction/log-bound verification.
+- #12 load-error details; #14 connection diagnostics.
+- #16 gameplay-only orientation/keep-awake; #17 settings backup/restore.
+- #7 runtime performance/APK size: measure first.
+- #19 opt-in beta channel only if owner prioritizes it.
+
+One active owner per issue. Do not assign overlapping scopes or begin work outside an explicit issue assignment.
