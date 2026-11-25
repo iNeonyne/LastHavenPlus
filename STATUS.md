@@ -16,7 +16,7 @@
 
 - **Coordination model:** two agents only — Chaty (orchestrator/reviewer/integrator) and Vibe (implementation contributor). GitHub Issues, PRs, reviews, commits and Actions are the only agent-to-agent communication channel.
 - **Ownership labels prepared:** `agent:unassigned`, `agent:chaty`, `agent:vibe`, `agent:blocked`, `agent:review` and `agent:owner`. Exactly one ownership label should be present on an issue; only Chaty changes it.
-- **Implementation:** PR preparation is on `chaty/agent-ownership-labels`, based on beta HEAD `6c9dadc31682db75f706435437d77969fb3e505e`. The workflow creates missing labels, labels newly opened/reopened issues and supports a controlled backfill of existing open issues.
+- **Implementation:** [PR #114](https://github.com/iNeonyne/LastHavenPlus/pull/114) is open from `chaty/agent-ownership-labels`, based on beta HEAD `6c9dadc31682db75f706435437d77969fb3e505e`. The workflow creates missing labels, labels newly opened/reopened issues and supports a controlled backfill of existing open issues.
 - **Activation limitation:** GitHub issue-event workflows run only when the workflow exists on the repository default branch. This beta-only change does not activate automatic labeling until the owner separately approves promotion to the default branch. No main changes or promotion were made.
 - **Current Vibe handoffs:** issue #106 / PR #112 and issue #107 / PR #113 are submitted and awaiting Chaty's review; #113 remains stacked on #112.
 - **Physical ARM64 testing:** unverified for both PRs. No app behavior or release state changed in this workflow task.
