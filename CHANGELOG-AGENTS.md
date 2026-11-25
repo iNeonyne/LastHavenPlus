@@ -557,7 +557,7 @@ Entry format:
 - **CI evidence:** exact updater PR validation #345 and signed ARM64 branch run #346 passed for their respective exact commits. PR #32 exact-head runs #348/#349 were cancelled and remain unverified.
 - **Changes:** Correct README stable release, feature and CI claims; rewrite STATUS with exact commit/CI boundaries and remaining physical-device blockers; align AGENT_WORK with the owner's addon-manager approval and current assignments.
 - **No code changes:** This branch is documentation-only. No addon manager implementation, physical-device testing, beta merge, main promotion or release publication was performed.
-- **Next:** Review documentation PR, merge only after source/evidence consistency check, then continue PR #32 and issue #23 feasibility work.
+- **Next:** Review documentation PR, merge only after source/evidence consistency check, then continue PR #34 validation and issue #23 feasibility work.
 
 
 ## 2026-11-25 — Replace unbounded optional release inputs with streamed caps
