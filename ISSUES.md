@@ -33,7 +33,7 @@ Ploy is an internal agent role, not a confirmed GitHub login; assignment is visi
 | [#8](#issue-8) | — | Legacy addon manager | Closed — superseded; no planned work |
 | [#9](#issue-9) | P2 | [PLOY QUEUED 2] Overlay accessibility and navigation | Open; TalkBack semantics and physical navigation checks remain for the #56 overlay |
 | [#10](#issue-10) | P2 | [PLOY QUEUED 7] Persistent app-wide network usage totals | Open; app-wide counters are implemented, physical readings remain to verify |
-| [#11](#issue-11) | P2 | [PLOY QUEUED 3] Privacy-conscious log tests | Paused; further tests remain |
+| [#11](#issue-11) | P2 | [PLOY QUEUED 3] Privacy-conscious log tests | Open; queued after #9 |
 | [#12](#issue-12) | P2 | [PLOY QUEUED 4] GeckoView load-error details | Open |
 | [#13](#issue-13) | — | Accessible names / legacy addon-manager compile work | Closed — consolidated into #9 |
 | [#14](#issue-14) | P2 | [PLOY QUEUED 5] Connection diagnostics | Open |
@@ -46,7 +46,7 @@ Ploy is an internal agent role, not a confirmed GitHub login; assignment is visi
 | [#21](#issue-21) | P0 | GeckoView runtime/profile hardware verification | Migration integrated; physical GeckoView checks remain alongside #5 |
 | [#22](#issue-22) | Superseded | Home screen and Play/Settings navigation | Replaced by direct-launch/overlay scope #56; physical checks tracked in #5/#56 |
 | [#23](#issue-23) | Deferred | Integrate and harden supplied GeckoView addon manager | On hold by owner instruction; do not resume without explicit approval |
-| [#28](https://github.com/iNeonyne/LastHavenPlus/issues/28) | P2 | Storage usage accuracy and iterative directory sizing | Open; not started |
+| [#28](https://github.com/iNeonyne/LastHavenPlus/issues/28) | P2 | [PLOY QUEUED 8] Storage usage accuracy and iterative directory sizing | Open; queued after #10 |
 | [#42](https://github.com/iNeonyne/LastHavenPlus/issues/42) | Superseded | v2.1.0 Home-screen UI verification | Superseded by direct-launch redesign #56; new UX verification belongs to #5/#56 |
 | [#29](https://github.com/iNeonyne/LastHavenPlus/issues/29) | Done | Reconcile beta documentation and CI evidence | Closed as completed after PR #46 merged to beta |
 | [#31](https://github.com/iNeonyne/LastHavenPlus/issues/31) | P0 | Draft release asset verification and differential fallback | PR #54 merged; exact-head unsigned and post-merge signed beta runs passed; live release-ID path/fallback checks remain |
