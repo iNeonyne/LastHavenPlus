@@ -4,14 +4,16 @@
 
 ## Current priorities
 
-1. **P0 — GeckoView verification and release baseline:** GeckoView 160 is now the engine in beta. CI run #310 passed the signed Android release build, unit tests, signing-certificate and ARM64-only ABI checks for commit `91e21d4bde0a26b8d7cbfd9697615f32c2f57d21`; this is not a physical-device result or a build of the latest beta HEAD.
-2. **P0 — Security/lifecycle hardening:** PR #26 is merged into beta at `e924c580699ad34f1083d1a9a0fe96901037c0ae`. Exact-head PR run #329 passed unsigned build/unit tests; signed run #330 passed release build, unit tests, certificate and ARM64-only packaging for the merge commit. Physical verification remains open.
-3. **P1 — Home screen and navigation (#22):** Implemented and merged in PR #26. PR CI passed; physical navigation/accessibility verification remains open.
-4. **P0.2 — Physical ARM64 verification (#5):** gameplay, profile persistence, media, navigation and update installation remain unverified until tested on real ARM64 hardware.
-5. **Build reproducibility/updater tests (#4):** Gradle Wrapper is present and pinned. Updater redirect, response-size, download-integrity and fallback hardening is in candidate PR work; CI evidence pending. Physical installation remains #5.
+1. **P0 — Release workflow reliability (#31 / PR #32):** PR #32 is open against beta. Review the workflow changes and require exact-head validation before merge.
+2. **P0 — Physical ARM64 verification (#5):** Gameplay, GeckoView profile persistence, navigation, audio/GPU behavior and same-key updater installation remain unverified on hardware.
+3. **P0 — Updater regression coverage (#4, #15):** Updater hardening is integrated at beta commit `1d6c1ec42becab44735edfd0323dfc60ff4b9f9d`; additional malformed-manifest, digest, patch and interrupted-download tests remain.
+4. **P1 — Addon manager integration (#23):** Owner-approved to resume. XPI audit is recorded; no implementation is integrated yet. Dedicated Home button required; manager must preserve/resume the existing game session.
+5. **P1 — Documentation reconciliation (#29):** README/STATUS/backlog still contain stale v1.0.0 and pre-v2.0.0 release records; reconcile against the published v2.0.0 release and current beta.
 6. **P2 — Storage measurement accuracy (#28):** Audit all app-private data paths and replace recursive directory sizing with iterative traversal.
-7. **P1 — Documentation reconciliation (#29):** Correct stale beta HEAD, CI and release-readiness records.
-8. **Deferred:** addon-manager work (#23) remains on hold until the owner supplies a new written specification.
+7. **P2 — Remaining product polish:** #9, #11, #12, #14, #16 and #17 only after core reliability and addon-manager gates.
+8. **P3 — Performance and APK size (#7):** Measure before optimizing; do not expand v2.1.0 scope without owner approval.
+
+**Release roadmap:** [#18 — v2.1.0 reliability, GeckoView verification and addon manager](https://github.com/iNeonyne/LastHavenPlus/issues/18). v2.0.0 is already published; v2.1.0 is a proposed target, not a release commitment.
 
 ## Backlog index
 
@@ -31,14 +33,15 @@
 | [#15](#issue-15) | P2 | Updater recovery | Open |
 | [#16](#issue-16) | P2 | Gameplay orientation and keep-awake settings | Open |
 | [#17](#issue-17) | P2 | Settings backup and restore | Open |
-| [#18](#issue-18) | Roadmap | GeckoView migration and launcher shell | Open; umbrella/roadmap |
+| [#18](#issue-18) | Roadmap | v2.1.0 reliability, GeckoView verification and addon manager | Open; proposed release roadmap |
 | [#19](#issue-19) | P1 | Opt-in beta release channel | Open |
 | [#20](#issue-20) | P0 | GeckoView technical decision | Research recorded; compatibility verification tracked with #21 |
 | [#21](#issue-21) | P0 | Replace Cefrium with GeckoView | Source migration implemented; physical runtime checks remain |
 | [#22](#issue-22) | P1 | Home screen and Play/Settings navigation | Merged to beta in PR #26; physical verification pending |
-| [#23](#issue-23) | Deferred | Addon manager replacement | Owner hold; no work authorized |
+| [#23](#issue-23) | P1 | Integrate and harden supplied GeckoView addon manager | Owner-approved; XPI audit recorded, implementation not started |
 | [#28](https://github.com/iNeonyne/LastHavenPlus/issues/28) | P2 | Storage usage accuracy and iterative directory sizing | Open; not started |
 | [#29](https://github.com/iNeonyne/LastHavenPlus/issues/29) | P1 | Reconcile beta documentation and CI evidence | Open; not started |
+| [#31](https://github.com/iNeonyne/LastHavenPlus/issues/31) | P0 | Resilient release packaging when differential generation fails | Open; PR #32 pending exact-head validation |
 
 ---
 
@@ -623,34 +626,27 @@ Fresh launch shows a simple branded home screen with Play and Settings. Do not l
 
 ---
 
-## Issue 23 — P1 — Rebuild addon manager after owner specification
-
-**Owner hold:** Do not research, design, implement, test or assign addon-manager work until the owner supplies a new written specification. WoW addon ZIP/`.toc` packages must not be conflated with Firefox WebExtensions or game injection.
-
+## Issue 23 — P1 — Integrate and harden the supplied GeckoView addon manager
 
 **GitHub:** https://github.com/iNeonyne/LastHavenPlus/issues/23  
-**Internal owner:** Chaty for intake/planning; implementation owner not assigned yet.
-**State:** BLOCKED — awaiting the project owner's written requirements.
+**State:** OWNER-APPROVED TO RESUME; XPI audit complete; implementation not started.  
+**Release target:** proposed v2.1.0 roadmap (#18).
 
-The previous addon manager implementation has been removed at the owner's request. Do not restore, port or recreate the old ZIP inspector/repository/dialog design based on previous issue text.
+The owner approved the supplied `lasthavens-addon-manager-0.11.0(1).xpi` and specified a dedicated Addon Manager button on launcher Home, not Settings. The manager must not initialize a game session. It must preserve an existing GeckoSession, and its Play action must resume that same session rather than opening a second game instance.
 
-### Removed from beta
-- `AddonArchiveInspector.kt`
-- `AddonLibraryRepository.kt`
-- `AddonManagerDialog.kt`
-- `AddonArchiveInspectorTest.kt`
-- Addon manager entry/state in `MainActivity.kt`
+### Required fixes from the XPI audit
+- [ ] Reject oversized import/restore files using `File.size` before `arrayBuffer()` allocation.
+- [ ] Stream network responses with hard byte caps even when Content-Length is missing or false; add timeouts and cancellation.
+- [ ] Bound repository/catalog/TOC response sizes and concurrency.
+- [ ] Replace recursive dependency traversal with iterative cycle-safe ordering.
+- [ ] Correct closed/open-ended/suffix HTTP Range parsing and HEAD content length.
+- [ ] Preserve last-known-good catalog data when a refresh is partial or fails; remove fail-open permission reporting.
+- [ ] Reduce full-library/worker payload copies and repeated repository tree scans; measure memory.
+- [ ] Verify exact GeckoView 160 WebExtension APIs; bundle the reviewed unsigned extension through the supported built-in extension API.
+- [ ] Implement app-owned tab/session delegation; do not leave manager options, source, screenshot or Play flows creating unmanaged sessions.
+- [ ] Add security, archive, network, dependency, range, cache and GeckoView integration tests.
 
-### Next step
-Wait for the owner to provide a new addon-manager specification. Then Chaty will translate it into a fresh design, data model, security boundary, implementation stages and acceptance tests before assigning work.
-
-### Constraints until then
-- No addon manager code, UI, storage schema, migrations, background work or injection hooks.
-- Do not delete unrelated user app data or assume an old package library should be migrated.
-- Do not conflate WoW addon packages with Gecko WebExtensions.
-- No game injection or runtime modification without a separately documented, explicitly approved integration contract.
-- No parallel implementation before the new scope is approved.
-
+Preserve archive path/CRC/duplicate/count/expanded-size checks. Keep Android 10/API 29+, ARM64-only, app ID and signing identity. Do not modify the game client or claim Lua initialization from injection-layer requests alone. See the GitHub issue for full scope and acceptance criteria.
 ---
 ---
 
@@ -673,3 +669,9 @@ Wait for the owner to provide a new addon-manager specification. Then Chaty will
 
 **GitHub:** https://github.com/iNeonyne/LastHavenPlus/issues/29  
 **State:** open; queued. Reconcile README, STATUS, ISSUES and release-facing claims against current beta source, exact commit CI evidence and outstanding physical-device gates. Preserve historical entries and do not mark hardware tests complete without evidence.
+
+
+## Issue 31 — P0 — Make release packaging resilient to optional differential update failures
+
+**GitHub:** https://github.com/iNeonyne/LastHavenPlus/issues/31  
+**State:** open; implementation candidate is PR #32 targeting beta. Require exact-head workflow validation and critical review before merge. The full signed APK must remain available if optional differential packaging fails. Preserve signing, ARM64, manifest and artifact-count checks.
