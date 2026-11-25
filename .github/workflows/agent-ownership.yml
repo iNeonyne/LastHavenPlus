@@ -1,0 +1,88 @@
+name: Agent issue ownership
+
+on:
+  issues:
+    types: [opened, reopened]
+  workflow_dispatch:
+    inputs:
+      backfill_existing:
+        description: "Apply ownership labels to existing open issues (beta only)"
+        required: false
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+jobs:
+  ownership:
+    name: Ensure agent labels and classify issues
+    if: github.event_name == 'issues' || github.ref == 'refs/heads/beta'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      issues: write
+    steps:
+      - name: Create missing ownership labels and apply issue ownership
+        env:
+          GH_TOKEN: ${{ github.token }}
+          EVENT_NAME: ${{ github.event_name }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+          BACKFILL: ${{ inputs.backfill_existing }}
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          ensure_label() {
+            local name="$1"
+            local color="$2"
+            local description="$3"
+            if ! gh api --paginate "repos/$GITHUB_REPOSITORY/labels?per_page=100" --jq '.[].name' | grep -Fxq "$name"; then
+              gh api --method POST "repos/$GITHUB_REPOSITORY/labels" \
+                -f "name=$name" -f "color=$color" -f "description=$description" >/dev/null
+            fi
+          }
+
+          ensure_label "agent:unassigned" "f9d0c4" "No agent owns this issue; Chaty may triage and assign it."
+          ensure_label "agent:chaty" "0052cc" "Implementation or coordination owned by Chaty."
+          ensure_label "agent:vibe" "5319e7" "Explicitly assigned to Vibe; implementation may start."
+          ensure_label "agent:blocked" "d93f0b" "On hold or waiting for a dependency or decision."
+          ensure_label "agent:review" "fbca04" "Implementation PR submitted; awaiting Chaty review."
+          ensure_label "agent:owner" "0e8a16" "Waiting for repository-owner decision or optional feedback."
+
+          add_if_unassigned() {
+            local number="$1"
+            local label="$2"
+            local has_owner_label
+            has_owner_label="$(gh api "repos/$GITHUB_REPOSITORY/issues/$number" --jq '[.labels[].name | select(startswith("agent:"))] | length > 0')"
+            if [[ "$has_owner_label" == "false" ]]; then
+              gh api --method POST "repos/$GITHUB_REPOSITORY/issues/$number/labels" \
+                --raw-field "labels[]=$label" >/dev/null
+              echo "Issue #$number -> $label"
+            else
+              echo "Issue #$number already has an agent ownership label; leaving it unchanged."
+            fi
+          }
+
+          if [[ "$EVENT_NAME" == "issues" ]]; then
+            add_if_unassigned "$ISSUE_NUMBER" "agent:unassigned"
+            exit 0
+          fi
+
+          if [[ "$BACKFILL" != "true" ]]; then
+            echo "Labels ensured. Backfill was not requested."
+            exit 0
+          fi
+
+          while IFS= read -r number; do
+            [[ -n "$number" ]] || continue
+            case "$number" in
+              5|21) label="agent:owner" ;;
+              7|19|23|86) label="agent:blocked" ;;
+              4|15|18|20|31|70|111) label="agent:chaty" ;;
+              106|107) label="agent:review" ;;
+              *) label="agent:unassigned" ;;
+            esac
+            add_if_unassigned "$number" "$label"
+          done < <(gh api --paginate "repos/$GITHUB_REPOSITORY/issues?state=open&per_page=100" \
+            --jq '.[] | select(.pull_request == null) | .number')
