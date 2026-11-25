@@ -640,7 +640,7 @@ Entry format:
 - **Role:** Chaty / CI workflow implementation
 - **Issue:** [#60](https://github.com/iNeonyne/LastHavenPlus/issues/60)
 - **Branch:** `chaty/ci-quality-gate` from beta `36f079445e227583c12b19bde9161844e0e5855d`
-- **Scope:** Add a read-only Android quality workflow for beta PRs and relevant beta pushes; configure pinned Spotless 8.12.0 with ktfmt 0.64; document local formatting/lint commands and split responsibilities between Android PR validation and the quality workflow.
-- **Design:** Use incremental formatting ratcheted to the PR base or previous beta commit to avoid mass-reformatting legacy files. Documentation-only edits do not trigger quality/build workflows. The existing Android PR job remains the source of JVM and Python updater-helper test results.
+- **Scope:** Add a read-only Android quality workflow for relevant beta pushes and extend the existing PR workflow with lint/format checks; configure pinned Spotless 8.12.0 with ktfmt 0.64; document local formatting/lint commands and split responsibilities between Android PR validation and the quality workflow.
+- **Design:** Use incremental formatting ratcheted to the PR base or previous beta commit to avoid mass-reformatting legacy files. Documentation-only edits do not trigger quality/build workflows. The existing Android PR job runs lint/format, JVM and Python updater-helper tests together; the post-merge quality workflow repeats only lint/format.
 - **Constraints:** No app source behavior, release signing, secrets, ABI, GeckoView, updater or main changes. No release or publication.
 - **Verification:** Exact-head Actions validation is pending. Do not claim lint/format success until the PR checks complete; a separate intentionally misformatted Kotlin change must be rejected by the formatter check.
