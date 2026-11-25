@@ -5,7 +5,16 @@
 **Latest integrated beta HEAD:** `b7d9f3256527de41a45ff8c935fac510be635a69`  
 **Phase:** PR #26 is merged into beta at `e924c580699ad34f1083d1a9a0fe96901037c0ae`. The current beta HEAD `b7d9f3256527de41a45ff8c935fac510be635a69` is 12 documentation/workflow commits beyond that merge; the application source is unchanged in that range. Signed run #330 passed for `e924c58`, not the exact current HEAD. Updater hardening is being prepared on `chaty/fix-updater-hardening` at `5c51978d1499c369fbc0a4e5801635c08d9b48b1` in PR [#30](https://github.com/iNeonyne/LastHavenPlus/pull/30); unsigned PR build and unit-test validation is pending for the latest PR head. Physical ARM64 gameplay, profile persistence and update installation remain unverified. `main` and `beta` remain diverged; promotion is blocked pending reconciliation and release gates.
 
-## Summary
+## Workflow policy — right-sized review
+
+The active workflow now uses three review depths while preserving one integration gate:
+
+- **Lightweight:** docs/copy/isolated low-risk changes; scope and factual/link checks.
+- **Standard:** contained app/UI/settings/diagnostics changes; affected-path and regression review plus required unsigned PR build/tests.
+- **Strict:** GeckoView/session, updater, storage/profile, security/networking, dependency/toolchain, manifest/signing and CI/release changes; failure-path review, focused tests, exact-head CI and applicable signed/package/device verification.
+
+Chaty reviews every PR and remains the only beta integrator. Review depth does not waive required CI. Keep PRs focused on one issue; refresh stale branches and rerun affected checks. This policy change is documentation-only; no application behavior or release configuration changed.
+
 
 - `beta` is the active development, integration and testing branch. `main` remains the stable release branch.
 - Beta source uses Mozilla GeckoView 160; Cefrium has been removed from the production build.
