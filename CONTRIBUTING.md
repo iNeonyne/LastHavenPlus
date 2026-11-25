@@ -17,7 +17,7 @@ The repository owner makes final product and release decisions. `beta` is the de
 1. Read `README.md`, `AGENTS.md`, `AGENT_WORK.md`, `STATUS.md`, the relevant section of `ISSUES.md` and the linked GitHub issue before editing.
 2. Work on one assigned issue per branch. Keep changes small and file scopes non-overlapping.
 3. Open a pull request targeting `beta`; do not target `main` for routine development.
-4. Chaty and Vibe are the reviewers/integrators authorized to merge into `beta` (never their own PRs). Contributors must not push directly to `beta` or `main`, merge their own PRs, or promote/publish a release.
+4. Chaty and Vibe are the reviewers/integrators authorized to merge into `beta`. Vibe may merge its own PRs only when fully verified per the owner's 2026-11-25 authorization: required checks green (or correctly not applicable, with that stated) and local verification complete. Contributors must not push directly to `beta` or `main`, merge their own PRs, or promote/publish a release.
 5. Include the exact head SHA, changed files, test commands/results, CI links, limitations and physical-device status in the PR handoff.
 6. Never force-push shared history. Reuse an existing task branch when practical; avoid creating unnecessary branches.
 7. Do not claim physical-device verification unless a real ARM64 device was tested and the device, Android version, build SHA and results are recorded.

@@ -15,7 +15,7 @@ The active embedded browser engine in `beta` is Mozilla GeckoView 160. Do not ad
 - Pull requests are the normal integration path for task work. Open PRs against `beta`; do not target `main` for routine development.
 - Parallel agents may work on separate issues only when their file scopes do not overlap. Never let two agents work on the same issue concurrently.
 - Contributors work on dedicated task branches, open PRs targeting `beta`, and provide a reviewer (Chaty or Vibe) the PR link, exact head commit, changed files, test evidence and remaining limitations.
-- **Chaty and Vibe are the orchestrators and integrators.** They review PR diffs and CI, resolve conflicts, request changes, and merge accepted PRs (never their own) into `beta`, and coordinate verification and release readiness. No other agent or contributor may merge or push directly to `beta`. The repository owner granted Vibe equal integrator authority to Chaty on 2026-11-25.
+- **Chaty and Vibe are the orchestrators and integrators.** They review PR diffs and CI, resolve conflicts, request changes, and merge accepted PRs into `beta`, and coordinate verification and release readiness. No other agent or contributor may merge or push directly to `beta`. The repository owner granted Vibe equal integrator authority to Chaty on 2026-11-25, including merging its own PRs when fully verified (required checks green or correctly not applicable, plus local verification).
 - Promote `beta` to `main` only after all release gates pass and the owner explicitly approves. Publishing a release or creating a release tag also requires explicit approval.
 - Never develop routinely on `main`, force-push shared branches or bypass required checks.
 
