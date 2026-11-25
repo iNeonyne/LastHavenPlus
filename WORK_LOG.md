@@ -215,3 +215,11 @@
 - **Skipped by design:** `Build and test (arm64)` and `Create release tag` were skipped for the PR event. This run did not use signing secrets, verify the signing certificate, verify final APK ABI contents or test on hardware.
 - **Current live release metadata:** v1.0.0 exposes `lasthavenplus-arm64.apk` (120,381,565 bytes) and `lasthavenplus-update.json` (249 bytes); no differential patch asset is published. The full APK path is available in release metadata; no real download/install was performed.
 - **Next safe action:** Complete final PR diff review, ensure current head checks remain green, merge PR #26 to beta, then inspect the exact beta push run for signed release, package identity, signing certificate, ARM64-only packaging and artifact contents. Do not publish a release or promote main. Physical gameplay/profile/update tests remain unverified.
+
+
+### 2026-11-25 — Preserve stable-install compatibility for beta demo APKs
+
+- **Finding:** The beta branch pipeline previously defaulted to versionName `0.1.0` and versionCode `1`, while the published v1.0.0 APK uses versionCode `1000000`. A signed beta demo built with the old default could be rejected as a downgrade when installed over the user's existing stable app.
+- **Change:** PR #26 updates the `Resolve version metadata` workflow step. On `beta`, it reads the latest published stable release tag using the read-only workflow token, validates the semver tag and computes the same versionCode formula. It explicitly keeps `is_release=false` and an empty release tag, so this creates only the normal signed Actions artifact—no Git tag, update manifest, draft or published release.
+- **Purpose:** Keep the application ID and signing identity stable and avoid a lower versionCode for the demo. The beta APK uses the same version identity as the latest stable release; a later stable release with a higher versionCode can update it normally.
+- **Verification:** Workflow change is on the PR branch and awaits final PR CI. The post-merge beta build must confirm the resolved versionName/versionCode, signer, ARM64-only package and artifact. Same-version replacement and game profile preservation still require physical-device testing.

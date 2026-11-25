@@ -11,7 +11,7 @@ LastHavenPlus is a lightweight Android launcher for the existing LastHaven Wrath
 
 Development is active on `beta`. The stable release remains on `main`.
 
-The current beta source uses Mozilla GeckoView 160 as its embedded browser engine and still opens the game directly. [PR #26](https://github.com/iNeonyne/LastHavenPlus/pull/26) adds the home screen, Play/Settings navigation and updater hardening. Its code head passed PR build/unit-test CI; review and merge are pending, so the changes are not part of `beta` yet.
+The current beta source uses Mozilla GeckoView 160 as its embedded browser engine and still opens the game directly. [PR #26](https://github.com/iNeonyne/LastHavenPlus/pull/26) adds the home screen, Play/Settings navigation and updater hardening. Its code head passed PR build/unit-test CI; review and merge are pending, so the changes are not part of `beta` yet. The beta branch build is also being adjusted to reuse the latest stable version name/code for its signed demo artifact, avoiding a versionCode downgrade over an existing stable install without creating a GitHub release.
 
 The GeckoView runtime and app shell are implemented in source, but successful CI builds do not establish that the game works correctly on a physical device. Game compatibility, profile persistence and the complete navigation flow still require physical ARM64 testing.
 
@@ -33,7 +33,7 @@ The application ID and established release signing identity must remain unchange
 The following describes what is present in the beta source. Runtime behavior that has not been tested on physical ARM64 hardware is explicitly identified as unverified in [STATUS.md](STATUS.md).
 
 - **Game hosting:** A process-scoped GeckoRuntime and GeckoSession host the LastHaven game. The current beta launches the game directly.
-- **Navigation:** The current beta game menu provides reload, return-to-game, settings, diagnostics, update and exit actions. The dedicated home screen and Home navigation are implemented in PR #26; its code head passed PR build/unit-test CI, but the change is not integrated into beta until merge.
+- **Navigation:** The current beta game menu provides reload, return-to-game, settings, diagnostics, update and exit actions. The dedicated home screen and Home navigation are implemented in PR #26; its code head passed PR build/unit-test CI, but the change is not integrated into beta until merge. The beta artifact will retain the latest stable version identity and signing key.
 - **Settings and storage:** Settings report installed APK size, persistent app-private data size and cache size. Persistent data includes GeckoView data; it is not a profile-only measurement.
 - **Network usage:** Android per-app traffic counters report received and sent bytes since boot and, where supported, during the current app session. These totals include game and updater traffic, not just game traffic.
 - **Diagnostics:** Bounded local diagnostic logs support viewing, clearing and explicit user-initiated sharing. Redaction is implemented; see the status report for remaining verification.

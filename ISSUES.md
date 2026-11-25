@@ -73,7 +73,7 @@ Harden the existing build and updater without replacing the current update archi
 
 ## Updater and differential-patch tests
 
-**Chaty progress (2026-11-25):** PR #26 adds unit tests for delta-to-full fallback policy, numeric version/versionCode handling, SHA-256 format validation and trusted GitHub asset URLs. Run #317 passed the full PR build/unit-test task for code SHA `283d649cd31ae009889d76affb25f655e28d3949`. The existing BSDIFF tests cover successful reconstruction, truncated headers, unsupported magic and output-size limits. Manifest parsing, actual file digest mismatch, base APK mismatch and interrupted network-download tests remain open.
+**Chaty progress (2026-11-25):** PR #26 adds unit tests for delta-to-full fallback policy, numeric version/versionCode handling, SHA-256 format validation and trusted GitHub asset URLs. It also changes beta demo artifact versioning to match the latest stable release identity while keeping release publication disabled. Run #317 passed the full PR build/unit-test task for code SHA `283d649cd31ae009889d76affb25f655e28d3949`. The existing BSDIFF tests cover successful reconstruction, truncated headers, unsupported magic and output-size limits. Manifest parsing, actual file digest mismatch, base APK mismatch and interrupted network-download tests remain open.
 - [ ] Add tests for malformed or unsupported update manifests.
 - [x] Test invalid release version tags and version-code handling (PR #26; run #317 passed).
 - [ ] Test incorrect APK and patch SHA-256 values.

@@ -3,7 +3,7 @@
 **Last updated:** 2026-11-25  
 **Active branch:** `beta`  
 **Latest inspected beta HEAD:** `c8eb02a265012d7be898277443a53dd1e3589cad`  
-**Phase:** GeckoView 160 is integrated in beta. Chaty's #22/#4 implementation in [PR #26](https://github.com/iNeonyne/LastHavenPlus/pull/26) passed PR build/unit-test CI on code SHA `283d649cd31ae009889d76affb25f655e28d3949`; review/merge and post-merge signed CI remain. Physical ARM64 gameplay, profile persistence and update installation remain unverified.
+**Phase:** GeckoView 160 is integrated in beta. Chaty's #22/#4 implementation in [PR #26](https://github.com/iNeonyne/LastHavenPlus/pull/26) passed PR build/unit-test CI on code SHA `283d649cd31ae009889d76affb25f655e28d3949`; review/merge and post-merge signed CI remain. PR #26 also updates beta artifact versioning to reuse the latest stable version identity without creating a release; that workflow change awaits final PR CI. Physical ARM64 gameplay, profile persistence and update installation remain unverified.
 
 ## Summary
 
@@ -25,7 +25,7 @@
 | CI result | `assembleRelease`, `testDebugUnitTest`, release signature verification and ARM64-only ABI verification succeeded |
 | Signed APK artifact | `lasthavenplus-release-signed-arm64` uploaded; workflow job passed |
 | Earlier measured APK size | Run #308: 92,850,795 bytes |
-| PR workflow change | Run [#311](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45511064839) succeeded on a push and skipped PR validation; PR run [#317](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45515320999) passed for code SHA `283d649cd31ae009889d76affb25f655e28d3949` |
+| PR workflow change | PR run [#317](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45515320999) passed for application code SHA `283d649cd31ae009889d76affb25f655e28d3949`; beta latest-stable version resolution is a new workflow change awaiting final-head validation |
 | Release state | No promotion to `main` or new release publication performed |
 
 Run #310 is the latest successful Android run inspected. It verifies the signed ARM64 release build and unit tests for commit `91e21d4bde0a26b8d7cbfd9697615f32c2f57d21`, not the current documentation/workflow HEAD. Its total elapsed time was 3m44s, compared with 5m02s for run #308; this is an observed one-run comparison, not a controlled benchmark. Run #311 is validating the updated workflow on a push. The PR-only job is correctly skipped for that push and remains unverified until an actual PR triggers it.

@@ -49,6 +49,7 @@ The repository owner makes final product and release decisions. Chaty is the mai
 - Keep user-confirmed download and installer handoff. No automatic downloads or installs.
 - Cover version/versionCode, SHA-256, trusted URL and delta-to-full fallback policy with unit tests.
 - Do not change the updater architecture or signing identity.
+- Beta branch demo artifacts must reuse the latest published stable versionName/versionCode so an existing stable install is not treated as a version downgrade. Keep `is_release=false`: no tag, manifest upload or GitHub release may be created by a beta build.
 
 ### Verification and handoff
 - PR run #317 passed `assembleRelease` and `testDebugUnitTest` for code SHA `283d649cd31ae009889d76affb25f655e28d3949`. Any later source change requires a fresh exact-head run; merge only with the current PR checks green.
