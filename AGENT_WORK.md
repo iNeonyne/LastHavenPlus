@@ -28,35 +28,33 @@ The repository owner makes final product and release decisions. Chaty is the mai
 - Do not change Gradle, AGP, JDK, Android SDK or GeckoView versions without evidence and compatibility validation.
 - Do not restore or work on the removed addon manager. Issue #23 remains on hold pending a new owner specification.
 
-## Chaty — ACTIVE: issue #22 home/navigation and issue #4 updater hardening
+## Chaty — ACTIVE: updater hardening follow-up (#4 and #15)
 
-**Integrated PR:** [#26](https://github.com/iNeonyne/LastHavenPlus/pull/26), merged to `beta` at `e924c580699ad34f1083d1a9a0fe96901037c0ae`.
+**Candidate branch:** `chaty/fix-updater-hardening`  
+**Starting beta HEAD:** `b7d9f3256527de41a45ff8c935fac510be635a69`  
+**Current candidate HEAD:** `4b5ecb6d4db4276983f98aff3cfb81d69b8fd882`
 
-### Issue #22 — home and navigation
-- Fresh launch opens Home; it must not load the game.
-- Play lazily creates the GeckoRuntime/GeckoSession and loads the game once.
-- Settings from Home must not initialize GeckoView.
-- Game menu: Reload, Home, Return to game, Settings, diagnostics, manual update check and Exit.
-- Home navigation detaches the GeckoView but retains the open GeckoSession; returning must not call `loadUri` again.
-- Home Back confirms exit.
-- Immersive system bars, landscape orientation and keep-awake apply only while gameplay is active. Settings/diagnostics restore normal UI.
-- Keep existing application ID, GeckoView version, signing identity, Gradle toolchain and ARM64-only configuration.
+### Issue #4 — updater correctness and tests
+- Follow redirects manually; validate HTTPS and exact trusted host at every hop; reject userinfo, unexpected ports, fragments, untrusted hosts and redirect chains beyond five hops.
+- Bound release API and update manifest response bodies.
+- Bound queued updater work, return a user-visible busy failure when saturated, and let the worker retire after idle timeout.
+- Verify streamed download size and SHA-256; use unique temporary and final filenames so a failed replacement cannot delete a previously staged verified APK.
+- Ensure diagnostics callback failure cannot suppress full APK fallback.
+- Add JVM tests for URL/redirect validation, bounded response bodies, download size/digest checks and fallback resilience.
+- Keep manual user confirmation; no automatic download or installation.
 
-### Issue #4 — updater
-- A differential patch is an optimization only. Any base mismatch, patch download/reconstruction failure, APK size/digest mismatch or package/signature validation failure must retry using the full APK.
-- Delete temporary/partial files on failure; never pass an unverified file to Android's installer.
-- Restrict release asset URLs and post-redirect hosts to HTTPS GitHub hosts.
-- Keep user-confirmed download and installer handoff. No automatic downloads or installs.
-- Cover version/versionCode, SHA-256, trusted URL and delta-to-full fallback policy with unit tests.
-- Do not change the updater architecture or signing identity.
-- Beta branch demo artifacts must reuse the latest published stable versionName/versionCode so an existing stable install is not treated as a version downgrade. Keep `is_release=false`: no tag, manifest upload or GitHub release may be created by a beta build.
+### Issue #15 — updater recovery
+- Persist the pending installer URI synchronously before opening Android's unknown-app installation settings.
+- Restore the pending URI from app preferences after Activity/process recreation.
+- Clear the persisted request only after the installer handoff starts successfully.
+- Preserve the existing package identity and release signing checks; never expose a partial APK to the installer.
 
 ### Verification and handoff
-- PR run #329 passed the unsigned release build and unit tests for PR head `3a1396f7364be1e6aa658b3eb67be41549a906fb`.
-- PR #26 merged to beta at `e924c580699ad34f1083d1a9a0fe96901037c0ae`. Verify signed branch CI, signer, ARM64-only packaging and artifact contents for the exact merge commit.
-- Physical ARM64 gameplay, profile persistence, process-death installer restoration and update installation remain unverified until tested on hardware.
-- Draft beta-to-main promotion PR [#27](https://github.com/iNeonyne/LastHavenPlus/pull/27) preserves main-only internal-document removals and the historical v1.0.0 changelog; do not merge until physical gates pass.
-- Chaty alone reviews and merges to beta. No release tag, main promotion or publication without owner approval.
+- Candidate CI has not run yet. Inspect the PR validation run before accepting the changes.
+- Physical same-key installation, permission handoff after force-stop/process death, delta update and full APK fallback remain hardware tests under #5.
+- PR must target `beta`; Chaty alone reviews and merges it.
+- PR #26 already integrated #22 home/navigation and earlier P0 hardening. Physical navigation remains unverified.
+- Draft promotion PR #27 remains unmerged; do not merge it before release gates and owner approval.
 
 ## Chaty — integration and release coordination
 
