@@ -8,8 +8,10 @@
 2. **P0 — Security/lifecycle hardening:** PR #26 is merged into beta at `e924c580699ad34f1083d1a9a0fe96901037c0ae`. Exact-head PR run #329 passed unsigned build/unit tests; signed run #330 passed release build, unit tests, certificate and ARM64-only packaging for the merge commit. Physical verification remains open.
 3. **P1 — Home screen and navigation (#22):** Implemented and merged in PR #26. PR CI passed; physical navigation/accessibility verification remains open.
 4. **P0.2 — Physical ARM64 verification (#5):** gameplay, profile persistence, media, navigation and update installation remain unverified until tested on real ARM64 hardware.
-5. **Build reproducibility/updater tests (#4):** Gradle Wrapper is present and pinned. Continue the missing updater edge-case coverage and verify current CI/workflow behavior.
-6. **Deferred:** addon-manager work (#23) remains on hold until the owner supplies a new written specification.
+5. **Build reproducibility/updater tests (#4):** Gradle Wrapper is present and pinned. Updater redirect, response-size, download-integrity and fallback hardening is in candidate PR work; CI evidence pending. Physical installation remains #5.
+6. **P2 — Storage measurement accuracy (#28):** Audit all app-private data paths and replace recursive directory sizing with iterative traversal.
+7. **P1 — Documentation reconciliation (#29):** Correct stale beta HEAD, CI and release-readiness records.
+8. **Deferred:** addon-manager work (#23) remains on hold until the owner supplies a new written specification.
 
 ## Backlog index
 
@@ -35,6 +37,8 @@
 | [#21](#issue-21) | P0 | Replace Cefrium with GeckoView | Source migration implemented; physical runtime checks remain |
 | [#22](#issue-22) | P1 | Home screen and Play/Settings navigation | Merged to beta in PR #26; physical verification pending |
 | [#23](#issue-23) | Deferred | Addon manager replacement | Owner hold; no work authorized |
+| [#28](https://github.com/iNeonyne/LastHavenPlus/issues/28) | P2 | Storage usage accuracy and iterative directory sizing | Open; not started |
+| [#29](https://github.com/iNeonyne/LastHavenPlus/issues/29) | P1 | Reconcile beta documentation and CI evidence | Open; not started |
 
 ---
 
@@ -654,3 +658,18 @@ Wait for the owner to provide a new addon-manager specification. Then Chaty will
 
 
 **Post-merge CI (2026-11-25):** Run [#330](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45518704468) passed signed optimized release build, unit tests, established certificate verification and ARM64-only packaging for `e924c580699ad34f1083d1a9a0fe96901037c0ae`. Artifact upload succeeded. Physical updater installation and device gameplay remain open.
+
+
+---
+
+## Issue 28 — P2 — Make storage usage reporting accurate and robust
+
+**GitHub:** https://github.com/iNeonyne/LastHavenPlus/issues/28  
+**State:** open; queued. Audit the actual app-private directories represented by storage totals, clarify omissions, and replace recursive directory traversal with iterative traversal. Keep APK, persistent data and cache measurements separate.
+
+---
+
+## Issue 29 — P1 — Reconcile beta documentation with current source and CI evidence
+
+**GitHub:** https://github.com/iNeonyne/LastHavenPlus/issues/29  
+**State:** open; queued. Reconcile README, STATUS, ISSUES and release-facing claims against current beta source, exact commit CI evidence and outstanding physical-device gates. Preserve historical entries and do not mark hardware tests complete without evidence.

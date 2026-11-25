@@ -266,3 +266,44 @@
 - **Promotion PR:** [#27](https://github.com/iNeonyne/LastHavenPlus/pull/27) is a draft. A two-parent merge checkpoint includes current main ancestry and preserves the promotion tree; GitHub API reports `mergeable=true`, `mergeable_state=clean`.
 - **Not verified:** physical ARM64 gameplay/profile persistence, process-death installer restoration and actual differential/full update installation.
 - **Next safe action:** keep PR #27 draft until physical device gates and promotion diff checks are complete. Do not merge main or publish a release yet.
+
+
+### 2026-11-25 — Updater hardening candidate and release follow-up triage
+
+- **Starting beta HEAD:** `b7d9f3256527de41a45ff8c935fac510be635a69`.
+- **Branch:** `chaty/fix-updater-hardening`.
+- **Candidate HEAD:** `4b5ecb6d4db4276983f98aff3cfb81d69b8fd882`.
+- **Files changed:** `AppUpdater.kt`, `MainActivity.kt`, `UpdateNetworkPolicy.kt`, `UpdateVersionPolicy.kt`, `UpdateFallback.kt`, `UpdateNetworkPolicyTest.kt`, `UpdateFallbackTest.kt`.
+- **Changes:** Added per-hop HTTPS redirect validation against exact GitHub hosts, bounded JSON response bodies, bounded/idle-retiring updater execution, shared download size/digest validation, unique temporary/final update file names, process-death-safe installer permission handoff state, and diagnostic-failure-safe full APK fallback. Added JVM tests for network policy and fallback resilience.
+- **Issue triage:** Updated physical device issue #5 to the canonical `https://lasthavens.com/play` URL and included updater recovery tests. Created #28 for storage measurement accuracy/iterative traversal and #29 for stale documentation/CI evidence. Existing #4 and #15 remain open.
+- **Verification:** No Gradle build or test command has been run in this environment. Candidate is not integrated; exact-head PR CI is the next verification step.
+- **Next safe action:** Open a PR targeting `beta`, inspect CI for exact candidate SHA, then update #4/#15 and STATUS with evidence. Do not merge to main or publish.
+
+
+### 2026-11-25 — Extend updater manifest validation coverage
+
+- **PR:** [#30](https://github.com/iNeonyne/LastHavenPlus/pull/30).
+- **Candidate HEAD:** `c68db2c8704813822c27b86dfb48cffbb84eb87f`.
+- **Changes:** Extracted manifest schema/version/versionCode/APK-name/size validation and exact delta base compatibility into a pure policy; added base APK digest validation helper. Added tests for malformed/inconsistent manifest fields, base version/code mismatch and base digest mismatch.
+- **CI:** Exact-head run [#340](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45521280150) is pending. No pass claimed.
+- **Correction:** Two new policy files were briefly created on main by a contents-API call without an explicit branch parameter; both were immediately deleted. A compare against the pre-change main commit confirms zero file differences; main's tree is unchanged. All intended policy files are present on the PR branch.
+- **Next safe action:** Wait for run #340, inspect logs/results and review the final PR head before merging into beta.
+
+
+### 2026-11-25 — Finalize updater candidate documentation checkpoint
+
+- **PR:** [#30](https://github.com/iNeonyne/LastHavenPlus/pull/30), targeting beta.
+- **Latest candidate before this documentation checkpoint:** `df82f40feca9eed7af318403e93a284ec692edad`.
+- **Tests in scope:** URL/redirect allowlist, bounded response parsing, download size/digest, release manifest schema and metadata, patch base compatibility/digest, and full-APK fallback resilience.
+- **CI:** Unsigned PR build and unit-test validation is pending for the latest PR head. No pass is claimed.
+- **Main safety:** The unintended temporary files were deleted from main; comparing main against its pre-incident HEAD shows zero changed files. Main's content tree is restored.
+- **Next safe action:** Inspect exact-head CI, correct any failures, review PR #30 and only then merge to beta. Physical updater installation remains unverified under #5.
+
+
+### 2026-11-25 — Add recovery cleanup for interrupted updater downloads
+
+- **PR:** [#30](https://github.com/iNeonyne/LastHavenPlus/pull/30).
+- **Code commit:** `5c51978d1499c369fbc0a4e5801635c08d9b48b1`.
+- **Change:** At the start of a new explicit download, remove leftover .part files from an interrupted prior process. Verified APK files are intentionally preserved. Added a JVM test covering partial APK/patch deletion and verified APK preservation. Also made response-body reading robust to zero-length reads and tightened fallback diagnostic exception handling.
+- **CI:** PR run [#344](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45521735696) is pending for the code commit. No pass is claimed.
+- **Next safe action:** Inspect CI on the final PR head after this documentation checkpoint. Keep physical update installation under #5.

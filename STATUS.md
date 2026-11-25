@@ -2,8 +2,8 @@
 
 **Last updated:** 2026-11-25  
 **Active branch:** `beta`  
-**Latest integrated beta HEAD:** `e924c580699ad34f1083d1a9a0fe96901037c0ae`  
-**Phase:** PR #26 is merged into beta at `e924c580699ad34f1083d1a9a0fe96901037c0ae`. It integrates the home/navigation flow, updater fallback and P0 hardening. Exact-head PR run #329 passed the unsigned release build and unit tests for `3a1396f7364be1e6aa658b3eb67be41549a906fb`. The merge commit's signed branch CI passed run #330, including release build, tests, signing-certificate and ARM64-only packaging. Physical ARM64 gameplay, profile persistence and update installation remain unverified. `main` and `beta` are still diverged (beta ahead 166, behind 9); promotion is blocked pending reconciliation and release gates.
+**Latest integrated beta HEAD:** `b7d9f3256527de41a45ff8c935fac510be635a69`  
+**Phase:** PR #26 is merged into beta at `e924c580699ad34f1083d1a9a0fe96901037c0ae`. The current beta HEAD `b7d9f3256527de41a45ff8c935fac510be635a69` is 12 documentation/workflow commits beyond that merge; the application source is unchanged in that range. Signed run #330 passed for `e924c58`, not the exact current HEAD. Updater hardening is being prepared on `chaty/fix-updater-hardening` at `5c51978d1499c369fbc0a4e5801635c08d9b48b1` in PR [#30](https://github.com/iNeonyne/LastHavenPlus/pull/30); unsigned PR build and unit-test validation is pending for the latest PR head. Physical ARM64 gameplay, profile persistence and update installation remain unverified. `main` and `beta` remain diverged; promotion is blocked pending reconciliation and release gates.
 
 ## Summary
 
@@ -19,13 +19,13 @@
 |---|---|
 | Active branch | `beta` |
 | Stable branch | `main` |
-| Latest integrated beta HEAD | `e924c580699ad34f1083d1a9a0fe96901037c0ae` |
+| Latest integrated beta HEAD | `b7d9f3256527de41a45ff8c935fac510be635a69` |
 | Latest successful PR validation | [#329](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45518210756) — unsigned build and unit tests for PR head `3a1396f7364be1e6aa658b3eb67be41549a906fb` |
 | Commit tested by run #310 | `91e21d4bde0a26b8d7cbfd9697615f32c2f57d21` |
 | CI result | `assembleRelease`, `testDebugUnitTest`, release signature verification and ARM64-only ABI verification succeeded |
 | Signed APK artifact | `lasthavenplus-release-signed-arm64` uploaded; workflow job passed |
 | Earlier measured APK size | Run #308: 92,850,795 bytes |
-| Post-merge signed CI | [Run #330](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45518704468) passed for merge commit `e924c580699ad34f1083d1a9a0fe96901037c0ae`; release build, unit tests, signing certificate and ARM64-only packaging succeeded |
+| Post-merge signed CI | [Run #330](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45518704468) passed for merge commit `e924c580699ad34f1083d1a9a0fe96901037c0ae`; it does not test later beta docs/workflow HEAD `b7d9f32` |
 | Release state | No promotion to `main` or new release publication performed |
 
 PR run #329 passed the unsigned release build and unit tests for PR head `3a1396f7364be1e6aa658b3eb67be41549a906fb`. Post-merge run [#330](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45518704468) then passed the signed optimized release build, unit tests, signing-certificate verification and ARM64-only packaging for exact merge commit `e924c580699ad34f1083d1a9a0fe96901037c0ae`. The beta artifact used versionName `1.0.0` / versionCode `1000000`; release-tag and publication steps were skipped.
@@ -64,7 +64,7 @@ PR run #329 passed the unsigned release build and unit tests for PR head `3a1396
 - Earlier run #302 failed AAR metadata validation because GeckoView 160 requires compile SDK 37.2. The project and workflow were adjusted to use API 37.2.
 - Run #308 subsequently passed `assembleRelease` and `testDebugUnitTest` for commit `82590635e77c7abfedcaa6fd1fa4ad8c3b5de469`; APK ABI and signing checks passed.
 - Run #310 completed successfully after the CI runner-time optimization. Its total elapsed time was 3m44s versus 5m02s for run #308; treat this as an observed comparison only, not a controlled performance benchmark.
-- PR run #329 completed successfully for PR #26 head `3a1396f7364be1e6aa658b3eb67be41549a906fb`: unsigned release build and unit tests passed. The merge commit is `e924c580699ad34f1083d1a9a0fe96901037c0ae`; signed branch CI is still outstanding.
+- PR run #329 completed successfully for PR #26 head `3a1396f7364be1e6aa658b3eb67be41549a906fb`: unsigned release build and unit tests passed. Signed run #330 then passed for merge commit `e924c580699ad34f1083d1a9a0fe96901037c0ae`. Neither run verifies later docs/workflow HEAD `b7d9f3256527de41a45ff8c935fac510be635a69`.
 - A passing unit-test task on run #308 does not prove every runtime path is covered or that physical-device behavior works.
 
 ## Active ownership
@@ -91,10 +91,19 @@ PRs targeting `beta` use an unsigned release build and unit-test job with read-o
 | GitHub URL validation | HTTPS URL requires exact `github.com` hostname; redirect hosts use an exact allowlist | URL unit tests and PR run #329 passed |
 | GeckoSession lifecycle | Preserved across Home; closed when Activity composition is destroyed | Source reviewed; physical lifecycle unverified |
 | Home Back | BackHandler opens exit confirmation | Source reviewed; physical interaction unverified |
-| Pending installer URI | Saved/restored through Activity instance state | Source reviewed; process-death flow unverified on device |
+| Pending installer URI | Saved/restored through Activity instance state in beta | Source reviewed; process-death flow unverified on device |
 | GeckoView R8 rules | Keep rules wired into minified release build | Signed/minified release build passed in run #330; GeckoView runtime startup on physical hardware remains unverified |
 
 The updater is process-scoped; its worker thread now times out after idle rather than remaining alive indefinitely. It is not shut down after each check, because later update operations must remain usable.
+
+
+## Updater hardening candidate — not yet integrated
+
+- **Branch:** `chaty/fix-updater-hardening`
+- **Code candidate HEAD:** `5c51978d1499c369fbc0a4e5801635c08d9b48b1` ([PR #30](https://github.com/iNeonyne/LastHavenPlus/pull/30))
+- **Changes:** manually validate every HTTPS redirect against an exact GitHub host allowlist; cap release/manifest JSON bodies; bound updater work queue and retire idle worker; verify downloaded size and SHA-256 through a shared policy; stage APK and patch files under unique names, remove crash-abandoned .part files on the next explicit download, and clean temporary files; persist installer permission handoff in SharedPreferences so it can be restored after process death; keep full-APK fallback even if diagnostic logging fails.
+- **Tests added:** trusted redirect host/port/credentials and redirect status tests; response size and downloaded digest/size policy tests; manifest schema/version/name/size/versionCode tests; patch base-version compatibility and base APK digest tests; regression test for diagnostics failure not blocking full APK fallback.
+- **Verification:** Unsigned PR build/unit-test validation is pending for the latest PR head. Do not treat it as integrated or release verified.
 
 ## Release blockers
 

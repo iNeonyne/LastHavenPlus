@@ -1,3 +1,17 @@
+## 2026-11-25 — Harden updater redirects, downloads and installer recovery
+
+- **Role:** Chaty / updater implementation
+- **Branch:** `chaty/fix-updater-hardening`
+- **Starting beta HEAD:** `b7d9f3256527de41a45ff8c935fac510be635a69`
+- **PR:** [#30](https://github.com/iNeonyne/LastHavenPlus/pull/30), targeting `beta`.
+- **Candidate HEAD at checkpoint:** `5c51978d1499c369fbc0a4e5801635c08d9b48b1`
+- **Files:** `AppUpdater.kt`, `MainActivity.kt`, `UpdateNetworkPolicy.kt`, `UpdateVersionPolicy.kt`, `UpdateFallback.kt`, `UpdateNetworkPolicyTest.kt`, `UpdateManifestPolicy.kt`, `UpdateManifestPolicyTest.kt`, `UpdateFileCleanup.kt`, `UpdateFileCleanupTest.kt`, `UpdateFallbackTest.kt`
+- **Change:** Replaced automatic redirects with a bounded manual redirect loop that validates each HTTPS destination against exact GitHub hosts; bounded release/manifest JSON bodies; bounded updater queue with an idle-timeout daemon worker and explicit busy callback; centralized downloaded size/SHA-256 checks; staged patch/APK data in unique temporary files and generated unique final APK paths; removes crash-abandoned .part files on the next explicit download while preserving verified APKs; persisted the pending installer URI before leaving for Android install-permission settings and restored it after process death; prevented diagnostics callback errors from blocking full APK fallback.
+- **Tests added:** Redirect allowlist and rejection cases (including untrusted hosts, credentials, ports and fragments), redirect status codes, response-size limit, download size/digest validation, manifest field validation, patch base compatibility/digest validation, partial-file cleanup and fallback when diagnostics fails.
+- **Verification:** Unsigned PR build/unit-test validation is pending for the latest PR head. No build/test pass is claimed. Physical installer handoff and update installation remain unverified.
+- **Related issues:** #4 updater tests, #15 recovery, #5 physical ARM64 update verification; new backlog issues #28 storage accuracy and #29 documentation reconciliation.
+- **Next:** Inspect exact-head unsigned build/unit-test CI and correct any failures before review/merge.
+
 ## 2026-11-25 — Verify signed ARM64 beta integration
 
 - **Role:** Chaty / integration and release coordination

@@ -42,7 +42,7 @@ private const val DEFAULT_GAME_URL = "https://lasthavens.com/play"
 private const val PREFERENCES_NAME = "launcher_settings"
 private const val KEY_GAME_URL = "game_url"
 private const val TAG = "LastHavenLauncher"
-private const val STATE_PENDING_UPDATE_URI = "pending_update_uri"
+private const val KEY_PENDING_UPDATE_URI = "pending_update_uri"
 
 enum class Screen { Home, Game }
 
@@ -52,11 +52,10 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        pendingUpdateUri = savedInstanceState?.getString(STATE_PENDING_UPDATE_URI)?.let(Uri::parse)
+        val preferences = getSharedPreferences(PREFERENCES_NAME, MODE_PRIVATE)
+        pendingUpdateUri = preferences.getString(KEY_PENDING_UPDATE_URI, null)?.let(Uri::parse)
         Diagnostics.info(this, "Lifecycle", "Activity created")
         WindowCompat.setDecorFitsSystemWindows(window, true)
-
-        val preferences = getSharedPreferences(PREFERENCES_NAME, MODE_PRIVATE)
         setContent {
             LastHavenApp(
                 preferences = preferences,
@@ -100,8 +99,12 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun installUpdate(uri: Uri) {
+        val preferences = getSharedPreferences(PREFERENCES_NAME, MODE_PRIVATE)
         if (!packageManager.canRequestPackageInstalls()) {
             pendingUpdateUri = uri
+            check(preferences.edit().putString(KEY_PENDING_UPDATE_URI, uri.toString()).commit()) {
+                "Could not save the pending update installer request"
+            }
             startActivity(
                 Intent(
                     Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES,
@@ -115,19 +118,21 @@ class MainActivity : ComponentActivity() {
             setDataAndType(uri, "application/vnd.android.package-archive")
             addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
         })
-    }
-
-    override fun onSaveInstanceState(outState: Bundle) {
-        pendingUpdateUri?.let { outState.putString(STATE_PENDING_UPDATE_URI, it.toString()) }
-        super.onSaveInstanceState(outState)
+        pendingUpdateUri = null
+        if (!preferences.edit().remove(KEY_PENDING_UPDATE_URI).commit()) {
+            Diagnostics.warn(this, "Updater", "Could not clear pending installer recovery state")
+        }
     }
 
     override fun onResume() {
         super.onResume()
         Diagnostics.info(this, "Lifecycle", "Activity resumed")
+        if (pendingUpdateUri == null) {
+            pendingUpdateUri = getSharedPreferences(PREFERENCES_NAME, MODE_PRIVATE)
+                .getString(KEY_PENDING_UPDATE_URI, null)?.let(Uri::parse)
+        }
         val uri = pendingUpdateUri
         if (uri != null && packageManager.canRequestPackageInstalls()) {
-            pendingUpdateUri = null
             installUpdate(uri)
         }
     }
