@@ -420,3 +420,13 @@
 - **Probe removal:** deleted `FormattingProbe.kt` in commit `b93be719e510757036c948d23a8aadf1409b95a2`; no test probe should remain in the final PR tree.
 - **Correction:** `ISSUES.md` now correctly states that PR validation runs in `android.yml`, while `quality.yml` is a post-merge beta-push gate only.
 - **Next:** wait for clean-head Android PR validation and review the exact final diff before considering a beta merge.
+
+
+## 2026-11-25 — Merge issue #60 Android quality gate to beta
+
+- **PR:** [#72](https://github.com/iNeonyne/LastHavenPlus/pull/72), squash-merged after exact-head PR validation passed.
+- **Merge commit / beta HEAD:** `82e819a43e6d728a9eb8fea620eca47ac9c998df`; branch ref verified at the same SHA.
+- **PR validation:** [run #45627915789](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45627915789) passed Android Lint, Spotless/ktfmt, unsigned release build, JVM unit tests and Python updater-helper tests on PR head `c788b895ad5627946bf80918c7dd08db85f894b4`.
+- **Negative test:** [run #45627319452](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45627319452) intentionally failed at Spotless for a deliberately misformatted Kotlin probe; the probe was removed before merge.
+- **Post-merge verification:** quality workflow [#45631250015](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45631250015) and existing beta build workflow [#45631249817](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45631249817) started for the exact merge SHA. Their results are pending at this log entry.
+- **Scope:** no app behavior or game changes; no `main` update, release tag or publication. The beta build workflow's release-publication steps are conditional on an explicit versioned release; this ordinary beta push is not a release.
