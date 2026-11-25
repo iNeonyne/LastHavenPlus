@@ -6,7 +6,7 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class DesignTokensTest {
-  private fun rgb(color: Color): Long = color.value.toLong() and 0xFFFFFFL
+  private fun rgb(color: Color): Long = color.value.toLong() ushr 32 and 0xFFFFFFL
 
   @Test
   fun sharedPaletteIsSingleSourceOfTruth() {
@@ -67,6 +67,6 @@ class DesignTokensTest {
 
   @Test
   fun scrimIsSemiTransparentBlack() {
-    assertEquals(0x58000000L, DesignTokens.scrim.value.toLong() and 0xFFFFFFFFL)
+    assertEquals(0x58000000L, DesignTokens.scrim.value.toLong() ushr 32)
   }
 }

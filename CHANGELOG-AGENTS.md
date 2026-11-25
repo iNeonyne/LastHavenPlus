@@ -1,3 +1,11 @@
+## 2026-11-25 — Fix DesignTokensTest color extraction (PR #113)
+
+- **Role:** Vibe / issue #107 visual tokens
+- **Branch:** `vibe/visual-tokens-568e1f` → `beta` (updates PR #113, stacked on PR #112).
+- **Files:** `app/src/test/java/com/neonyne/lasthavenlauncher/DesignTokensTest.kt`.
+- **Change:** The test helpers misread Compose packed colors: sRGB `Color(Int)` values are stored shifted into the upper 32 bits of `Color.value`, so `and 0xFFFFFF` and `and 0xFFFFFFFF` both resolved to black and produced six false failures. `rgb` now extracts via `ushr 32` (matching Compose `toArgb()`), and the scrim assertion compares the shifted ARGB, preserving the intended semi-transparent black value and WCAG thresholds. No token values changed.
+- **Verification:** Full PR validation pending on the new exact head; physical ARM64 rendering/haptics remain unverified.
+
 ## 2026-11-25 — Harden updater redirects, downloads and installer recovery
 
 - **Role:** Chaty / updater implementation
