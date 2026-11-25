@@ -31,6 +31,42 @@ class UpdateDownloadPolicyTest {
     }
 
     @Test
+    fun handlesZeroLengthReadsWithoutDroppingBytes() {
+        withTemporaryFile { file ->
+            val payload = "zero-read-safe".toByteArray()
+            val source = object : InputStream() {
+                private var firstRead = true
+                private var offset = 0
+
+                override fun read(): Int =
+                    if (offset >= payload.size) -1 else payload[offset++].toInt() and 0xff
+
+                override fun read(buffer: ByteArray, start: Int, length: Int): Int {
+                    if (firstRead) {
+                        firstRead = false
+                        return 0
+                    }
+                    if (offset >= payload.size) return -1
+                    val count = minOf(length, payload.size - offset)
+                    System.arraycopy(payload, offset, buffer, start, count)
+                    offset += count
+                    return count
+                }
+            }
+
+            UpdateDownloadPolicy.copyAndVerify(
+                input = source,
+                destination = file,
+                expectedSize = payload.size.toLong(),
+                maximumBytes = payload.size.toLong(),
+                expectedSha256 = sha256(payload),
+            )
+
+            assertEquals(payload.toList(), file.readBytes().toList())
+        }
+    }
+
+    @Test
     fun deletesTruncatedDownload() {
         withTemporaryFile { file ->
             try {
