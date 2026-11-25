@@ -45,7 +45,7 @@ Required before merge:
 - Obtain successful exact-head unsigned PR build/unit-test CI.
 - Retain final signed release, signer, ARM64 and asset-count verification.
 
-PR #32's exact-head Actions runs #348 and #349 were cancelled; it is superseded. PR #34 run #351 passed for its earlier head; latest-head run #352 is in progress. No latest-head pass is claimed yet.
+PR #32's exact-head Actions runs #348 and #349 were cancelled; it is superseded. PR #34 run #351 passed for an earlier head; run #353 failed in a test assertion, run #354 was cancelled after the correction, and latest-head run #355 is in progress. No latest-head pass is claimed yet.
 
 ## Chaty — ACTIVE: documentation reconciliation (#29)
 
