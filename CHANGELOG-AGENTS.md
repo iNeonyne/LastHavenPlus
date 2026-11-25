@@ -579,3 +579,14 @@ Entry format:
 - **Merge commit:** `1f661cb6234dcfdfd051d0cb963e739668896a26`.
 - **Outcome:** post-promotion status and CI records reconciled; completed issue #29 removed from active work; addon-manager issue #23 returned to owner-directed hold; issue #31 backlog wording corrected; active assignment cleared.
 - **Validation:** documentation-only diff review. No application tests or physical-device checks were run by this PR.
+
+
+## 2026-11-25 — Reconcile roadmap and audit stale branches
+
+- **Role:** Chaty / repository housekeeping.
+- **Base:** beta at `1f661cb6234dcfdfd051d0cb963e739668896a26` (PR #49 merge).
+- **Roadmap correction:** v2.1.0 is a candidate already promoted to `main` by PR #47, not merely a proposed beta target. Publication remains unverified; physical ARM64 feature-matrix and final versioned release-artifact checks remain release gates.
+- **Issue correction:** issue #18's active plan is narrowed to reliability and GeckoView verification. Addon-manager work #23 remains explicitly on hold. Issue #31 records the passing signed beta verification run #45601558602 but stays open because release-tag differential fallback paths have not been exercised.
+- **Branch audit:** 27 branches were returned, including two protected working branches (`main`, `beta`), a legacy backup with no common ancestor, superseded task branches and prior housekeeping branches. No open PRs were found. Several branches contain unique commits or diverged history and were not deleted. The available GitHub integration exposes no branch-delete action; do not simulate deletion by force-moving refs.
+- **Scope:** backlog and work-history documentation plus GitHub issue metadata only. No app source, Gradle, CI workflow, signing, release publication or game changes.
+- **Verification:** exact branch comparisons were inspected for the Chaty task branches. Physical-device testing remains unverified. No application tests were run for this documentation-only update.
