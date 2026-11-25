@@ -32,7 +32,7 @@ The repository owner makes final product and release decisions. Chaty is the mai
 
 **Candidate branch:** `chaty/fix-updater-hardening`  
 **Starting beta HEAD:** `b7d9f3256527de41a45ff8c935fac510be635a69`  
-**Current candidate HEAD:** `4b5ecb6d4db4276983f98aff3cfb81d69b8fd882`
+**Current candidate HEAD:** `c68db2c8704813822c27b86dfb48cffbb84eb87f`
 
 ### Issue #4 — updater correctness and tests
 - Follow redirects manually; validate HTTPS and exact trusted host at every hop; reject userinfo, unexpected ports, fragments, untrusted hosts and redirect chains beyond five hops.
@@ -50,7 +50,7 @@ The repository owner makes final product and release decisions. Chaty is the mai
 - Preserve the existing package identity and release signing checks; never expose a partial APK to the installer.
 
 ### Verification and handoff
-- Candidate CI has not run yet. Inspect the PR validation run before accepting the changes.
+- PR [#30](https://github.com/iNeonyne/LastHavenPlus/pull/30) targets beta; exact-head run [#340](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45521280150) is pending. Inspect the final run before accepting the changes.
 - Physical same-key installation, permission handoff after force-stop/process death, delta update and full APK fallback remain hardware tests under #5.
 - PR must target `beta`; Chaty alone reviews and merges it.
 - PR #26 already integrated #22 home/navigation and earlier P0 hardening. Physical navigation remains unverified.
