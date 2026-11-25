@@ -2,12 +2,12 @@
 
 **Last updated:** 2026-11-25  
 **Active branch:** `beta`  
-**Latest application integration commit:** `dffca7e67ef4a8dd1bec8777c2c4c8b8a51a0210` (PR [#43](https://github.com/iNeonyne/LastHavenPlus/pull/43)); PR #46 was documentation-only.  
-**Beta HEAD before this documentation follow-up:** `1adc890343fb4389ad76144eb00fed2ea33e316e` (PR [#78](https://github.com/iNeonyne/LastHavenPlus/pull/78), documentation-only).  
+**Latest application integration commit:** `2e64f56d9dbf82fa0396d8e23b5e52a62506d9ae` (PR [#83](https://github.com/iNeonyne/LastHavenPlus/pull/83), direct launch and overlay).  
+**Current beta HEAD before icon PR:** `2e64f56d9dbf82fa0396d8e23b5e52a62506d9ae`.  
 **Latest workflow integration:** PR [#54](https://github.com/iNeonyne/LastHavenPlus/pull/54) merged to beta at `b12da7651445d15080e7593d441459a8c8403070`; exact-head unsigned and post-merge signed CI both passed.  
 **Stable documentation:** owner-authorized v2.1.0 corrections are on `main`; README commit `fdae3d90cf3abb209df8a42dd73ed1667bae9808`, CHANGELOG commit `2abe7cc212b67a3b91f5dcdb108aee3a55559e32`.  
 **Stable promotion and publication:** PR [#47](https://github.com/iNeonyne/LastHavenPlus/pull/47) promoted to `main`; tag/release `v2.1.0` is published at `03fcfa9652ce4e7d1034523d640a1693e6e6b9ce`.  
-**Current phase:** v2.1.0 is published; v2.2.0 planning is active. The direct-launch/overlay redesign is tracked in #56. Physical ARM64 feature verification remains outstanding. PR #54 fixed draft asset cleanup/verification by release ID; exact-head unsigned validation and post-merge signed beta validation both passed. The release-ID path still requires a future owner-authorized versioned release run.
+**Current phase:** v2.1.0 is published; v2.2.0 planning is active. The direct-launch/overlay redesign is tracked in #56. Owner release feedback is collected after publication on the owner's schedule; it is not a release blocker. PR #54 fixed draft asset cleanup/verification by release ID; exact-head unsigned validation and post-merge signed beta validation both passed. The release-ID path still requires a future owner-authorized versioned release run.
 **Latest workflow integration:** issue #60 merged by PR [#72](https://github.com/iNeonyne/LastHavenPlus/pull/72) at `82e819a43e6d728a9eb8fea620eca47ac9c998df`. Exact-head PR validation passed in [run #45627915789](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45627915789). Post-merge Android quality run [#45631250015](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45631250015) and beta build run [#45631249817](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45631249817) completed successfully. The beta build verified signed release APK assembly, unit tests, established signing certificate and ARM64-only ABI; release-tag publication steps were skipped.
 
 ## Current source state
@@ -43,58 +43,27 @@ Integrated from PR #43:
 - Responsive layout policy and JVM breakpoint tests.
 - GeckoSession retained while the game view is detached for launcher pages.
 
-Not verified yet:
-- Adaptive icon as rendered from the built APK.
-- Physical resize, split-screen and freeform behavior.
-- Back/navigation behavior and session retention on a physical device.
-- Gameplay orientation, immersive mode and keep-awake behavior after navigation.
-- Compose UI instrumentation tests are not included.
+Follow-up feedback may be reported by the owner after installing a release. No owner feedback is required before publication.
 
-## Device verification
+## Owner release feedback
 
-The owner reports that the app and GeckoView work on an ARM64 device. The device model, Android version, exact commit/APK digest and per-feature test results have not been supplied. Record this as an owner-reported smoke test only; do not claim the full GeckoView matrix or the v2.1.0 UI has been tested.
-
-Still unverified on physical ARM64 hardware:
-- Game login and gameplay; WebGL/WebGL2, WASM and WebSockets.
-- Touch/IME/focus, audio/audio focus, fullscreen and permissions.
-- Cookies, LocalStorage, IndexedDB, Cache Storage and service-worker persistence across restart/update.
-- Renderer/process recovery and session restoration.
-- Same-key update installation, installer permission restoration, differential update and full-APK fallback.
-- v2.1.0 launcher icon, responsive resizing, menu and screen navigation.
+The repository owner will install releases and report what works and what does not on their own schedule. Feedback is recorded in #5/#21 and converted into focused follow-up issues where needed. Pending feedback is not a release blocker.
 
 ## Release constraints and blockers
 
-1. Signed beta evidence for run #45601558602 is recorded in PR #47; artifact SHA-256: `0e1407a809897bd134817f7427bc5dbfea04344345c2ee0d8a4a9ffc945aec8e`; established signing certificate SHA-256: `b3bbf7520e77dfc384a60b1eee6c5f205b978f9b453849e2be523f642018d263`.
-2. PR #47 promoted the candidate to `main` while preserving stable history and stable-facing documentation policy. Do not repeat or overwrite this promotion.
-3. Investigate and fix the final release-asset query failure in run #45603533787; do not recreate or republish v2.1.0 merely to retry verification.
-4. Complete and record the required physical ARM64 feature matrix. The owner's earlier smoke-test report is not a substitute for the matrix.
-5. The versioned v2.1.0 APK is published: versionCode 2001000, signed with the established certificate and packaged arm64-v8a only. The workflow verified these checks and uploaded the release assets; its final API lookup failed, while current release metadata confirms the expected APK, manifest and patch.
-
-## Open work
-
-- #60: Android lint and Kotlin formatting quality gate; PR #72 merged to beta at `82e819a43e6d728a9eb8fea620eca47ac9c998df`. Exact-head PR validation passed in [run #45627915789](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45627915789), including lint, Spotless, unsigned release build, JVM tests and updater-helper tests. Negative formatter test was rejected as expected in [run #45627319452](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45627319452). Post-merge lint/format run [#45631250015](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45631250015) and beta build/test run [#45631249817](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45631249817) are pending; verify before closing issue.
-- #4/#15: updater regression coverage and physical update verification.
-- #5/#21: physical GeckoView/game compatibility and profile verification.
-- #20: complete remaining GeckoView 160 artifact/POM/dependency/license/API evidence.
-- #23: addon-manager work on hold by owner instruction; do not resume without explicit approval.
-- #28: storage measurement accuracy.
-- #31: PR #54 merged; exact-head unsigned validation passed in run #45610110307; post-merge signed beta run [#45610518305](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45610518305) passed build, unit tests, established signing-certificate verification and ARM64-only ABI checks. Future owner-authorized release run must exercise draft-ID cleanup/verification and differential fallback.
-- #42: v2.1.0 launcher UI verification; source implementation is integrated by PR #43, physical UI checks remain.
-- #22: Home/Play/Settings source implementation closed as complete; physical navigation/session checks remain under #5/#42.
-- #9/#11/#12/#14/#16/#17: remaining accessibility, diagnostics, load-error, connection, gameplay and backup work.
-- Stable README/CHANGELOG are reconciled on main; no release was created or republished during housekeeping.
-
-## Branch policy
-
-`beta` is development/integration; `main` is stable. Task PRs target beta; Chaty alone merges beta PRs. The v2.1.0 candidate was promoted by PR #47 and published as tag/release `v2.1.0` by the owner-approved release workflow. Do not create another tag or republish without explicit owner approval.
-
+- Preserve application ID, established signing identity and ARM64-only packaging.
+- Keep updater behavior manual and user-confirmed; no automatic download or installation.
+- Require exact-commit CI, signed optimized APK verification, package identity/signing checks and artifact inspection before publication.
+- Resolve any failing build, test, signing, packaging or security checks before publication.
+- Owner release feedback (#5/#21) is post-release and optional; it is not a blocker.
+- No tag, promotion to `main` or publication without explicit owner approval.
 
 ## v2.2.0 roadmap and active ownership — 2026-11-25
 
 - **Roadmap:** GitHub issue #18 is the v2.2.0 planning source of truth. v2.2.0 is a target, not release authorization.
 - **Chaty:** owns issue #18, remaining #70 Markdown lint/stale-reference review and branch audit, central documentation, CI/release coordination, PR review and beta integration. Roadmap/assignment housekeeping merged by PR [#73](https://github.com/iNeonyne/LastHavenPlus/pull/73) at `c16439bfcedc9949d8ec683039fb5df85afea122`.
 - **Ploy:** assigned issue #56 only: direct game launch and responsive in-game overlay, including Settings in both orientations and preserved GeckoSession state. Must submit a focused PR targeting beta; see AGENT_WORK.md.
-- **Physical device blocker:** #5/#21 remain open. No full ARM64 gameplay/profile/update matrix is verified. Record exact device, Android version, commit/APK digest and per-test outcomes when supplied.
+- **Owner feedback:** #5/#21 are post-release feedback trackers. The owner will share findings on their own schedule; pending feedback does not block release.
 - **Supersession:** #42's old v2.1.0 Home-screen-first verification is superseded by #56; verify the new UX under #5/#56.
 - **CI gate #60:** PR #72 merged at `82e819a43e6d728a9eb8fea620eca47ac9c998df`. Exact PR validation [#45627915789](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45627915789), post-merge quality [#45631250015](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45631250015), and signed beta build [#45631249817](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45631249817) passed. The beta build skipped release-tag publication steps.
 - **Addon Manager #23:** remains on hold; no assignment or implementation without explicit owner approval.
@@ -112,7 +81,7 @@ Still unverified on physical ARM64 hardware:
 - **Ploy ACTIVE:** #56 direct-launch and responsive overlay. One active issue at a time; all other Ploy work is queued.
 - **Ploy queue:** #9 accessibility → #11 diagnostics tests → #12 GeckoView 160 load errors → #14 connection diagnostics → #16 orientation/keep-awake → #10 persistent network totals → #28 storage accuracy → #6 essential settings/HTTPS URL → #17 settings backup/restore. Start each only after the previous Ploy issue is merged by Chaty. Exact narrow scopes and exclusions are recorded in each issue and AGENT_WORK.md.
 - **Chaty:** #4/#15 updater reliability, #20 GeckoView dependency record, #31 release workflow, #61–#66 CI/build/security, #70 docs validation, roadmap and integration.
-- **Chaty + owner/device tester:** #5/#21 physical ARM64 verification; #7 measured performance baseline.
+- **Repository owner:** optional release feedback in #5/#21; #7 measured performance work when scheduled.
 - **Owner decision:** #67 license selection. #23 Addon Manager remains ON HOLD and has no assigned agent.
 - Ploy is an internal agent role, not a confirmed GitHub username; assignments are marked in issue bodies, not through an invented GitHub assignee.
 
@@ -130,5 +99,5 @@ Still unverified on physical ARM64 hardware:
 - **Owner:** Chaty, taking over from Ploy at the repository owner's direction. Ploy must not work on #56 concurrently.
 - **Branch:** `chaty/issue-56-direct-launch-overlay`, based on beta `01af3f488225eaa5321b994a3957e53dcdb70c55`.
 - **Implemented on candidate branch:** cold startup now initializes the game directly; Android Back toggles a translucent in-game menu overlay while keeping the Game destination/session mounted; Settings opens as a separate destination and returns to gameplay; gameplay orientation remains landscape while the menu restores system bars; Settings restores normal orientation/system UI; persistent page-load progress strip removed.
-- **Still required:** focused navigation/state tests, Spotless, lint, unsigned release build, JVM/Python tests and exact-head CI. Inspect GeckoView rendering order to confirm Compose overlay appears above the game on device. Physical ARM64 portrait/landscape verification is not performed.
+- **Still required:** focused navigation/state tests, Spotless, lint, unsigned release build, JVM/Python tests and exact-head CI. Inspect GeckoView rendering order to confirm Compose overlay appears above the game on device. The owner may report portrait/landscape rendering feedback after installing a release; this is not a release gate.
 - **Integration:** no PR opened or merge performed yet; beta and main remain unchanged. No release/tag/publication.
