@@ -4,21 +4,21 @@
 
 ## Current priorities — v2.2.0
 
-1. **P0 — Release engineering and updater confidence (#4, #31):** finish automated updater regression coverage and keep release-ID/differential fallback testing owner-authorized. Owner feedback on released builds is collected separately in #5/#21 and does not block publication.
+1. **Deferred to v2.3.0 (#4, #15, #31):** complete automated updater regression coverage and future owner-authorized release-ID/differential fallback verification. No remaining updater work is a v2.2.0 implementation task.
 2. **P1 — v2.2.0 launcher experience (#56, #84):** direct launch, responsive in-game overlay, session-preserving navigation and the approved recreated icon are integrated in beta and selectively promoted to main. No further v2.2.0 feature work is active.
 3. **Deferred to v2.3.0 (#86):** accessibility, diagnostics, settings, storage/network accuracy, updater recovery and release engineering follow-ups. Owner feedback is tracked separately after releases.
 4. **P1/P2 — Engineering reliability (#60 complete; #61–#66):** keep CI hardening and dependency review separate from product work; no unverified toolchain upgrades.
-5. **P2 — Settings and diagnostics (#6, #9–#17, #28):** prioritize after the direct-launch core; preserve data and privacy boundaries.
+5. **Deferred to v2.3.0 (#6, #9–#17, #28):** settings, diagnostics, accessibility and storage/network accuracy; preserve data and privacy boundaries.
 6. **P3 — Performance/APK size (#7):** measure before optimizing.
 7. **Deferred — Addon Manager (#23) and beta channel (#19):** no Addon Manager work without explicit owner approval; beta channel is not a v2.2.0 prerequisite.
 
-**Release roadmap:** [#18 — v2.2.0 roadmap](https://github.com/iNeonyne/LastHavenPlus/issues/18). v2.1.0 is published. v2.2.0 is a planning target, not a release commitment. No tag, promotion, or publication is authorized by this roadmap.
+**Release roadmap:** [#18 — v2.2.0 roadmap](https://github.com/iNeonyne/LastHavenPlus/issues/18). v2.1.0 is published. v2.2.0 is a planning target, not a release commitment. No tag or publication is authorized by this roadmap. The selective main promotion was separately approved by the owner.
 
 ## Agent work queue
 
-**v2.2.0 implementation:** #56 and #84 are integrated. **Chaty:** owns review, release coordination and #70 documentation validation. **Ploy:** no active assignment; supporting work is deferred to #86 and must not start until owner prioritization. [#9 QUEUED](https://github.com/iNeonyne/LastHavenPlus/issues/9) → [#9](https://github.com/iNeonyne/LastHavenPlus/issues/9) → [#11](https://github.com/iNeonyne/LastHavenPlus/issues/11) → [#12](https://github.com/iNeonyne/LastHavenPlus/issues/12) → [#14](https://github.com/iNeonyne/LastHavenPlus/issues/14) → [#16](https://github.com/iNeonyne/LastHavenPlus/issues/16) → [#10](https://github.com/iNeonyne/LastHavenPlus/issues/10) → [#28](https://github.com/iNeonyne/LastHavenPlus/issues/28) → [#6](https://github.com/iNeonyne/LastHavenPlus/issues/6) → [#17](https://github.com/iNeonyne/LastHavenPlus/issues/17). All supporting work is deferred to #86; do not start the next issue until the owner prioritizes v2.3.0 work. Each issue retains its own scope and constraints.
+**v2.2.0 implementation:** #56 and #84 are integrated. **Chaty:** owns review, release coordination and #70 documentation validation. **Ploy:** no active assignment; supporting work is deferred to #86 and must not start until owner prioritization. [#9](https://github.com/iNeonyne/LastHavenPlus/issues/9) → [#11](https://github.com/iNeonyne/LastHavenPlus/issues/11) → [#12](https://github.com/iNeonyne/LastHavenPlus/issues/12) → [#14](https://github.com/iNeonyne/LastHavenPlus/issues/14) → [#16](https://github.com/iNeonyne/LastHavenPlus/issues/16) → [#10](https://github.com/iNeonyne/LastHavenPlus/issues/10) → [#28](https://github.com/iNeonyne/LastHavenPlus/issues/28) → [#6](https://github.com/iNeonyne/LastHavenPlus/issues/6) → [#17](https://github.com/iNeonyne/LastHavenPlus/issues/17). All supporting work is deferred to #86; do not start the next issue until the owner prioritizes v2.3.0 work. Each issue retains its own scope and constraints.
 
-**Chaty:** #4/#15 updater reliability, #20 GeckoView evidence, #31 release workflow, #61–#66 engineering/CI, #70 docs, roadmap/review/integration. **Repository owner:** optional release feedback in #5/#21; #7 performance work requires measured evidence when that work is scheduled. **Repository owner:** #67 license choice. **#23:** ON HOLD; no agent assigned.
+**Chaty:** #70 documentation validation, roadmap/review/integration and release coordination. #4/#15/#31 and supporting work are deferred under #86. **Repository owner:** optional release feedback in #5/#21; #7 performance work requires measured evidence when that work is scheduled. **Repository owner:** #67 license choice. **#23:** ON HOLD; no agent assigned.
 
 Ploy is an internal agent role, not a confirmed GitHub login; assignment is visible in each issue body. Do not assign an unrelated GitHub account.
 
@@ -660,7 +660,7 @@ See the GitHub issue #18 for the full phase checklist and release gates. `AGENT_
 - Verify GeckoRuntime/GeckoSession lifecycle, cold start, pause/resume, renderer recovery and session restoration.
 - Verify login and persistent cookies/site data across force-stop/restart and same-key update.
 - Verify WebGL/WebGL2, WebAssembly, WebSockets, touch/IME, audio, fullscreen and required permission prompts.
-- Verify the new direct-launch/overlay experience after #56 is integrated; coordinate UI-specific checks with #5.
+- The direct-launch/overlay implementation is integrated; optional owner feedback is collected separately in #5/#21 after releases.
 - Record pass/fail results and sanitized evidence in `STATUS.md`.
 
 ### Exclusions
@@ -779,7 +779,8 @@ Record exact branch head, Actions run URLs, lint results, formatter result and l
 ## v2.2.0 delivery ownership (2026-11-25)
 
 - **Chaty:** owns roadmap #18, central documentation, issue triage, branch audit, CI evidence, PR review and beta integration.
-- **Ploy:** owns implementation of #56 only, on a dedicated branch and PR targeting beta. See AGENT_WORK.md for behavior, file boundaries, exclusions, tests and handoff requirements.
+- **Chaty:** implemented #56 in PR #83 and integrated the approved icon in PR #85; selective stable promotion merged in PR #87.
+- **Ploy:** no active assignment; supporting work remains deferred to #86 pending owner prioritization.
 - **Owner release feedback (#5/#21):** optional post-publication feedback; the owner will share findings on their own schedule and it is not a release gate.
 - **#42:** the old v2.1.0 Home-screen-first acceptance scope is superseded by #56. Do not duplicate its old Home screen/menu implementation.
 - **#60:** exact PR validation passed in run #45627915789; post-merge quality workflow #45631250015 and signed beta build workflow #45631249817 both completed successfully. Issue can be closed as completed.
