@@ -64,7 +64,7 @@ class MainActivity : ComponentActivity() {
 
     private fun setGameplayUi(gameplay: Boolean, immersive: Boolean) {
         immersiveActive = immersive
-        WindowCompat.setDecorFitsSystemWindows(window, !immersive)
+        WindowCompat.setDecorFitsSystemWindows(window, !gameplay)
         requestedOrientation = if (gameplay) {
             ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE
         } else {
