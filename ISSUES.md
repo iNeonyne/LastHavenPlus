@@ -5,10 +5,11 @@
 ## Current priorities
 
 1. **P0 — GeckoView verification and release baseline:** GeckoView 160 is now the engine in beta. CI run #310 passed the signed Android release build, unit tests, signing-certificate and ARM64-only ABI checks for commit `91e21d4bde0a26b8d7cbfd9697615f32c2f57d21`; this is not a physical-device result or a build of the latest beta HEAD.
-2. **P1 — Home screen and navigation (#22):** Chaty owns implementation and integration in PR #26. PR run #317 passed build/unit tests for code SHA `283d649cd31ae009889d76affb25f655e28d3949`; review/merge pending. Ploy has no active assignment.
-3. **P0.2 — Physical ARM64 verification (#5):** gameplay, profile persistence, media, navigation and update installation remain unverified until tested on real ARM64 hardware.
-4. **Build reproducibility/updater tests (#4):** Gradle Wrapper is present and pinned. Continue the missing updater edge-case coverage and verify current CI/workflow behavior.
-5. **Deferred:** addon-manager work (#23) remains on hold until the owner supplies a new written specification.
+2. **P0 — Security/lifecycle hardening:** PR #26 adds BSDIFF decompressed-output limits, an idle-timeout updater worker, exact GitHub hostname checks, GeckoSession Activity cleanup, saved installer URI state and GeckoView R8 rules. Run #325 is in progress on head `f4891ab41b36fead89030a9fccdcabb9927cee8f`; do not mark complete until exact-head CI passes.
+3. **P1 — Home screen and navigation (#22):** Chaty owns implementation and integration in PR #26. Home Back confirmation and session-preserving Home navigation are implemented in the candidate. Ploy has no active assignment.
+4. **P0.2 — Physical ARM64 verification (#5):** gameplay, profile persistence, media, navigation and update installation remain unverified until tested on real ARM64 hardware.
+5. **Build reproducibility/updater tests (#4):** Gradle Wrapper is present and pinned. Continue the missing updater edge-case coverage and verify current CI/workflow behavior.
+6. **Deferred:** addon-manager work (#23) remains on hold until the owner supplies a new written specification.
 
 ## Backlog index
 
@@ -53,7 +54,7 @@ Close only when every acceptance criterion is met and evidence is recorded. If a
 
 ## Issue 4 — P0.1 — Improve build reproducibility and updater test coverage
 
-**Current audit (2026-11-25):** The Gradle Wrapper is pinned to Gradle 9.7.1 with a distribution SHA-256. Signed CI run [#310](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45508671565) passed release build/tests, signer and ARM64-only ABI checks for commit `91e21d4bde0a26b8d7cbfd9697615f32c2f57d21`; this does not verify current beta HEAD. PR run [#317](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45515320999) passed `assembleRelease` and `testDebugUnitTest` for PR #26 code SHA `283d649cd31ae009889d76affb25f655e28d3949`, without signing secrets or signed ABI checks. Keep the issue open for remaining updater edge cases, post-merge signed CI and physical update installation.
+**Current audit (2026-11-25):** The Gradle Wrapper is pinned to Gradle 9.7.1 with a distribution SHA-256. Signed CI run [#310](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45508671565) passed release build/tests, signer and ARM64-only ABI checks for commit `91e21d4bde0a26b8d7cbfd9697615f32c2f57d21`; this does not verify current beta HEAD. PR #26 adds P0 security/lifecycle fixes; exact-head run #325 is in progress. PR run [#317](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45515320999) passed `assembleRelease` and `testDebugUnitTest` for PR #26 code SHA `283d649cd31ae009889d76affb25f655e28d3949`, without signing secrets or signed ABI checks. Keep the issue open for remaining updater edge cases, post-merge signed CI and physical update installation.
 
 **GitHub:** https://github.com/iNeonyne/LastHavenPlus/issues/4
 **State:** open
