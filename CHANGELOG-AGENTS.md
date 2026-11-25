@@ -558,3 +558,13 @@ Entry format:
 - **Changes:** Correct README stable release, feature and CI claims; rewrite STATUS with exact commit/CI boundaries and remaining physical-device blockers; align AGENT_WORK with the owner's addon-manager approval and current assignments.
 - **No code changes:** This branch is documentation-only. No addon manager implementation, physical-device testing, beta merge, main promotion or release publication was performed.
 - **Next:** Review documentation PR, merge only after source/evidence consistency check, then continue PR #32 and issue #23 feasibility work.
+
+
+## 2026-11-25 — Replace unbounded optional release inputs with streamed caps
+
+- **Role:** Chaty / CI release workflow reliability.
+- **Issue:** [#31](https://github.com/iNeonyne/LastHavenPlus/issues/31).
+- **PR:** [#34](https://github.com/iNeonyne/LastHavenPlus/pull/34), targeting beta.
+- **Change:** Added a streamed bounded input helper for the GitHub release-list response (4 MiB), prior APK (256 MiB) and prior manifest (1 MiB); validates HTTPS GitHub asset hosts across redirects; adds unit tests and runs them in PR and signed build jobs.
+- **Supersedes:** PR #32, whose operations had timeouts but no hard byte caps. PR #32 exact-head runs #348/#349 were cancelled.
+- **Verification:** PR #34 exact-head run #351 is in progress for `751102ac2e00b4adb10c0ab8b34ac3017c5f6311`; no pass claimed yet.
