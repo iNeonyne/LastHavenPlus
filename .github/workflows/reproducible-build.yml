@@ -1,0 +1,144 @@
+name: Independent unsigned APK reproducibility
+
+on:
+  workflow_dispatch:
+  pull_request:
+    branches: [beta]
+    paths:
+      - "app/**"
+      - "gradle/**"
+      - "gradlew"
+      - "gradle.properties"
+      - "settings.gradle.kts"
+      - "build.gradle.kts"
+      - "*.gradle.kts"
+      - ".github/scripts/reproducible/**"
+      - ".github/workflows/reproducible-build.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: reproducible-apk-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  independent-build:
+    name: Clean unsigned APK build ${{ matrix.build_id }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        build_id: [a, b]
+    permissions:
+      contents: read
+    steps:
+      - name: Check out exact commit
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+
+      - name: Set up JDK 25
+        uses: actions/setup-java@d1374f8ac74474200d16ef8ecee22c7ae7a51880 # v6.3.0
+        with:
+          distribution: temurin
+          java-version: "25"
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@9fc6c4e9069bf8d3d10b2204b1fb8f6ef7065407 # v3
+        with:
+          packages: platform-tools
+
+      - name: Install pinned Android SDK components
+        run: sdkmanager "platforms;android-37.2" "build-tools;37.0.0"
+
+      - name: Record build environment
+        run: |
+          mkdir -p .reproducible
+          uname -a > .reproducible/environment.txt
+          printf '\nJDK:\n' >> .reproducible/environment.txt
+          java -version 2>> .reproducible/environment.txt
+          printf '\nGradle wrapper:\n' >> .reproducible/environment.txt
+          ./gradlew --version >> .reproducible/environment.txt
+          printf '\nAndroid SDK packages:\n' >> .reproducible/environment.txt
+          sdkmanager --list_installed >> .reproducible/environment.txt
+
+      - name: Build unsigned optimized release APK from clean state
+        run: |
+          env -u ANDROID_KEYSTORE_PATH -u ANDROID_KEYSTORE_PASSWORD -u ANDROID_KEY_PASSWORD \
+            ./gradlew --no-daemon --no-build-cache --no-configuration-cache \
+            clean assembleRelease --stacktrace
+
+      - name: Stage exactly one unsigned APK
+        shell: bash
+        run: |
+          set -euo pipefail
+          mapfile -t apks < <(find app/build/outputs/apk/release -maxdepth 1 -type f -name '*.apk' -print)
+          if [[ "${#apks[@]}" -ne 1 ]]; then
+            echo "::error::Expected exactly one release APK, found ${#apks[@]}."
+            printf '%s\n' "${apks[@]}"
+            exit 1
+          fi
+          mkdir -p .reproducible/apk
+          cp "${apks[0]}" .reproducible/apk/unsigned.apk
+          if find app/build/outputs/apk/release -maxdepth 1 -type f -name '*signed*.apk' | grep -q .; then
+            echo "::error::A signed APK unexpectedly appeared in this unsigned build."
+            exit 1
+          fi
+          sha256sum .reproducible/apk/unsigned.apk
+
+      - name: Upload intermediate unsigned APK for comparison
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: unsigned-apk-build-${{ matrix.build_id }}
+          path: .reproducible/
+          if-no-files-found: error
+          retention-days: 1
+
+  compare:
+    name: Compare independent unsigned APKs
+    needs: independent-build
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    steps:
+      - name: Check out comparison script
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+
+      - name: Download build A
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          name: unsigned-apk-build-a
+          path: build-a
+
+      - name: Download build B
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          name: unsigned-apk-build-b
+          path: build-b
+
+      - name: Test archive comparison helper
+        run: python3 -m unittest discover -s .github/scripts/reproducible/tests -v
+
+      - name: Compare APK hashes and archive entries
+        id: compare
+        run: |
+          python3 .github/scripts/reproducible/compare_unsigned_apks.py \
+            build-a/apk/unsigned.apk build-b/apk/unsigned.apk
+
+      - name: Upload comparison report and environment records
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: unsigned-apk-reproducibility-report
+          path: |
+            reproducibility-report.md
+            reproducibility-report.json
+            build-a/environment.txt
+            build-b/environment.txt
+          if-no-files-found: warn
+          retention-days: 30
