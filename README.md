@@ -11,7 +11,7 @@ LastHavenPlus is a lightweight Android launcher for the existing LastHaven Wrath
 
 Development continues on `beta`; `main` is the stable release branch. The published stable release is **v2.0.0**. Its GitHub release metadata confirms the ARM64 APK asset `lasthavenplus-arm64.apk` and update manifest `lasthavenplus-update.json`.
 
-The current beta source includes Mozilla GeckoView 160, the launcher Home screen, Play/Settings navigation and updater hardening. Updater hardening was integrated in beta at commit `1d6c1ec42becab44735edfd0323dfc60ff4b9f9d`. Exact-head unsigned PR validation passed in [Actions #345](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45521843766), and the signed ARM64 branch build, unit tests, signing-certificate and ABI checks passed in [Actions #346](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45522408962) for that exact merge commit. The current beta HEAD is `1f300b90e5aed9a5eaa86e473b746f0841d42b16`; the commits after #346 are documentation-only. PR [#32](https://github.com/iNeonyne/LastHavenPlus/pull/32) remains open for release-workflow timeout/fallback hardening and has not passed exact-head CI.
+The current beta source includes Mozilla GeckoView 160, the launcher Home screen, Play/Settings navigation and updater hardening. Updater hardening was integrated in beta at commit `1d6c1ec42becab44735edfd0323dfc60ff4b9f9d`. Exact-head unsigned PR validation passed in [Actions #345](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45521843766), and the signed ARM64 branch build, unit tests, signing-certificate and ABI checks passed in [Actions #346](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45522408962) for that exact merge commit. The current beta HEAD is `1f300b90e5aed9a5eaa86e473b746f0841d42b16`; the commits after #346 are documentation-only. PR #32 was superseded. Replacement [PR #34](https://github.com/iNeonyne/LastHavenPlus/pull/34) adds byte-bounded release inputs and regression tests; its latest exact-head CI is still running.
 
 CI success does not establish physical-device compatibility. Real ARM64 gameplay, browser-profile persistence, navigation, media and in-place update installation remain unverified.
 
@@ -73,7 +73,7 @@ A signed release build requires the established project keystore and credentials
 - [Actions #345](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45521843766): exact PR-head unsigned release build and unit tests passed for the updater-hardening PR.
 - [Actions #346](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45522408962): signed release build, unit tests, signing-certificate verification, ARM64-only ABI verification and artifact upload passed for beta merge commit `1d6c1ec42becab44735edfd0323dfc60ff4b9f9d`.
 - These runs predate the documentation-only beta HEAD `1f300b90e5aed9a5eaa86e473b746f0841d42b16`. No app source changes are present in the intervening documentation commits.
-- PR #32's exact-head validation was cancelled; it is not a passing check.
+- PR #32 was superseded after cancelled validation; PR #34 is the active release-workflow fix and must pass exact-head CI before merge.
 - CI does not replace physical ARM64 device testing.
 
 See [STATUS.md](STATUS.md) for exact commits, outstanding checks and blockers.
