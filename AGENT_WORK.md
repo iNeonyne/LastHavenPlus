@@ -31,11 +31,11 @@ The repository owner makes final product and release decisions. Chaty is the mai
 - No analytics or tracking; never log cookies, tokens or session secrets.
 - Do not make speculative performance/build-tool changes; measure before and after.
 
-## Chaty — ACTIVE: release-workflow review (#31 / PR #32)
+## Chaty — ACTIVE: release-workflow review (#31 / PR #34; PR #32 superseded)
 
 **Superseded PR:** https://github.com/iNeonyne/LastHavenPlus/pull/32  
 **Replacement PR:** https://github.com/iNeonyne/LastHavenPlus/pull/34  
-**Candidate head:** `751102ac2e00b4adb10c0ab8b34ac3017c5f6311`
+**Latest candidate head:** `3103a0c64a4dff784ed019efc35900076f07aea8`
 
 Required before merge:
 - Bound release-list API response bytes, not only elapsed time.
@@ -45,7 +45,7 @@ Required before merge:
 - Obtain successful exact-head unsigned PR build/unit-test CI.
 - Retain final signed release, signer, ARM64 and asset-count verification.
 
-PR #32's exact-head Actions runs #348 and #349 were cancelled; it is superseded. PR #34 run #351 is in progress. No passing validation is claimed yet.
+PR #32's exact-head Actions runs #348 and #349 were cancelled; it is superseded. PR #34 run #351 passed for its earlier head; latest-head run #352 is in progress. No latest-head pass is claimed yet.
 
 ## Chaty — ACTIVE: documentation reconciliation (#29)
 
