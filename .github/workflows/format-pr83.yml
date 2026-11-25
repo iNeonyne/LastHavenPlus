@@ -1,0 +1,53 @@
+name: Temporary PR 83 Kotlin formatter
+
+on:
+  push:
+    branches:
+      - chaty/issue-56-direct-launch-overlay
+
+permissions:
+  contents: write
+
+concurrency:
+  group: pr83-ktfmt
+  cancel-in-progress: false
+
+jobs:
+  format:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: chaty/issue-56-direct-launch-overlay
+          fetch-depth: 0
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "25"
+      - uses: android-actions/setup-android@v3
+        with:
+          packages: platform-tools
+      - name: Install Android platform
+        run: sdkmanager "platforms;android-37.2" "build-tools;37.0.0"
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: wrapper
+          validate-wrappers: true
+      - name: Apply repository formatter
+        run: ./gradlew spotlessApply
+      - name: Commit formatted files or remove this temporary workflow
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          if git diff --quiet; then
+            git rm .github/workflows/format-pr83.yml
+            git commit -m "chore: remove temporary PR formatter workflow"
+          else
+            git add app/src/main/java/com/neonyne/lasthavenlauncher/*.kt app/src/test/java/com/neonyne/lasthavenlauncher/*.kt
+            git commit -m "style: apply ktfmt Google style"
+          fi
+          git push origin HEAD:chaty/issue-56-direct-launch-overlay
