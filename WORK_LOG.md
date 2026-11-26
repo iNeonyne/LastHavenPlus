@@ -48,6 +48,7 @@
 - **Unverified / risks:** ...
 - **Next safe action:** ...
 ```
+
 ### 2026-11-25 — Remove legacy addon manager and prepare GeckoView agent references
 
 - **Issue/task:** owner instruction; #9, #11, #20, #21, #22, #23.
