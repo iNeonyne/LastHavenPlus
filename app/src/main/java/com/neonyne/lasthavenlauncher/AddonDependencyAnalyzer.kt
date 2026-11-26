@@ -36,7 +36,8 @@ object AddonDependencyAnalyzer {
       val stack = ArrayDeque<Pair<String, Iterator<String>>>()
       stack.addLast(start to graph[start].orEmpty().iterator())
       while (stack.isNotEmpty()) {
-        val (node, edges) = stack.peekLast()
+        val frame = stack.peekLast() ?: continue
+        val (node, edges) = frame
         if (edges.hasNext()) {
           val next = edges.next()
           if (visited.add(next)) {
