@@ -761,15 +761,6 @@ Entry format:
 - **Status:** backlog-only triage. No application source changes, assignments, release commitments or device-test claims.
 
 
-## 2026-11-26 — Distinguish game loading, navigation failure and renderer failure (issue #106)
-
-- **Role:** Vibe / game loading and failure UX (owner-approved UI/UX work)
-- **Issue:** #106 — loading, reconnect and load-failure presentation (separate from #107 styling).
-- **Branch:** `vibe/game-load-states-568e1f` → `beta`; refreshed on beta `737fba1` via merge commit (no force-push, no history rewrite).
-- **Changes:** added `GameLoadPolicy` (pure JVM classifier: Preparing / LoadingGame / RecoverableFailure / RendererFailure / Game) with 18 unit tests covering transitions, failure priority, non-obscuring of loaded gameplay and the review-requested retry/restore state-reset sequences (retry clears failure flags and re-enters the branded loading state, a failed retry re-presents the recoverable-failure screen, restore clears every flag and the session is recreated while the GeckoRuntime/profile stays intact); `GameScreen` now renders the branded initial loading state (previously absent once the Gecko session existed), a dedicated crash renderer-failure screen with an explicit "Restore game" action, and a wider recoverable-failure retry state; `MainActivity` distinguishes `sessionCrashed` (GeckoView `onCrash`/`onKill`) from `pageLoadFailed` (`onPageStop` failure), tracks `hasCompletedLoad` so later in-game navigations never obscure healthy gameplay, and adds a session-recreation restore path that keeps the GeckoRuntime (profile) intact. Loading and failure surfaces expose accessibility content descriptions; Retry/Restore buttons use 48dp minimum height.
-- **GeckoView API use:** only delegates already integrated against 160 (`ProgressDelegate.onPageStart/onPageStop`, `ContentDelegate.onCrash/onKill`); no new engine APIs. Error-category mapping stays with #12 as coordinated.
-- **Scope:** no game/client changes, no session-downgrade behaviors, no automatic retry, no polling, no new navigation destinations; session/profile lifecycle unchanged otherwise.
-- **Verification:** exact-head CI pending on the PR. On-device ARM64 behavior of the crash/restore path and the branded loading state remains unverified and must be confirmed on physical hardware.
 ## 2026-11-26 — Establish Chaty and Vibe GitHub-only workflow
 
 - **Role:** Chaty / workflow and documentation owner.

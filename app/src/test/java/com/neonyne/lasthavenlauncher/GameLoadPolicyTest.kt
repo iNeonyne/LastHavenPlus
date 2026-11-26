@@ -207,7 +207,7 @@ class GameLoadPolicyTest {
         hasCompletedLoad = false,
         failure = GameLoadPolicy.failure(sessionCrashed = false, pageLoadFailed = false),
       )
-    assertEquals(GameLoadPresentation.Game, afterRestore)
+    assertEquals(GameLoadPresentation.LoadingGame, afterRestore)
 
     val restoredReload =
       GameLoadPolicy.resolve(
@@ -250,5 +250,38 @@ class GameLoadPolicyTest {
         failure = GameLoadPolicy.failure(sessionCrashed = true, pageLoadFailed = false),
       )
     assertEquals(GameLoadPresentation.RendererFailure, crashedAgain)
+  }
+
+  @Test
+  fun coldStartBeforeFirstOnPageStartKeepsBrandedLoadingState() {
+    val preSignalWindow =
+      GameLoadPolicy.resolve(
+        hasSession = true,
+        isLoading = false,
+        hasCompletedLoad = false,
+        failure = GameLoadPolicy.failure(sessionCrashed = false, pageLoadFailed = false),
+      )
+    assertEquals(GameLoadPresentation.LoadingGame, preSignalWindow)
+  }
+
+  @Test
+  fun failedPageStopRecordsRecoverableFailureWhileFirstLoadFails() {
+    val failedDuringLoad =
+      GameLoadPolicy.resolve(
+        hasSession = true,
+        isLoading = false,
+        hasCompletedLoad = false,
+        failure = GameLoadPolicy.failure(sessionCrashed = false, pageLoadFailed = true),
+      )
+    assertEquals(GameLoadPresentation.RecoverableFailure, failedDuringLoad)
+
+    val failedWhileStillLoading =
+      GameLoadPolicy.resolve(
+        hasSession = true,
+        isLoading = true,
+        hasCompletedLoad = false,
+        failure = GameLoadPolicy.failure(sessionCrashed = false, pageLoadFailed = true),
+      )
+    assertEquals(GameLoadPresentation.RecoverableFailure, failedWhileStillLoading)
   }
 }

@@ -24,8 +24,9 @@ enum class GameLoadPresentation {
  * Classifies GeckoView load signals into one user-visible game-screen state. Rules:
  * - A process failure always wins over a navigation failure and over loading.
  * - A navigation failure obscures loading.
- * - The branded loading state is only shown before the first page load completes, so later in-game
- *   navigations never obscure healthy, loaded gameplay.
+ * - The branded loading state stays until the first successful page load completes, so the
+ *   pre-onPageStart window never briefly exposes a blank game view; later in-game navigations
+ *   never obscure healthy, loaded gameplay because hasCompletedLoad stays true.
  */
 object GameLoadPolicy {
   fun resolve(
@@ -38,7 +39,7 @@ object GameLoadPolicy {
       failure == GameLoadFailureKind.Process -> GameLoadPresentation.RendererFailure
       failure == GameLoadFailureKind.Navigation -> GameLoadPresentation.RecoverableFailure
       !hasSession -> GameLoadPresentation.Preparing
-      isLoading && !hasCompletedLoad -> GameLoadPresentation.LoadingGame
+      !hasCompletedLoad -> GameLoadPresentation.LoadingGame
       else -> GameLoadPresentation.Game
     }
 

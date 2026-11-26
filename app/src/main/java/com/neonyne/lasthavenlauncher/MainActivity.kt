@@ -190,8 +190,8 @@ private fun LastHavenApp(
       context,
       onLoadState = { loading, failed ->
         isLoading = loading
+        pageLoadFailed = failed
         if (!failed) {
-          pageLoadFailed = false
           sessionCrashed = false
         }
       },
