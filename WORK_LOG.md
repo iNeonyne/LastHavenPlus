@@ -552,3 +552,25 @@ No branch was deleted. The available GitHub connector exposes no branch-delete o
 - **Icon limitation:** issue #133 reopened as `agent:owner`; Android-generated adaptive-mask previews and physical ARM64 launcher rendering still need owner verification.
 - **Visual system:** PR #136 Android run #45743147121 passed on its old head, but branch is stale and non-mergeable after beta advanced. Vibe must merge current beta, resolve conflicts, and rerun exact-head checks.
 - **Release state:** no v2.4.0 tag, promotion, or publication authorized/performed. Beta CI artifact carries stable v2.3.0 identity (`versionCode 2003000`); a v2.4.0 release build requires the authorized stable tag workflow.
+
+
+## 2026-11-26 — GPL and community hygiene preparation
+
+- Owner approved GPL-3.0-or-later for original LastHavenPlus project code/documentation in issue #67.
+- Created chaty/community-hygiene from beta.
+- Added canonical GPL text from SPDX license-list data, private vulnerability reporting policy, weekly Gradle Dependabot updates, README license/third-party boundary, and contributor branch-retention rules.
+- Reconciled the existing CHANGELOG.md with an Unreleased policy entry; did not duplicate the already-existing CONTRIBUTING.md.
+- Preliminary direct-dependency license review only; transitive dependency and packaged-notice audit remains open. No copyright-holder name/date was invented.
+- PR and CI verification pending. No Android code/build-tool/signing/ABI/release/main changes; no branch deletion or device testing.
+
+
+- Follow-up reconciliation: restored the verified v2.2.0 and v2.3.0 release-note sections from their respective tagged CHANGELOG.md snapshots, and added the README release-history link. This corrects the earlier work-log shorthand that mentioned only the Unreleased entry.
+
+
+## 2026-11-26 — GPL compatibility audit follow-up
+
+- Added the canonical GPL text as app/src/main/res/raw/gpl_3_0.txt and exposed it through Settings → Open-source licenses. Avoided MainActivity/overlay navigation edits after confirming Vibe's #9 accessibility PR #139 is pending review; reverted our temporary navigation experiment to beta.
+- Added a PR CI step that records releaseRuntimeClasspath and uploads it with unit-test reports. The report artifact from run #45836638591 shows the GeckoView 160 runtime graph includes Google Play Services FIDO 21.3.1, Base 18.7.2, Basement 18.9.0 and Tasks 18.3.2.
+- Published Maven metadata declares those Google artifacts under the Android Software Development Kit License. GPLv3 compatibility for distribution of the combined APK is not established; this is a legal compatibility risk, not a definitive legal conclusion.
+- Updated issue #67 to agent:owner and returned PR #141 to draft pending owner direction, full artifact-level notice audit and copyright-holder attribution. No merge or release.
+- Markdown run #45837172690 passed. Android run #45837172797 was still running at this checkpoint. No physical-device test, app ID/signing/ABI/toolchain/GeckoView/game/main changes or branch deletions.
