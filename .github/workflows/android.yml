@@ -3,7 +3,6 @@ name: LastHavenPlus Android build and signed releases
 on:
   push:
     branches: [main, beta]
-    tags: ["v*"]
     # Documentation-only edits do not need an Android build. Workflow/config/source
     # changes still run the complete verification pipeline.
     paths-ignore:
