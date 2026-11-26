@@ -1,4 +1,4 @@
-name: Markdown quality gate
+name: Release documentation Markdown gate
 
 on:
   push:
@@ -23,7 +23,7 @@ concurrency:
 
 jobs:
   markdownlint:
-    name: Markdown lint (all repository Markdown)
+    name: Markdown lint (release-facing documentation)
     runs-on: ubuntu-latest
     timeout-minutes: 10
     permissions:
@@ -35,4 +35,9 @@ jobs:
         uses: DavidAnson/markdownlint-cli2-action@3ce8f712b5d8f31acd8e201be6d97e3d2bb23eb7 # v25.1.0
         with:
           config: .markdownlint-cli2.jsonc
-          globs: "**/*.md"
+          globs: |
+            README.md
+            CHANGELOG.md
+            CONTRIBUTING.md
+            .github/release/*.md
+            docs/*.md
