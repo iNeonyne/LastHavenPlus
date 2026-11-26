@@ -856,3 +856,11 @@ The additional UX proposal was reviewed and consolidated into existing issues ra
 The owner selected Apache-2.0. PR #144 prepares the canonical LICENSE, SECURITY.md, Gradle Dependabot, README/license boundary, changelog and contribution-policy updates, packaged Apache-2.0 text with an in-app Settings viewer, and CI runtime dependency reporting.
 
 **Current blocker:** the resolved GeckoView 160 runtime graph includes Google Play Services FIDO/Base/Basement/Tasks artifacts declared under the Android Software Development Kit License. The owner subsequently selected Apache-2.0 for original project material. Complete the artifact-level license/notice inventory before merging or publishing. Owner-supplied project attribution is recorded as LastHavenPlus, Copyright 2026. Third-party components retain their own terms. See the refreshed community-hygiene PR and its review comment for evidence.
+
+## Issue #67 — audit progress update (2026-11-26)
+
+PR #144 now packages the Apache-2.0 project license, MPL-2.0 text, a third-party notice summary and a Settings viewer. The CI workflow also uploads the unsigned release APK with the resolved releaseRuntimeClasspath report for direct package inspection.
+
+The graph includes GeckoView 160 and Google Play Services FIDO 21.3.1, Base 18.7.2, Basement 18.9.0 and Tasks 18.3.2. The Google artifacts are declared under Google's Android Software Development Kit License terms, not an OSI-approved open-source license; they remain outside the project Apache license.
+
+The latest Android run failed at Spotless formatting only; SettingsDialogs.kt was corrected. Exact-head Android validation, APK inspection, complete artifact-level notice verification and final review remain outstanding. Keep issue open and PR draft until those gates pass.
