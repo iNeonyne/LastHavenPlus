@@ -6,6 +6,7 @@ import java.util.zip.ZipEntry
 import java.util.zip.ZipOutputStream
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
+import org.junit.Assert.assertThrows
 import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
@@ -60,6 +61,26 @@ class AddonLibraryRepositoryTest {
 
     assertTrue(result.addons.single().enabled)
     assertEquals("2", result.addons.single().version)
+  }
+
+  @Test
+  fun libraryRejectsIndexEntriesWithoutBackingFiles() {
+    val repository = AddonLibraryRepository(temporaryFolder.newFolder("missing-files"))
+    val archive = zipOf("Sample/Sample.toc" to "## Interface: 30300\\n")
+    repository.importZip(ByteArrayInputStream(archive), archive.size.toLong())
+    assertTrue(repository.addonDirectory("Sample").deleteRecursively())
+
+    assertThrows(IllegalArgumentException::class.java) { repository.readLibrary() }
+  }
+
+  @Test
+  fun removeRejectsUnknownAddonWithoutChangingLibrary() {
+    val repository = AddonLibraryRepository(temporaryFolder.newFolder("unknown-remove"))
+    val archive = zipOf("Sample/Sample.toc" to "## Interface: 30300\\n")
+    repository.importZip(ByteArrayInputStream(archive), archive.size.toLong())
+
+    assertThrows(IllegalArgumentException::class.java) { repository.removeAddon("Missing") }
+    assertEquals(listOf("Sample"), repository.readLibrary().addons.map { it.folder })
   }
 
   private fun zipOf(vararg files: Pair<String, String>): ByteArray {
