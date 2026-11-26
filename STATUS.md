@@ -177,3 +177,21 @@ The repository owner will install releases and report what works and what does n
 - **Scope:** Game menu pane title, heading/traversal semantics, Compose input-focus entry, scrollable menu and live reduced-motion observation. No GeckoSession replacement or game-client change.
 - **Outstanding:** physical ARM64 TalkBack pane announcement/focus/traversal, GeckoView-relative order, reduced-motion device behavior and large-font rendering were not tested. `FocusRequester` moves Compose input focus, not TalkBack accessibility focus. Owner authorized merge with these limitations recorded; issue #9 remains open as `agent:owner` for device verification. No physical-device compatibility claim.
 - **Post-merge:** merge commit is the current beta HEAD at this checkpoint; post-merge CI has not yet reported a result.
+
+
+## Issue #67 — Apache-2.0/community hygiene candidate (2026-11-26)
+
+- **PR:** #141, currently draft, targeting beta; branch chaty/community-hygiene-refresh; latest candidate head at this status update: pending exact-head SHA.
+- **Owner decision:** Apache-2.0 selected. Canonical root LICENSE and packaged app resource app/src/main/res/raw/apache_2_0.txt added; Settings now exposes an Open-source licenses dialog.
+- **Other changes:** SECURITY.md, weekly Gradle Dependabot, README license boundary and changelog link, reconciled v2.2.0/v2.3.0 release notes, contributor branch-retention policy, and PR CI runtime dependency report artifact.
+- **CI:** Markdown run #45837172690 passed. Android run #45837172797 was still running at the time of this update; do not claim exact-head Android success until it completes.
+- **Third-party audit:** the runtime graph includes Google Play Services FIDO/Base/Basement/Tasks artifacts declared under the Android Software Development Kit License. The earlier GPL compatibility concern is no longer the selected project-license question after the owner chose Apache-2.0. Complete artifact-level licensing and packaged notices remain pending; no dependency is relicensed by the project.
+- **Attribution:** no copyright-holder identity/year has been invented; owner confirmation remains outstanding.
+- **Scope safety:** no game/client, app ID, signing, ABI, toolchain, GeckoView version, release/tag/main changes. No branch deletions. Physical-device testing is not applicable to these repository changes.
+
+
+## Licensing decision update — 2026-11-26
+
+- The owner superseded the earlier GPL-3.0-or-later choice and selected Apache License, Version 2.0 for original LastHavenPlus project code and documentation.
+- the refreshed community-hygiene PR now carries the Apache-2.0 license text and Settings viewer. Third-party dependency notices and copyright attribution remain incomplete; do not merge until audited and verified.
+- F-Droid readiness is explicitly out of scope. Reproducible-build investigation remains independently tracked.
