@@ -4,6 +4,7 @@ LastHavenPlus is an Android launcher for the existing LastHaven Wrath of the Lic
 
 - **Game:** [lasthavens.com/play](https://lasthavens.com/play)
 - **Latest stable release:** [v2.3.0 on GitHub Releases](https://github.com/iNeonyne/LastHavenPlus/releases/tag/v2.3.0)
+- **Release history:** [CHANGELOG.md](CHANGELOG.md)
 - **Development:** `beta`; stable releases: `main`
 
 ## Compatibility and identity
