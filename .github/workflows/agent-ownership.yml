@@ -53,7 +53,8 @@ jobs:
           ensure_label "agent:unassigned" "f9d0c4" "No agent owns this issue; Chaty may triage and assign it."
           ensure_label "agent:chaty" "0052cc" "Implementation or coordination owned by Chaty."
           ensure_label "agent:vibe" "5319e7" "Explicitly assigned to Vibe; implementation may start."
-          ensure_label "agent:blocked" "d93f0b" "On hold or waiting for a dependency or decision."
+          ensure_label "agent:queued" "c5def5" "Ready and waiting its turn; not an active assignment and must not be started."
+          ensure_label "agent:blocked" "d93f0b" "Cannot proceed until a documented dependency, prerequisite, or owner decision is cleared."
           ensure_label "agent:review" "fbca04" "Implementation PR submitted; awaiting Chaty review."
           ensure_label "agent:owner" "0e8a16" "Waiting for repository-owner decision or optional feedback."
 
@@ -77,7 +78,7 @@ jobs:
           fi
 
           if [[ "$BACKFILL" != "true" ]]; then
-            echo "Labels ensured. Backfill was not requested."
+            echo "Labels ensured (including agent:queued). Backfill was not requested."
             exit 0
           fi
 
