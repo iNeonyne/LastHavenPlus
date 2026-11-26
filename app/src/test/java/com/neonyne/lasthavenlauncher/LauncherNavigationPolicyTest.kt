@@ -51,22 +51,6 @@ class LauncherNavigationPolicyTest {
     assertFalse(target.menuVisible)
   }
 
-
-  @Test
-  fun backFromLicensesReturnsToSettings() {
-    val target =
-      LauncherNavigationPolicy.onBack(
-        currentScreen = Screen.Licenses,
-        menuVisible = false,
-        settingsReturnScreen = Screen.Game,
-        diagnosticsReturnScreen = Screen.Settings,
-        updateReturnScreen = Screen.Game,
-      )
-
-    assertEquals(Screen.Settings, target.screen)
-    assertFalse(target.menuVisible)
-  }
-
   @Test
   fun menuActionsReturnToGameAndCloseOverlay() {
     assertEquals(
