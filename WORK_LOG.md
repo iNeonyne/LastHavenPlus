@@ -602,3 +602,10 @@ No branch was deleted. The available GitHub connector exposes no branch-delete o
 - **Checks:** not yet run in CI; no local Gradle environment or passing test is claimed. Spotless, lint, unsigned release assembly and JVM tests are pending exact-head PR validation.
 - **Unverified / remaining:** malformed-section stream cleanup is source-corrected but needs CI; no real signed ARM64 APK-pair round-trip, package/version/ABI/signer fixture, differential benchmark, signed beta artifact or physical device test has been completed.
 - **Next safe action:** open a draft PR, inspect exact diff and exact-head validation, then continue remaining #4 acceptance gaps without changing release policy.
+
+
+### 2026-11-26 — Spotless correction for #157
+
+- **Finding:** exact-head PR run #45888473948 failed at `spotlessKotlinCheck` for import order and nested scope formatting in `BsdiffPatch.kt` and `BsdiffPatchTest.kt`; it did not reach unit tests.
+- **Correction:** replaced the initial source commit `dd33fc1af4e33b4c1d4fd89c5b37e64159115714` with `0b275726c6a19784fe42822813ec799ca10df84e`, retaining the same resource-lifecycle fix using an opened-section collection and best-effort reverse-order close. Test commit `0e6896afc6f6f17d7e038b612b01875e0ebbbc2f` remains unchanged.
+- **Next:** rerun exact-head Spotless, Android/JVM tests, Markdown and reproducibility. No test pass is claimed.
