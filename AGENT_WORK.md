@@ -1,6 +1,6 @@
 # Agent work assignments — LastHavenPlus
 
-**Current beta baseline:** 97570eaaca86c9e27d92d04f90da9d930f6bdb33 (after PR #119 independent unsigned APK reproducibility integration).  
+**Current beta baseline:** 1279f214b3fdd3ba420e090a6a90914a8a3399e7 (observed 2026-11-26; latest verified branch ref, not a claim of signed CI).  
 **Stable baseline:** main / v2.3.0 tag ebc5b424e83ae66c2b0accc2bec6f050b8dc0d88.
 
 ## Roles and integration
@@ -133,3 +133,13 @@ The following GitHub issues were created from the beta code review. All are curr
 Updater review findings were added to existing #15 and #4, not split into parallel updater tasks. #111 remains Vibe's active progress work and must be reviewed for file overlap before any updater follow-up is assigned.
 
 **Assignment policy:** Do not assign these issues to Vibe while an existing task/PR owns overlapping files. Keep one active owner per issue and record the exact scope in a GitHub assignment comment before work begins.
+
+## Current coordination correction — 2026-11-26
+
+- **Addon Manager #23:** Phase A is integrated into beta by PR #152 at 103bb979c98589a8704459d28d13861eccca39d6. Runtime injection/Phase B remains unimplemented and owner-gated. Earlier active-PR #152 wording above is historical.
+- **Diagnostics #11 / PR #154:** Vibe's exact head is 44b96ae47ce54f83ed900fcacb6f093e728e9259. The effective delta against current beta is nine files, not the stale 40-file count; code review found no blocking defect. Vibe must merge current beta into the branch and rerun exact-head CI before approval. Runtime-version startup logging is deferred because MainActivity was excluded from the assignment.
+- **Updater #4 / #15:** both coordinated under Chaty; #15 was reopened and relabeled agent:chaty after the owner reprioritized updater reliability/differential updates. Current task branch: chaty/updater-patch-stream-cleanup-4, base 1279f214b3fdd3ba420e090a6a90914a8a3399e7. Narrow change closes BSDIFF compressed sections through structured use scopes and adds malformed-section tests. Exact-head CI pending.
+- **Updater progress #111 / PR #143:** ownership is agent:review. Review found the 16-sample cap can prevent a 500 ms speed/ETA window on high-frequency chunk callbacks; correction and regression test requested. Keep draft and do not merge before v2.4.0 release plus explicit owner authorization for v2.5.0 integration.
+- **#20 / PR #122:** owner pause reaffirmed; issue is agent:blocked, PR traceability-only.
+- **#107 / PR #113:** owner stopped further commits; PR traceability-only and must not be merged/refreshed.
+- **#67 / PR #144:** issue body now reflects All Rights Reserved for original project material; unresolved Guava license evidence, GeckoView bundled notice inventory, Google Play services distribution-rights question, stale branch/docs and exact-head CI remain blockers.
