@@ -1,8 +1,8 @@
 # Project status — LastHavenPlus
 
 **Last updated:** 2026-11-26  
-**Active branch:** beta  
-**Beta HEAD at this verification checkpoint:** f800deebf6c8bdaa91df4ac7c3693dcf86f3e6b6 (after docs PR #137; application integration remains at c24b24e).  
+**Active work branch:** `chaty/addon-manager-native-phase-a` (draft PR #140)  
+**Beta HEAD at this verification checkpoint:** `e0967121b51ac1c232c92edd80157fc02b714766` (after PR #136).  
 **Stable branch / v2.3.0 tag:** ebc5b424e83ae66c2b0accc2bec6f050b8dc0d88; GitHub confirms published, non-draft, non-prerelease [v2.3.0](https://github.com/iNeonyne/LastHavenPlus/releases/tag/v2.3.0) with canonical ARM64 APK, update manifest and v2.2.0-to-v2.3.0 differential package. Main remains unchanged by this housekeeping work.
 
 ## Active unmerged work — Addon Manager ZIP v0.5.1
@@ -10,9 +10,9 @@
 - **Issue / owner:** [#23](https://github.com/iNeonyne/LastHavenPlus/issues/23), Chaty (`agent:chaty`); owner reauthorized work on 2026-11-26.
 - **PR:** draft [#140](https://github.com/iNeonyne/LastHavenPlus/pull/140), branch `chaty/addon-manager-native-phase-a`, based on beta HEAD `e0967121b51ac1c232c92edd80157fc02b714766`.
 - **Source:** uploaded ZIP v0.5.1, SHA-256 `734a8af29b9e108f05666e5f1140cd58f77de87f888386fd1777b7948908b7fc`; it is distinct from the historical XPI v0.11.0.
-- **Implemented on the draft branch:** bounded streaming ZIP extraction, TOC metadata parsing, app-private addon library persistence, disabled-by-default imports, enable/disable/remove/export and a Compose manager screen with JVM tests.
-- **Not yet usable in beta:** Android document picker/export wiring, manager navigation, runtime loader integration, localization and physical-device verification remain incomplete. The original XHR/Worker/blocks.idx/WASM-memory loader remains disabled pending exact GeckoView 160 security/compatibility review.
-- **CI:** the first validation caught a malformed Kotlin escape and then missing test extraction-directory arguments; both were corrected. Exact-head validation for the latest branch commit is pending. No PR build is yet reported as passing.
+- **Implemented on the draft branch:** bounded streaming ZIP extraction, TOC parsing, app-private library persistence, disabled-by-default imports, enable/disable/replace/remove/export, Compose manager UI, Android OpenDocument/CreateDocument pickers and background-thread ContentResolver I/O. Unknown provider sizes are accepted only with a hard streaming cap. Added multiple-addon and case-insensitive path-collision tests.
+- **Not yet usable in beta:** overlay navigation and same-session return, localization and runtime loader integration remain incomplete. The original XHR/Worker/blocks.idx/WASM-memory loader remains disabled pending exact GeckoView 160 security/compatibility review. Physical ARM64 testing is outstanding.
+- **CI:** Markdown passed on current head `7c6efc7ea1f8df26c2a6721115299a78a1d15671` ([#45830740836](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45830740836)). Android validation [#45830740786](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45830740786) is running. Earlier Android attempts failed only at Spotless formatting; the next head contains formatting corrections. No current-head Android pass is claimed.
 - **Coordination:** Vibe's #9 overlay accessibility PR is still open; #23 intentionally avoids `MainActivity.kt` and `GameMenuScreen.kt` until #9 is integrated.
 - **Release/device:** no beta merge, release, tag, promotion or physical ARM64 runtime test.
 ## Latest integration — v2.4.0 launcher icon
