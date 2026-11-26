@@ -812,3 +812,13 @@ Entry format:
 - **Safety:** Vibe cannot merge or push to beta/main. Exactly one implementation owner per issue. Owner-only, blocked and review states are distinct from unassigned work.
 - **Activation caveat:** GitHub issue-event workflows must exist on the repository default branch. The PR targets beta only; automatic issue-open labeling remains inactive until the owner separately approves promotion to the default branch. No main, release, app source or game changes.
 - **Verification:** documentation and workflow source review pending PR CI/merge. No automation run or label backfill is claimed. Physical-device testing is not applicable.
+
+
+## 2026-11-26 — GPL and community hygiene preparation
+
+- Owner approved GPL-3.0-or-later for original LastHavenPlus project code/documentation in issue #67.
+- Created chaty/community-hygiene from beta.
+- Added canonical GPL text from SPDX license-list data, private vulnerability reporting policy, weekly Gradle Dependabot updates, README license/third-party boundary, and contributor branch-retention rules.
+- Reconciled the existing CHANGELOG.md with an Unreleased policy entry; did not duplicate the already-existing CONTRIBUTING.md.
+- Preliminary direct-dependency license review only; transitive dependency and packaged-notice audit remains open. No copyright-holder name/date was invented.
+- PR and CI verification pending. No Android code/build-tool/signing/ABI/release/main changes; no branch deletion or device testing.
