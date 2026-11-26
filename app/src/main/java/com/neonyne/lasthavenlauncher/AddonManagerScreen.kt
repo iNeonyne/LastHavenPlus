@@ -22,6 +22,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -39,6 +40,7 @@ fun AddonManagerScreen(
   onRemove: (String) -> Unit,
   onBack: () -> Unit,
 ) {
+  val dependencyReport = remember(snapshot) { AddonDependencyAnalyzer.analyze(snapshot.addons) }
   Column(
     modifier = Modifier.fillMaxSize().padding(horizontal = 20.dp, vertical = 16.dp),
     verticalArrangement = Arrangement.spacedBy(14.dp),
@@ -128,6 +130,7 @@ fun AddonManagerScreen(
           AddonCard(
             addon = addon,
             library = snapshot,
+            dependencyReport = dependencyReport,
             busy = busy,
             onToggle = { enabled -> onToggle(addon.folder, enabled) },
             onExport = { onExport(addon.folder) },
@@ -149,6 +152,7 @@ fun AddonManagerScreen(
 private fun AddonCard(
   addon: AddonLibraryItem,
   library: AddonLibrarySnapshot,
+  dependencyReport: AddonDependencyReport,
   busy: Boolean,
   onToggle: (Boolean) -> Unit,
   onExport: () -> Unit,
@@ -198,13 +202,17 @@ private fun AddonCard(
         style = MaterialTheme.typography.bodySmall,
       )
 
-      val missing =
-        addon.dependencies.filter { dependency ->
-          library.addons.none { it.folder.equals(dependency, ignoreCase = true) && it.enabled }
-        }
+      val missing = dependencyReport.missingByFolder[addon.folder].orEmpty()
       if (missing.isNotEmpty()) {
         Text(
           stringResource(R.string.addon_manager_missing_dependencies, missing.joinToString()),
+          color = MaterialTheme.colorScheme.error,
+          style = MaterialTheme.typography.bodySmall,
+        )
+      }
+      if (addon.folder in dependencyReport.cyclicFolders) {
+        Text(
+          stringResource(R.string.addon_manager_dependency_cycle),
           color = MaterialTheme.colorScheme.error,
           style = MaterialTheme.typography.bodySmall,
         )
