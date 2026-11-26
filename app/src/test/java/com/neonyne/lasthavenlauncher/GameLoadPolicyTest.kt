@@ -139,4 +139,116 @@ class GameLoadPolicyTest {
       GameLoadPolicy.failure(sessionCrashed = false, pageLoadFailed = false),
     )
   }
+
+  // The tests below replay the exact flag sequences wired in MainActivity: retry clears
+  // pageLoadFailed/sessionCrashed and reloads in place; restore recreates the session and
+  // clears every load flag while keeping the session present.
+
+  @Test
+  fun retryAfterRecoverableFailureResetsToLoadingThenGame() {
+    val presentation =
+      GameLoadPolicy.resolve(
+        hasSession = true,
+        isLoading = false,
+        hasCompletedLoad = false,
+        failure = GameLoadPolicy.failure(sessionCrashed = false, pageLoadFailed = true),
+      )
+    assertEquals(GameLoadPresentation.RecoverableFailure, presentation)
+
+    val retrying =
+      GameLoadPolicy.resolve(
+        hasSession = true,
+        isLoading = true,
+        hasCompletedLoad = false,
+        failure = GameLoadPolicy.failure(sessionCrashed = false, pageLoadFailed = false),
+      )
+    assertEquals(GameLoadPresentation.LoadingGame, retrying)
+
+    val recovered =
+      GameLoadPolicy.resolve(
+        hasSession = true,
+        isLoading = false,
+        hasCompletedLoad = true,
+        failure = GameLoadPolicy.failure(sessionCrashed = false, pageLoadFailed = false),
+      )
+    assertEquals(GameLoadPresentation.Game, recovered)
+  }
+
+  @Test
+  fun failedRetryShowsRecoverableFailureAgain() {
+    val stillFailing =
+      GameLoadPolicy.resolve(
+        hasSession = true,
+        isLoading = false,
+        hasCompletedLoad = false,
+        failure = GameLoadPolicy.failure(sessionCrashed = false, pageLoadFailed = true),
+      )
+    assertEquals(GameLoadPresentation.RecoverableFailure, stillFailing)
+  }
+
+  @Test
+  fun crashDuringInitialLoadShowsRendererFailure() {
+    val crashedWhileLoading =
+      GameLoadPolicy.resolve(
+        hasSession = true,
+        isLoading = false,
+        hasCompletedLoad = false,
+        failure = GameLoadPolicy.failure(sessionCrashed = true, pageLoadFailed = false),
+      )
+    assertEquals(GameLoadPresentation.RendererFailure, crashedWhileLoading)
+  }
+
+  @Test
+  fun restoreResetsFlagsAndReloadsBrandedLoadingState() {
+    val afterRestore =
+      GameLoadPolicy.resolve(
+        hasSession = true,
+        isLoading = false,
+        hasCompletedLoad = false,
+        failure = GameLoadPolicy.failure(sessionCrashed = false, pageLoadFailed = false),
+      )
+    assertEquals(GameLoadPresentation.Game, afterRestore)
+
+    val restoredReload =
+      GameLoadPolicy.resolve(
+        hasSession = true,
+        isLoading = true,
+        hasCompletedLoad = false,
+        failure = GameLoadPolicy.failure(sessionCrashed = false, pageLoadFailed = false),
+      )
+    assertEquals(GameLoadPresentation.LoadingGame, restoredReload)
+
+    val recovered =
+      GameLoadPolicy.resolve(
+        hasSession = true,
+        isLoading = false,
+        hasCompletedLoad = true,
+        failure = GameLoadPolicy.failure(sessionCrashed = false, pageLoadFailed = false),
+      )
+    assertEquals(GameLoadPresentation.Game, recovered)
+  }
+
+  @Test
+  fun restoredGameIsNeverObscuredByLaterNavigation() {
+    val laterNavigation =
+      GameLoadPolicy.resolve(
+        hasSession = true,
+        isLoading = true,
+        hasCompletedLoad = true,
+        failure = GameLoadPolicy.failure(sessionCrashed = false, pageLoadFailed = false),
+      )
+    assertEquals(GameLoadPresentation.Game, laterNavigation)
+  }
+
+  @Test
+  fun crashAfterRestoreTakesPriorityOverLoading() {
+    val crashedAgain =
+      GameLoadPolicy.resolve(
+        hasSession = true,
+        isLoading = true,
+        hasCompletedLoad = false,
+        failure = GameLoadPolicy.failure(sessionCrashed = true, pageLoadFailed = false),
+      )
+    assertEquals(GameLoadPresentation.RendererFailure, crashedAgain)
+  }
 }
