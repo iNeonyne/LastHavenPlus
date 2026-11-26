@@ -1,6 +1,6 @@
 # Agent work assignments — LastHavenPlus
 
-**Current beta baseline:** 4c508cf5eff07d8a64dc3ec772dcc1a37a1320a8 after the #133 icon integration and its documentation follow-ups; advanced to e0967121b51ac1c232c92edd80157fc02b714766 after PR #136 integrated the #107 visual system.  
+**Current beta baseline:** 97570eaaca86c9e27d92d04f90da9d930f6bdb33 (after PR #119 independent unsigned APK reproducibility integration).  
 **Stable baseline:** main / v2.3.0 tag ebc5b424e83ae66c2b0accc2bec6f050b8dc0d88.
 
 ## Roles and integration
@@ -28,12 +28,24 @@
 - **Integration:** PR [#136](https://github.com/iNeonyne/LastHavenPlus/pull/136) merged into `beta` by Chaty at `e0967121b51ac1c232c92edd80157fc02b714766`; exact-head unsigned validation passed on final head `94b06eccf2670289474d0e3ad1a7a9c5e30f7c01`. Issue #107 closed on acceptance.
 - **Device status:** physical ARM64 rendering/haptics remain unverified.
 
-### Issue #9 — overlay accessibility and navigation (v2.4.0)
-- **Owner:** Vibe (agent:vibe), assigned by Chaty on 2026-11-26 after #107 integration.
-- **Scope:** Compose semantics (pane title, heading, traversal group) and accessible focus entry for the existing Back menu overlay; TalkBack traversal order verification; reduced-motion gating of the existing overlay fade; return-to-game behavior must keep discarding no session state. No menu redesign, no new actions.
-- **Branch:** `vibe/overlay-accessibility`, fresh from beta `e0967121b51ac1c232c92edd80157fc02b714766`.
-- **State:** implementation in progress on this branch.
-- **Device status:** physical ARM64 TalkBack/gesture verification not performed; JVM-only test infra means focus/TalkBack behavior cannot be fully automated.
+### Issue #9 — overlay accessibility and navigation (integrated)
+- **PR:** [#139](https://github.com/iNeonyne/LastHavenPlus/pull/139), squash-merged by Chaty at `0d5ab712ce5195a3e71023c68da54f054645a8e2`.
+- **Owner:** issue remains `agent:owner` for physical ARM64 TalkBack/focus/traversal, GeckoView-relative order, reduced-motion and large-font verification.
+- **Device status:** no physical-device verification is claimed.
+
+### Issue #23 — Addon Manager Phase A (active Chaty implementation)
+- **Owner:** Chaty (`agent:chaty`), following the repository owner's explicit handoff on 2026-11-26. Vibe must not continue work on #23 or push to its branch.
+- **PR:** [#152](https://github.com/iNeonyne/LastHavenPlus/pull/152), draft, targeting `beta`; Chaty continues the existing branch `vibe/addon-manager-phase-a-23`, synced with beta `97570eaaca86c9e27d92d04f90da9d930f6bdb33`.
+- **Scope:** native Phase A only — bounded ZIP import/export, app-private addon library, storage preflight, staging/rollback, TOC dependency metadata, iterative dependency analysis, localized removal confirmation and launcher overlay navigation. Current corrections add replay-safe crash recovery, explicit old/new index revision decisions, fail-closed malformed journal/index handling, safe in-root journal path validation and regression tests for interrupted recovery.
+- **Current head:** `cc15080282b24df986dee2a10788e34e1cbbe511` (docs reconciliation after the beta sync). The prior code-synced head `444985b` passed Markdown [#45875013185](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45875013185); Android/reproducibility checks were still running at that checkpoint. The final docs-reconciled head requires fresh exact-head Android, Markdown and independent reproducibility validation before merge. The previous implementation checkpoint [#45872047540](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45872047540) passed lint, Spotless, unsigned release assembly and 137/137 JVM tests; MIT notice packaging assertion passed on [#45873000772](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45873000772). No merge yet.
+- **Runtime limitation:** Chrome MV3 background/service-worker execution, XHR/Worker interception, game-resource masking and Lua initialization are not implemented or enabled. GeckoView 160 runtime/lifecycle integration remains a separate gate. Phase B is not authorized in this PR.
+- **Device status:** no physical ARM64 test has been performed.
+
+### Issue #11 — privacy-conscious diagnostics tests (awaiting Chaty review)
+- **Owner:** `agent:review`; Vibe submitted [PR #154](https://github.com/iNeonyne/LastHavenPlus/pull/154), and Chaty is reviewing it.
+- **Current head:** `16e8abbf25626ffc8fcb7eadafa6ee05cfa79d4b`, synced with beta after PR #119.
+- **Scope:** focused JVM coverage for sensitive-value redaction, log rotation/size limits and safe failure-path logging. No telemetry, network upload, logger rewrite, updater or Addon Manager changes.
+- **Validation:** exact-head Android PR validation [#45874522453](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45874522453) and Markdown [#45874522448](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45874522448) passed. The independent reproducibility run hit a transient Kotlin Compose plugin-resolution failure on one clean runner; failed-job retry is pending. No physical ARM64 testing.
 
 ### Completed — issue #129 CI consolidation
 - PR [#132](https://github.com/iNeonyne/LastHavenPlus/pull/132) merged at 7cd898f4c1f9b7f70787a7000e1ed9343a83540d.
@@ -53,15 +65,15 @@
 ### Issue #18 — v2.4.0–v2.6.0 roadmap
 - Owner requested a three-version roadmap on 2026-11-26; the live issue now records v2.4.0 UI/UX, v2.5.0 updater experience and v2.6.0 settings/diagnostics.
 - These are planning targets only, not release/tag/promotion authorization.
-- v2.4.0 icon resources (#133, Chaty) and Compose visual-system work (#107, Vibe) proceeded in parallel with separate file scopes; #107 integrated via PR #136 and #9 accessibility is now the active Vibe assignment.
+- v2.4.0 icon resources (#133), visual system (#107) and overlay accessibility (#9) are integrated; #9 remains open only for owner device verification.
 
 ## Review queue and stale-base work
 
-### Issue #66 / PR #119 — independent unsigned APK reproducibility
-- PR is open on chaty/issue-66-independent-apk-rebuilds; issue ownership is agent:review.
-- Prior independent builds produced byte-identical unsigned APKs (run #45727205562 on its recorded exact commit).
-- The PR is based on an older beta commit and must be refreshed against current beta, then exact-head Android validation and reproducibility runs must pass before merge.
-- No signing secrets, signed artifact reproducibility, F-Droid or physical-device claim.
+### Issue #66 / PR #119 — independent unsigned APK reproducibility (merged)
+- PR [#119](https://github.com/iNeonyne/LastHavenPlus/pull/119) squash-merged to beta at `97570eaaca86c9e27d92d04f90da9d930f6bdb33`; issue #66 closed automatically.
+- Exact-head Android [#45867363836](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45867363836), Markdown [#45867363835](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45867363835) and independent two-runner reproducibility [#45867363851](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45867363851) passed before merge.
+- Post-merge signed ARM64 beta build [#45874342894](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45874342894) and Markdown [#45874342809](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45874342809) passed. Post-merge independent reproducibility [#45874342980](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45874342980) hit a Kotlin Compose plugin-resolution failure on one clean runner; retry is running.
+- No signing secrets in independent builds; no signed-artifact reproducibility, F-Droid or physical-device claim.
 
 ### Issue #70 — documentation/security guidance
 - Repository-wide markdownlint was integrated by PR #120; latest beta Markdown run #45736853811 passed.
@@ -71,7 +83,6 @@
 
 - **Issue #20 / PR #122:** GeckoView artifact/dependency audit. Owner explicitly deferred it; issue remains agent:blocked, PR draft/open for traceability. No further commits or workflow-dispatch requests.
 - **Issue #62 / PR #123:** branch lifecycle audit. Owner explicitly deferred it; issue remains agent:blocked, PR draft/open for traceability. No further commits.
-- **Issue #23:** Addon Manager remains on hold. No investigation, implementation or assignment without explicit owner approval.
 - **Issue #65:** waiting for owner decision; do not claim emulator/device coverage.
 - **Issue #15, #31, #111, #86 and #19:** blocked/deferred per current issue labels and owner priorities.
 
