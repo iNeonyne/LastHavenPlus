@@ -2,9 +2,9 @@
 
 **Last updated:** 2026-11-27  
 **Active branch:** beta  
-**Verified beta base before PR #162 documentation follow-up:** a0e5271793c9bb7754b7ac41429065e5602df569 (PR #161 housekeeping merge).  
+**Verified beta base for this assignment-system PR:** `0cc21b471fce646d03dad449b91acbe67a90df7d` (PR #171 base SHA).  
 **Stable release:** [v2.3.0](https://github.com/iNeonyne/LastHavenPlus/releases/tag/v2.3.0), tag commit ebc5b424e83ae66c2b0accc2bec6f050b8dc0d88; GitHub release metadata confirms the ARM64 APK, update manifest and v2.2.0-to-v2.3.0 BSDIFF asset. Main HEAD observed as e9c2b53d1ec84e27722da4b54fa4ddcbad65f891.  
-**Open PRs at the 2026-11-27 live check:** #164 (docs), #165 (Vibe strings), #166 (Addon Manager groundwork). Recheck exact heads and CI before review/merge. No release, tag, publication or beta-to-main promotion is authorized.
+**Open PRs at the 2026-11-27 live check:** #164 (docs), #165 (Vibe strings), #166 (Addon Manager groundwork), #171 (assignment system; this change). Recheck exact heads and CI before review/merge. No release, tag, publication or beta-to-main promotion is authorized.
 
 ## Current operational checkpoint — 2026-11-27
 
