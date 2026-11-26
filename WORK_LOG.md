@@ -597,6 +597,6 @@ No branch was deleted. The available GitHub connector exposes no branch-delete o
 
 - **Branch:** `chaty/updater-patch-stream-cleanup-4-beta` from beta `7451b940dc0adfa1ea14234fe6d489bba688b12c`.
 - **Changes:** `BsdiffPatch.kt` now records each opened compressed section and closes them in reverse order in a `finally` block. `BsdiffPatchTest.kt` adds malformed diff/extra section cases and verifies stale output is removed.
-- **Commits:** source `a5e680e0a9fe628b41cde130f5ffa699a9dfe784`; tests/current head `35f1b69448ab4e91a5acaff9950ff492c5fcf811`.
-- **CI:** pending exact-head rerun. Previous #157 reproducibility run had a clean build failure because `org.jetbrains.kotlin.plugin.compose:2.4.21` could not be resolved; the other clean build succeeded. No pass claimed.
+- **Commits:** source `a5e680e0a9fe628b41cde130f5ffa699a9dfe784`; tests `35f1b69448ab4e91a5acaff9950ff492c5fcf811`; exact branch/PR head `9dd377e3cd48882ef90e3e2da44c63b5d2fba98c`.
+- **CI:** exact-head Android run #45890826303, Markdown run #45890826405 and independent unsigned APK reproducibility run #45890826652 all passed. PR #159 was closed without merge; the changes are not integrated.
 - **Remaining:** full updater test matrix, real signed APK-pair byte-for-byte reconstruction and signature/identity verification, benchmark and current beta signed packaging verification. No physical device test claimed.
