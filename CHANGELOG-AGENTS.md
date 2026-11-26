@@ -880,3 +880,10 @@ Entry format:
 - Recorded PR #158 merge at 7451b940dc0adfa1ea14234fe6d489bba688b12c and post-merge Markdown run #45890132670 passed.
 - Updater BSDIFF candidate PR #160 was closed without merge: Markdown #45891807077 passed, but reproducibility build A failed resolving Kotlin Compose plugin 2.4.21; Android validation and reproducibility build B were incomplete at closure. No candidate code is integrated.
 - No app/game behavior, dependencies, signing, ABI, release, tag, publication, main promotion or physical-device claims changed.
+
+
+## 2026-11-26 — Record PR #161 integration
+
+- PR #161 squash-merged to beta at a0e5271793c9bb7754b7ac41429065e5602df569.
+- Exact-head Markdown quality run #45892727113 passed on 6a61d9197b21b2d89aeee39d1a8633b9c8012f6f; post-merge Markdown run #45892884986 passed on the merge commit.
+- Issue #128 closed as completed. No application behavior, game, dependency/toolchain, signing, ABI, release or main changes; no physical-device test claimed.
