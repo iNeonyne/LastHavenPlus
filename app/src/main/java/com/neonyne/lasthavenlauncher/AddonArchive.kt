@@ -42,8 +42,8 @@ object AddonArchive {
    * Copies the selected archive to private staging storage, validates its central directory, then
    * streams each accepted file to disk. Expanded addon payloads are never retained in RAM.
    *
-   * The caller must obtain the selected document's size before opening its stream. The actual
-   * number of copied bytes is checked against that size and the compressed archive limit.
+   * The caller may supply a verified document size when the provider exposes one. Unknown sizes are
+   * accepted, but the actual streamed byte count is always capped at the compressed archive limit.
    */
   fun importZip(
     input: InputStream,
