@@ -11,7 +11,7 @@
 - **Updater:** #4 remains open for remaining regression coverage. #15, #31 and #111 are blocked/deferred; no release-ID/differential fallback runtime verification is claimed.
 - **Reproducibility:** #66 / PR #119 has a prior byte-identical unsigned APK result, but its branch is behind current beta and needs refresh plus exact-head reruns before merge.
 - **Owner-paused:** #20 / PR #122 and #62 / PR #123 are explicitly deferred; keep their drafts open for traceability and do not resume. #23 Addon Manager remains on hold.
-- **UI/UX:** #133 icon resources are active with Chaty; #107 visual-system implementation is assigned to Vibe. The two tasks have separate file scopes and proceed in parallel. PR #113 remains draft/open for traceability only and must not be merged or extended. #9 accessibility remains queued until #107 integrates.
+- **UI/UX:** #133 icon is merged and closed via PR #135. #107 visual-system implementation is assigned to Vibe (`agent:vibe`) in PR #136, which needs a beta refresh after the icon merge before review/merge. PR #113 remains draft/open for traceability only. #9 accessibility remains queued until #107 integrates.
 - **Roadmap:** issue #18 now covers v2.4.0 UI/UX, v2.5.0 updater experience and v2.6.0 settings/diagnostics. Targets are planning only, not release authorization.
 - **Other deferred work:** #86 and #19 remain deferred outside the scoped roadmap; #23 remains on hold.
 
@@ -19,7 +19,7 @@
 
 - **Chaty:** #128 housekeeping, #4 updater test coverage, #81 approved library-only dependency refresh, and final #70 documentation reconciliation. #129 CI consolidation is closed as completed.
 - **Vibe:** #107 shared visual-system implementation (agent:vibe). Owner-paused drafts #122/#123 must remain paused.
-- **Chaty:** #133 adaptive launcher icon implementation (agent:chaty).
+- **Chaty:** completed #133 adaptive launcher icon integration via PR #135.
 - **Owner decision:** #65 and any release/promotion/roadmap authorization remain with the repository owner.
 
 ## Backlog index
