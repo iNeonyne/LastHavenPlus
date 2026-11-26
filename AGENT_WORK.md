@@ -23,7 +23,8 @@
 - **Owner:** Chaty (agent:chaty), per the repository owner's direction on 2026-11-26.
 - **Branch:** chaty/issue-133-icy-pixel-castle, based on beta e69656303d7e1c1e7d50f7211c8cfaeb748f07e9.
 - **Scope:** replace only launcher artwork with the selected icy-blue pixel-art gothic castle/moon concept; update adaptive foreground/background while preserving standard and round icon references.
-- **Current implementation checkpoint:** vector artwork and deep-navy adaptive background committed on the task branch; build, mask preview, exact-head CI and physical launcher appearance remain unverified.
+- **PR:** [#135](https://github.com/iNeonyne/LastHavenPlus/pull/135), open against beta; current PR head 6ff1f13aff552005c5a26643786e54cc46851015.
+- **Current implementation checkpoint:** vector artwork and deep-navy adaptive background committed on the task branch; unsigned exact-head CI is running. Android-generated mask output and physical launcher appearance remain unverified.
 - **Exclusions:** no Compose screens, design tokens, app behavior, manifest identity, signing, build/toolchain, GeckoView, updater or game changes.
 
 ### Issue #107 — v2.4.0 visual system
@@ -75,7 +76,7 @@
 
 ## Other preserved drafts
 
-- **PR #113:** draft/open for traceability only. Owner asked Chaty to take over future UI/UX implementation; issue #107 has been reopened under Chaty ownership. PR #113 remains draft/open for traceability only; do not merge or push further commits to the old branch. Vibe will implement #107 on a fresh branch from current beta; Chaty owns #133 icon resources.
+- **PR #113:** draft/open for traceability only. Do not merge or push further commits to its stale branch. Following the owner's latest direction, Chaty owns #133 icon resources and Vibe owns #107 Compose visual-system work on a fresh branch from current beta.
 - **PR #131:** closed unmerged because its base became stale; superseded by PR #132. No need to reopen.
 
 ## Ownership label rules
