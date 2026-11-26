@@ -203,3 +203,11 @@ The repository owner will install releases and report what works and what does n
 - Resolved runtime graph includes GeckoView 160 and Google Play Services FIDO/Base/Basement/Tasks under Google's Android Software Development Kit License terms. These vendor components are not OSI open-source and remain outside the project Apache license.
 - Markdown lint passed on the preceding notice-doc head. Android CI exposed Spotless formatting in SettingsDialogs.kt; that correction is now committed. Exact-head Android rerun and unsigned APK inspection are pending.
 - Do not merge until the APK contents, full runtime notice inventory and vendor terms have been reviewed. No release, tag, main promotion or physical-device test.
+
+
+## Issue #67 — reserved-rights notice (in progress)
+
+- Owner direction on 2026-11-26: original LastHavenPlus code and documentation are All Rights Reserved for personal use; no general reuse license is granted.
+- PR [#144](https://github.com/iNeonyne/LastHavenPlus/pull/144) is draft. The branch now has the root rights notice, README/NOTICE updates, separate third-party license references, and an in-app rights/third-party viewer.
+- Third-party Apache-2.0 and MPL-2.0 license texts remain separate and must be retained where applicable. No claim is made that those licenses apply to LastHavenPlus itself.
+- PR branch remains two commits behind beta at the last compare checkpoint; exact-head Android/Markdown CI and APK inspection have not yet been rerun after these edits. No merge or release is claimed.
