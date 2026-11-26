@@ -40,7 +40,10 @@ class AddonRuntimePlannerTest {
           ),
         )
       )
-    assertEquals(listOf("AceCore", "BagSort", "QuestHelper"), plan.orderedAddons.map { it.folder })
+    assertEquals(
+      listOf("AceCore", "BagSort", "QuestHelper"),
+      plan.orderedAddons.map { it.folder },
+    )
     assertTrue(plan.blockedAddons.isEmpty())
   }
 
@@ -106,8 +109,10 @@ class AddonRuntimePlannerTest {
     assertTrue(first.isEmpty)
     assertEquals(first.bundleRevision, second.bundleRevision)
 
-    val enabled = AddonRuntimePlanner.plan(AddonLibrarySnapshot("r1", listOf(item("Addon"))))
-    val changed = AddonRuntimePlanner.plan(AddonLibrarySnapshot("r2", listOf(item("Addon"))))
+    val enabled =
+      AddonRuntimePlanner.plan(AddonLibrarySnapshot("r1", listOf(item("Addon"))))
+    val changed =
+      AddonRuntimePlanner.plan(AddonLibrarySnapshot("r2", listOf(item("Addon"))))
     assertNotEquals(enabled.bundleRevision, changed.bundleRevision)
   }
 }
