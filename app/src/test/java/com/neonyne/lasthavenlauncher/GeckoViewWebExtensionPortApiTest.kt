@@ -13,16 +13,16 @@ class GeckoViewWebExtensionPortApiTest {
     assertNotNull(
       port.methods.firstOrNull {
         it.name == "setDelegate" && it.parameterTypes.contentEquals(arrayOf(delegate))
-      }
+      },
     )
     assertNotNull(
-      port.methods.firstOrNull { it.name == "postMessage" && it.parameterTypes.size == 1 }
+      port.methods.firstOrNull { it.name == "postMessage" && it.parameterTypes.size == 1 },
     )
     assertNotNull(
-      delegate.methods.firstOrNull { it.name == "onPortMessage" && it.parameterTypes.size == 2 }
+      delegate.methods.firstOrNull { it.name == "onPortMessage" && it.parameterTypes.size == 2 },
     )
     assertNotNull(
-      delegate.methods.firstOrNull { it.name == "onDisconnect" && it.parameterTypes.size == 1 }
+      delegate.methods.firstOrNull { it.name == "onDisconnect" && it.parameterTypes.size == 1 },
     )
   }
 }
