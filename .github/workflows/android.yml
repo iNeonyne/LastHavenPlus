@@ -72,6 +72,11 @@ jobs:
           python3 -m unittest discover -s .github/scripts/tests -v
           bash -n .github/scripts/prepare_release_payload.sh
 
+      - name: Generate runtime dependency report
+        run: |
+          mkdir -p app/build/reports
+          ./gradlew :app:dependencies --configuration releaseRuntimeClasspath > app/build/reports/runtime-dependencies.txt
+
       - name: Run lint, formatting, unsigned release build and unit tests
         run: ./gradlew lintDebug spotlessCheck assembleRelease testDebugUnitTest --stacktrace -PspotlessRatchetFrom=origin/beta
 
@@ -85,6 +90,7 @@ jobs:
             app/build/reports/tests/testDebugUnitTest/
             app/build/reports/lint-results-debug.html
             app/build/reports/lint-results-debug.sarif
+            app/build/reports/runtime-dependencies.txt
           if-no-files-found: ignore
           retention-days: 14
 
