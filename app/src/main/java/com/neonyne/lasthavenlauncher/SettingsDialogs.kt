@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
@@ -33,6 +34,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.Dispatchers
@@ -95,14 +97,14 @@ fun SettingsScreen(
             )
             Text(
                 "Per-app totals include game and updater traffic. They are stored locally and reset on device reboot.",
-                color = PageMuted,
+                color = DesignTokens.textSecondary,
                 style = MaterialTheme.typography.bodySmall,
             )
         }
 
         PageSection(title = "Application") {
             Text("LastHavenPlus", color = DesignTokens.textPrimary, fontWeight = FontWeight.SemiBold)
-            Text("Game engine: Mozilla GeckoView 160", color = PageMuted)
+            Text("Game engine: Mozilla GeckoView 160", color = DesignTokens.textSecondary)
             OutlinedButton(
                 onClick = onCheckUpdates,
                 enabled = !isCheckingUpdate,
@@ -126,7 +128,7 @@ fun DiagnosticsScreen(
         PageSection(title = "Local diagnostic log") {
             Text(
                 "Logs are stored on this device. Review them before sharing.",
-                color = PageMuted,
+                color = DesignTokens.textSecondary,
                 style = MaterialTheme.typography.bodySmall,
             )
             Surface(
@@ -180,46 +182,53 @@ fun UpdateScreen(
             when {
                 isChecking -> {
                     LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
-                    Text("Checking the stable release channel…", color = PageMuted)
+                    Text("Checking the stable release channel…", color = DesignTokens.textSecondary)
                 }
                 update != null -> {
-                    Text("LastHavenPlus ${update.version} is available.", color = Color.White)
+                    Text("LastHavenPlus ${update.version} is available.", color = DesignTokens.textPrimary)
                     if (update.patch != null) {
                         Text(
                             "A smaller differential package is available (${"%.1f".format(java.util.Locale.US, update.patch.size / 1024.0 / 1024.0)} MiB).",
-                            color = PageMuted,
+                            color = DesignTokens.textSecondary,
                         )
                     }
                     if (update.releaseNotes.isNotBlank()) {
-                        Text(update.releaseNotes, color = PageMuted)
+                        Text(update.releaseNotes, color = DesignTokens.textSecondary)
                     }
                     if (isDownloading) {
                         LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
                         Text(
                             if (downloadingDelta) "Downloading differential update…" else "Downloading full APK…",
-                            color = PageMuted,
+                            color = DesignTokens.textSecondary,
                         )
                     } else {
+                        val hapticView = LocalView.current
                         Button(
-                            onClick = { onDownload(update.patch != null) },
-                            modifier = Modifier.fillMaxWidth(),
+                            onClick = {
+                                restrainedActionFeedback(hapticView)
+                                onDownload(update.patch != null)
+                            },
+                            modifier = Modifier.fillMaxWidth().heightIn(min = DesignTokens.minTouchTarget),
                         ) {
                             Text(if (update.patch != null) "Download smaller update" else "Download update")
                         }
                         if (update.patch != null) {
                             OutlinedButton(
-                                onClick = { onDownload(false) },
-                                modifier = Modifier.fillMaxWidth(),
+                                onClick = {
+                                    restrainedActionFeedback(hapticView)
+                                    onDownload(false)
+                                },
+                                modifier = Modifier.fillMaxWidth().heightIn(min = DesignTokens.minTouchTarget),
                             ) { Text("Download full APK instead") }
                         }
                     }
                 }
-                else -> Text(message ?: "No update information yet. Check for updates from Settings.", color = PageMuted)
+                else -> Text(message ?: "No update information yet. Check for updates from Settings.", color = DesignTokens.textSecondary)
             }
         }
         if (message != null && update != null) {
             PageSection(title = "Download status") {
-                Text(message, color = PageMuted)
+                Text(message, color = DesignTokens.textSecondary)
             }
         }
     }
@@ -255,7 +264,7 @@ private fun SettingsPageFrame(
                 horizontalArrangement = Arrangement.SpaceBetween,
             ) {
                 Column(Modifier.weight(1f)) {
-                    Text(title, color = Color.White, style = MaterialTheme.typography.headlineSmall)
+                    Text(title, color = DesignTokens.textPrimary, style = MaterialTheme.typography.headlineSmall)
                     Text("LASTHAVENPLUS", color = DesignTokens.gold, style = MaterialTheme.typography.labelSmall)
                 }
                 TextButton(onClick = onBack) { Text("Back") }
@@ -279,7 +288,7 @@ private fun PageSection(
             modifier = Modifier.fillMaxWidth().padding(18.dp),
             verticalArrangement = Arrangement.spacedBy(10.dp),
         ) {
-            Text(title, color = PageAccent, fontWeight = FontWeight.Bold)
+            Text(title, color = DesignTokens.gold, fontWeight = FontWeight.Bold)
             content()
         }
     }
@@ -292,8 +301,8 @@ private fun InfoLine(label: String, value: String) {
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Text(label, color = PageMuted, modifier = Modifier.weight(1f))
-        Text(value, color = Color.White, fontWeight = FontWeight.SemiBold)
+        Text(label, color = DesignTokens.textSecondary, modifier = Modifier.weight(1f))
+        Text(value, color = DesignTokens.textPrimary, fontWeight = FontWeight.SemiBold)
     }
 }
 
