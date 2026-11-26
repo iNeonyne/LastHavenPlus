@@ -1,0 +1,256 @@
+package com.neonyne.lasthavenlauncher
+
+import java.io.BufferedOutputStream
+import java.io.File
+import java.io.FileInputStream
+import java.io.FileOutputStream
+import java.io.InputStream
+import java.io.OutputStream
+import java.nio.file.Files
+import java.nio.file.StandardCopyOption
+import java.util.Base64
+import java.util.Properties
+import java.util.UUID
+import java.util.zip.ZipEntry
+import java.util.zip.ZipOutputStream
+
+data class AddonLibraryItem(
+  val title: String,
+  val folder: String,
+  val version: String,
+  val interfaceVersion: String,
+  val notes: String,
+  val dependencies: List<String>,
+  val sizeBytes: Long,
+  val filesCount: Int,
+  val enabled: Boolean,
+  val importedAt: Long,
+  val warnings: List<String>,
+)
+
+data class AddonLibrarySnapshot(
+  val revision: String,
+  val addons: List<AddonLibraryItem>,
+) {
+  val totalBytes: Long
+    get() = addons.sumOf { it.sizeBytes }
+}
+
+/** App-private, file-backed addon library. Imported packages are never enabled automatically. */
+class AddonLibraryRepository(private val root: File) {
+  private val indexFile = File(root, "library.properties")
+
+  fun readLibrary(): AddonLibrarySnapshot {
+    if (!indexFile.exists()) return AddonLibrarySnapshot("empty", emptyList())
+    val properties = Properties().apply { FileInputStream(indexFile).use(::load) }
+    val count = properties.getProperty("count")?.toIntOrNull()
+      ?: throw IllegalStateException("Addon library index is invalid.")
+    require(count in 0..10_000) { "Addon library index contains too many entries." }
+    val addons =
+      (0 until count).map { index ->
+        fun value(key: String): String =
+          decode(properties.getProperty("addon.$index.$key").orEmpty())
+        val folder = value("folder")
+        require(isSafeFolder(folder)) { "Addon library contains an invalid folder name." }
+        AddonLibraryItem(
+          title = value("title"),
+          folder = folder,
+          version = value("version"),
+          interfaceVersion = value("interface"),
+          notes = value("notes"),
+          dependencies = decodeList(properties.getProperty("addon.$index.dependencies").orEmpty()),
+          sizeBytes = properties.getProperty("addon.$index.size")?.toLongOrNull()
+            ?: throw IllegalStateException("Addon library size is invalid."),
+          filesCount = properties.getProperty("addon.$index.files")?.toIntOrNull()
+            ?: throw IllegalStateException("Addon library file count is invalid."),
+          enabled = properties.getProperty("addon.$index.enabled")?.toBooleanStrictOrNull() ?: false,
+          importedAt = properties.getProperty("addon.$index.importedAt")?.toLongOrNull() ?: 0L,
+          warnings = decodeList(properties.getProperty("addon.$index.warnings").orEmpty()),
+        )
+      }
+    require(addons.map { it.folder.lowercase() }.distinct().size == addons.size) {
+      "Addon library contains duplicate folder names."
+    }
+    return AddonLibrarySnapshot(properties.getProperty("revision") ?: "unknown", addons)
+  }
+
+  fun importZip(input: InputStream, compressedSize: Long): AddonLibrarySnapshot {
+    val imported = AddonArchive.importZip(input, compressedSize)
+    require(imported.isNotEmpty()) { "The archive contains no addons." }
+    val current = readLibrary()
+    val replacing = imported.map { it.folder.lowercase() }.toSet()
+    val total =
+      current.addons.filterNot { it.folder.lowercase() in replacing }.sumOf { it.sizeBytes } +
+        imported.sumOf { it.sizeBytes }
+    require(total <= AddonArchive.MAX_LIBRARY_BYTES) { "Addon library exceeds 384 MiB." }
+
+    if (!root.exists() && !root.mkdirs()) {
+      throw IllegalStateException("Could not create addon storage.")
+    }
+    val existing = current.addons.associateBy { it.folder.lowercase() }
+    val nextItems =
+      current.addons.filterNot { it.folder.lowercase() in replacing }.toMutableList()
+    val staged = mutableListOf<Pair<File, File>>()
+    val backups = mutableListOf<Pair<File, File>>()
+    try {
+      for (addon in imported) {
+        require(isSafeFolder(addon.folder)) { "Invalid addon folder: ${addon.folder}" }
+        val stage = File(root, ".stage-${UUID.randomUUID()}")
+        require(stage.mkdirs()) { "Could not prepare addon storage." }
+        staged += stage to File(root, addon.folder)
+        for ((relativePath, bytes) in addon.files) {
+          val destination = File(stage, relativePath)
+          val canonicalRoot = stage.canonicalFile
+          val canonicalDestination = destination.canonicalFile
+          require(canonicalDestination.path.startsWith(canonicalRoot.path + File.separator)) {
+            "Unsafe addon file path: $relativePath"
+          }
+          destination.parentFile?.let {
+            if (!it.exists() && !it.mkdirs()) {
+              throw IllegalStateException("Could not create addon file directory.")
+            }
+          }
+          FileOutputStream(destination).use { stream -> stream.write(bytes) }
+        }
+        val previous = existing[addon.folder.lowercase()]
+        nextItems +=
+          AddonLibraryItem(
+            title = addon.title,
+            folder = addon.folder,
+            version = addon.version,
+            interfaceVersion = addon.interfaceVersion,
+            notes = addon.notes,
+            dependencies = addon.dependencies,
+            sizeBytes = addon.sizeBytes,
+            filesCount = addon.files.size,
+            enabled = previous?.enabled ?: false,
+            importedAt = System.currentTimeMillis(),
+            warnings = addon.warnings,
+          )
+      }
+
+      for ((stage, target) in staged) {
+        if (target.exists()) {
+          val backup = File(root, ".backup-${UUID.randomUUID()}")
+          check(target.renameTo(backup)) { "Could not stage the existing addon for replacement." }
+          backups += target to backup
+        }
+        check(stage.renameTo(target)) { "Could not commit imported addon files." }
+      }
+
+      val snapshot = AddonLibrarySnapshot(UUID.randomUUID().toString(), nextItems)
+      writeIndex(snapshot)
+      backups.forEach { (_, backup) -> backup.deleteRecursively() }
+      return snapshot
+    } catch (error: Exception) {
+      for ((target, backup) in backups.asReversed()) {
+        target.deleteRecursively()
+        if (backup.exists()) backup.renameTo(target)
+      }
+      throw error
+    } finally {
+      staged.forEach { (stage, _) -> stage.deleteRecursively() }
+    }
+  }
+
+  fun setEnabled(folder: String, enabled: Boolean): AddonLibrarySnapshot {
+    require(isSafeFolder(folder)) { "Invalid addon folder." }
+    val current = readLibrary()
+    require(current.addons.any { it.folder == folder }) { "Addon not found." }
+    val next =
+      current.copy(
+        revision = UUID.randomUUID().toString(),
+        addons = current.addons.map { if (it.folder == folder) it.copy(enabled = enabled) else it },
+      )
+    writeIndex(next)
+    return next
+  }
+
+  fun removeAddon(folder: String): AddonLibrarySnapshot {
+    require(isSafeFolder(folder)) { "Invalid addon folder." }
+    val current = readLibrary()
+    val next =
+      current.copy(
+        revision = UUID.randomUUID().toString(),
+        addons = current.addons.filterNot { it.folder == folder },
+      )
+    writeIndex(next)
+    File(root, folder).deleteRecursively()
+    return next
+  }
+
+  fun exportZip(folder: String, output: OutputStream) {
+    require(isSafeFolder(folder)) { "Invalid addon folder." }
+    val addonDirectory = File(root, folder)
+    require(addonDirectory.isDirectory) { "Addon not found." }
+    ZipOutputStream(BufferedOutputStream(output)).use { zip ->
+      val files = addonDirectory.walkTopDown().filter(File::isFile).sortedBy { it.relativeTo(addonDirectory).invariantSeparatorsPath }
+      for (file in files) {
+        val relative = file.relativeTo(addonDirectory).invariantSeparatorsPath
+        AddonArchive.validateEntryPath(relative)
+        zip.putNextEntry(ZipEntry("$folder/$relative"))
+        FileInputStream(file).use { input -> input.copyTo(zip) }
+        zip.closeEntry()
+      }
+    }
+  }
+
+  fun addonDirectory(folder: String): File {
+    require(isSafeFolder(folder)) { "Invalid addon folder." }
+    return File(root, folder)
+  }
+
+  private fun writeIndex(snapshot: AddonLibrarySnapshot) {
+    val properties = Properties()
+    properties["revision"] = snapshot.revision
+    properties["count"] = snapshot.addons.size.toString()
+    snapshot.addons.forEachIndexed { index, addon ->
+      fun put(key: String, value: String) {
+        properties["addon.$index.$key"] = encode(value)
+      }
+      put("title", addon.title)
+      put("folder", addon.folder)
+      put("version", addon.version)
+      put("interface", addon.interfaceVersion)
+      put("notes", addon.notes)
+      properties["addon.$index.dependencies"] = encodeList(addon.dependencies)
+      properties["addon.$index.size"] = addon.sizeBytes.toString()
+      properties["addon.$index.files"] = addon.filesCount.toString()
+      properties["addon.$index.enabled"] = addon.enabled.toString()
+      properties["addon.$index.importedAt"] = addon.importedAt.toString()
+      properties["addon.$index.warnings"] = encodeList(addon.warnings)
+    }
+
+    val temporary = File(root, ".library-${UUID.randomUUID()}.tmp")
+    FileOutputStream(temporary).use { output ->
+      properties.store(output, "LastHavenPlus addon library")
+      output.fd.sync()
+    }
+    try {
+      Files.move(
+        temporary.toPath(),
+        indexFile.toPath(),
+        StandardCopyOption.REPLACE_EXISTING,
+        StandardCopyOption.ATOMIC_MOVE,
+      )
+    } catch (_: java.nio.file.AtomicMoveNotSupportedException) {
+      Files.move(temporary.toPath(), indexFile.toPath(), StandardCopyOption.REPLACE_EXISTING)
+    }
+  }
+
+  private fun isSafeFolder(folder: String): Boolean =
+    folder.matches(Regex("[A-Za-z0-9_-]+")) &&
+      !folder.startsWith("blizzard_", ignoreCase = true)
+
+  private fun encode(value: String): String =
+    Base64.getEncoder().encodeToString(value.toByteArray(Charsets.UTF_8))
+
+  private fun decode(value: String): String =
+    String(Base64.getDecoder().decode(value), Charsets.UTF_8)
+
+  private fun encodeList(values: List<String>): String =
+    values.joinToString(".") { encode(it) }
+
+  private fun decodeList(value: String): List<String> =
+    if (value.isBlank()) emptyList() else value.split('.').map(::decode)
+}
