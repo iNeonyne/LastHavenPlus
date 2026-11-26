@@ -837,3 +837,12 @@ Entry format:
 - Prepared Apache-2.0 project licensing, SECURITY.md, Gradle Dependabot, user-facing changelog reconciliation, contributor branch-retention policy, and an in-app Apache-2.0 text viewer.
 - Added a releaseRuntimeClasspath report to PR validation so transitive runtime dependencies can be audited from CI artifacts.
 - The dependency report surfaced Google Play Services runtime artifacts under the Android Software Development Kit License. The owner subsequently selected Apache-2.0 for original project material; third-party license/notice inventory and project copyright attribution remain open. PR #144 stays draft.
+
+## 2026-11-26 — Third-party notices and APK audit work (#67)
+
+- Added repository and in-app third-party notice inventories, canonical MPL-2.0 text, and retained the Apache-2.0 project-license boundary.
+- Settings now presents the project Apache license, third-party notice summary and MPL-2.0 text.
+- PR validation uploads the unsigned release APK alongside the resolved runtime dependency report for direct inspection; the PR job has no release secrets and does not publish APKs.
+- The runtime graph contains Google Play Services FIDO/Base/Basement/Tasks under Google's Android Software Development Kit License terms. These are not OSI open-source licenses and remain separately disclosed; no legal conclusion is made about distribution rights.
+- First Android validation exposed Spotless formatting issues in SettingsDialogs.kt; the correction is committed and exact-head validation is pending.
+- Owner attribution: LastHavenPlus, Copyright 2026. No game, app identity, signing, ABI, dependency/toolchain version, GeckoView, release, main or branch deletion changes.
