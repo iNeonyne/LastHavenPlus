@@ -117,8 +117,7 @@ fun AddonManagerHost(onBack: () -> Unit) {
     onToggle = { folder, enabled ->
       finishOperation(
         { repository.setEnabled(folder, enabled) },
-        if (enabled) enabledMessage
-        else disabledMessage,
+        if (enabled) enabledMessage else disabledMessage,
       )
     },
     onExport = pickers.exportZip,
