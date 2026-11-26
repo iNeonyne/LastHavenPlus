@@ -51,10 +51,18 @@
 | [#56](https://github.com/iNeonyne/LastHavenPlus/issues/56) | Done | Direct launch and responsive in-game overlay | PR #83 merged to beta; PR #87 selectively promoted implementation to main; exact beta validation and signed CI passed |
 | [#60](https://github.com/iNeonyne/LastHavenPlus/issues/60) | Done | Android lint and Kotlin formatting quality gate | PR #72 merged; exact-head PR and post-merge beta quality/build workflows passed |
 | [#84](https://github.com/iNeonyne/LastHavenPlus/issues/84) | Done | Approved recreated LastHavens-inspired launcher icon | PR #85 merged to beta; PR #87 promoted icon to main; beta CI passed |
-| [#86](https://github.com/iNeonyne/LastHavenPlus/issues/86) | Deferred | v2.3.0 deferred reliability, updater and supporting-feature backlog | Open coordination index; linked issues remain the detailed sources of truth |
-| [#106](https://github.com/iNeonyne/LastHavenPlus/issues/106) | P2 | Gameplay loading, reconnect and load-failure UX | Open; deferred candidate; coordinate with #12 |
-| [#107](https://github.com/iNeonyne/LastHavenPlus/issues/107) | P3 | Consistent visual design and interaction polish | Open; deferred; includes restrained haptics and theme-token coordination; no home screen |
+| [#86](https://github.com/iNeonyne/LastHavenPlus/issues/86) | Deferred | v2.4.0 deferred settings, diagnostics and supporting-feature backlog | Blocked; not an approved roadmap or release commitment |
+| [#106](https://github.com/iNeonyne/LastHavenPlus/issues/106) | Done | Gameplay loading, reconnect and load-failure UX | Closed after implementation integration; no open task remains under this issue |
+| [#107](https://github.com/iNeonyne/LastHavenPlus/issues/107) | Done | Consistent visual design and interaction polish | Closed after later UI integration; old draft PR #113 is traceability-only and must not be resumed |
 
+| [#20](https://github.com/iNeonyne/LastHavenPlus/issues/20) | Deferred | GeckoView 160 artifact/dependency audit | Owner-deferred; PR #122 remains draft/open; do not resume |
+| [#62](https://github.com/iNeonyne/LastHavenPlus/issues/62) | Deferred | Branch lifecycle audit | Owner-deferred; PR #123 remains draft/open; do not resume |
+| [#66](https://github.com/iNeonyne/LastHavenPlus/issues/66) | Engineering | Independent unsigned APK reproducibility | PR #119 open; prior byte-identical result exists; branch refresh and exact-head reruns required |
+| [#70](https://github.com/iNeonyne/LastHavenPlus/issues/70) | Docs | Contributor/security guidance and Markdown validation | Markdownlint integrated; final reconciliation is in PR #133 |
+| [#81](https://github.com/iNeonyne/LastHavenPlus/issues/81) | Dependencies | Compatible AndroidX and compression library refresh | Chaty-owned; only the five approved library versions are in scope |
+| [#111](https://github.com/iNeonyne/LastHavenPlus/issues/111) | Deferred | Updater download progress and retry feedback | Blocked/deferred; do not start alongside #4 |
+| [#128](https://github.com/iNeonyne/LastHavenPlus/issues/128) | Housekeeping | Post-v2.3.0 repository housekeeping | Chaty-owned; current docs reconciliation in PR #133 |
+| [#129](https://github.com/iNeonyne/LastHavenPlus/issues/129) | Done | Consolidate beta CI quality checks | Closed; PR #132 merged and exact-merge CI passed |
 ---
 
 ## How new work is added
