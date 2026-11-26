@@ -333,6 +333,13 @@ private fun LastHavenApp(
         )
 
       Screen.Game -> {
+        val animatorDurationScale = remember {
+          Settings.Global.getFloat(
+            context.contentResolver,
+            Settings.Global.ANIMATOR_DURATION_SCALE,
+            1f,
+          )
+        }
         val gamePresentation =
           GameLoadPolicy.resolve(
             hasSession = session != null,
@@ -349,8 +356,16 @@ private fun LastHavenApp(
           )
           AnimatedVisibility(
             visible = menuVisible,
-            enter = fadeIn(animationSpec = tween(durationMillis = 160)),
-            exit = fadeOut(animationSpec = tween(durationMillis = 120)),
+            enter =
+              fadeIn(
+                animationSpec =
+                  tween(durationMillis = OverlayMotionPolicy.fadeInMillis(animatorDurationScale))
+              ),
+            exit =
+              fadeOut(
+                animationSpec =
+                  tween(durationMillis = OverlayMotionPolicy.fadeOutMillis(animatorDurationScale))
+              ),
           ) {
             GameMenuScreen(
               onReload = {
