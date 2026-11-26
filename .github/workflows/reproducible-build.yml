@@ -2,7 +2,7 @@ name: Independent unsigned APK reproducibility
 
 on:
   push:
-    branches: [beta]
+    branches: [beta, main]
     paths:
       - "app/**"
       - "gradle/**"

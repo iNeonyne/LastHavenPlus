@@ -2,7 +2,7 @@ name: Markdown quality gate
 
 on:
   push:
-    branches: [beta]
+    branches: [beta, main]
     paths:
       - "**/*.md"
       - ".markdownlint-cli2.jsonc"
