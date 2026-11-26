@@ -83,6 +83,31 @@ class AddonArchiveTest {
   }
 
   @Test
+  fun rejectsOversizedTOCMetadataAndDependencyLists() {
+    val oversizedNotes =
+      zipOf("Sample/Sample.toc" to "## Notes: ${"x".repeat(AddonArchive.MAX_NOTES_CHARS + 1)}\n")
+    assertThrows(IllegalArgumentException::class.java) {
+      AddonArchive.importZip(
+        ByteArrayInputStream(oversizedNotes),
+        oversizedNotes.size.toLong(),
+        temporaryFolder.newFolder("oversized-notes"),
+      )
+    }
+
+    val excessiveDependencies =
+      (0..AddonArchive.MAX_DEPENDENCIES).joinToString(",") { "Dependency$it" }
+    val excessiveDependencyArchive =
+      zipOf("Sample/Sample.toc" to "## Dependencies: $excessiveDependencies\n")
+    assertThrows(IllegalArgumentException::class.java) {
+      AddonArchive.importZip(
+        ByteArrayInputStream(excessiveDependencyArchive),
+        excessiveDependencyArchive.size.toLong(),
+        temporaryFolder.newFolder("excessive-dependencies"),
+      )
+    }
+  }
+
+  @Test
   fun importsFlatAddonContents() {
     val archive =
       zipOf(
