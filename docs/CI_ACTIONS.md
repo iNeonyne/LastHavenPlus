@@ -16,8 +16,8 @@ All third-party `uses:` references in the four workflows are pinned to full comm
 | --- | --- | --- |
 | `actions/checkout` | v7.0.1 | `3d3c42e5aac5ba805825da76410c181273ba90b1` |
 | `actions/setup-java` | v6.3.0 | `d1374f8ac74474200d16ef8ecee22c7ae7a51880` |
-| `android-actions/setup-android` | v3 | `9fc6c4e9069bf8d3d10b2204b1fb8f6ef7065407` |
-| `gradle/actions/setup-gradle` | v4 (v4.4.3) | `ed408507eac070d1f99cc633dbcf757c94c7933a` |
+| `android-actions/setup-android` | v4.0.4 | `be39fa834029ff78f1a44aa3bb0819b8fc2bd8fd` |
+| `gradle/actions/setup-gradle` | v6.4.1 | `8da46b539cd8fe6ab27ca75128919a18d757604c` |
 | `actions/upload-artifact` | v7.0.2 | `cf430e030ddbb5b0abf93d22962f4752f3646cd9` |
 | `actions/download-artifact` | v4 | `d3f86a106a0bac45b974a628896c90dbdf5c8093` |
 | `softprops/action-gh-release` | v3.0.4 | `8a0cd651e5b2365bd640854a3fa5dfc70e4875f3` |
