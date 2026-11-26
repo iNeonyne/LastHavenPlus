@@ -10,6 +10,7 @@
     <string name="addon_manager_no_addons">Ainda não há addons locais. Importe um ZIP com uma pasta de addon e seu arquivo .toc correspondente.</string>
     <string name="addon_manager_files_summary">%1$d arquivos · %2$s</string>
     <string name="addon_manager_missing_dependencies">Verifique as dependências necessárias: %1$s</string>
+    <string name="addon_manager_optional_dependencies">Dependências opcionais: %1$s</string>
     <string name="addon_manager_no_version">Sem versão</string>
     <string name="addon_manager_export_zip">Exportar ZIP</string>
     <string name="addon_manager_remove">Remover</string>
