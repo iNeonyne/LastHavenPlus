@@ -3,7 +3,7 @@
 LastHavenPlus is an Android launcher for the existing LastHaven Wrath of the Lich King browser game. It hosts the game; it does not recreate, modify or develop the game client.
 
 - **Game:** [lasthavens.com/play](https://lasthavens.com/play)
-- **Latest stable release:** [v2.4.0 on GitHub Releases](https://github.com/iNeonyne/LastHavenPlus/releases/tag/v2.4.0)
+- **Latest stable release:** [v2.3.0 on GitHub Releases](https://github.com/iNeonyne/LastHavenPlus/releases/tag/v2.3.0)
 - **Development:** `beta`; stable releases: `main`
 
 ## Compatibility and identity
