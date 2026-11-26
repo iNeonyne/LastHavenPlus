@@ -860,3 +860,12 @@ Entry format:
 - Reconciled active records after PR #119 merged: issue #66 is complete; issue #11 is awaiting Chaty's review of PR #154; issue #23 is owner-authorized for native Phase A under Chaty/PR #152.
 - Clarified that the former #23 hold and XPI 0.11.0 checklist are historical/superseded by the owner-approved ZIP 0.5.1 Phase A scope. Phase B/runtime injection remains unauthorized.
 - Updated beta baseline to `97570eaaca86c9e27d92d04f90da9d930f6bdb33`; PR #152 docs reconciliation is at `cc15080282b24df986dee2a10788e34e1cbbe511` and needs fresh exact-head CI.
+
+
+## 2026-11-26 — Document existing GeckoView permission policy (#150)
+
+- Audited `AndroidManifest.xml`, `MainActivity.setupGeckoDelegates` and `GeckoRuntimeProvider` on beta `1279f214b3fdd3ba420e090a6a90914a8a3399e7`.
+- Documented the source-backed allowlist: persistent storage and audible/inaudible autoplay only for `lasthavens.com` and its subdomains; all other content permissions/origins denied; Android runtime and media capture requests rejected.
+- Clarified that `REQUEST_INSTALL_PACKAGES` supports user-confirmed APK installation and that no camera, microphone, geolocation or notification permissions are declared.
+- Updated README, AGENTS, STATUS, ISSUES, AGENT_WORK and this changelog. No runtime code, manifest, GeckoView settings or game behavior changed.
+- Exact-head Markdown validation remains pending; no physical-device permission-flow claim is made.
