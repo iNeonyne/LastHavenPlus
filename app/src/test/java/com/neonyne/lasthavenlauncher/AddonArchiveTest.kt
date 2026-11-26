@@ -100,6 +100,20 @@ class AddonArchiveTest {
   }
 
   @Test
+  fun importsWhenDocumentProviderDoesNotReportSize() {
+    val archive = zipOf("Sample/Sample.toc" to "## Interface: 30300\n")
+
+    val imported =
+      AddonArchive.importZip(
+        ByteArrayInputStream(archive),
+        null,
+        temporaryFolder.newFolder("unknown-size"),
+      )
+
+    assertEquals("Sample", imported.single().folder)
+  }
+
+  @Test
   fun rejectsDocumentSizeMismatch() {
     val archive = zipOf("Sample/Sample.toc" to "## Interface: 30300\\n")
     val extraction = temporaryFolder.newFolder("size-mismatch")
