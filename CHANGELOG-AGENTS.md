@@ -820,3 +820,13 @@ Entry format:
 - **Review/CI:** exact-head Android validation [#45829421214](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45829421214) and Markdown gate [#45829421210](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45829421210) passed. Owner authorized merge with physical device checks outstanding.
 - **Changes:** pane title, heading and traversal semantics, Compose input-focus request, scrollable overlay and live reduced-motion observer. `FocusRequester` does not move TalkBack accessibility focus.
 - **Limitations:** no physical ARM64/TalkBack, GeckoView traversal, reduced-motion or large-font test was performed. Issue #9 remains open as `agent:owner` for those checks; no device compatibility claim.
+
+
+## 2026-11-26 — Continue Addon Manager Phase A (#23)
+
+- **Owner:** Chaty; repository owner explicitly reauthorized the issue. Implementation remains isolated in draft PR [#145](https://github.com/iNeonyne/LastHavenPlus/pull/145) targeting beta.
+- **Hardening:** moved expanded-size/free-space preflight ahead of archive payload extraction; the importer validates the ZIP central directory first and checks capacity for extraction plus staging before writing expanded files.
+- **Metadata:** required and optional TOC dependencies are parsed separately, persisted in the private library index and shown distinctly; optional dependencies do not trigger missing-required-dependency warnings.
+- **Tests:** added coverage for preflight occurring before expanded writes, optional dependency parsing/persistence and optional dependency warning behavior. Corrected the rollback fixture's escaped newline after exact-head CI exposed the mismatch.
+- **GeckoView investigation:** exact pinned 160 API probe covers built-in install/ensure, tab delegation and native messaging. Mozilla docs require APK-bundled unpacked built-in extension assets; the supplied Chrome MV3 service-worker entry point needs an event-page-compatible port and exact-version runtime testing. No runtime injection or game-resource masking was enabled.
+- **Status:** draft PR; latest exact-head CI pending. No merge, release, tag, main promotion or physical ARM64 device claim.
