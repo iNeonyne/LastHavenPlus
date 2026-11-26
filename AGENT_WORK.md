@@ -1,6 +1,6 @@
 # Agent work assignments — LastHavenPlus
 
-**Current beta baseline:** e69656303d7e1c1e7d50f7211c8cfaeb748f07e9 (verified after PR #132 merge).  
+**Current beta baseline:** e69656303d7e1c1e7d50f7211c8cfaeb748f07e9 (verified after PR #134 documentation reconciliation).  
 **Stable baseline:** main / v2.3.0 tag ebc5b424e83ae66c2b0accc2bec6f050b8dc0d88.
 
 ## Roles and integration
@@ -23,7 +23,7 @@
 - **Owner:** Chaty (agent:chaty), per the repository owner's direction on 2026-11-26.
 - **Branch:** chaty/issue-133-icy-pixel-castle, based on beta e69656303d7e1c1e7d50f7211c8cfaeb748f07e9.
 - **Scope:** replace only launcher artwork with the selected icy-blue pixel-art gothic castle/moon concept; update adaptive foreground/background while preserving standard and round icon references.
-- **PR:** [#135](https://github.com/iNeonyne/LastHavenPlus/pull/135), open against beta; current PR head 6ff1f13aff552005c5a26643786e54cc46851015.
+- **PR:** [#135](https://github.com/iNeonyne/LastHavenPlus/pull/135), open against beta; current PR head ce4e9e2c82024ed8dd3c1117f2e7989c56d6e864.
 - **Current implementation checkpoint:** vector artwork and deep-navy adaptive background committed on the task branch; unsigned exact-head CI is running. Android-generated mask output and physical launcher appearance remain unverified.
 - **Exclusions:** no Compose screens, design tokens, app behavior, manifest identity, signing, build/toolchain, GeckoView, updater or game changes.
 
