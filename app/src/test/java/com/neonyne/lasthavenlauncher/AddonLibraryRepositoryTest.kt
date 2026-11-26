@@ -213,6 +213,7 @@ class AddonLibraryRepositoryTest {
     writeTransaction(
       root,
       ".txn-crashed",
+      oldRevision = indexRevision,
       newRevision = "uncommitted-revision",
       backups = listOf("Sample" to backup.name),
     )
@@ -239,6 +240,7 @@ class AddonLibraryRepositoryTest {
     writeTransaction(
       root,
       ".txn-crashed",
+      oldRevision = indexRevision,
       newRevision = "uncommitted-revision",
       fresh = listOf("NewAddon"),
     )
@@ -265,6 +267,7 @@ class AddonLibraryRepositoryTest {
     writeTransaction(
       root,
       ".txn-crashed",
+      oldRevision = "previous-revision",
       newRevision = committedRevision,
       backups = listOf("Sample" to backup.name),
     )
@@ -285,11 +288,13 @@ class AddonLibraryRepositoryTest {
     val archive =
       zipOf("Sample/Sample.toc" to "## Version: 1\n", "Sample/main.lua" to "print('kept')")
     repository.importZip(ByteArrayInputStream(archive), archive.size.toLong())
+    val oldRevision = repository.readLibrary().revision
     val backup = File(root, ".remove-crashed")
     check(File(root, "Sample").renameTo(backup))
     writeTransaction(
       root,
       ".txn-crashed",
+      oldRevision = oldRevision,
       newRevision = "uncommitted-revision",
       backups = listOf("Sample" to backup.name),
     )
@@ -300,6 +305,140 @@ class AddonLibraryRepositoryTest {
     assertEquals("print('kept')", File(root, "Sample/main.lua").readText())
     assertFalse(backup.exists())
     assertFalse(File(root, ".txn-crashed").exists())
+  }
+
+  @Test
+  fun recoveryCanBeRepeatedAfterCrashImmediatelyFollowingBackupRestore() {
+    val root = temporaryFolder.newFolder("recovery-repeat")
+    val original = zipOf("Sample/Sample.toc" to "## Version: 1\n", "Sample/main.lua" to "old")
+    val initialRepository = AddonLibraryRepository(root)
+    initialRepository.importZip(ByteArrayInputStream(original), original.size.toLong())
+    val oldRevision = initialRepository.readLibrary().revision
+    val backup = File(root, ".backup-crashed")
+    check(File(root, "Sample").renameTo(backup))
+    writeTransaction(
+      root,
+      ".txn-crashed",
+      oldRevision = oldRevision,
+      newRevision = "uncommitted-revision",
+      backups = listOf("Sample" to backup.name),
+    )
+
+    val crashingRepository =
+      AddonLibraryRepository(root, afterBackupRestore = { throw IOException("simulated crash") })
+    assertThrows(IOException::class.java) { crashingRepository.readLibrary() }
+    assertFalse(backup.exists())
+    assertTrue(File(root, "Sample/main.lua").exists())
+    assertTrue(File(root, ".txn-crashed").exists())
+
+    val recovered = AddonLibraryRepository(root).readLibrary()
+
+    assertEquals(oldRevision, recovered.revision)
+    assertEquals("1", recovered.addons.single().version)
+    assertEquals("old", File(root, "Sample/main.lua").readText())
+    assertFalse(File(root, ".txn-crashed").exists())
+  }
+
+  @Test
+  fun recoveryFailsClosedWhenIndexRevisionMatchesNeitherJournalState() {
+    val root = temporaryFolder.newFolder("recovery-mismatched-index")
+    val repository = AddonLibraryRepository(root)
+    val archive = zipOf("Sample/Sample.toc" to "## Version: 1\n")
+    repository.importZip(ByteArrayInputStream(archive), archive.size.toLong())
+    val oldRevision = repository.readLibrary().revision
+    val backup = File(root, ".backup-crashed")
+    check(File(root, "Sample").renameTo(backup))
+    writeTransaction(
+      root,
+      ".txn-crashed",
+      oldRevision = oldRevision,
+      newRevision = "uncommitted-revision",
+      backups = listOf("Sample" to backup.name),
+    )
+    writeLibraryIndex(root, 0)
+
+    assertThrows(IllegalStateException::class.java) { repository.readLibrary() }
+
+    assertTrue(backup.exists())
+    assertFalse(File(root, "Sample").exists())
+    assertTrue(File(root, ".txn-crashed").exists())
+  }
+
+  @Test
+  fun recoveryFailsClosedAndPreservesDataWhenIndexIsMalformed() {
+    val root = temporaryFolder.newFolder("recovery-malformed-index")
+    val repository = AddonLibraryRepository(root)
+    val archive = zipOf("Sample/Sample.toc" to "## Version: 1\n")
+    repository.importZip(ByteArrayInputStream(archive), archive.size.toLong())
+    val oldRevision = repository.readLibrary().revision
+    val backup = File(root, ".backup-crashed")
+    check(File(root, "Sample").renameTo(backup))
+    writeTransaction(
+      root,
+      ".txn-crashed",
+      oldRevision = oldRevision,
+      newRevision = "uncommitted-revision",
+      backups = listOf("Sample" to backup.name),
+    )
+    File(root, "library.properties").writeText("revision=\\ncount=not-a-number\\n")
+
+    assertThrows(IllegalStateException::class.java) { repository.readLibrary() }
+
+    assertTrue(backup.exists())
+    assertFalse(File(root, "Sample").exists())
+    assertTrue(File(root, ".txn-crashed").exists())
+  }
+
+  @Test
+  fun recoveryRejectsMalformedJournalPathsBeforeResolvingAnyPath() {
+    val root = temporaryFolder.newFolder("recovery-malformed-journal")
+    val repository = AddonLibraryRepository(root)
+    val archive = zipOf("Sample/Sample.toc" to "## Version: 1\n")
+    repository.importZip(ByteArrayInputStream(archive), archive.size.toLong())
+    val oldRevision = repository.readLibrary().revision
+    val backup = File(root, ".backup-crashed")
+    check(File(root, "Sample").renameTo(backup))
+    val transaction = Properties().apply {
+      this["formatVersion"] = "2"
+      this["oldIndexMissing"] = "false"
+      this["oldRevision"] = oldRevision
+      this["newRevision"] = "uncommitted-revision"
+      this["backup.0"] = backup.name
+      this["target.0"] = "../outside"
+    }
+    FileOutputStream(File(root, ".txn-malformed")).use {
+      transaction.store(it, "malformed test transaction")
+    }
+    val outside = File(root.parentFile, "outside")
+    outside.writeText("keep")
+
+    assertThrows(IllegalArgumentException::class.java) { repository.readLibrary() }
+
+    assertTrue(backup.exists())
+    assertTrue(File(root, ".txn-malformed").exists())
+    assertEquals("keep", outside.readText())
+  }
+
+  @Test
+  fun recoveryRollsBackFreshAddonWhenOriginalIndexWasAbsent() {
+    val root = temporaryFolder.newFolder("recovery-empty-index")
+    val fresh = File(root, "NewAddon")
+    assertTrue(fresh.mkdirs())
+    File(fresh, "NewAddon.toc").writeText("## Version: 1\n")
+    writeTransaction(
+      root,
+      ".txn-empty",
+      oldIndexMissing = true,
+      oldRevision = null,
+      newRevision = "uncommitted-revision",
+      fresh = listOf("NewAddon"),
+    )
+
+    val recovered = AddonLibraryRepository(root).readLibrary()
+
+    assertEquals(emptyList<AddonLibraryItem>(), recovered.addons)
+    assertFalse(fresh.exists())
+    assertFalse(File(root, ".txn-empty").exists())
   }
 
   @Test
@@ -396,16 +535,23 @@ class AddonLibraryRepositoryTest {
     root: File,
     name: String,
     newRevision: String,
+    oldRevision: String? = "old-revision",
+    oldIndexMissing: Boolean = false,
     backups: List<Pair<String, String>> = emptyList(),
     fresh: List<String> = emptyList(),
+    stages: List<String> = emptyList(),
   ) {
     val properties = Properties()
+    properties["formatVersion"] = "2"
+    properties["oldIndexMissing"] = oldIndexMissing.toString()
+    oldRevision?.let { properties["oldRevision"] = it }
     properties["newRevision"] = newRevision
     backups.forEachIndexed { index, (folder, backupName) ->
       properties["backup.$index"] = backupName
       properties["target.$index"] = folder
     }
     fresh.forEachIndexed { index, folder -> properties["fresh.$index"] = folder }
+    stages.forEachIndexed { index, folder -> properties["stage.$index"] = folder }
     FileOutputStream(File(root, name)).use {
       properties.store(it, "LastHavenPlus addon transaction")
     }
