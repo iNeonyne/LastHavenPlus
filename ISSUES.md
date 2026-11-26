@@ -5,13 +5,13 @@
 ## Current state after v2.3.0
 
 - **Latest stable:** v2.3.0 is published on main at tag commit ebc5b424e83ae66c2b0accc2bec6f050b8dc0d88.
-- **Development:** beta is at c24b24e7125f49e86f465b1786ccfecb537e9694 after v2.4.0 icon integration; no release or promotion is in progress.
+- **Development:** beta is at f800deebf6c8bdaa91df4ac7c3693dcf86f3e6b6; v2.4.0 icon code is integrated at c24b24e, with owner visual signoff pending. No release or promotion is in progress.
 - **CI:** PR #132 consolidated beta lint/format checks into the existing signed ARM64 build job and is merged. Exact-head PR validation and post-merge signed CI passed. Issue #129 is closed as completed after the measured result was recorded.
 - **Housekeeping:** #128 is Chaty-owned; it reconciles repository status and work records. #70 remains open until this reconciliation is integrated.
 - **Updater:** #4 remains open for remaining regression coverage. #15, #31 and #111 are blocked/deferred; no release-ID/differential fallback runtime verification is claimed.
 - **Reproducibility:** #66 / PR #119 has a prior byte-identical unsigned APK result, but its branch is behind current beta and needs refresh plus exact-head reruns before merge.
 - **Owner-paused:** #20 / PR #122 and #62 / PR #123 are explicitly deferred; keep their drafts open for traceability and do not resume. #23 Addon Manager remains on hold.
-- **UI/UX:** #133 icon is merged and closed via PR #135. #107 visual-system implementation is assigned to Vibe (`agent:vibe`) in PR #136, which needs a beta refresh after the icon merge before review/merge. PR #113 remains draft/open for traceability only. #9 accessibility remains queued until #107 integrates.
+- **UI/UX:** #133 implementation is merged via PR #135, but issue remains open as `agent:owner` for Android mask/physical launcher visual verification. #107 visual-system implementation is assigned to Vibe (`agent:vibe`) in PR #136, whose original CI passed but whose branch needs a beta refresh and new exact-head validation before review/merge. PR #113 remains draft/open for traceability only. #9 accessibility remains queued until #107 integrates.
 - **Roadmap:** issue #18 now covers v2.4.0 UI/UX, v2.5.0 updater experience and v2.6.0 settings/diagnostics. Targets are planning only, not release authorization.
 - **Other deferred work:** #86 and #19 remain deferred outside the scoped roadmap; #23 remains on hold.
 
@@ -61,7 +61,7 @@
 | [#70](https://github.com/iNeonyne/LastHavenPlus/issues/70) | Docs | Contributor/security guidance and Markdown validation | Markdownlint integrated; final reconciliation is in this housekeeping PR |
 | [#81](https://github.com/iNeonyne/LastHavenPlus/issues/81) | Dependencies | Compatible AndroidX and compression library refresh | Chaty-owned; only the five approved library versions are in scope |
 | [#111](https://github.com/iNeonyne/LastHavenPlus/issues/111) | Deferred | Updater download progress and retry feedback | Blocked/deferred; do not start alongside #4 |
-| [#133](https://github.com/iNeonyne/LastHavenPlus/issues/133) | Done | v2.4.0 adaptive launcher icon refresh | PR #135 merged to beta at c24b24e; exact-head Android and Markdown PR checks passed |
+| [#133](https://github.com/iNeonyne/LastHavenPlus/issues/133) | Owner review | v2.4.0 adaptive launcher icon refresh | PR #135 merged; exact-head and signed ARM64 CI passed; owner visual/mask verification pending |
 | [#128](https://github.com/iNeonyne/LastHavenPlus/issues/128) | Housekeeping | Post-v2.3.0 repository housekeeping | Chaty-owned; current docs reconciliation in this housekeeping PR |
 | [#129](https://github.com/iNeonyne/LastHavenPlus/issues/129) | Done | Consolidate beta CI quality checks | Closed; PR #132 merged and exact-merge CI passed |
 
