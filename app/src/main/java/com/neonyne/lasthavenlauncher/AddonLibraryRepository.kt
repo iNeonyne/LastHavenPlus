@@ -79,7 +79,11 @@ class AddonLibraryRepository(private val root: File) {
   }
 
   fun importZip(input: InputStream, compressedSize: Long): AddonLibrarySnapshot {
-    val imported = AddonArchive.importZip(input, compressedSize)
+    if (!root.exists() && !root.mkdirs()) {
+      throw IllegalStateException("Could not create addon storage.")
+    }
+    val extraction = File(root, ".extract-${UUID.randomUUID()}")
+    val imported = AddonArchive.importZip(input, compressedSize, extraction)
     require(imported.isNotEmpty()) { "The archive contains no addons." }
     val current = readLibrary()
     val replacing = imported.map { it.folder.lowercase() }.toSet()
@@ -88,20 +92,18 @@ class AddonLibraryRepository(private val root: File) {
         imported.sumOf { it.sizeBytes }
     require(total <= AddonArchive.MAX_LIBRARY_BYTES) { "Addon library exceeds 384 MiB." }
 
-    if (!root.exists() && !root.mkdirs()) {
-      throw IllegalStateException("Could not create addon storage.")
-    }
     val existing = current.addons.associateBy { it.folder.lowercase() }
     val nextItems = current.addons.filterNot { it.folder.lowercase() in replacing }.toMutableList()
     val staged = mutableListOf<Pair<File, File>>()
     val backups = mutableListOf<Pair<File, File>>()
+    val newTargets = mutableListOf<File>()
     try {
       for (addon in imported) {
         require(isSafeFolder(addon.folder)) { "Invalid addon folder: ${addon.folder}" }
         val stage = File(root, ".stage-${UUID.randomUUID()}")
         require(stage.mkdirs()) { "Could not prepare addon storage." }
         staged += stage to File(root, addon.folder)
-        for ((relativePath, bytes) in addon.files) {
+        for ((relativePath, sourceFile) in addon.files) {
           val destination = File(stage, relativePath)
           val canonicalRoot = stage.canonicalFile
           val canonicalDestination = destination.canonicalFile
@@ -113,7 +115,9 @@ class AddonLibraryRepository(private val root: File) {
               throw IllegalStateException("Could not create addon file directory.")
             }
           }
-          FileOutputStream(destination).use { stream -> stream.write(bytes) }
+          FileInputStream(sourceFile).use { source ->
+            FileOutputStream(destination).use { target -> source.copyTo(target) }
+          }
         }
         val previous = existing[addon.folder.lowercase()]
         nextItems +=
@@ -133,12 +137,17 @@ class AddonLibraryRepository(private val root: File) {
       }
 
       for ((stage, target) in staged) {
-        if (target.exists()) {
-          val backup = File(root, ".backup-${UUID.randomUUID()}")
-          check(target.renameTo(backup)) { "Could not stage the existing addon for replacement." }
-          backups += target to backup
-        }
+        val backup =
+          if (target.exists()) {
+            File(root, ".backup-${UUID.randomUUID()}").also {
+              check(target.renameTo(it)) { "Could not stage the existing addon for replacement." }
+              backups += target to it
+            }
+          } else {
+            null
+          }
         check(stage.renameTo(target)) { "Could not commit imported addon files." }
+        if (backup == null) newTargets += target
       }
 
       val snapshot = AddonLibrarySnapshot(UUID.randomUUID().toString(), nextItems)
@@ -146,6 +155,7 @@ class AddonLibraryRepository(private val root: File) {
       backups.forEach { (_, backup) -> backup.deleteRecursively() }
       return snapshot
     } catch (error: Exception) {
+      newTargets.forEach(File::deleteRecursively)
       for ((target, backup) in backups.asReversed()) {
         target.deleteRecursively()
         if (backup.exists()) backup.renameTo(target)
@@ -153,6 +163,7 @@ class AddonLibraryRepository(private val root: File) {
       throw error
     } finally {
       staged.forEach { (stage, _) -> stage.deleteRecursively() }
+      extraction.deleteRecursively()
     }
   }
 
