@@ -4,7 +4,7 @@
     <string name="addon_manager_local_addons">Локальні додатки</string>
     <string name="addon_manager_back">Назад</string>
     <string name="addon_manager_import_description">Імпортуйте ZIP-файли локальних додатків WoW 3.3.5a. Нові імпортовані додатки вимкнені та залишаються на цьому пристрої.</string>
-    <string name="addon_manager_runtime_unavailable">Завантаження додатків під час гри та інтеграція з ігровою сесією поки недоступні.</string>
+    <string name="addon_manager_runtime_unavailable">Завантаження додатків під час гри поки недоступне. Імпортовані файли зберігаються лише локально.</string>
     <string name="addon_manager_import_zip">Імпортувати ZIP</string>
     <string name="addon_manager_count">%1$d додатків\n%2$s</string>
     <string name="addon_manager_no_addons">Локальних додатків ще немає. Імпортуйте ZIP із папкою додатка та відповідним файлом .toc.</string>
