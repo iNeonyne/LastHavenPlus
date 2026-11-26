@@ -1,3 +1,10 @@
+## 2026-11-26 — Post-merge verification and owner visual signoff (#133)
+
+- **Beta HEAD:** `c24b24e7125f49e86f465b1786ccfecb537e9694` application merge; documentation-only PR #137 later advanced beta to `f800deebf6c8bdaa91df4ac7c3693dcf86f3e6b6`.
+- **Post-merge CI:** [run #45743277446](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45743277446) passed signed optimized ARM64 build and JVM tests, verified ABI exactly `arm64-v8a`, matched established signing certificate SHA-256 `b3bbf7520e77dfc384a60b1eee6c5f205b978f9b453849e2be523f642018d263`, and uploaded the beta APK artifact. Release tag and publication were skipped.
+- **Issue #133:** implementation merged, but reopened as `agent:owner` because Android-generated adaptive-mask screenshots and physical ARM64 launcher appearance remain unverified.
+- **Issue #107:** Vibe's PR #136 exact-head CI passed on the old base, but branch is now stale/non-mergeable. Vibe must merge current beta, resolve documentation overlap and rerun checks.
+
 ## 2026-11-26 — Integrate v2.4.0 icy pixel-castle launcher icon (#133)
 
 - **PR:** #135 squash-merged to beta at `c24b24e7125f49e86f465b1786ccfecb537e9694`.

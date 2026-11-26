@@ -2,7 +2,7 @@
 
 **Last updated:** 2026-11-26  
 **Active branch:** beta  
-**Latest beta HEAD:** c24b24e7125f49e86f465b1786ccfecb537e9694 (PR [#135](https://github.com/iNeonyne/LastHavenPlus/pull/135), v2.4.0 icy pixel-castle icon).  
+**Beta HEAD at this verification checkpoint:** f800deebf6c8bdaa91df4ac7c3693dcf86f3e6b6 (after docs PR #137; application integration remains at c24b24e).  
 **Stable branch / v2.3.0 tag:** ebc5b424e83ae66c2b0accc2bec6f050b8dc0d88; GitHub confirms published, non-draft, non-prerelease [v2.3.0](https://github.com/iNeonyne/LastHavenPlus/releases/tag/v2.3.0) with canonical ARM64 APK, update manifest and v2.2.0-to-v2.3.0 differential package. Main remains unchanged by this housekeeping work.
 
 ## Latest integration — v2.4.0 launcher icon
@@ -10,9 +10,13 @@
 - **PR:** [#135](https://github.com/iNeonyne/LastHavenPlus/pull/135), squash-merged to beta at `c24b24e7125f49e86f465b1786ccfecb537e9694`.
 - **Exact-head Android validation:** [run #45742710788](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45742710788) passed lint, Spotless, unsigned release assembly and JVM tests. PR validation remained unsigned; signing/tag/publication jobs were skipped.
 - **Exact-head Markdown validation:** [run #45742710826](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45742710826) passed.
-- **Post-merge beta validation:** Markdown push run [#45743277532](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45743277532) passed. Signed ARM64 beta build [#45743277446](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45743277446) was still running at this checkpoint; do not claim signed packaging verification until it completes.
+- **Post-merge beta validation:** Markdown push run [#45743277532](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45743277532) passed. Signed ARM64 beta build [#45743277446](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45743277446) passed on exact application merge commit `c24b24e`. It built and unit-tested the optimized APK, verified ARM64-only packaging (`arm64-v8a`), matched the established signing certificate SHA-256 `b3bbf7520e77dfc384a60b1eee6c5f205b978f9b453849e2be523f642018d263`, and uploaded artifact `LastHavenPlus-2.3.0-beta-arm64-v8a` (92,813,021 bytes). Tag and publication jobs were skipped as required.
 - **Artwork:** native icy-blue pixel-art castle/moon vector, deep-navy adaptive background and 8% foreground inset; standard and round adaptive icon resources remain wired. Local mask simulations were inspected, but Android-generated launcher screenshots and physical ARM64 appearance remain unverified.
-- **Issue #133:** closed completed after merge and exact-head PR CI.
+- **Issue #133:** implementation is merged, but the issue was reopened as `agent:owner` because Android-generated mask previews and physical ARM64 launcher appearance still need owner verification.
+
+## Documentation checkpoint — PR #137
+
+- PR [#137](https://github.com/iNeonyne/LastHavenPlus/pull/137) merged at `f800deebf6c8bdaa91df4ac7c3693dcf86f3e6b6`; exact Markdown lint [run #45743490458](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45743490458) passed. This changed documentation only.
 
 ## Previous integration — documentation reconciliation
 
@@ -43,8 +47,8 @@
 - **Updater:** #4 remains open for remaining automated regression coverage. #15, #31 and #111 remain blocked/deferred; no release-ID/differential fallback verification or updater UX work is claimed complete.
 - **Reproducibility:** PR [#119](https://github.com/iNeonyne/LastHavenPlus/pull/119) / issue #66 remains open. An earlier exact commit produced byte-identical unsigned APKs; the PR branch is behind current beta and must be refreshed and revalidated before merge.
 - **Owner-paused drafts:** PR #122 / issue #20 (GeckoView dependency audit) and PR #123 / issue #62 (branch lifecycle audit) remain draft/open and blocked by explicit owner scope resets. Do not add commits or resume without reprioritization.
-- **UI/UX:** issue #107 is assigned to Vibe (`agent:vibe`). PR [#136](https://github.com/iNeonyne/LastHavenPlus/pull/136) contains the first visual-system implementation; its original exact-head Android run [#45743147121](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45743147121) was still running at this checkpoint. The icon merge advanced beta and made #136 non-mergeable; Vibe has been asked to merge current beta into the branch, resolve `AGENT_WORK.md`, and rerun exact-head CI. PR #113 remains traceability-only.
-- **Icon:** issue #133 implementation is submitted for review in [PR #135](https://github.com/iNeonyne/LastHavenPlus/pull/135), head ce4e9e2c82024ed8dd3c1117f2e7989c56d6e864. The icy-blue pixel-castle vector and deep-navy adaptive background are committed; unsigned exact-head CI is running. Android-generated mask output and physical launcher appearance remain unverified.
+- **UI/UX:** issue #107 is assigned to Vibe (`agent:vibe`). PR [#136](https://github.com/iNeonyne/LastHavenPlus/pull/136) contains the visual-system implementation. Original exact-head Android run [#45743147121](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45743147121) passed, but only against the pre-icon base. Beta advanced after PRs #135 and #137; #136 is draft/non-mergeable and Vibe has been asked to merge current beta into the branch, resolve `AGENT_WORK.md`, update the handoff and rerun exact-head CI. PR #113 remains traceability-only.
+- **Icon:** PR #135 is merged at `c24b24e`; exact-head PR checks and post-merge signed ARM64 CI passed. Issue #133 is reopened as `agent:owner` for actual Android adaptive-mask/physical launcher appearance verification; CI does not prove launcher rendering.
 - **Accessibility:** issue #9 remains unassigned until the visual-system pass is settled, to avoid overlapping Compose screen work.
 - **Documentation quality:** PR #120 added repository-wide markdownlint; current beta Markdown quality run [#45736853811](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45736853811) passed. Issue #70 remains open until this central reconciliation is reviewed and merged.
 - **Device status:** CI and packaging checks do not prove physical ARM64 gameplay, profile persistence, haptics, updater installation or device-specific behavior. No new physical-device testing was performed.
