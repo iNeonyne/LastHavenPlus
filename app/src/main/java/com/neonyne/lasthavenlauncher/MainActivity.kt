@@ -304,7 +304,7 @@ private fun LastHavenApp(
   }
 
   LaunchedEffect(Unit) {
-    // Start/resume the game immediately; the metadata check never downloads or installs.
+    // Start/resume the game immediately. Update checks are explicit from the Update screen.
     startGame()
   }
 
