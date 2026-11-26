@@ -24,7 +24,12 @@ class AddonArchiveTest {
         "Example/Media/icon.blp" to "image",
       )
 
-    val imported = AddonArchive.importZip(ByteArrayInputStream(archive), archive.size.toLong(), temporaryFolder.newFolder())
+    val imported =
+      AddonArchive.importZip(
+        ByteArrayInputStream(archive),
+        archive.size.toLong(),
+        temporaryFolder.newFolder(),
+      )
 
     assertEquals(1, imported.size)
     assertEquals("Example Addon", imported.single().title)

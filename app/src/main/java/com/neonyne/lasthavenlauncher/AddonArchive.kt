@@ -80,9 +80,7 @@ object AddonArchive {
           }
 
           val destination = File(extractionDirectory, path)
-          require(
-            destination.canonicalFile.path.startsWith(canonicalRoot.path + File.separator)
-          ) {
+          require(destination.canonicalFile.path.startsWith(canonicalRoot.path + File.separator)) {
             "Unsafe archive path: $path"
           }
           destination.parentFile?.let { parent ->
@@ -134,7 +132,7 @@ object AddonArchive {
         !path.any { it.code in 0..31 } &&
         segments.dropLast(if (path.endsWith('/')) 1 else 0).none {
           it.isEmpty() || it == "." || it == ".."
-        },
+        }
     ) {
       "Unsafe archive path: $name"
     }
@@ -157,13 +155,11 @@ object AddonArchive {
     }
 
     require(roots.isNotEmpty()) { "Main Folder/Folder.toc is missing." }
-    val topRoots =
-      roots.filter { root ->
-        roots.none { parent ->
-          parent != root &&
-            (parent.path.isEmpty() || root.path.startsWith(parent.path + "/"))
-        }
+    val topRoots = roots.filter { root ->
+      roots.none { parent ->
+        parent != root && (parent.path.isEmpty() || root.path.startsWith(parent.path + "/"))
       }
+    }
 
     val seenFolders = mutableSetOf<String>()
     return topRoots.map { root ->
@@ -178,14 +174,16 @@ object AddonArchive {
       }
 
       val ownFiles =
-        entries.filter { (path, _) ->
-          val inRoot = if (root.path.isEmpty()) true else path.startsWith(root.path + "/")
-          inRoot &&
-            !path.startsWith("__MACOSX/") &&
-            !Regex("(^|/)\\.(git|svn)(/|$)").containsMatchIn(path)
-        }.mapKeys { (path, _) ->
-          if (root.path.isEmpty()) path else path.removePrefix(root.path + "/")
-        }
+        entries
+          .filter { (path, _) ->
+            val inRoot = if (root.path.isEmpty()) true else path.startsWith(root.path + "/")
+            inRoot &&
+              !path.startsWith("__MACOSX/") &&
+              !Regex("(^|/)\\.(git|svn)(/|$)").containsMatchIn(path)
+          }
+          .mapKeys { (path, _) ->
+            if (root.path.isEmpty()) path else path.removePrefix(root.path + "/")
+          }
 
       val tocName = "${root.folder}.toc"
       val tocFile =
@@ -195,8 +193,9 @@ object AddonArchive {
       val metadata = parseToc(String(tocFile.readBytes(), StandardCharsets.UTF_8))
       val total = ownFiles.values.sumOf { it.length() }
       val warnings =
-        if (metadata.interfaceVersion.isNotBlank() &&
-          "30300" !in metadata.interfaceVersion.split(Regex("[,\\s]+"))
+        if (
+          metadata.interfaceVersion.isNotBlank() &&
+            "30300" !in metadata.interfaceVersion.split(Regex("[,\\s]+"))
         ) {
           listOf("The TOC does not declare Interface 30300. Compatibility is unverified.")
         } else {
