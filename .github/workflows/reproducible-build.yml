@@ -56,15 +56,15 @@ jobs:
 
       - name: Record build environment
         run: |
-          mkdir -p .reproducible
-          uname -a > .reproducible/environment.txt
-          printf '\nRunner image: %s %s\n' "${ImageOS:-unknown}" "${ImageVersion:-unknown}" >> .reproducible/environment.txt
-          printf '\nJDK:\n' >> .reproducible/environment.txt
-          java -version 2>> .reproducible/environment.txt
-          printf '\nGradle wrapper:\n' >> .reproducible/environment.txt
-          ./gradlew --version >> .reproducible/environment.txt
-          printf '\nAndroid SDK packages:\n' >> .reproducible/environment.txt
-          sdkmanager --list_installed >> .reproducible/environment.txt
+          mkdir -p reproducible-output
+          uname -a > reproducible-output/environment.txt
+          printf '\nRunner image: %s %s\n' "${ImageOS:-unknown}" "${ImageVersion:-unknown}" >> reproducible-output/environment.txt
+          printf '\nJDK:\n' >> reproducible-output/environment.txt
+          java -version 2>> reproducible-output/environment.txt
+          printf '\nGradle wrapper:\n' >> reproducible-output/environment.txt
+          ./gradlew --version >> reproducible-output/environment.txt
+          printf '\nAndroid SDK packages:\n' >> reproducible-output/environment.txt
+          sdkmanager --list_installed >> reproducible-output/environment.txt
 
       - name: Build unsigned optimized release APK from clean state
         run: |
@@ -82,19 +82,19 @@ jobs:
             printf '%s\n' "${apks[@]}"
             exit 1
           fi
-          mkdir -p .reproducible/apk
-          cp "${apks[0]}" .reproducible/apk/unsigned.apk
-          if "$ANDROID_HOME/build-tools/37.0.0/apksigner" verify .reproducible/apk/unsigned.apk >/dev/null 2>&1; then
+          mkdir -p reproducible-output/apk
+          cp "${apks[0]}" reproducible-output/apk/unsigned.apk
+          if "$ANDROID_HOME/build-tools/37.0.0/apksigner" verify reproducible-output/apk/unsigned.apk >/dev/null 2>&1; then
             echo "::error::The reproducibility input unexpectedly contains a signed APK."
             exit 1
           fi
-          sha256sum .reproducible/apk/unsigned.apk
+          sha256sum reproducible-output/apk/unsigned.apk
 
       - name: Upload intermediate unsigned APK for comparison
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: unsigned-apk-build-${{ matrix.build_id }}
-          path: .reproducible/
+          path: reproducible-output/
           if-no-files-found: error
           retention-days: 1
 
