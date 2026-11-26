@@ -236,6 +236,16 @@ private fun AddonCard(
           style = MaterialTheme.typography.bodySmall,
         )
       }
+      if (addon.optionalDependencies.isNotEmpty()) {
+        Text(
+          stringResource(
+            R.string.addon_manager_optional_dependencies,
+            addon.optionalDependencies.joinToString(),
+          ),
+          color = MaterialTheme.colorScheme.onSurfaceVariant,
+          style = MaterialTheme.typography.bodySmall,
+        )
+      }
       if (addon.folder in dependencyReport.cyclicFolders) {
         Text(
           stringResource(R.string.addon_manager_dependency_cycle),
