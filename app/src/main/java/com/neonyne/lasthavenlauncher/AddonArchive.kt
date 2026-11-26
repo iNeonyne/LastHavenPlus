@@ -201,6 +201,9 @@ object AddonArchive {
     }
 
     require(roots.isNotEmpty()) { "Main Folder/Folder.toc is missing." }
+    require(roots.size == 1 || roots.none { it.path.isEmpty() }) {
+      "Multiple addons must each be packaged in a separate folder."
+    }
     val topRoots = roots.filter { root ->
       roots.none { parent ->
         parent != root && (parent.path.isEmpty() || root.path.startsWith(parent.path + "/"))
@@ -224,7 +227,7 @@ object AddonArchive {
           .filter { (path, _) ->
             val inRoot = if (root.path.isEmpty()) true else path.startsWith(root.path + "/")
             inRoot &&
-              !path.startsWith("__MACOSX/") &&
+              path.split('/').none { it.equals("__MACOSX", ignoreCase = true) } &&
               !Regex("(^|/)\\.(git|svn)(/|$)").containsMatchIn(path)
           }
           .mapKeys { (path, _) ->
