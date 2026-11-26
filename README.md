@@ -62,7 +62,7 @@ A signed release build requires the established project keystore and credentials
 
 ## License and third-party notices
 
-Original LastHavenPlus project code and documentation are licensed under the GNU General Public License, version 3 or (at your option) any later version. See [LICENSE](LICENSE). This license does not relicense the LastHaven game, GeckoView, Android libraries, or other third-party components and assets; their respective license terms and notices continue to apply. LastHavenPlus hosts the existing game and does not distribute or modify its client.
+Original LastHavenPlus project code and documentation are licensed under the Apache License, Version 2.0. See [LICENSE](LICENSE). This license does not relicense the LastHaven game, GeckoView, Android libraries, or other third-party components and assets; their respective license terms and notices continue to apply. LastHavenPlus hosts the existing game and does not distribute or modify its client.
 
 ## Project workflow and records
 
