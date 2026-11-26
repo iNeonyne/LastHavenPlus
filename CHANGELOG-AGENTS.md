@@ -869,3 +869,11 @@ Entry format:
 - Clarified that `REQUEST_INSTALL_PACKAGES` supports user-confirmed APK installation and that no camera, microphone, geolocation or notification permissions are declared.
 - Updated README, AGENTS, STATUS, ISSUES, AGENT_WORK and this changelog. No runtime code, manifest, GeckoView settings or game behavior changed.
 - Exact-head Markdown validation passed on PR #158 head `e2ce22c44508a87f53fc4a57a03f82e0597550bc` (run #45889911748); internal links/anchors checked across all 15 Markdown files with zero missing local targets. No physical-device permission-flow claim is made.
+
+
+## 2026-11-26 — Harden BSDIFF section cleanup (#4)
+
+- Track each successfully opened BSDIFF40 compressed section immediately and close opened sections in reverse order if later section setup or reconstruction fails.
+- Cleanup is best-effort to avoid replacing the primary parse/reconstruction exception with a close exception.
+- Add regression tests for malformed diff and extra sections and stale output removal.
+- Prepared a fresh branch from beta `7451b940dc0adfa1ea14234fe6d489bba688b12c` after the original PR #157 branch became stale. Exact-head CI pending; previous reproducibility attempt had an external Kotlin Compose plugin resolution failure on one clean build.
