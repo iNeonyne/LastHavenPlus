@@ -88,16 +88,17 @@ class AddonDocumentIo(
   private fun querySize(uri: Uri): Long? {
     val descriptorSize = runCatching {
       resolver.openAssetFileDescriptor(uri, "r")?.use { it.length }
-    }.getOrNull()
+    }
+      .getOrNull()
     if (descriptorSize != null && descriptorSize > 0L) return descriptorSize
 
     return runCatching {
-        resolver.query(uri, arrayOf(OpenableColumns.SIZE), null, null, null)?.use { cursor ->
-          if (!cursor.moveToFirst()) return@use null
-          val index = cursor.getColumnIndex(OpenableColumns.SIZE)
-          if (index < 0 || cursor.isNull(index)) null else cursor.getLong(index).takeIf { it > 0L }
-        }
+      resolver.query(uri, arrayOf(OpenableColumns.SIZE), null, null, null)?.use { cursor ->
+        if (!cursor.moveToFirst()) return@use null
+        val index = cursor.getColumnIndex(OpenableColumns.SIZE)
+        if (index < 0 || cursor.isNull(index)) null else cursor.getLong(index).takeIf { it > 0L }
       }
+    }
       .getOrNull()
   }
 }
