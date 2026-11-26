@@ -149,7 +149,7 @@ Updater review findings were added to existing #15 and #4, not split into parall
 
 - **Owner:** Chaty (`agent:chaty`); no parallel updater implementation.
 - **PR preparation branch:** `chaty/updater-patch-stream-cleanup-4-beta`, based on beta `7451b940dc0adfa1ea14234fe6d489bba688b12c`.
-- **Current head:** `35f1b69448ab4e91a5acaff9950ff492c5fcf811` (source `a5e680e0a9fe628b41cde130f5ffa699a9dfe784`; tests `35f1b69448ab4e91a5acaff9950ff492c5fcf811`).
+- **Current head:** `9dd377e3cd48882ef90e3e2da44c63b5d2fba98c` (source `a5e680e0a9fe628b41cde130f5ffa699a9dfe784`; tests `35f1b69448ab4e91a5acaff9950ff492c5fcf811`; 7 commits ahead of beta).
 - **Scope:** ensure already-open BSDIFF compressed sections are closed if subsequent section opening/validation fails; add malformed diff/extra section cleanup regression tests.
-- **Next:** exact-head Android, Markdown and reproducibility runs; review test behavior; only then open/review/merge PR. Full #4 acceptance remains outstanding.
+- **Validation:** Android run #45890826303, Markdown run #45890826405 and independent unsigned APK reproducibility run #45890826652 all passed on exact head `9dd377e3cd48882ef90e3e2da44c63b5d2fba98c`. PR #159 was closed without merge; no code is integrated. **Next:** Chaty review and merge decision; full #4 acceptance remains outstanding.
 - **Non-goals:** no patch-engine switch, retry/network change, auto-download/install, release, tag, main promotion, signing or ABI changes.
