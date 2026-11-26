@@ -64,6 +64,9 @@ jobs:
           gradle-version: wrapper
           validate-wrappers: true
 
+      - name: Fetch beta formatting baseline
+        run: git fetch --no-tags --depth=1 origin beta
+
       - name: Apply Kotlin formatter for recovery review
         if: github.event_name == 'pull_request'
         run: ./gradlew spotlessApply --stacktrace
@@ -77,9 +80,6 @@ jobs:
             app/src/main/java/com/neonyne/lasthavenlauncher/AddonLibraryRepository.kt
             app/src/test/java/com/neonyne/lasthavenlauncher/AddonLibraryRepositoryTest.kt
           retention-days: 1
-
-      - name: Fetch beta formatting baseline
-        run: git fetch --no-tags --depth=1 origin beta
 
       - name: Test release workflow helpers
         run: |
