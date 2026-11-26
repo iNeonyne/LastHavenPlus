@@ -31,7 +31,7 @@ These are features integrated into beta and covered by the repository's automate
 - **Network usage:** Android per-UID counters report app traffic, including both game and updater traffic; they are not game-only totals.
 - **Diagnostics:** Bounded local diagnostic logs support viewing, clearing and explicit user-initiated sharing. Review logs before sharing.
 - **Updater:** Stable release checks and downloads remain user-initiated. Manifest, version, URL, payload and digest validation are applied; differential patch failures retain a verified full-APK fallback. Android's package installer controls installation.
-- **Addon manager:** Native Phase A local ZIP/library management is integrated by [PR #152](https://github.com/iNeonyne/LastHavenPlus/pull/152) in beta. Imported addons remain library data; local enablement is metadata only and does not activate addons in the game. The supplied Chrome MV3 runtime port (Phase B) is not implemented and requires a separate explicit owner decision plus GeckoView 160 compatibility/security review.
+- **Addon manager:** Native Phase A local ZIP/library management is integrated by [PR #152](https://github.com/iNeonyne/LastHavenPlus/pull/152) in beta. Imported addons remain library data; local enablement is metadata only and does not activate addons in the game. The supplied Chrome MV3 runtime port (Phase B) is not implemented. The repository owner has authorized Phase B investigation/implementation under Chaty's coordination; GeckoView 160 compatibility and security review remain mandatory.
 
 ## Site permissions
 
@@ -69,7 +69,7 @@ A signed release build requires the established project keystore and credentials
 - Task PRs target `beta`. Chaty alone reviews and merges into beta.
 - Chaty coordinates and reviews; Vibe implements only existing issues explicitly assigned by Chaty.
 - GitHub Issues, PRs, reviews, commits and Actions are the only agent-to-agent communication channel.
-- Agent ownership is tracked with one `agent:*` label per issue: `agent:unassigned`, `agent:chaty`, `agent:vibe`, `agent:blocked`, `agent:review` or `agent:owner`.
+- Every actionable issue has exactly one `agent:*` state/ownership label: `agent:unassigned` (intake), `agent:queued` (ready, waiting its turn), `agent:chaty`, `agent:vibe`, `agent:blocked` (dependency/hold), `agent:review` or `agent:owner`.
 - `ISSUES.md` and GitHub Issues are the task sources of truth.
 - `STATUS.md` records verified, unverified and incomplete work plus exact CI evidence.
 - `AGENTS.md` and `AGENT_WORK.md` define contributor workflow and active assignments.
