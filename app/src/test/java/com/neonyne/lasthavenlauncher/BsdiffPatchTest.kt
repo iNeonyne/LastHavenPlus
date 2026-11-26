@@ -219,10 +219,11 @@ class BsdiffPatchTest {
       val extra = compressed {}
       val malformed = byteArrayOf(0x42, 0x5a, 0x68, 0x31)
 
-      val cases = listOf(
-        Triple(control, malformed, extra),
-        Triple(control, diff, malformed),
-      )
+      val cases =
+        listOf(
+          Triple(control, malformed, extra),
+          Triple(control, diff, malformed),
+        )
       cases.forEachIndexed { index, sections ->
         val (controlSection, diffSection, extraSection) = sections
         val header =
