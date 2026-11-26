@@ -119,10 +119,11 @@ class AddonArchiveTest {
     val archive = zipOf("Sample/Sample.toc" to "## Interface: 30300\\n")
     val corrupted = archive.copyOf()
     val signature = byteArrayOf(0x50, 0x4b, 0x01, 0x02)
-    val centralDirectory = corrupted.indices.first { index ->
-      index + signature.size <= corrupted.size &&
-        signature.indices.all { offset -> corrupted[index + offset] == signature[offset] }
-    }
+    val centralDirectory =
+      corrupted.indices.first { index ->
+        index + signature.size <= corrupted.size &&
+          signature.indices.all { offset -> corrupted[index + offset] == signature[offset] }
+      }
     corrupted[centralDirectory + 16] = (corrupted[centralDirectory + 16].toInt() xor 1).toByte()
 
     assertThrows(IllegalArgumentException::class.java) {
