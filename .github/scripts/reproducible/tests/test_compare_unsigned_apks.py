@@ -57,6 +57,15 @@ class UnsignedApkComparisonTests(unittest.TestCase):
             with self.assertRaises(ValueError):
                 compare_apks(first, second)
 
+    def test_rejects_corrupt_archive(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            first, second = root / "a.apk", root / "b.apk"
+            first.write_bytes(b"not a valid APK archive")
+            self.make_apk(second, {"classes.dex": b"dex"})
+            with self.assertRaises(zipfile.BadZipFile):
+                compare_apks(first, second)
+
 
 if __name__ == "__main__":
     unittest.main()
