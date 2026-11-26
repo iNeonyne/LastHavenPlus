@@ -552,3 +552,13 @@ No branch was deleted. The available GitHub connector exposes no branch-delete o
 - **Icon limitation:** issue #133 reopened as `agent:owner`; Android-generated adaptive-mask previews and physical ARM64 launcher rendering still need owner verification.
 - **Visual system:** PR #136 Android run #45743147121 passed on its old head, but branch is stale and non-mergeable after beta advanced. Vibe must merge current beta, resolve conflicts, and rerun exact-head checks.
 - **Release state:** no v2.4.0 tag, promotion, or publication authorized/performed. Beta CI artifact carries stable v2.3.0 identity (`versionCode 2003000`); a v2.4.0 release build requires the authorized stable tag workflow.
+
+
+## 2026-11-26 — GPL and community hygiene preparation
+
+- Owner approved GPL-3.0-or-later for original LastHavenPlus project code/documentation in issue #67.
+- Created chaty/community-hygiene from beta.
+- Added canonical GPL text from SPDX license-list data, private vulnerability reporting policy, weekly Gradle Dependabot updates, README license/third-party boundary, and contributor branch-retention rules.
+- Reconciled the existing CHANGELOG.md with an Unreleased policy entry; did not duplicate the already-existing CONTRIBUTING.md.
+- Preliminary direct-dependency license review only; transitive dependency and packaged-notice audit remains open. No copyright-holder name/date was invented.
+- PR and CI verification pending. No Android code/build-tool/signing/ABI/release/main changes; no branch deletion or device testing.
