@@ -31,7 +31,7 @@ Every actionable issue carries exactly one agent ownership label. New issues are
 
 | Issue | Priority | Summary | Current state |
 |---|---:|---|---|
-| [#4](#issue-4) | P0.1 | Build reproducibility and updater test coverage | Open; signed ARM64 CI verified, automated updater edge-case coverage remains |
+| [#4](#issue-4) | P0.1 | Build reproducibility and updater test coverage | Open; versioned CI APK artifact naming added to active Chaty scope; updater edge-case coverage remains |
 | [#5](#issue-5) | Feedback | Owner feedback — gameplay and update behavior after release | Open; owner will provide release feedback on their own schedule; not a release blocker |
 | [#6](#issue-6) | P2 | Essential launcher settings and safe storage controls | Open; includes version identity, theme preference and accessible storage loading-state candidates |
 | [#7](#issue-7) | P3 | Runtime performance and APK size | Open; measure before optimizing |
@@ -114,6 +114,7 @@ Harden the existing build and updater without replacing the current update archi
 
 ## CI verification
 - [ ] Verify release APK package identity in CI.
+- [ ] Name signed Actions APK artifacts with resolved versionName and build channel while preserving canonical updater release assets.
 - [ ] Verify ARM64-only native libraries and established signing certificate for current beta. Run #232 restored the keystore but skipped APK checks.
 - [ ] Publish APK size information and checksum results in the workflow summary.
 
