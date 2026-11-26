@@ -825,10 +825,10 @@ Entry format:
 ## 2026-11-26 — Apache-2.0 and community hygiene preparation
 
 - Owner approved Apache-2.0 for original LastHavenPlus project code/documentation in issue #67.
-- Created chaty/community-hygiene-refresh from beta.
+- Created chaty/community-hygiene-refresh-refresh from beta.
 - Added canonical Apache-2.0 text from SPDX license-list data, private vulnerability reporting policy, weekly Gradle Dependabot updates, README license/third-party boundary, and contributor branch-retention rules.
 - Reconciled the existing CHANGELOG.md with an Unreleased policy entry; did not duplicate the already-existing CONTRIBUTING.md.
-- Preliminary direct-dependency license review only; transitive dependency and packaged-notice audit remains open. No copyright-holder name/date was invented.
+- Preliminary direct-dependency license review only; transitive dependency and packaged-notice audit remains open. Owner supplied project attribution: LastHavenPlus, Copyright 2026.
 - PR and CI verification pending. No Android code/build-tool/signing/ABI/release/main changes; no branch deletion or device testing.
 
 
@@ -836,4 +836,4 @@ Entry format:
 
 - Prepared Apache-2.0 project licensing, SECURITY.md, Gradle Dependabot, user-facing changelog reconciliation, contributor branch-retention policy, and an in-app Apache-2.0 text viewer.
 - Added a releaseRuntimeClasspath report to PR validation so transitive runtime dependencies can be audited from CI artifacts.
-- The dependency report surfaced Google Play Services runtime artifacts under the Android Software Development Kit License. The owner subsequently selected Apache-2.0 for original project material; third-party license/notice inventory and project copyright attribution remain open. the refreshed community-hygiene PR stays draft.
+- The dependency report surfaced Google Play Services runtime artifacts under the Android Software Development Kit License. The owner subsequently selected Apache-2.0 for original project material; third-party license/notice inventory and project copyright attribution remain open. PR #144 stays draft.
