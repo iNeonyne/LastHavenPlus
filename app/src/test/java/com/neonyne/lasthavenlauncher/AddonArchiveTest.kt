@@ -272,14 +272,8 @@ class AddonArchiveTest {
       shortAt(centralOffset + 30) + shortAt(centralOffset + 32)
     val result = ByteArray(archive.size + firstRecordLength)
     archive.copyInto(result, 0, 0, eocd)
-    archive.copyInto(result, 0, eocd, archive.size)
-    archive.copyInto(result, eocd + centralSize, centralOffset, centralOffset + centralSize)
-    archive.copyInto(
-      result,
-      eocd + centralSize + firstRecordLength,
-      centralOffset,
-      centralOffset + firstRecordLength,
-    )
+    archive.copyInto(result, eocd, centralOffset, centralOffset + firstRecordLength)
+    archive.copyInto(result, eocd + firstRecordLength, eocd, archive.size)
     val newEocd = eocd + firstRecordLength
     fun putShort(offset: Int, value: Int) {
       result[offset] = value.toByte()
