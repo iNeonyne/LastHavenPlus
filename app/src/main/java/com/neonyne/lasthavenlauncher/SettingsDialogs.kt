@@ -64,6 +64,9 @@ fun SettingsScreen(
       it.readText()
     }
   }
+  val apacheLicenseText = remember {
+    context.resources.openRawResource(R.raw.apache_2_0).bufferedReader().use { it.readText() }
+  }
   val mplLicenseText = remember {
     context.resources.openRawResource(R.raw.mpl_2_0).bufferedReader().use { it.readText() }
   }
@@ -163,6 +166,16 @@ fun SettingsScreen(
           )
           Text(
             thirdPartyNotices,
+            color = DesignTokens.textBody,
+            style = MaterialTheme.typography.bodySmall,
+          )
+          Text(
+            "Apache License, Version 2.0 (third-party components)",
+            color = DesignTokens.frost,
+            fontWeight = FontWeight.SemiBold,
+          )
+          Text(
+            apacheLicenseText,
             color = DesignTokens.textBody,
             style = MaterialTheme.typography.bodySmall,
           )
