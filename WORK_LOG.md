@@ -580,3 +580,6 @@ No branch was deleted. The available GitHub connector exposes no branch-delete o
 
 
 2026-11-26 — Corrected current project records on PR #152 branch: #23's prior hold/XPI specification is marked superseded by owner-approved ZIP 0.5.1 Phase A; #11 is recorded as agent:review for PR #154; #66/PR #119 is recorded as merged at 97570eaaca86c9e27d92d04f90da9d930f6bdb33. Updated the PR #152 documentation head to cc15080282b24df986dee2a10788e34e1cbbe511; fresh exact-head CI required.
+
+
+2026-11-26 — PR #152 integrated native Addon Manager Phase A into beta at 103bb979c98589a8704459d28d13861eccca39d6. Exact-head Android/Markdown/reproducibility checks passed; Android report contained 137 tests, 0 failures, and the packaged MIT notice assertion passed. PR #145 was closed as superseded. Issue #23 moved to agent:owner pending a separate Phase B decision. No runtime injection, physical ARM64 test, release, tag or main promotion.

@@ -2,16 +2,16 @@
 
 **Last updated:** 2026-11-26  
 **Active branch:** beta  
-**Beta HEAD at this verification checkpoint:** 97570eaaca86c9e27d92d04f90da9d930f6bdb33 (after PR #119).  
+**Beta HEAD at this verification checkpoint:** 103bb979c98589a8704459d28d13861eccca39d6 (after PR #152).  
 **Stable branch / v2.3.0 tag:** ebc5b424e83ae66c2b0accc2bec6f050b8dc0d88; GitHub confirms published, non-draft, non-prerelease [v2.3.0](https://github.com/iNeonyne/LastHavenPlus/releases/tag/v2.3.0) with canonical ARM64 APK, update manifest and v2.2.0-to-v2.3.0 differential package. Main remains unchanged by this housekeeping work.
 
-## 2026-11-26 — Addon Manager Phase A implementation checkpoint (#23)
+## 2026-11-26 — Addon Manager Phase A integrated (#23)
 
 - **Owner:** Chaty (`agent:chaty`) took over the remaining implementation at the repository owner's explicit direction. Vibe was reassigned to issue #11 (`agent:vibe`) and must not push to the PR #152 branch.
-- **PR:** [#152](https://github.com/iNeonyne/LastHavenPlus/pull/152), draft, targeting `beta`; branch `vibe/addon-manager-phase-a-23` is synced with beta `97570eaaca86c9e27d92d04f90da9d930f6bdb33`, current head `cc15080282b24df986dee2a10788e34e1cbbe511` (docs reconciliation commit; exact-head CI rerun required).
+- **PR:** [#152](https://github.com/iNeonyne/LastHavenPlus/pull/152), squash-merged to beta at `103bb979c98589a8704459d28d13861eccca39d6`.
 - **Scope:** Phase A native local management only — bounded ZIP import/export, app-private library, storage preflight, staging/rollback, TOC dependency metadata, iterative dependency analysis, localized removal confirmation and launcher navigation. Recovery corrections now include replay-safe rollback, explicit old/new index revision decisions, fail-closed malformed journal/index handling, safe in-root journal path validation and crash-window regression tests.
-- **Exact-head CI:** Android [#45875013105](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45875013105) and independent reproducibility [#45875013161](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45875013161) are running; Markdown [#45875013185](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45875013185) passed. Prior implementation checkpoint [#45872047540](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45872047540) passed lint, Spotless, unsigned release assembly and 137/137 JVM tests; packaged MIT notice assertion passed on [#45873000772](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45873000772). No merge yet.
-- **Runtime limitation:** Chrome MV3 background/service-worker execution, XHR/Worker interception, game-resource masking and Lua initialization remain unimplemented. GeckoView 160 runtime/lifecycle integration remains a separate gate; Phase B is not authorized in this PR.
+- **Exact-head PR CI:** Android [#45875494197](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45875494197) passed lint, Spotless, unsigned release assembly, 137/137 JVM tests and packaged MIT notice verification; Markdown [#45875494251](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45875494251) and independent two-runner reproducibility [#45875494315](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45875494315) passed.
+- **Runtime limitation:** Chrome MV3 background/service-worker execution, XHR/Worker interception, game-resource masking and Lua initialization remain unimplemented. Phase B is not authorized; issue #23 is now `agent:owner` pending a separate decision.
 - **Device status:** no physical ARM64 device test has been performed.
 
 ## Latest integration — v2.4.0 launcher icon
@@ -47,15 +47,15 @@
 - Mozilla GeckoView 160 is the embedded browser engine; Cefrium is removed from production.
 - The app launches directly into the game. The Back menu is a responsive overlay; Settings, diagnostics and update details are launcher-owned full-screen pages.
 - Updater downloads and installation remain user-initiated. Preserve application ID, established signing identity and ARM64-only packaging.
-- Addon Manager Phase A (#23) is in draft PR #152 under Chaty's ownership; local enablement remains metadata only, no addon runtime is active in the game, and Phase B is not authorized.
+- Addon Manager Phase A (#23) is integrated by PR #152; local enablement remains metadata only, no addon runtime is active in the game, and Phase B is not authorized.
 - v2.3.0 is published. The owner requested the next three-version roadmap; issue #18 now records v2.4.0 UI/UX, v2.5.0 updater experience and v2.6.0 settings/diagnostics. This is planning only; no new release, tag or promotion is authorized.
 
 ## Open work and limitations
 
 - **Housekeeping:** issue #128 is active on branch chaty/post-v2.3-housekeeping; this PR reconciles the current records while preserving historical entries.
-- **Diagnostics:** #11 / PR #154 is `agent:review`; exact-head Android [#45874522453](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45874522453) and Markdown [#45874522448](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45874522448) passed after syncing with beta. Independent reproducibility [#45874522426](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45874522426) needs a retry after the same plugin-resolution failure. No physical ARM64 testing.
+- **Diagnostics:** #11 / PR #154 is `agent:review`; its prior synced head passed Android [#45874522453](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45874522453), Markdown [#45874522448](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45874522448) and independent reproducibility [#45874522426](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45874522426). The branch is synced with beta after PR #152; fresh exact-head CI is required. No physical ARM64 testing.
 - **Updater:** #4 remains open for remaining automated regression coverage. #15, #31 and #111 remain blocked/deferred; no release-ID/differential fallback verification or updater UX work is claimed complete.
-- **Reproducibility:** PR [#119](https://github.com/iNeonyne/LastHavenPlus/pull/119) / issue #66 merged at `97570eaaca86c9e27d92d04f90da9d930f6bdb33`. Exact-head Android, Markdown and independent two-runner reproducibility checks passed. Post-merge signed ARM64 [#45874342894](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45874342894) and Markdown [#45874342809](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45874342809) passed; post-merge reproducibility [#45874342980](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45874342980) is being retried after a clean-runner Kotlin Compose plugin-resolution failure.
+- **Reproducibility:** PR #119 / issue #66 merged at `97570eaaca86c9e27d92d04f90da9d930f6bdb33`. Exact-head Android, Markdown and independent two-runner checks passed. Post-merge signed ARM64 [#45874342894](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45874342894), Markdown [#45874342809](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45874342809) and reproducibility retry [#45874342980](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45874342980) all passed.
 - **Owner-paused drafts:** PR #122 / issue #20 (GeckoView dependency audit) and PR #123 / issue #62 (branch lifecycle audit) remain draft/open and blocked by explicit owner scope resets. Do not add commits or resume without reprioritization.
 - **UI/UX:** issue #107 visual-system implementation is integrated via PR #136 at `e0967121b51ac1c232c92edd80157fc02b714766`; issue #9 accessibility/navigation implementation is integrated via PR #139 at `0d5ab712ce5195a3e71023c68da54f054645a8e2`. Their remaining physical-device checks stay owner-owned. PR #113 remains traceability-only.
 - **Icon:** PR #135 is merged at `c24b24e`; exact-head PR checks and post-merge signed ARM64 CI passed. Issue #133 is reopened as `agent:owner` for actual Android adaptive-mask/physical launcher appearance verification; CI does not prove launcher rendering.

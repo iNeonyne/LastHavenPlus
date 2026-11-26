@@ -5,12 +5,12 @@
 ## Current state after v2.3.0
 
 - **Latest stable:** v2.3.0 is published on main at tag commit ebc5b424e83ae66c2b0accc2bec6f050b8dc0d88.
-- **Development:** beta is at 97570eaaca86c9e27d92d04f90da9d930f6bdb33; v2.4.0 icon, visual-system and overlay accessibility implementations are integrated, with owner device verification still open. Addon Manager Phase A PR #152 is draft and Chaty-owned; no release or promotion is in progress.
+- **Development:** beta is at 103bb979c98589a8704459d28d13861eccca39d6; v2.4.0 icon, visual-system and overlay accessibility implementations are integrated, with owner device verification still open. Addon Manager native Phase A is integrated via PR #152; issue #23 is `agent:owner` pending a separate Phase B decision.
 - **CI:** PR #132 consolidated beta lint/format checks into the existing signed ARM64 build job and is merged. Exact-head PR validation and post-merge signed CI passed. Issue #129 is closed as completed after the measured result was recorded.
 - **Housekeeping:** #128 is Chaty-owned; it reconciles repository status and work records. #70 remains open until this reconciliation is integrated.
 - **Updater:** #4 remains open for remaining regression coverage. #15, #31 and #111 are blocked/deferred; no release-ID/differential fallback runtime verification is claimed.
 - **Reproducibility:** #66 / PR #119 merged at `97570eaaca86c9e27d92d04f90da9d930f6bdb33`; exact-head PR checks passed. Post-merge signed ARM64 and Markdown checks passed; post-merge clean-runner reproducibility retry is in progress after a plugin-resolution failure.
-- **Owner-paused:** #20 / PR #122 and #62 / PR #123 are explicitly deferred; keep their drafts open for traceability and do not resume. #23 was explicitly reauthorized and is owned by Chaty in draft PR #152.
+- **Owner-paused:** #20 / PR #122 and #62 / PR #123 are explicitly deferred; keep their drafts open for traceability and do not resume. #23 Phase A is integrated; Phase B remains unauthorized and issue #23 is `agent:owner`.
 - **UI/UX:** #133 icon and #107 visual system are integrated; #9 overlay accessibility/navigation is integrated by PR #139. #133 and #9 remain open as `agent:owner` for physical-device verification. PR #113 remains draft/open for traceability only.
 - **Roadmap:** issue #18 now covers v2.4.0 UI/UX, v2.5.0 updater experience and v2.6.0 settings/diagnostics. Targets are planning only, not release authorization.
 - **Other deferred work:** #86 and #19 remain deferred outside the scoped roadmap.
@@ -45,7 +45,7 @@
 | [#20](#issue-20) | Deferred | GeckoView 160 artifact/dependency audit | Owner-deferred; PR #122 remains draft/open for traceability; do not resume |
 | [#21](#issue-21) | Feedback | Owner feedback — GeckoView runtime/profile behavior after release | Open; optional owner feedback and reported follow-up defects; not a release blocker |
 | [#22](#issue-22) | Superseded | Home screen and Play/Settings navigation | Replaced by direct-launch/overlay scope #56; owner feedback tracked in #5/#21 |
-| [#23](#issue-23) | P1 | Integrate and harden supplied GeckoView addon manager | Chaty-owned Phase A corrections in draft PR #152; runtime port remains out of scope |
+| [#23](#issue-23) | P1 | Integrate and harden supplied GeckoView addon manager | Native Phase A integrated by PR #152; `agent:owner` pending separate Phase B decision |
 | [#28](https://github.com/iNeonyne/LastHavenPlus/issues/28) | P2 | Storage usage accuracy and iterative directory sizing | Open; queued after #10 |
 | [#42](https://github.com/iNeonyne/LastHavenPlus/issues/42) | Superseded | v2.1.0 Home-screen UI verification | Superseded by direct-launch redesign #56; new UX verification belongs to #5/#56 |
 | [#29](https://github.com/iNeonyne/LastHavenPlus/issues/29) | Done | Reconcile beta documentation and CI evidence | Closed as completed after PR #46 merged to beta |
@@ -714,10 +714,10 @@ Fresh launch shows a simple branded home screen with Play and Settings. Do not l
 ## Issue 23 — P1 — Integrate and harden the supplied GeckoView addon manager
 
 **GitHub:** https://github.com/iNeonyne/LastHavenPlus/issues/23  
-**State:** ACTIVE — the owner explicitly reauthorized work on 2026-11-25/26. Chaty (`agent:chaty`) owns native Phase A in draft PR #152, currently synced to beta at `97570ea` and awaiting exact-head CI/review.  
+**State:** Phase A integrated by PR #152 at beta commit `103bb979c98589a8704459d28d13861eccca39d6`. Issue remains open with `agent:owner` pending the owner's decision whether to authorize a separate Phase B.  
 **Current source:** owner-supplied Addon Manager ZIP v0.5.1 (Chrome Manifest V3); it supersedes the earlier XPI 0.11.0 as the implementation target.  
 **Phase A scope:** bounded local ZIP import/export, app-private library persistence, TOC metadata/dependency analysis and Compose management UI. Enabled state is metadata only; no runtime injection or in-game activation is implemented.  
-**Phase B:** GeckoView 160 runtime adaptation, XHR/Worker interception and game-resource masking remain separate and are not authorized by PR #152.  
+**Phase B:** GeckoView 160 runtime adaptation, XHR/Worker interception and game-resource masking remain separate and are not authorized.  
 
 ### Historical XPI 0.11.0 audit (superseded by ZIP 0.5.1)
 The following checklist documents the earlier XPI proposal only. It is not the acceptance checklist for the current ZIP 0.5.1 Phase A work; see GitHub issue #23 for current source, phases and gates.

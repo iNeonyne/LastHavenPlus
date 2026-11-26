@@ -1,6 +1,6 @@
 # Agent work assignments — LastHavenPlus
 
-**Current beta baseline:** 97570eaaca86c9e27d92d04f90da9d930f6bdb33 (after PR #119 independent unsigned APK reproducibility integration).  
+**Current beta baseline:** 103bb979c98589a8704459d28d13861eccca39d6 (after PR #152 native Addon Manager Phase A integration).  
 **Stable baseline:** main / v2.3.0 tag ebc5b424e83ae66c2b0accc2bec6f050b8dc0d88.
 
 ## Roles and integration
@@ -43,9 +43,8 @@
 
 ### Issue #11 — privacy-conscious diagnostics tests (awaiting Chaty review)
 - **Owner:** `agent:review`; Vibe submitted [PR #154](https://github.com/iNeonyne/LastHavenPlus/pull/154), and Chaty is reviewing it.
-- **Current head:** `16e8abbf25626ffc8fcb7eadafa6ee05cfa79d4b`, synced with beta after PR #119.
 - **Scope:** focused JVM coverage for sensitive-value redaction, log rotation/size limits and safe failure-path logging. No telemetry, network upload, logger rewrite, updater or Addon Manager changes.
-- **Validation:** exact-head Android PR validation [#45874522453](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45874522453) and Markdown [#45874522448](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45874522448) passed. The independent reproducibility run hit a transient Kotlin Compose plugin-resolution failure on one clean runner; failed-job retry is pending. No physical ARM64 testing.
+- **Validation before latest beta sync:** exact-head Android [#45874522453](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45874522453), Markdown [#45874522448](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45874522448) and independent two-runner reproducibility [#45874522426](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45874522426) passed after the PR #119 sync. PR #154 is now synced with beta after PR #152; fresh exact-head CI is required. No physical ARM64 testing.
 
 ### Completed — issue #129 CI consolidation
 - PR [#132](https://github.com/iNeonyne/LastHavenPlus/pull/132) merged at 7cd898f4c1f9b7f70787a7000e1ed9343a83540d.

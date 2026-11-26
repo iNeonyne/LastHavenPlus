@@ -860,3 +860,10 @@ Entry format:
 - Reconciled active records after PR #119 merged: issue #66 is complete; issue #11 is awaiting Chaty's review of PR #154; issue #23 is owner-authorized for native Phase A under Chaty/PR #152.
 - Clarified that the former #23 hold and XPI 0.11.0 checklist are historical/superseded by the owner-approved ZIP 0.5.1 Phase A scope. Phase B/runtime injection remains unauthorized.
 - Updated beta baseline to `97570eaaca86c9e27d92d04f90da9d930f6bdb33`; PR #152 docs reconciliation is at `cc15080282b24df986dee2a10788e34e1cbbe511` and needs fresh exact-head CI.
+
+
+## 2026-11-26 — Integrate Addon Manager Phase A (#152)
+
+- **PR:** [#152](https://github.com/iNeonyne/LastHavenPlus/pull/152) squash-merged into beta at `103bb979c98589a8704459d28d13861eccca39d6`. The superseded duplicate draft PR #145 was closed unmerged.
+- **Validation:** exact-head Android [#45875494197](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45875494197) passed 137 JVM tests and the packaged MIT notice assertion; Markdown [#45875494251](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45875494251) and independent reproducibility [#45875494315](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45875494315) passed. Post-merge beta Markdown [#45876158514](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45876158514) passed; signed ARM64 and reproducibility checks are tracked by [#45876160304](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45876160304) and [#45876158660](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45876158660).
+- **Scope:** native local ZIP/library management only. No runtime injection, game-resource masking, Lua initialization or game-client changes. Issue #23 remains open as `agent:owner` pending a separate Phase B decision. No physical ARM64 device test, release, tag or main promotion.
