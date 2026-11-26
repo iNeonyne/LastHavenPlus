@@ -830,3 +830,11 @@ Entry format:
 - **Tests:** added coverage for preflight occurring before expanded writes, optional dependency parsing/persistence and optional dependency warning behavior. Corrected the rollback fixture's escaped newline after exact-head CI exposed the mismatch.
 - **GeckoView investigation:** exact pinned 160 API probe covers built-in install/ensure, tab delegation and native messaging. Mozilla docs require APK-bundled unpacked built-in extension assets; the supplied Chrome MV3 service-worker entry point needs an event-page-compatible port and exact-version runtime testing. No runtime injection or game-resource masking was enabled.
 - **Status:** draft PR; latest exact-head CI pending. No merge, release, tag, main promotion or physical ARM64 device claim.
+## 2026-11-26 — Triage beta code-review follow-ups
+
+- **Role:** Chaty / issue triage and roadmap coordination.
+- **Created:** #146 GameSessionController extraction; #147 navigation/back-stack consolidation; #148 gameplay orientation/immersive state; #149 launcher string resources; #150 GeckoView/Android permission-policy documentation.
+- **Dependencies:** #147 depends on #146. #148 coordinates with #16. All five issues start as `agent:unassigned` pending file-scope checks and explicit assignment.
+- **Existing issue updates:** Added updater URI dismissal/error mapping/cancellation-cleanup findings to #15 and R8/release smoke verification to #4. Kept updater ownership consolidated; #111 remains the separate Vibe progress task.
+- **Duplicate prevention:** No new theme issue (already covered by #107/#6), no new download-progress issue (#111), and no new updater owner.
+- **Constraints:** No source, CI, dependency, toolchain, signing, ABI, release, main-branch or game-client changes. No physical-device testing was performed or claimed.

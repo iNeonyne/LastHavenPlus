@@ -187,3 +187,15 @@ The repository owner will install releases and report what works and what does n
 - **Latest validation history:** prior exact-head run [#45852470193](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45852470193) failed one JVM test because the rollback fixture encoded a literal backslash-n instead of a newline. The run's `minifyReleaseWithR8` task completed; R8 was not the failure. The fixture was corrected and further preflight/optional-dependency coverage was added. New exact-head validation is pending.
 - **Runtime limitation:** this candidate is native local management only. The supplied Chrome MV3 background/service worker, XHR/Worker interception, game-resource masking and in-game Lua initialization are not implemented or enabled. GeckoView 160 runtime compatibility and session/lifecycle integration still require dedicated tests.
 - **Verification limits:** no physical ARM64 device test has been performed. No merge, release, tag, or main promotion.
+## Code-review backlog additions — 2026-11-26
+
+The beta code review identified structural follow-ups rather than a broad defect backlog. New issues #146–#150 were created and remain unassigned pending dependency and file-ownership checks:
+- #146 GameSessionController and explicit GeckoSession keep-alive/close invariant (P1).
+- #147 navigation/back-stack consolidation (P1; depends on #146).
+- #148 centralized gameplay orientation/immersive state (P2; coordinate with #16).
+- #149 launcher-owned string resources (P2).
+- #150 verified documentation of the existing GeckoView/Android permission policy (P2; no runtime permission changes).
+
+Updater findings were appended to existing #15 (installer URI dismissal lifecycle, actionable error mapping, safe cancellation cleanup) and #4 (R8/release smoke verification); no parallel updater issue was created. Existing #111 progress implementation remains separately owned by Vibe.
+
+No code, CI, release, signing, dependency, ABI or device behavior changed in this documentation/triage checkpoint. No physical ARM64 device test is claimed.

@@ -112,3 +112,18 @@ Only Chaty changes ownership labels. Assignment comments must define expected be
 - **Pre-merge CI:** Android [#45829421214](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45829421214) and Markdown [#45829421210](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45829421210) passed.
 - **Integrated:** pane title, heading/traversal semantics, Compose input-focus request, scrollable menu and live reduced-motion observer.
 - **Remaining:** ARM64 TalkBack announcement/focus/traversal, GeckoView-relative ordering, reduced-motion behavior and large-font rendering require physical-device verification. No device test is claimed. Issue #9 remains `agent:owner` pending verification.
+
+
+## New code-review follow-ups (2026-11-26)
+
+The following GitHub issues were created from the beta code review. All are currently `agent:unassigned`; no contributor may start until Chaty checks current PR/file ownership and posts an explicit assignment.
+
+- **#146 — GameSessionController:** P1; centralize GeckoSession lifecycle and load/crash state. Coordinate with #23 / PR #145 and avoid overlapping MainActivity/GeckoSession work.
+- **#147 — Navigation/back stack:** P1; depends on #146. One pure navigation policy or lightweight stack; no new navigation dependency by default.
+- **#148 — GameplayUiState:** P2; centralize existing orientation/immersive window presentation; coordinate with #16.
+- **#149 — String resources:** P2; launcher-owned strings only, no translation/copy redesign.
+- **#150 — Permission policy documentation:** P2; documentation-only audit of the current deny-by-default GeckoView/Android permission behavior.
+
+Updater review findings were added to existing #15 and #4, not split into parallel updater tasks. #111 remains Vibe's active progress work and must be reviewed for file overlap before any updater follow-up is assigned.
+
+**Assignment policy:** Do not assign these issues to Vibe while an existing task/PR owns overlapping files. Keep one active owner per issue and record the exact scope in a GitHub assignment comment before work begins.
