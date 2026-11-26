@@ -566,3 +566,11 @@ No branch was deleted. The available GitHub connector exposes no branch-delete o
 - **GeckoView research:** exact pinned-artifact API probe confirms built-in extension lifecycle, tab delegate and native messaging method presence. Mozilla docs describe APK asset-folder packaging and indicate Firefox MV3 background execution uses event-page scripts rather than Chrome service workers. This is not proof of runtime compatibility in GeckoView 160.
 - **Known limitations:** Chrome MV3 runtime, XHR/Worker interception, game-resource masking, Lua initialization and real GeckoView extension/session lifecycle tests remain unimplemented. No physical ARM64 device testing. No merge/release/tag/main promotion.
 - **Next safe action:** run and inspect Android CI on the final PR head; review lint/test artifacts and source diff; continue the separate exact-GeckoView-160 runtime compatibility probe before enabling any injection.
+
+### 2026-11-26 — Chaty takes over Addon Manager Phase A; Vibe assigned #11
+
+- **Owner direction:** Chaty took over issue #23 / PR #152. Issue #23 is `agent:chaty`; Vibe was instructed not to continue on that branch.
+- **Vibe assignment:** issue #11 is now `agent:vibe`, scoped to diagnostics redaction, rotation/size-bound and failure-path tests. #9's implementation was integrated by PR #139, satisfying #11's prerequisite.
+- **Code changes:** replaced ambiguous recovery rollback with explicit journal format v2 old/new revision state; made rollback replay-safe when the process dies after restoring a backup; fail closed on malformed/mismatched index or journal; validate journal paths remain within app-private addon storage; record stage paths for safe cleanup; added crash-window and malformed-state tests.
+- **Verification:** commit `c9067bd35323fff167a014fcda9904caf7d81617` passed exact-head Android validation [#45872047540](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45872047540) and Markdown [#45872047492](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45872047492); 137 JVM tests passed. Final package-level MIT asset assertion is being added.
+- **State:** PR #152 remains draft; no merge, release, tag, main promotion or physical-device compatibility claim. Phase B remains excluded.

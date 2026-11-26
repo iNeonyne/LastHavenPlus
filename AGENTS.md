@@ -88,7 +88,7 @@ See [Mozilla's GeckoView consumer documentation](https://firefox-source-docs.moz
 
 ## Addon boundary
 
-Issue #23 is active under explicit repository-owner approval (2026-11-25/26). The current source target is the owner-supplied Addon Manager ZIP 0.5.1, a Chrome Manifest V3 extension; it supersedes the earlier XPI 0.11.0 investigation as the implementation target.
+Issue #23 is active under explicit repository-owner approval (2026-11-25/26), with Chaty (`agent:chaty`) owning the remaining Phase A implementation in PR #152. Vibe is assigned to diagnostics tests in issue #11 and must not modify the Addon Manager branch. The current source target is the owner-supplied Addon Manager ZIP 0.5.1, a Chrome Manifest V3 extension; it supersedes the earlier XPI 0.11.0 investigation as the implementation target.
 
 Keep the work phased and accurately described:
 

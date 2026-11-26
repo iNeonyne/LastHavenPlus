@@ -75,6 +75,13 @@ jobs:
       - name: Run lint, formatting, unsigned release build and unit tests
         run: ./gradlew lintDebug spotlessCheck assembleRelease testDebugUnitTest --stacktrace -PspotlessRatchetFrom=origin/beta
 
+      - name: Verify Addon Manager MIT notice in unsigned APK
+        if: github.event_name == 'pull_request'
+        run: |
+          apk="$(find app/build/outputs/apk/release -maxdepth 1 -type f -name '*unsigned.apk' -print -quit)"
+          test -n "$apk"
+          unzip -Z1 "$apk" | grep -Fx "assets/licenses/ADDON_MANAGER_0.5.1_MIT.txt"
+
       - name: Upload unit-test reports
         if: always()
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2

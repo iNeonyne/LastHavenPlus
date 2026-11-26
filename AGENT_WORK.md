@@ -1,6 +1,6 @@
 # Agent work assignments — LastHavenPlus
 
-**Current beta baseline:** 0350acaee3f277e01ac51a3722346ab228e23af3 (after PR #139 overlay accessibility/navigation integration).  
+**Current beta baseline:** 02f47e7886c0ca777513d4740b8d95d8f01b9842 (after PR #153 updater regression test integration).  
 **Stable baseline:** main / v2.3.0 tag ebc5b424e83ae66c2b0accc2bec6f050b8dc0d88.
 
 ## Roles and integration
@@ -33,13 +33,18 @@
 - **Owner:** issue remains `agent:owner` for physical ARM64 TalkBack/focus/traversal, GeckoView-relative order, reduced-motion and large-font verification.
 - **Device status:** no physical-device verification is claimed.
 
-### Issue #23 — Addon Manager Phase A (active Vibe implementation, Chaty review)
-- **Owner:** Vibe (`agent:vibe`); Chaty assigned implementation on 2026-11-26 after the repository owner reauthorized #23 and approved resuming. Chaty is reviewer and the only integrator.
-- **PR:** [#152](https://github.com/iNeonyne/LastHavenPlus/pull/152), draft, targeting `beta`; branch `vibe/addon-manager-phase-a-23`, based on Chaty's PR [#145](https://github.com/iNeonyne/LastHavenPlus/pull/145) head and merged with current beta.
-- **Scope implemented:** Chaty's Phase A scope (bounded ZIP import/export, app-private addon library, storage preflight before expanded extraction, staging/rollback, required and optional TOC dependency metadata, iterative cycle analysis, localized removal confirmation, overlay navigation) plus the review-driven correction pass: write-ahead transaction records with deterministic crash recovery on the next library read, revision-based commit/rollback decisions, worst-case staging reservation for untrusted document sizes, a 10,000-entry library-count invariant, packaged MIT notice asset for Addon Manager 0.5.1, and crash-window/boundary regression tests.
-- **Validation:** exact-head Android CI recorded in PR #152; review-driven corrections are in progress; no merge.
+### Issue #23 — Addon Manager Phase A (active Chaty implementation)
+- **Owner:** Chaty (`agent:chaty`), following the repository owner's explicit handoff on 2026-11-26. Vibe must not continue work on #23 or push to its branch.
+- **PR:** [#152](https://github.com/iNeonyne/LastHavenPlus/pull/152), draft, targeting `beta`; Chaty continues the existing branch `vibe/addon-manager-phase-a-23` from current beta.
+- **Scope:** native Phase A only — bounded ZIP import/export, app-private addon library, storage preflight, staging/rollback, TOC dependency metadata, iterative dependency analysis, localized removal confirmation and launcher overlay navigation. Current corrections add replay-safe crash recovery, explicit old/new index revision decisions, fail-closed malformed journal/index handling, safe in-root journal path validation and regression tests for interrupted recovery.
+- **Validation:** implementation commit `c9067bd35323fff167a014fcda9904caf7d81617` passed exact-head Android validation [#45872047540](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45872047540): lint, Spotless, unsigned release assembly and 137/137 JVM tests. Markdown gate [#45872047492](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45872047492) passed. A final CI assertion for the packaged MIT notice is being added; no merge.
 - **Runtime limitation:** Chrome MV3 background/service-worker execution, XHR/Worker interception, game-resource masking and Lua initialization are not implemented or enabled. GeckoView 160 runtime/lifecycle integration remains a separate gate. Phase B is not authorized in this PR.
 - **Device status:** no physical ARM64 test has been performed.
+
+### Issue #11 — privacy-conscious diagnostics tests (active Vibe assignment)
+- **Owner:** Vibe (`agent:vibe`), assigned by Chaty after the #23 handoff; #9 implementation is integrated and #11's prerequisite is satisfied.
+- **Scope:** focused JVM coverage for sensitive-value redaction, log rotation/size limits and safe failure-path logging. No telemetry, network upload, logger rewrite, updater or Addon Manager changes.
+- **Branch/PR:** Vibe to create a dedicated branch from current `beta` and submit a PR targeting `beta`; Chaty reviews and integrates.
 
 ### Completed — issue #129 CI consolidation
 - PR [#132](https://github.com/iNeonyne/LastHavenPlus/pull/132) merged at 7cd898f4c1f9b7f70787a7000e1ed9343a83540d.

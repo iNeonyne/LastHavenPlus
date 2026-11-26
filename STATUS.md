@@ -7,11 +7,11 @@
 
 ## 2026-11-26 — Addon Manager Phase A implementation checkpoint (#23)
 
-- **Owner:** the repository owner reauthorized #23; Chaty assigned implementation to Vibe (`agent:vibe`) on 2026-11-26 and is now reviewer only. Chaty's Phase A candidate PR [#145](https://github.com/iNeonyne/LastHavenPlus/pull/145) was superseded as candidate by Vibe's continuation.
-- **PR:** [#152](https://github.com/iNeonyne/LastHavenPlus/pull/152), draft, targeting `beta`; branch `vibe/addon-manager-phase-a-23`, based on Chaty's PR #145 head and merged with current beta.
-- **Scope in the PR:** Chaty's Phase A scope (bounded ZIP import/export, app-private library, storage preflight, staging/rollback, TOC dependency metadata, iterative dependency analysis, localized removal confirmation, overlay navigation) plus Vibe's correction pass: write-ahead transaction records with deterministic crash recovery at the next library read, revision-based commit/rollback decisions, worst-case staging reservation for untrusted document sizes, a 10,000-entry library-count invariant, packaged MIT notice asset for Addon Manager 0.5.1, and expanded crash-window/boundary regression tests.
-- **Validation:** local spotlessCheck, lintDebug and 127/127 unit tests pass; exact-head CI is recorded in PR #152. No merge; review by Chaty is pending.
-- **Runtime limitation:** Chrome MV3 background/service-worker execution, XHR/Worker interception, game-resource masking and Lua initialization remain unimplemented. GeckoView 160 runtime/lifecycle integration remains a separate gate.
+- **Owner:** Chaty (`agent:chaty`) took over the remaining implementation at the repository owner's explicit direction. Vibe was reassigned to issue #11 (`agent:vibe`) and must not push to the PR #152 branch.
+- **PR:** [#152](https://github.com/iNeonyne/LastHavenPlus/pull/152), draft, targeting `beta`; Chaty continues the existing branch `vibe/addon-manager-phase-a-23`, based on beta `02f47e7886c0ca777513d4740b8d95d8f01b9842`.
+- **Scope:** Phase A native local management only — bounded ZIP import/export, app-private library, storage preflight, staging/rollback, TOC dependency metadata, iterative dependency analysis, localized removal confirmation and launcher navigation. Recovery corrections now include replay-safe rollback, explicit old/new index revision decisions, fail-closed malformed journal/index handling, safe in-root journal path validation and crash-window regression tests.
+- **Verified implementation checkpoint:** commit `c9067bd35323fff167a014fcda9904caf7d81617`; Android validation [#45872047540](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45872047540) passed lint, Spotless, unsigned release assembly and 137/137 JVM tests. Markdown [#45872047492](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45872047492) passed. Final CI is adding an assertion that the MIT notice is present in the unsigned APK. No merge.
+- **Runtime limitation:** Chrome MV3 background/service-worker execution, XHR/Worker interception, game-resource masking and Lua initialization remain unimplemented. GeckoView 160 runtime/lifecycle integration remains a separate gate; Phase B is not authorized in this PR.
 - **Device status:** no physical ARM64 device test has been performed.
 
 ## Latest integration — v2.4.0 launcher icon
@@ -47,7 +47,7 @@
 - Mozilla GeckoView 160 is the embedded browser engine; Cefrium is removed from production.
 - The app launches directly into the game. The Back menu is a responsive overlay; Settings, diagnostics and update details are launcher-owned full-screen pages.
 - Updater downloads and installation remain user-initiated. Preserve application ID, established signing identity and ARM64-only packaging.
-- Addon Manager Phase A (#23) is reauthorized and implemented by Vibe in draft PR #152 under Chaty review; no addon manager behavior is active in the game and no release is authorized.
+- Addon Manager Phase A (#23) is being implemented by Chaty in draft PR #152; local enablement remains metadata only, no addon runtime is active in the game, and no release is authorized.
 - v2.3.0 is published. The owner requested the next three-version roadmap; issue #18 now records v2.4.0 UI/UX, v2.5.0 updater experience and v2.6.0 settings/diagnostics. This is planning only; no new release, tag or promotion is authorized.
 
 ## Open work and limitations
@@ -56,9 +56,9 @@
 - **Updater:** #4 remains open for remaining automated regression coverage. #15, #31 and #111 remain blocked/deferred; no release-ID/differential fallback verification or updater UX work is claimed complete.
 - **Reproducibility:** PR [#119](https://github.com/iNeonyne/LastHavenPlus/pull/119) / issue #66 remains open. An earlier exact commit produced byte-identical unsigned APKs; the PR branch is behind current beta and must be refreshed and revalidated before merge.
 - **Owner-paused drafts:** PR #122 / issue #20 (GeckoView dependency audit) and PR #123 / issue #62 (branch lifecycle audit) remain draft/open and blocked by explicit owner scope resets. Do not add commits or resume without reprioritization.
-- **UI/UX:** issue #107 is assigned to Vibe (`agent:vibe`). PR [#136](https://github.com/iNeonyne/LastHavenPlus/pull/136) contains the visual-system implementation. Original exact-head Android run [#45743147121](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45743147121) passed, but only against the pre-icon base. Beta advanced after PRs #135 and #137; #136 is draft/non-mergeable and Vibe has been asked to merge current beta into the branch, resolve `AGENT_WORK.md`, update the handoff and rerun exact-head CI. PR #113 remains traceability-only.
+- **UI/UX:** issue #107 visual-system implementation is integrated via PR #136 at `e0967121b51ac1c232c92edd80157fc02b714766`; issue #9 accessibility/navigation implementation is integrated via PR #139 at `0d5ab712ce5195a3e71023c68da54f054645a8e2`. Their remaining physical-device checks stay owner-owned. PR #113 remains traceability-only.
 - **Icon:** PR #135 is merged at `c24b24e`; exact-head PR checks and post-merge signed ARM64 CI passed. Issue #133 is reopened as `agent:owner` for actual Android adaptive-mask/physical launcher appearance verification; CI does not prove launcher rendering.
-- **Accessibility:** issue #9 remains unassigned until the visual-system pass is settled, to avoid overlapping Compose screen work.
+- **Accessibility:** issue #9 implementation is integrated by PR #139; issue remains `agent:owner` for physical ARM64 TalkBack/focus/traversal, GeckoView-relative order, reduced-motion and large-font verification.
 - **Documentation quality:** PR #120 added repository-wide markdownlint; current beta Markdown quality run [#45736853811](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45736853811) passed. Issue #70 remains open until this central reconciliation is reviewed and merged.
 - **Device status:** CI and packaging checks do not prove physical ARM64 gameplay, profile persistence, haptics, updater installation or device-specific behavior. No new physical-device testing was performed.
 
@@ -67,7 +67,7 @@
 - **v2.4.0 — UI/UX:** icon resources (#133, Chaty) and shared Compose visual system (#107, Vibe) proceed in parallel; accessibility/navigation coverage (#9) follows #107 integration. No game/client changes or new home screen.
 - **v2.5.0 — updater:** truthful download progress and retry feedback (#111), plus coordinated regression/recovery coverage (#4/#15/#31) after prioritization.
 - **v2.6.0 — settings/diagnostics:** essential settings (#6), connection and GeckoView error diagnostics (#12/#14), orientation/keep-awake (#16), storage/network accuracy and safe backup/restore (#10/#17/#28) in dependency order.
-- Roadmap source: issue #18. Version targets are not release commitments. #23 remains on hold; #19 and #7 remain deferred.
+- Roadmap source: issue #18. Version targets are not release commitments. #23 Phase A is active in draft PR #152; #19 and #7 remain deferred.
 
 ## Historical integration records
 
