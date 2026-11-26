@@ -845,3 +845,11 @@ Entry format:
 - **Existing issue updates:** Added updater URI dismissal/error mapping/cancellation-cleanup findings to #15 and R8/release smoke verification to #4. Kept updater ownership consolidated; #111 remains the separate Vibe progress task.
 - **Duplicate prevention:** No new theme issue (already covered by #107/#6), no new download-progress issue (#111), and no new updater owner.
 - **Constraints:** No source, CI, dependency, toolchain, signing, ABI, release, main-branch or game-client changes. No physical-device testing was performed or claimed.
+
+
+## 2026-11-26 — Begin PR integration sequence (#119, #152, #154)
+
+- **PR #119:** squash-merged into beta at `97570eaaca86c9e27d92d04f90da9d930f6bdb33`; issue #66 closed automatically. Exact-head Android, Markdown and independent two-runner unsigned APK reproducibility checks passed. Post-merge signed ARM64 build [#45874342894](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45874342894) and Markdown [#45874342809](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45874342809) passed; post-merge reproducibility [#45874342980](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45874342980) is being retried after a clean-runner Kotlin Compose plugin marker resolution failure.
+- **PR #154:** diagnostics tests synced with beta using merge commit `16e8abbf25626ffc8fcb7eadafa6ee05cfa79d4b`; issue #11 moved to `agent:review`. Exact-head Android [#45874522453](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45874522453) and Markdown [#45874522448](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45874522448) passed. Reproducibility run [#45874522426](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45874522426) is being retried after the same clean-runner plugin-resolution failure.
+- **PR #152:** Chaty-owned Addon Manager Phase A branch synced with beta via merge commit `444985b6cf78cdc89e494988c65364b7bf80b767`; exact-head Android and independent reproducibility workflows are running, Markdown [#45875013185](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45875013185) passed. Phase A remains local ZIP/library management only; runtime injection and Phase B are not implemented or authorized.
+- **Limitations:** no physical ARM64 device testing; no beta-to-main promotion, release tag or publication.

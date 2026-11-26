@@ -1,6 +1,6 @@
 # Agent work assignments — LastHavenPlus
 
-**Current beta baseline:** 02f47e7886c0ca777513d4740b8d95d8f01b9842 (after PR #153 updater regression test integration).  
+**Current beta baseline:** 97570eaaca86c9e27d92d04f90da9d930f6bdb33 (after PR #119 independent unsigned APK reproducibility integration).  
 **Stable baseline:** main / v2.3.0 tag ebc5b424e83ae66c2b0accc2bec6f050b8dc0d88.
 
 ## Roles and integration
@@ -35,16 +35,17 @@
 
 ### Issue #23 — Addon Manager Phase A (active Chaty implementation)
 - **Owner:** Chaty (`agent:chaty`), following the repository owner's explicit handoff on 2026-11-26. Vibe must not continue work on #23 or push to its branch.
-- **PR:** [#152](https://github.com/iNeonyne/LastHavenPlus/pull/152), draft, targeting `beta`; Chaty continues the existing branch `vibe/addon-manager-phase-a-23` from current beta.
+- **PR:** [#152](https://github.com/iNeonyne/LastHavenPlus/pull/152), draft, targeting `beta`; Chaty continues the existing branch `vibe/addon-manager-phase-a-23`, synced with beta `97570eaaca86c9e27d92d04f90da9d930f6bdb33`.
 - **Scope:** native Phase A only — bounded ZIP import/export, app-private addon library, storage preflight, staging/rollback, TOC dependency metadata, iterative dependency analysis, localized removal confirmation and launcher overlay navigation. Current corrections add replay-safe crash recovery, explicit old/new index revision decisions, fail-closed malformed journal/index handling, safe in-root journal path validation and regression tests for interrupted recovery.
-- **Validation:** implementation commit `c9067bd35323fff167a014fcda9904caf7d81617` passed exact-head Android validation [#45872047540](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45872047540): lint, Spotless, unsigned release assembly and 137/137 JVM tests. Markdown gate [#45872047492](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45872047492) passed. A final CI assertion for the packaged MIT notice is being added; no merge.
+- **Current head:** `444985b6cf78cdc89e494988c65364b7bf80b767` (merge-based sync with beta after PR #119; no rebase/force-push). Exact-head Android validation [#45875013105](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45875013105) and independent reproducibility [#45875013161](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45875013161) are running; Markdown [#45875013185](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45875013185) passed. The previous exact-head implementation checkpoint [#45872047540](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45872047540) passed lint, Spotless, unsigned release assembly and 137/137 JVM tests; MIT notice packaging assertion passed on [#45873000772](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45873000772). No merge yet.
 - **Runtime limitation:** Chrome MV3 background/service-worker execution, XHR/Worker interception, game-resource masking and Lua initialization are not implemented or enabled. GeckoView 160 runtime/lifecycle integration remains a separate gate. Phase B is not authorized in this PR.
 - **Device status:** no physical ARM64 test has been performed.
 
-### Issue #11 — privacy-conscious diagnostics tests (active Vibe assignment)
-- **Owner:** Vibe (`agent:vibe`), assigned by Chaty after the #23 handoff; #9 implementation is integrated and #11's prerequisite is satisfied.
+### Issue #11 — privacy-conscious diagnostics tests (awaiting Chaty review)
+- **Owner:** `agent:review`; Vibe submitted [PR #154](https://github.com/iNeonyne/LastHavenPlus/pull/154), and Chaty is reviewing it.
+- **Current head:** `16e8abbf25626ffc8fcb7eadafa6ee05cfa79d4b`, synced with beta after PR #119.
 - **Scope:** focused JVM coverage for sensitive-value redaction, log rotation/size limits and safe failure-path logging. No telemetry, network upload, logger rewrite, updater or Addon Manager changes.
-- **Branch/PR:** Vibe to create a dedicated branch from current `beta` and submit a PR targeting `beta`; Chaty reviews and integrates.
+- **Validation:** exact-head Android PR validation [#45874522453](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45874522453) and Markdown [#45874522448](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45874522448) passed. The independent reproducibility run hit a transient Kotlin Compose plugin-resolution failure on one clean runner; failed-job retry is pending. No physical ARM64 testing.
 
 ### Completed — issue #129 CI consolidation
 - PR [#132](https://github.com/iNeonyne/LastHavenPlus/pull/132) merged at 7cd898f4c1f9b7f70787a7000e1ed9343a83540d.
@@ -68,11 +69,11 @@
 
 ## Review queue and stale-base work
 
-### Issue #66 / PR #119 — independent unsigned APK reproducibility
-- PR is open on chaty/issue-66-independent-apk-rebuilds; issue ownership is agent:review.
-- Prior independent builds produced byte-identical unsigned APKs (run #45727205562 on its recorded exact commit).
-- The PR is based on an older beta commit and must be refreshed against current beta, then exact-head Android validation and reproducibility runs must pass before merge.
-- No signing secrets, signed artifact reproducibility, F-Droid or physical-device claim.
+### Issue #66 / PR #119 — independent unsigned APK reproducibility (merged)
+- PR [#119](https://github.com/iNeonyne/LastHavenPlus/pull/119) squash-merged to beta at `97570eaaca86c9e27d92d04f90da9d930f6bdb33`; issue #66 closed automatically.
+- Exact-head Android [#45867363836](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45867363836), Markdown [#45867363835](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45867363835) and independent two-runner reproducibility [#45867363851](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45867363851) passed before merge.
+- Post-merge signed ARM64 beta build [#45874342894](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45874342894) and Markdown [#45874342809](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45874342809) passed. Post-merge independent reproducibility [#45874342980](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45874342980) hit a Kotlin Compose plugin-resolution failure on one clean runner; retry is running.
+- No signing secrets in independent builds; no signed-artifact reproducibility, F-Droid or physical-device claim.
 
 ### Issue #70 — documentation/security guidance
 - Repository-wide markdownlint was integrated by PR #120; latest beta Markdown run #45736853811 passed.
