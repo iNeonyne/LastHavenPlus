@@ -65,7 +65,7 @@ Exactly one `agent:*` ownership label should describe each actionable issue's cu
 - New issues receive `agent:unassigned` automatically.
 - Only Chaty changes ownership labels. Replace the previous `agent:*` label when an issue changes state; do not leave conflicting ownership labels.
 - An `agent:unassigned` label is not permission to begin work. Vibe must wait for Chaty's explicit `agent:vibe` assignment and scope comment.
-- On PR submission, Chaty changes the issue to `agent:review`; after review, Chaty either assigns `agent:vibe` for revisions, retains `agent:chaty`, or returns it to `agent:unassigned`.
+- On PR submission, Chaty changes the issue to `agent:review`; after review, Chaty assigns `agent:vibe` for revisions, retains `agent:chaty`, or sets `agent:blocked` / `agent:owner` when a prerequisite or owner decision prevents work. Do not leave an actionable issue unassigned after triage; `agent:unassigned` is only a brief intake state that Chaty must resolve before work starts.
 - After merge, Chaty updates the issue's ownership label and completion state based on verified evidence. Do not close issues merely because documentation changed.
 - The label automation is defined in `.github/workflows/agent-ownership.yml`. GitHub issue-event workflows must exist on the repository default branch to run automatically. A beta-only PR therefore prepares the automation but does not activate issue-open labeling until the owner separately approves promotion of that workflow to the default branch.
 
@@ -104,7 +104,7 @@ See [Mozilla's GeckoView consumer documentation](https://firefox-source-docs.moz
 
 ## Addon boundary
 
-Issue #23 is active under explicit repository-owner approval (2026-11-25/26), with Chaty (`agent:chaty`) owning the remaining Phase A implementation in PR #152. Vibe is assigned to diagnostics tests in issue #11 and must not modify the Addon Manager branch. The current source target is the owner-supplied Addon Manager ZIP 0.5.1, a Chrome Manifest V3 extension; it supersedes the earlier XPI 0.11.0 investigation as the implementation target.
+Issue #23 Phase A is integrated in beta by PR #152 at 103bb979c98589a8704459d28d13861eccca39d6. The issue is now agent:owner while the repository owner decides whether to authorize Phase B. Vibe must not modify the Addon Manager implementation. The integrated Phase A target is the owner-supplied ZIP 0.5.1; it provides native local library management only. Runtime injection, XHR/Worker interception and game-addon activation are not implemented or authorized.
 
 Keep the work phased and accurately described:
 
