@@ -91,5 +91,5 @@ class GeckoViewWebExtensionApiTest {
                 it.name == "onDisconnect" && it.parameterTypes.size == 1
             },
         )
-        }
+    }
 }
