@@ -1,3 +1,11 @@
+## 2026-11-26 — Begin v2.4.0 launcher icon implementation (#133)
+
+- **Owner:** Chaty (agent:chaty), following the repository owner's explicit takeover direction.
+- **Branch:** chaty/issue-133-icy-pixel-castle, based on beta e69656303d7e1c1e7d50f7211c8cfaeb748f07e9.
+- **Artwork:** added a native Android vector illustration of an icy-blue pixel-art gothic castle, moon, frost stars and snowy ridge; changed the adaptive background to deep navy and pointed the adaptive foreground to the new vector resource.
+- **Scope:** launcher icon resources only. Application identity, manifest, app behavior, Gradle/toolchain, signing, GeckoView, updater and game/client remain untouched.
+- **Verification:** source edits are committed to the task branch. Exact-head lint/build/tests, circular/squircle/rounded-square mask inspection and physical ARM64 launcher rendering are still pending; no completion or device-compatibility claim.
+- **Parallel ownership:** issue #107 is assigned to Vibe for the separate Compose visual-system work; #9 remains queued until #107 integrates.
 ## 2026-11-26 — Owner-requested v2.4.0–v2.6.0 roadmap and UI/UX ownership
 
 - **Roadmap:** issue #18 now sequences v2.4.0 UI/UX, v2.5.0 updater experience and v2.6.0 settings/diagnostics. These are planning targets, not release authorization.
