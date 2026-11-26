@@ -564,3 +564,13 @@ No branch was deleted. The available GitHub connector exposes no branch-delete o
 - **Coordination:** do not edit `MainActivity.kt` or `GameMenuScreen.kt` while Vibe's #9 PR is open. Menu entry and same-session return are deferred until #9 is integrated.
 - **CI history:** first PR validation failed on a malformed Kotlin backslash literal; after correction, the next exact-head run compiled main code but test compilation found three calls missing the new extraction-directory argument. Those calls were corrected. Formatting was applied with the repository's Spotless task. Exact-head PR validation for the corrected branch head is pending.
 - **Limitations:** document picker/export destination and route integration are not wired yet; runtime loader is disabled; translations and physical ARM64 tests remain outstanding. No beta merge, release, tag or promotion.
+
+
+### 2026-11-26 — Android document picker and bounded unknown-size import
+
+- Added OpenDocument and CreateDocument flows through Android's Storage Access Framework; no broad storage permission is requested.
+- Added ContentResolver ZIP import/export and an asynchronous Compose host so provider I/O, archive validation and ZIP compression do not run on the UI thread.
+- Providers with missing/unknown size are supported through a hard 128 MiB streamed compressed-input cap; known lengths are still checked exactly.
+- Added tests for unknown-size provider import, multiple addon roots and case-insensitive duplicate archive paths.
+- Latest branch head at this documentation checkpoint: `7c6efc7ea1f8df26c2a6721115299a78a1d15671`. Markdown gate passed (#45830740836); Android lint/Spotless/unsigned build/JVM tests were still running (#45830740786).
+- Still not integrated into the in-game overlay; do not modify `MainActivity.kt` or `GameMenuScreen.kt` until Vibe's #9 PR is integrated. Runtime injection remains disabled pending security and owner-boundary review.
