@@ -55,7 +55,7 @@ fun SettingsScreen(
   var refreshing by remember { mutableStateOf(false) }
   var showLicenses by remember { mutableStateOf(false) }
   val licenseText = remember {
-    context.resources.openRawResource(R.raw.gpl_3_0).bufferedReader().use { it.readText() }
+    context.resources.openRawResource(R.raw.apache_2_0).bufferedReader().use { it.readText() }
   }
 
   LaunchedEffect(refreshKey) {
@@ -137,10 +137,9 @@ fun SettingsScreen(
           verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
           Text(
-            "LastHavenPlus original project code and documentation are licensed under the GNU " +
-              "General Public License, version 3 or (at your option) any later version. " +
-              "You may redistribute and modify this program under those terms. " +
-              "This program is provided without warranty. The complete license follows.",
+            "LastHavenPlus original project code and documentation are licensed under the Apache License, " +
+              "Version 2.0. You may use, reproduce and distribute the work under those terms. " +
+              "The license is provided without warranty. The complete license follows.",
             color = DesignTokens.textSecondary,
           )
           Text(
