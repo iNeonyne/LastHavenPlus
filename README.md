@@ -31,7 +31,7 @@ These are features integrated into beta and covered by the repository's automate
 - **Network usage:** Android per-UID counters report app traffic, including both game and updater traffic; they are not game-only totals.
 - **Diagnostics:** Bounded local diagnostic logs support viewing, clearing and explicit user-initiated sharing. Review logs before sharing.
 - **Updater:** Stable release checks and downloads remain user-initiated. Manifest, version, URL, payload and digest validation are applied; differential patch failures retain a verified full-APK fallback. Android's package installer controls installation.
-- **Addon manager:** Native local ZIP/library management is under review in [draft PR #145](https://github.com/iNeonyne/LastHavenPlus/pull/145); it is not yet integrated into beta. It does not activate addons in the game. The supplied Chrome MV3 runtime port remains unimplemented pending GeckoView 160 compatibility and security testing.
+- **Addon manager:** Native local ZIP/library management is implemented by Vibe in [draft PR #152](https://github.com/iNeonyne/LastHavenPlus/pull/152) under Chaty review; it is not yet integrated into beta. It does not activate addons in the game. The supplied Chrome MV3 runtime port remains unimplemented pending GeckoView 160 compatibility and security testing.
 
 ## GeckoView profile transition
 

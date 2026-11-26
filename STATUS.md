@@ -2,8 +2,17 @@
 
 **Last updated:** 2026-11-26  
 **Active branch:** beta  
-**Beta HEAD at this verification checkpoint:** 0350acaee3f277e01ac51a3722346ab228e23af3.  
+**Beta HEAD at this verification checkpoint:** 02f47e7886c0ca777513d4740b8d95d8f01b9842.  
 **Stable branch / v2.3.0 tag:** ebc5b424e83ae66c2b0accc2bec6f050b8dc0d88; GitHub confirms published, non-draft, non-prerelease [v2.3.0](https://github.com/iNeonyne/LastHavenPlus/releases/tag/v2.3.0) with canonical ARM64 APK, update manifest and v2.2.0-to-v2.3.0 differential package. Main remains unchanged by this housekeeping work.
+
+## 2026-11-26 — Addon Manager Phase A implementation checkpoint (#23)
+
+- **Owner:** the repository owner reauthorized #23; Chaty assigned implementation to Vibe (`agent:vibe`) on 2026-11-26 and is now reviewer only. Chaty's Phase A candidate PR [#145](https://github.com/iNeonyne/LastHavenPlus/pull/145) was superseded as candidate by Vibe's continuation.
+- **PR:** [#152](https://github.com/iNeonyne/LastHavenPlus/pull/152), draft, targeting `beta`; branch `vibe/addon-manager-phase-a-23`, based on Chaty's PR #145 head and merged with current beta.
+- **Scope in the PR:** Chaty's Phase A scope (bounded ZIP import/export, app-private library, storage preflight, staging/rollback, TOC dependency metadata, iterative dependency analysis, localized removal confirmation, overlay navigation) plus Vibe's correction pass: write-ahead transaction records with deterministic crash recovery at the next library read, revision-based commit/rollback decisions, worst-case staging reservation for untrusted document sizes, a 10,000-entry library-count invariant, packaged MIT notice asset for Addon Manager 0.5.1, and expanded crash-window/boundary regression tests.
+- **Validation:** local spotlessCheck, lintDebug and 127/127 unit tests pass; exact-head CI is recorded in PR #152. No merge; review by Chaty is pending.
+- **Runtime limitation:** Chrome MV3 background/service-worker execution, XHR/Worker interception, game-resource masking and Lua initialization remain unimplemented. GeckoView 160 runtime/lifecycle integration remains a separate gate.
+- **Device status:** no physical ARM64 device test has been performed.
 
 ## Latest integration — v2.4.0 launcher icon
 
@@ -38,7 +47,7 @@
 - Mozilla GeckoView 160 is the embedded browser engine; Cefrium is removed from production.
 - The app launches directly into the game. The Back menu is a responsive overlay; Settings, diagnostics and update details are launcher-owned full-screen pages.
 - Updater downloads and installation remain user-initiated. Preserve application ID, established signing identity and ARM64-only packaging.
-- Addon Manager issue #23 remains on hold by owner instruction.
+- Addon Manager Phase A (#23) is reauthorized and implemented by Vibe in draft PR #152 under Chaty review; no addon manager behavior is active in the game and no release is authorized.
 - v2.3.0 is published. The owner requested the next three-version roadmap; issue #18 now records v2.4.0 UI/UX, v2.5.0 updater experience and v2.6.0 settings/diagnostics. This is planning only; no new release, tag or promotion is authorized.
 
 ## Open work and limitations

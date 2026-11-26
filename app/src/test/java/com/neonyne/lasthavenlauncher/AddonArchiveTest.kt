@@ -389,6 +389,28 @@ class AddonArchiveTest {
   }
 
   @Test
+  fun rejectsEntriesWhoseActualSizeExceedsDeclaredCentralDirectorySize() {
+    val archive =
+      inflateCentralDirectorySizes(
+        zipOf(
+          "Sample/Sample.toc" to "## Interface: 30300\n",
+          "Sample/main.lua" to "print('sample')",
+        ),
+        declaredSizeBytes = 4L,
+      )
+
+    val error =
+      assertThrows(IllegalArgumentException::class.java) {
+        AddonArchive.importZip(
+          ByteArrayInputStream(archive),
+          archive.size.toLong(),
+          temporaryFolder.newFolder("size-mismatch"),
+        )
+      }
+    assertTrue(error.message.orEmpty().startsWith("File integrity check failed"))
+  }
+
+  @Test
   fun rejectsArchiveAboveCompressedSizeLimitBeforeReading() {
     val input =
       object : InputStream() {

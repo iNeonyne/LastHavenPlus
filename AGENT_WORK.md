@@ -33,12 +33,12 @@
 - **Owner:** issue remains `agent:owner` for physical ARM64 TalkBack/focus/traversal, GeckoView-relative order, reduced-motion and large-font verification.
 - **Device status:** no physical-device verification is claimed.
 
-### Issue #23 — Addon Manager Phase A (active Chaty work)
-- **Owner:** Chaty (`agent:chaty`), reauthorized by the repository owner on 2026-11-25/26.
-- **PR:** [#145](https://github.com/iNeonyne/LastHavenPlus/pull/145), draft, targeting `beta`; branch `chaty/addon-manager-phase-a-current-beta`, based on beta `0350acaee3f277e01ac51a3722346ab228e23af3`.
-- **Scope implemented in candidate:** bounded ZIP import/export, app-private addon library, storage preflight before expanded extraction, staging/rollback, required and optional TOC dependency metadata, iterative cycle analysis, localized removal confirmation, and overlay navigation returning to the existing game screen.
-- **Validation:** exact-head Android CI and review pending after latest changes; no merge.
-- **Runtime limitation:** Chrome MV3 background/service-worker execution, XHR/Worker interception, game-resource masking and Lua initialization are not implemented or enabled. GeckoView 160 runtime/lifecycle integration remains a separate gate.
+### Issue #23 — Addon Manager Phase A (active Vibe implementation, Chaty review)
+- **Owner:** Vibe (`agent:vibe`); Chaty assigned implementation on 2026-11-26 after the repository owner reauthorized #23 and approved resuming. Chaty is reviewer and the only integrator.
+- **PR:** [#152](https://github.com/iNeonyne/LastHavenPlus/pull/152), draft, targeting `beta`; branch `vibe/addon-manager-phase-a-23`, based on Chaty's PR [#145](https://github.com/iNeonyne/LastHavenPlus/pull/145) head and merged with current beta.
+- **Scope implemented:** Chaty's Phase A scope (bounded ZIP import/export, app-private addon library, storage preflight before expanded extraction, staging/rollback, required and optional TOC dependency metadata, iterative cycle analysis, localized removal confirmation, overlay navigation) plus the review-driven correction pass: write-ahead transaction records with deterministic crash recovery on the next library read, revision-based commit/rollback decisions, worst-case staging reservation for untrusted document sizes, a 10,000-entry library-count invariant, packaged MIT notice asset for Addon Manager 0.5.1, and crash-window/boundary regression tests.
+- **Validation:** exact-head Android CI recorded in PR #152; review-driven corrections are in progress; no merge.
+- **Runtime limitation:** Chrome MV3 background/service-worker execution, XHR/Worker interception, game-resource masking and Lua initialization are not implemented or enabled. GeckoView 160 runtime/lifecycle integration remains a separate gate. Phase B is not authorized in this PR.
 - **Device status:** no physical ARM64 test has been performed.
 
 ### Completed — issue #129 CI consolidation

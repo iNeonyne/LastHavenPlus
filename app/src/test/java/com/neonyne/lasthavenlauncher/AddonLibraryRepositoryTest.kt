@@ -3,8 +3,11 @@ package com.neonyne.lasthavenlauncher
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.io.File
+import java.io.FileOutputStream
 import java.io.IOException
 import java.io.InputStream
+import java.util.Base64
+import java.util.Properties
 import java.util.zip.ZipEntry
 import java.util.zip.ZipOutputStream
 import org.junit.Assert.assertEquals
@@ -110,6 +113,172 @@ class AddonLibraryRepositoryTest {
   }
 
   @Test
+  fun rejectsFalselySmallReportedSizeWhenStorageCannotCoverWorstCase() {
+    val root = temporaryFolder.newFolder("untrusted-size-low-storage")
+    val repository = AddonLibraryRepository(root, availableStorageBytes = { 128L })
+    val unreadable =
+      object : InputStream() {
+        override fun read(): Int = error("Input must not be read before the staging preflight")
+      }
+
+    assertThrows(IllegalArgumentException::class.java) { repository.importZip(unreadable, 64L) }
+
+    assertTrue(root.listFiles().orEmpty().isEmpty())
+    assertTrue(repository.readLibrary().addons.isEmpty())
+  }
+
+  @Test
+  fun rejectsImportThatWouldExceedTheLibraryEntryLimit() {
+    val root = temporaryFolder.newFolder("entry-limit")
+    writeLibraryIndex(root, 10_000)
+    val repository = AddonLibraryRepository(root)
+    assertEquals(10_000, repository.readLibrary().addons.size)
+    val revisionBefore = repository.readLibrary().revision
+    val archive = zipOf("NewAddon/NewAddon.toc" to "## Interface: 30300\n")
+
+    assertThrows(IllegalArgumentException::class.java) {
+      repository.importZip(ByteArrayInputStream(archive), archive.size.toLong())
+    }
+
+    assertEquals(revisionBefore, repository.readLibrary().revision)
+    assertEquals(10_000, repository.readLibrary().addons.size)
+    assertTrue(root.listFiles().orEmpty().none { it.name.startsWith(".stage-") })
+    assertTrue(root.listFiles().orEmpty().none { it.name == "NewAddon" })
+  }
+
+  @Test
+  fun recoveryRestoresPreviousStateWhenReplacementCrashedAfterBackupRename() {
+    val root = temporaryFolder.newFolder("crash-replace")
+    val repository = AddonLibraryRepository(root)
+    val original =
+      zipOf(
+        "Sample/Sample.toc" to "## Version: 1\n",
+        "Sample/main.lua" to "print('original')",
+      )
+    repository.importZip(ByteArrayInputStream(original), original.size.toLong())
+    val indexRevision = repository.readLibrary().revision
+    val backup = File(root, ".backup-crashed")
+    check(File(root, "Sample").renameTo(backup))
+    writeTransaction(
+      root,
+      ".txn-crashed",
+      newRevision = "uncommitted-revision",
+      backups = listOf("Sample" to backup.name),
+    )
+
+    val recovered = repository.readLibrary()
+
+    assertEquals(indexRevision, recovered.revision)
+    assertEquals("1", recovered.addons.single().version)
+    assertEquals("print('original')", File(root, "Sample/main.lua").readText())
+    assertFalse(backup.exists())
+    assertFalse(File(root, ".txn-crashed").exists())
+  }
+
+  @Test
+  fun recoveryRemovesFreshTargetWhenImportCrashedBeforeIndexCommit() {
+    val root = temporaryFolder.newFolder("crash-fresh")
+    val repository = AddonLibraryRepository(root)
+    val archive = zipOf("Sample/Sample.toc" to "## Version: 1\n")
+    repository.importZip(ByteArrayInputStream(archive), archive.size.toLong())
+    val indexRevision = repository.readLibrary().revision
+    val fresh = File(root, "NewAddon")
+    check(fresh.mkdirs())
+    File(fresh, "NewAddon.toc").writeText("## Version: 2\n")
+    writeTransaction(
+      root,
+      ".txn-crashed",
+      newRevision = "uncommitted-revision",
+      fresh = listOf("NewAddon"),
+    )
+
+    val recovered = repository.readLibrary()
+
+    assertEquals(indexRevision, recovered.revision)
+    assertEquals(listOf("Sample"), recovered.addons.map { it.folder })
+    assertFalse(fresh.exists())
+    assertFalse(File(root, ".txn-crashed").exists())
+  }
+
+  @Test
+  fun recoveryFinishesCleanupWhenCrashHappenedAfterIndexCommit() {
+    val root = temporaryFolder.newFolder("crash-committed")
+    val repository = AddonLibraryRepository(root)
+    val first = zipOf("Sample/Sample.toc" to "## Version: 1\n")
+    repository.importZip(ByteArrayInputStream(first), first.size.toLong())
+    File(root, "Sample/main.lua").writeText("print('replacement')")
+    val committedRevision = repository.readLibrary().revision
+    val backup = File(root, ".backup-crashed")
+    check(backup.mkdirs())
+    File(backup, "stale.txt").writeText("old")
+    writeTransaction(
+      root,
+      ".txn-crashed",
+      newRevision = committedRevision,
+      backups = listOf("Sample" to backup.name),
+    )
+
+    val recovered = repository.readLibrary()
+
+    assertEquals(committedRevision, recovered.revision)
+    assertEquals("1", recovered.addons.single().version)
+    assertEquals("print('replacement')", File(root, "Sample/main.lua").readText())
+    assertFalse(backup.exists())
+    assertFalse(File(root, ".txn-crashed").exists())
+  }
+
+  @Test
+  fun recoveryRestoresAddonWhenRemovalCrashedAfterBackupRename() {
+    val root = temporaryFolder.newFolder("crash-remove")
+    val repository = AddonLibraryRepository(root)
+    val archive =
+      zipOf("Sample/Sample.toc" to "## Version: 1\n", "Sample/main.lua" to "print('kept')")
+    repository.importZip(ByteArrayInputStream(archive), archive.size.toLong())
+    val backup = File(root, ".remove-crashed")
+    check(File(root, "Sample").renameTo(backup))
+    writeTransaction(
+      root,
+      ".txn-crashed",
+      newRevision = "uncommitted-revision",
+      backups = listOf("Sample" to backup.name),
+    )
+
+    val recovered = repository.readLibrary()
+
+    assertEquals(listOf("Sample"), recovered.addons.map { it.folder })
+    assertEquals("print('kept')", File(root, "Sample/main.lua").readText())
+    assertFalse(backup.exists())
+    assertFalse(File(root, ".txn-crashed").exists())
+  }
+
+  @Test
+  fun recoverySweepsStaleTemporaryArtifacts() {
+    val root = temporaryFolder.newFolder("crash-sweep")
+    val repository = AddonLibraryRepository(root)
+    val archive = zipOf("Sample/Sample.toc" to "## Version: 1\n")
+    repository.importZip(ByteArrayInputStream(archive), archive.size.toLong())
+    val extraction = File(root, ".extract-stale")
+    val stage = File(root, ".stage-stale")
+    val orphanBackup = File(root, ".backup-orphan")
+    val sourceArchive = File(root, "addon-source-stale.zip")
+    val tempIndex = File(root, ".library-stale.tmp")
+    extraction.mkdirs()
+    stage.mkdirs()
+    orphanBackup.mkdirs()
+    sourceArchive.writeText("zip")
+    tempIndex.writeText("index")
+
+    val recovered = repository.readLibrary()
+
+    assertEquals(listOf("Sample"), recovered.addons.map { it.folder })
+    assertFalse(extraction.exists())
+    assertFalse(stage.exists())
+    assertFalse(orphanBackup.exists())
+    assertFalse(sourceArchive.exists())
+    assertFalse(tempIndex.exists())
+  }
+
+  @Test
   fun rejectsUnknownSizeArchiveWhenStorageCannotCoverWorstCase() {
     val root = temporaryFolder.newFolder("unknown-size-low-storage")
     val repository = AddonLibraryRepository(root, availableStorageBytes = { 0L })
@@ -154,6 +323,53 @@ class AddonLibraryRepositoryTest {
     assertEquals("print('original')", File(root, "Sample/main.lua").readText())
     assertTrue(root.listFiles().orEmpty().none { it.name.startsWith(".backup-") })
   }
+
+  private fun writeTransaction(
+    root: File,
+    name: String,
+    newRevision: String,
+    backups: List<Pair<String, String>> = emptyList(),
+    fresh: List<String> = emptyList(),
+  ) {
+    val properties = Properties()
+    properties["newRevision"] = newRevision
+    backups.forEachIndexed { index, (folder, backupName) ->
+      properties["backup.$index"] = backupName
+      properties["target.$index"] = folder
+    }
+    fresh.forEachIndexed { index, folder -> properties["fresh.$index"] = folder }
+    FileOutputStream(File(root, name)).use {
+      properties.store(it, "LastHavenPlus addon transaction")
+    }
+  }
+
+  private fun writeLibraryIndex(root: File, count: Int) {
+    val properties = Properties()
+    properties["revision"] = "limit-revision"
+    properties["count"] = count.toString()
+    for (index in 0 until count) {
+      val folder = "Addon" + index.toString().padStart(4, '0')
+      val addonFolder = File(root, folder)
+      check(addonFolder.mkdirs())
+      File(addonFolder, "$folder.toc").writeText("## Interface: 30300\n")
+      properties["addon.$index.title"] = encode("Addon $index")
+      properties["addon.$index.folder"] = encode(folder)
+      properties["addon.$index.version"] = encode("1")
+      properties["addon.$index.interface"] = encode("30300")
+      properties["addon.$index.notes"] = encode("")
+      properties["addon.$index.dependencies"] = ""
+      properties["addon.$index.optionalDependencies"] = ""
+      properties["addon.$index.size"] = "10"
+      properties["addon.$index.files"] = "1"
+      properties["addon.$index.enabled"] = "false"
+      properties["addon.$index.importedAt"] = "0"
+      properties["addon.$index.warnings"] = ""
+    }
+    FileOutputStream(File(root, "library.properties")).use { properties.store(it, null) }
+  }
+
+  private fun encode(value: String): String =
+    Base64.getEncoder().encodeToString(value.toByteArray(Charsets.UTF_8))
 
   private fun zipOf(vararg files: Pair<String, String>): ByteArray {
     val output = ByteArrayOutputStream()
