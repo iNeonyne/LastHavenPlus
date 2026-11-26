@@ -24,9 +24,13 @@ Goal: control branch growth without losing useful or unmerged work. This documen
 
 ### Retirement
 - A branch may be proposed for retirement after its PR is merged, closed with work superseded/abandoned, or the owner declares it obsolete.
-- **Approval is required before every deletion.** Record the approving statement and deletion in the log.
+- **Repository setting (verified live 2026-11-26 via repository metadata): `delete_branch_on_merge` is enabled.** GitHub automatically deletes a PR's head branch when the PR is merged. Consequences:
+  - Merged task branches disappear without a manual step; no separate disposal-log entry is required for an auto-deleted merged head branch.
+  - Branches with no open PR (for example `beta-legacy-*`, `infra/*`, staging and historical branches) are **not** affected by auto-delete; their removal still requires explicit owner approval.
+  - After merge, references to a deleted head branch remain resolvable through the merge commit and PR record.
+- **Approval is required before every manual deletion.** Record the approving statement and deletion in the log.
 - Preserve `beta-legacy-*` orphan snapshots until independently verified; never wholesale-merge them.
-- A branch whose tip is an ancestor of `beta` (fully integrated, zero unique commits) is the safest retirement candidate, but deletion still requires explicit owner approval recorded in the disposal log.
+- A branch whose tip is an ancestor of `beta` (fully integrated, zero unique commits) is the safest retirement candidate, but manual deletion still requires explicit owner approval recorded in the disposal log.
 
 ## Audit — 2026-11-26 15:09 UTC (refreshed)
 
@@ -75,7 +79,8 @@ Baseline: `beta` at `0350aca` (post-PR-#139 accessibility integration, follow-up
 | Date | Branches | Approval | Record |
 |---|---|---|---|
 | 2026-11-25 | Prior 16-branch cleanup (pre-v2.2.0) | Owner-approved per #62 history | Issue #62 / PR [#75](https://github.com/iNeonyne/LastHavenPlus/pull/75) |
-| 2026-11-26 (observed, not acted on) | 5 merged-task branches already absent from remote: `vibe/game-load-states-568e1f`, `vibe/visual-system-v240`, `vibe/overlay-accessibility`, `chaty/issue-4-download-stream-verification`, `chaty/issue-70-markdown-lint` | Removal observed during this audit; no deletion performed or approved by this document | This audit snapshot |
+| 2026-11-26 (observed, not acted on) | 5 merged-task branches already absent from remote: `vibe/game-load-states-568e1f`, `vibe/visual-system-v240`, `vibe/overlay-accessibility`, `chaty/issue-4-download-stream-verification`, `chaty/issue-70-markdown-lint` | Removal observed during this audit; no deletion performed or approved by this document. Consistent with the repository's `delete_branch_on_merge` setting (owner-enabled, verified live 2026-11-26) | This audit snapshot |
+| 2026-11-26 | Repository setting `delete_branch_on_merge` enabled by the owner (verified live via `gh api repos/iNeonyne/LastHavenPlus`) | Owner action, recorded here for the lifecycle record | This audit snapshot |
 
 ## Previously deleted branches
 - 2026-11-25, per #62 prior audit: `chaty/fix-release-workflow-timeouts`, `chaty/fix-release-draft-verification`, `chaty/docs-reconciliation-v2.1`, `chaty/housekeeping-closeout`, `chaty/housekeeping-doc-reconciliation`, `chaty/housekeeping-postrelease-sync`, `chaty/housekeeping-roadmap-reconcile`, `chaty/status-sync-after-51`, `chaty/v2.1-docs-reconcile`, `chaty/v2.1-release-records`, `chaty/workflow-efficiency-policy`, the absorbed Dependabot branches of PRs #57/#58/#59/#68/#69/#71, and completed launch branches `chaty/v2.1-launcher-redesign` and `plow-22-home-screen`.
