@@ -110,15 +110,17 @@ class AddonLibraryRepository(private val root: File) {
       }
     val replacing = imported.map { it.folder.lowercase(Locale.ROOT) }.toSet()
     val total =
-      current.addons.filterNot { it.folder.lowercase(Locale.ROOT) in replacing }.sumOf { it.sizeBytes } +
-        imported.sumOf { it.sizeBytes }
+      current.addons
+        .filterNot { it.folder.lowercase(Locale.ROOT) in replacing }
+        .sumOf { it.sizeBytes } + imported.sumOf { it.sizeBytes }
     if (total > AddonArchive.MAX_LIBRARY_BYTES) {
       extraction.deleteRecursively()
       throw IllegalArgumentException("Addon library exceeds 384 MiB.")
     }
 
     val existing = current.addons.associateBy { it.folder.lowercase(Locale.ROOT) }
-    val nextItems = current.addons.filterNot { it.folder.lowercase(Locale.ROOT) in replacing }.toMutableList()
+    val nextItems =
+      current.addons.filterNot { it.folder.lowercase(Locale.ROOT) in replacing }.toMutableList()
     val staged = mutableListOf<Pair<File, File>>()
     val backups = mutableListOf<Pair<File, File>>()
     val newTargets = mutableListOf<File>()
