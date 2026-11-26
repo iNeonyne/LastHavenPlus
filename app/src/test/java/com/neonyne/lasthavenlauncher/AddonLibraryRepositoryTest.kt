@@ -413,7 +413,7 @@ class AddonLibraryRepositoryTest {
     val outside = File(root.parentFile, "outside")
     outside.writeText("keep")
 
-    assertThrows(IllegalArgumentException::class.java) { repository.readLibrary() }
+    assertThrows(IllegalStateException::class.java) { repository.readLibrary() }
 
     assertTrue(backup.exists())
     assertTrue(File(root, ".txn-malformed").exists())
