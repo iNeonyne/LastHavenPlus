@@ -10,10 +10,13 @@ import android.view.WindowManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.darkColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -174,7 +177,9 @@ private fun LastHavenApp(
   var session by remember { mutableStateOf<GeckoSession?>(null) }
   var isLoading by remember { mutableStateOf(false) }
   var pageLoadFailed by remember { mutableStateOf(false) }
+  var sessionCrashed by remember { mutableStateOf(false) }
   var hasLoadedGame by remember { mutableStateOf(false) }
+  var hasCompletedLoad by remember { mutableStateOf(false) }
 
   // Keep the GeckoSession alive while its view is detached for launcher destinations.
   DisposableEffect(session) {
@@ -182,16 +187,38 @@ private fun LastHavenApp(
     onDispose { sessionToClose?.close() }
   }
 
+  val attachGameSession: (GeckoSession) -> Unit = { gameSession ->
+    setupGeckoDelegates(
+      gameSession,
+      context,
+      onLoadState = { loading, failed ->
+        isLoading = loading
+        pageLoadFailed = failed
+        if (!failed) {
+          sessionCrashed = false
+        }
+      },
+      onPageLoaded = { hasCompletedLoad = true },
+      onSessionCrashed = {
+        isLoading = false
+        pageLoadFailed = false
+        sessionCrashed = true
+      },
+    )
+  }
+
   val reloadGame: () -> Unit = {
     val current = session
     if (current?.isOpen() == true) {
       pageLoadFailed = false
+      sessionCrashed = false
       current.reload()
     } else if (current != null) {
       val currentRuntime = runtime ?: GeckoRuntimeProvider.get(context).also { runtime = it }
       current.open(currentRuntime)
       current.loadUri(gameUrl)
       pageLoadFailed = false
+      sessionCrashed = false
     }
   }
 
@@ -199,10 +226,7 @@ private fun LastHavenApp(
     if (session == null) {
       val gameRuntime = runtime ?: GeckoRuntimeProvider.get(context).also { runtime = it }
       val gameSession = GeckoSession()
-      setupGeckoDelegates(gameSession, context) { loading, failed ->
-        isLoading = loading
-        pageLoadFailed = failed
-      }
+      attachGameSession(gameSession)
       gameSession.open(gameRuntime)
       session = gameSession
       pageLoadFailed = false
@@ -218,6 +242,20 @@ private fun LastHavenApp(
     }
     menuVisible = false
     currentScreen = Screen.Game
+  }
+
+  // A crashed content process cannot be reloaded in place; recreate the session while
+  // keeping the runtime (and therefore the game profile) intact.
+  val restoreGame: () -> Unit = {
+    if (session != null) {
+      session = null
+      hasLoadedGame = false
+      hasCompletedLoad = false
+      pageLoadFailed = false
+      isLoading = false
+      sessionCrashed = false
+      startGame()
+    }
   }
 
   val checkForUpdates: (Boolean) -> Unit = { showResult ->
@@ -279,7 +317,7 @@ private fun LastHavenApp(
     menuVisible = target.menuVisible
   }
 
-  MaterialTheme(colorScheme = darkColorScheme()) {
+  MaterialTheme(colorScheme = DesignTokens.colorScheme(), shapes = DesignTokens.shapes) {
     when (currentScreen) {
       Screen.Home ->
         HomeScreen(
@@ -290,14 +328,26 @@ private fun LastHavenApp(
           onExit = onExit,
         )
 
-      Screen.Game ->
+      Screen.Game -> {
+        val gamePresentation =
+          GameLoadPolicy.resolve(
+            hasSession = session != null,
+            isLoading = isLoading,
+            hasCompletedLoad = hasCompletedLoad,
+            failure = GameLoadPolicy.failure(sessionCrashed, pageLoadFailed),
+          )
         Box(modifier = Modifier.fillMaxSize()) {
           GameScreen(
             session = session,
-            pageLoadFailed = pageLoadFailed,
-            onReload = reloadGame,
+            presentation = gamePresentation,
+            onRetry = reloadGame,
+            onRestore = restoreGame,
           )
-          if (menuVisible) {
+          AnimatedVisibility(
+            visible = menuVisible,
+            enter = fadeIn(animationSpec = tween(durationMillis = 160)),
+            exit = fadeOut(animationSpec = tween(durationMillis = 120)),
+          ) {
             GameMenuScreen(
               onReload = {
                 reloadGame()
@@ -314,6 +364,7 @@ private fun LastHavenApp(
             )
           }
         }
+      }
 
       Screen.Settings ->
         SettingsScreen(
@@ -375,6 +426,8 @@ private fun setupGeckoDelegates(
   geckoSession: GeckoSession,
   context: android.content.Context,
   onLoadState: (Boolean, Boolean) -> Unit,
+  onPageLoaded: () -> Unit,
+  onSessionCrashed: () -> Unit,
 ) {
   geckoSession.setProgressDelegate(
     object : GeckoSession.ProgressDelegate {
@@ -385,19 +438,20 @@ private fun setupGeckoDelegates(
 
       override fun onPageStop(session: GeckoSession, success: Boolean) {
         onLoadState(false, !success)
-        if (!success) Diagnostics.warn(context, TAG, "GeckoView page load failed")
+        if (success) onPageLoaded()
+        else Diagnostics.warn(context, TAG, "GeckoView page load failed")
       }
     }
   )
   geckoSession.setContentDelegate(
     object : GeckoSession.ContentDelegate {
       override fun onCrash(session: GeckoSession) {
-        onLoadState(false, true)
+        onSessionCrashed()
         Diagnostics.error(context, TAG, "GeckoView content process crashed")
       }
 
       override fun onKill(session: GeckoSession) {
-        onLoadState(false, true)
+        onSessionCrashed()
         Diagnostics.error(context, TAG, "GeckoView content process was killed")
       }
 
