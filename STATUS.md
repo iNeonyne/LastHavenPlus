@@ -5,6 +5,16 @@
 **Beta HEAD at this verification checkpoint:** f800deebf6c8bdaa91df4ac7c3693dcf86f3e6b6 (after docs PR #137; application integration remains at c24b24e).  
 **Stable branch / v2.3.0 tag:** ebc5b424e83ae66c2b0accc2bec6f050b8dc0d88; GitHub confirms published, non-draft, non-prerelease [v2.3.0](https://github.com/iNeonyne/LastHavenPlus/releases/tag/v2.3.0) with canonical ARM64 APK, update manifest and v2.2.0-to-v2.3.0 differential package. Main remains unchanged by this housekeeping work.
 
+## Active unmerged work — Addon Manager ZIP v0.5.1
+
+- **Issue / owner:** [#23](https://github.com/iNeonyne/LastHavenPlus/issues/23), Chaty (`agent:chaty`); owner reauthorized work on 2026-11-26.
+- **PR:** draft [#140](https://github.com/iNeonyne/LastHavenPlus/pull/140), branch `chaty/addon-manager-native-phase-a`, based on beta HEAD `e0967121b51ac1c232c92edd80157fc02b714766`.
+- **Source:** uploaded ZIP v0.5.1, SHA-256 `734a8af29b9e108f05666e5f1140cd58f77de87f888386fd1777b7948908b7fc`; it is distinct from the historical XPI v0.11.0.
+- **Implemented on the draft branch:** bounded streaming ZIP extraction, TOC metadata parsing, app-private addon library persistence, disabled-by-default imports, enable/disable/remove/export and a Compose manager screen with JVM tests.
+- **Not yet usable in beta:** Android document picker/export wiring, manager navigation, runtime loader integration, localization and physical-device verification remain incomplete. The original XHR/Worker/blocks.idx/WASM-memory loader remains disabled pending exact GeckoView 160 security/compatibility review.
+- **CI:** the first validation caught a malformed Kotlin escape and then missing test extraction-directory arguments; both were corrected. Exact-head validation for the latest branch commit is pending. No PR build is yet reported as passing.
+- **Coordination:** Vibe's #9 overlay accessibility PR is still open; #23 intentionally avoids `MainActivity.kt` and `GameMenuScreen.kt` until #9 is integrated.
+- **Release/device:** no beta merge, release, tag, promotion or physical ARM64 runtime test.
 ## Latest integration — v2.4.0 launcher icon
 
 - **PR:** [#135](https://github.com/iNeonyne/LastHavenPlus/pull/135), squash-merged to beta at `c24b24e7125f49e86f465b1786ccfecb537e9694`.
@@ -149,7 +159,7 @@ The repository owner will install releases and report what works and what does n
 - **#56:** completed and integrated; no active Ploy assignment. Supporting work (#9, #11, #12, #14, #16, #10, #28, #6, #17) is deferred to the v2.3.0 backlog in #86. Do not start a new Ploy task until the owner prioritizes it.
 - **Chaty:** #4/#15 updater reliability, #20 GeckoView dependency record, #31 release workflow, #61–#66 CI/build/security, #70 docs validation, roadmap and integration.
 - **Repository owner:** optional release feedback in #5/#21; #7 measured performance work when scheduled using comparable, repeatable measurements.
-- **Owner decision:** #67 license selection. #23 Addon Manager remains ON HOLD and has no assigned agent.
+- **Owner decision:** #67 license selection. #23 was reauthorized on 2026-11-26 and is assigned to Chaty; its native port remains unmerged and unavailable in beta.
 - Ploy is an internal agent role, not a confirmed GitHub username; assignments are marked in issue bodies, not through an invented GitHub assignee.
 
 
