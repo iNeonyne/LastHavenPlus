@@ -180,7 +180,7 @@ object AddonArchive {
 
       check(sourceArchive.delete()) { "Could not remove temporary addon archive." }
       archiveFile = null
-      return parseAddons(entries)
+      parseAddons(entries)
     } catch (error: Exception) {
       archiveFile?.delete()
       extractionDirectory.deleteRecursively()
