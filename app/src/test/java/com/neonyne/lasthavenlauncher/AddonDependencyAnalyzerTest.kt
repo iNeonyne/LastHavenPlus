@@ -47,7 +47,7 @@ class AddonDependencyAnalyzerTest {
     val report = AddonDependencyAnalyzer.analyze(addons)
 
     assertTrue(report.cyclicFolders.isEmpty())
-    assertTrue(report.missingByFolder.values.all(List<String>::isEmpty))
+    assertTrue(report.missingByFolder.values.all { it.isEmpty() })
   }
 
   private fun addon(
