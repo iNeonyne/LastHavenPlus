@@ -1,3 +1,15 @@
+## 2026-11-26 — Post-v2.3.0 housekeeping and CI consolidation
+
+- **Stable release:** v2.3.0 is published at tag/main commit ebc5b424e83ae66c2b0accc2bec6f050b8dc0d88. Canonical ARM64 APK, update manifest and v2.2.0-to-v2.3.0 differential asset are present.
+- **Beta baseline:** 7cd898f4c1f9b7f70787a7000e1ed9343a83540d.
+- **CI PR:** [#132](https://github.com/iNeonyne/LastHavenPlus/pull/132) squash-merged to beta; superseded PR #131 was closed unmerged because its base was stale.
+- **Workflow change:** moved beta-push lintDebug and spotlessCheck into the existing signed ARM64 build job for relevant source/build/script paths; fetches only the exact prior beta commit for the Spotless baseline; removed the duplicate quality.yml runner. PR validation remains unsigned, read-only and secret-free.
+- **Verification:** exact-head PR run [#45737717923](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45737717923) passed; Markdown run [#45737717837](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45737717837) passed; post-merge beta run [#45738073790](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45738073790) passed lint, formatting, JVM/Python tests, signed ARM64 build, established certificate and ABI checks.
+- **Timing:** one measured consolidated beta build job took 94s; previous separate jobs took 258s (signed build) + 123s (quality). This is an initial ~75% reduction in combined runner time, not yet a multi-run benchmark.
+- **Artifact:** LastHavenPlus-2.3.0-beta-arm64-v8a, 92,815,476 bytes. The build was not a release; tag, differential and publication steps were skipped.
+- **Safety:** no app source, Gradle/toolchain/dependency, signing, ABI, updater, main or release behavior changed. No physical-device test was performed.
+- **Housekeeping:** PR #130 updated the beta README stable link; PR #127 versioned CI APK artifact names. Issue #128 tracks the remaining docs reconciliation. Owner-paused PRs #122/#123 and #113 remain untouched.
+
 ## 2026-11-25 — Harden updater redirects, downloads and installer recovery
 
 - **Role:** Chaty / updater implementation
