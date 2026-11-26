@@ -32,6 +32,8 @@ jobs:
         with:
           gradle-version: wrapper
           validate-wrappers: true
+      - name: Fetch beta formatting baseline
+        run: git fetch --no-tags --depth=1 origin beta
       - name: Apply repository Kotlin formatter
         run: ./gradlew spotlessApply
       - name: Commit formatting changes on this task branch
