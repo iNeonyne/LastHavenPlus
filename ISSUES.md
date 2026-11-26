@@ -11,8 +11,9 @@
 - **Updater:** #4 remains open for remaining regression coverage. #15, #31 and #111 are blocked/deferred; no release-ID/differential fallback runtime verification is claimed.
 - **Reproducibility:** #66 / PR #119 has a prior byte-identical unsigned APK result, but its branch is behind current beta and needs refresh plus exact-head reruns before merge.
 - **Owner-paused:** #20 / PR #122 and #62 / PR #123 are explicitly deferred; keep their drafts open for traceability and do not resume. #23 Addon Manager remains on hold.
-- **UI/UX:** PR #113 remains draft/open for traceability only; #107 is closed after later integration. The owner instructed Chaty to own any future UI/UX follow-up.
-- **Other deferred work:** #86 and #19 are not active roadmap commitments. Do not create the next roadmap until the owner asks after housekeeping.
+- **UI/UX:** owner requested Chaty take over implementation. Issue #133 (icon) is active with Chaty; #107 (visual system) is reopened and queued after #133. PR #113 is draft/open for traceability only and must not be merged or extended. #9 accessibility remains unassigned until the visual-system pass is complete.
+- **Roadmap:** issue #18 now covers v2.4.0 UI/UX, v2.5.0 updater experience and v2.6.0 settings/diagnostics. Targets are planning only, not release authorization.
+- **Other deferred work:** #86 and #19 remain deferred outside the scoped roadmap; #23 remains on hold.
 
 ## Current ownership
 
@@ -38,7 +39,7 @@
 | [#15](#issue-15) | P2 | Updater recovery and download progress visibility | Open; adds measurable speed/ETA, inline retry, install-later confirmation, storage preflight, package-size comparison and release-note/history UX |
 | [#16](#issue-16) | P2 | Gameplay orientation and keep-awake settings | Open |
 | [#17](#issue-17) | P2 | Settings backup and restore | Open |
-| [#18](#issue-18) | Roadmap | Historical v2.3.0 UI/UX and updater roadmap | Open; do not draft the next roadmap until the owner requests it after housekeeping |
+| [#18](#issue-18) | Roadmap | v2.4.0–v2.6.0 UI/UX, updater and settings roadmap | Open; owner-requested planning targets only, no release authorization |
 | [#19](#issue-19) | P1 | Opt-in beta release channel | Open |
 | [#20](#issue-20) | Deferred | GeckoView 160 artifact/dependency audit | Owner-deferred; PR #122 remains draft/open for traceability; do not resume |
 | [#21](#issue-21) | Feedback | Owner feedback — GeckoView runtime/profile behavior after release | Open; optional owner feedback and reported follow-up defects; not a release blocker |
@@ -728,7 +729,7 @@ The owner later placed all addon-manager work on hold. The previous XPI specific
 - [ ] Add security, archive, network, dependency, range, cache and GeckoView integration tests.
 
 - **Constraints:** Preserve archive path/CRC/duplicate/count/expanded-size checks. Keep Android 10/API 29+, ARM64-only, app ID and signing identity. Do not modify the game client or claim Lua initialization from injection-layer requests alone. See the GitHub issue for full scope and acceptance criteria.
----
+
 ---
 
 **Integration checkpoint (2026-11-25):** PR #26 merged to beta at `e924c580699ad34f1083d1a9a0fe96901037c0ae`. PR run #329 passed unsigned release build and unit tests for the exact PR head. Signed post-merge ARM64 CI and owner feedback remains optional. `main` and `beta` are diverged (beta ahead 166, main ahead 9); review the nine main-only commits before any promotion.
