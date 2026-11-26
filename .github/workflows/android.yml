@@ -64,6 +64,20 @@ jobs:
           gradle-version: wrapper
           validate-wrappers: true
 
+      - name: Apply Kotlin formatter for recovery review
+        if: github.event_name == 'pull_request'
+        run: ./gradlew spotlessApply --stacktrace
+
+      - name: Upload formatted recovery sources
+        if: github.event_name == 'pull_request'
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        with:
+          name: temporary-formatted-addon-recovery
+          path: |
+            app/src/main/java/com/neonyne/lasthavenlauncher/AddonLibraryRepository.kt
+            app/src/test/java/com/neonyne/lasthavenlauncher/AddonLibraryRepositoryTest.kt
+          retention-days: 1
+
       - name: Fetch beta formatting baseline
         run: git fetch --no-tags --depth=1 origin beta
 
