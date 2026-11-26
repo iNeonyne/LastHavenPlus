@@ -33,16 +33,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-
-private val PageBackground = Color(0xFF080D18)
-private val PageCard = Color(0xFF121D2D)
-private val PageMuted = Color(0xFFAAB7C9)
-private val PageAccent = Color(0xFFE5B85C)
 
 @Composable
 fun SettingsScreen(
@@ -73,7 +67,7 @@ fun SettingsScreen(
             )
             Text(
                 "Includes app-private files and GeckoView data; it is not a profile-only measurement.",
-                color = PageMuted,
+                color = DesignTokens.textSecondary,
                 style = MaterialTheme.typography.bodySmall,
             )
             InfoLine("App cache", snapshot?.cacheBytes?.let(::formatBytes) ?: "Measuring…")
@@ -107,7 +101,7 @@ fun SettingsScreen(
         }
 
         PageSection(title = "Application") {
-            Text("LastHavenPlus", color = Color.White, fontWeight = FontWeight.SemiBold)
+            Text("LastHavenPlus", color = DesignTokens.textPrimary, fontWeight = FontWeight.SemiBold)
             Text("Game engine: Mozilla GeckoView 160", color = PageMuted)
             OutlinedButton(
                 onClick = onCheckUpdates,
@@ -137,13 +131,13 @@ fun DiagnosticsScreen(
             )
             Surface(
                 modifier = Modifier.fillMaxWidth(),
-                color = Color(0xFF080B12),
+                color = DesignTokens.logSurface,
                 shape = MaterialTheme.shapes.medium,
             ) {
                 Text(
                     content,
                     modifier = Modifier.padding(14.dp),
-                    color = Color(0xFFD7E0EC),
+                    color = DesignTokens.textBody,
                     style = MaterialTheme.typography.bodySmall,
                 )
             }
@@ -240,7 +234,7 @@ private fun SettingsPageFrame(
     BoxWithConstraints(
         modifier = Modifier
             .fillMaxSize()
-            .background(PageBackground),
+            .background(DesignTokens.ink),
     ) {
         val widthDp = maxWidth.value.toInt()
         val maxContentWidth = LauncherLayoutPolicy.settingsContentMaxWidthDp(widthDp).dp
@@ -262,7 +256,7 @@ private fun SettingsPageFrame(
             ) {
                 Column(Modifier.weight(1f)) {
                     Text(title, color = Color.White, style = MaterialTheme.typography.headlineSmall)
-                    Text("LASTHAVENPLUS", color = PageAccent, style = MaterialTheme.typography.labelSmall)
+                    Text("LASTHAVENPLUS", color = DesignTokens.gold, style = MaterialTheme.typography.labelSmall)
                 }
                 TextButton(onClick = onBack) { Text("Back") }
             }
@@ -279,7 +273,7 @@ private fun PageSection(
 ) {
     Card(
         modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(containerColor = PageCard),
+        colors = CardDefaults.cardColors(containerColor = DesignTokens.panel),
     ) {
         Column(
             modifier = Modifier.fillMaxWidth().padding(18.dp),
