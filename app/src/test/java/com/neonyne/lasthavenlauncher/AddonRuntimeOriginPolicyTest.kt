@@ -38,6 +38,8 @@ class AddonRuntimeOriginPolicyTest {
 
   @Test
   fun rejectsOversizedUrlInput() {
-    assertFalse(AddonRuntimeOriginPolicy.allows("https://lasthavens.com/play?" + "x".repeat(4096)))
+    assertFalse(
+      AddonRuntimeOriginPolicy.allows("https://lasthavens.com/play?" + "x".repeat(4096))
+    )
   }
 }
