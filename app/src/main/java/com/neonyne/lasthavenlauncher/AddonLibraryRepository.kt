@@ -43,6 +43,7 @@ class AddonLibraryRepository(
   private val root: File,
   private val availableStorageBytes: () -> Long = { root.usableSpace },
   private val beforeIndexWrite: (() -> Unit)? = null,
+  private val afterBackupRestore: (() -> Unit)? = null,
 ) {
   private companion object {
     const val MIN_FREE_SPACE_RESERVE_BYTES = 1024L * 1024L
@@ -60,9 +61,12 @@ class AddonLibraryRepository(
   private val indexFile = File(root, "library.properties")
 
   private data class TransactionPlan(
-    val newRevision: String?,
+    val oldRevision: String?,
+    val oldIndexMissing: Boolean,
+    val newRevision: String,
     val backups: List<Pair<File, File>>,
     val freshTargets: List<File>,
+    val stages: List<File>,
   )
 
   private data class CommitPlan(
@@ -73,8 +77,20 @@ class AddonLibraryRepository(
 
   fun readLibrary(performStaleSweep: Boolean = true): AddonLibrarySnapshot {
     recoverPendingTransactions(performStaleSweep)
-    if (!indexFile.exists()) return AddonLibrarySnapshot("empty", emptyList())
+    return readLibraryIndex(requireAddonDirectories = true)
+      ?: AddonLibrarySnapshot("empty", emptyList())
+  }
+
+  /**
+   * Parses and validates the complete index. Recovery uses the same validation without requiring
+   * addon directories to be in place, because a crash may have moved them into transaction backups.
+   */
+  private fun readLibraryIndex(requireAddonDirectories: Boolean): AddonLibrarySnapshot? {
+    if (!indexFile.exists()) return null
     val properties = Properties().apply { FileInputStream(indexFile).use(::load) }
+    val revision =
+      properties.getProperty("revision")?.takeIf(::isSafeRevision)
+        ?: throw IllegalStateException("Addon library index revision is invalid.")
     val count =
       properties.getProperty("count")?.toIntOrNull()
         ?: throw IllegalStateException("Addon library index is invalid.")
@@ -82,7 +98,10 @@ class AddonLibraryRepository(
     val addons =
       (0 until count).map { index ->
         fun value(key: String): String =
-          decode(properties.getProperty("addon.$index.$key").orEmpty())
+          decode(
+            properties.getProperty("addon.$index.$key")
+              ?: throw IllegalStateException("Addon library index is missing $key."),
+          )
         val folder = value("folder")
         require(isSafeFolder(folder)) { "Addon library contains an invalid folder name." }
         AddonLibraryItem(
@@ -91,9 +110,16 @@ class AddonLibraryRepository(
           version = value("version"),
           interfaceVersion = value("interface"),
           notes = value("notes"),
-          dependencies = decodeList(properties.getProperty("addon.$index.dependencies").orEmpty()),
+          dependencies =
+            decodeList(
+              properties.getProperty("addon.$index.dependencies")
+                ?: throw IllegalStateException("Addon library dependencies are missing."),
+            ),
           optionalDependencies =
-            decodeList(properties.getProperty("addon.$index.optionalDependencies").orEmpty()),
+            decodeList(
+              properties.getProperty("addon.$index.optionalDependencies")
+                ?: throw IllegalStateException("Addon library optional dependencies are missing."),
+            ),
           sizeBytes =
             properties.getProperty("addon.$index.size")?.toLongOrNull()?.also {
               require(it in 0..AddonArchive.MAX_LIBRARY_BYTES) {
@@ -107,9 +133,16 @@ class AddonLibraryRepository(
               }
             } ?: throw IllegalStateException("Addon library file count is invalid."),
           enabled =
-            properties.getProperty("addon.$index.enabled")?.toBooleanStrictOrNull() ?: false,
-          importedAt = properties.getProperty("addon.$index.importedAt")?.toLongOrNull() ?: 0L,
-          warnings = decodeList(properties.getProperty("addon.$index.warnings").orEmpty()),
+            properties.getProperty("addon.$index.enabled")?.toBooleanStrictOrNull()
+              ?: throw IllegalStateException("Addon library enabled state is invalid."),
+          importedAt =
+            properties.getProperty("addon.$index.importedAt")?.toLongOrNull()
+              ?: throw IllegalStateException("Addon library import time is invalid."),
+          warnings =
+            decodeList(
+              properties.getProperty("addon.$index.warnings")
+                ?: throw IllegalStateException("Addon library warnings are missing."),
+            ),
         )
       }
     require(addons.map { it.folder.lowercase(Locale.ROOT) }.distinct().size == addons.size) {
@@ -118,10 +151,12 @@ class AddonLibraryRepository(
     require(addons.sumOf { it.sizeBytes } <= AddonArchive.MAX_LIBRARY_BYTES) {
       "Addon library exceeds 384 MiB."
     }
-    require(addons.all { addonDirectory(it.folder).isDirectory }) {
-      "Addon library references missing addon files."
+    if (requireAddonDirectories) {
+      require(addons.all { addonDirectory(it.folder).isDirectory }) {
+        "Addon library references missing addon files."
+      }
     }
-    return AddonLibrarySnapshot(properties.getProperty("revision") ?: "unknown", addons)
+    return AddonLibrarySnapshot(revision, addons)
   }
 
   fun importZip(input: InputStream, compressedSize: Long?): AddonLibrarySnapshot =
@@ -220,12 +255,16 @@ class AddonLibraryRepository(
         }
 
         val newRevision = UUID.randomUUID().toString()
+        val oldIndex = readLibraryIndex(requireAddonDirectories = false)
         val transaction = File(root, TXN_PREFIX + UUID.randomUUID())
         writeTransactionPlan(
-          transaction,
-          newRevision,
+          transaction = transaction,
+          oldRevision = oldIndex?.revision,
+          oldIndexMissing = oldIndex == null,
+          newRevision = newRevision,
           backups = plans.mapNotNull { plan -> plan.backup?.let { plan.target.name to it.name } },
           freshTargets = plans.filter { it.backup == null }.map { it.target.name },
+          stages = plans.map { it.stage.name },
         )
         try {
           for (plan in plans) {
@@ -239,34 +278,26 @@ class AddonLibraryRepository(
 
           val snapshot = AddonLibrarySnapshot(newRevision, nextItems)
           writeIndex(snapshot)
-          plans.forEach { plan -> plan.backup?.deleteRecursively() }
+          plans.forEach { plan ->
+            plan.backup?.let { backup ->
+              check(backup.deleteRecursively()) { "Could not finalize replaced addon files." }
+            }
+          }
           check(transaction.delete()) { "Could not finalize the addon transaction record." }
           snapshot
         } catch (error: Exception) {
-          val committed = readIndexRevision() == newRevision
-          var rollbackComplete = true
-          if (!committed) {
-            for (plan in plans.asReversed()) {
-              val backup = plan.backup
-              if (backup != null && backup.exists()) {
-                plan.target.deleteRecursively()
-                if (!backup.renameTo(plan.target)) {
-                  rollbackComplete = false
-                }
-              } else if (backup == null && plan.target.exists()) {
-                plan.target.deleteRecursively()
-              }
-            }
-          }
-          if (rollbackComplete && !transaction.delete()) {
-            rollbackComplete = false
-          }
-          if (!rollbackComplete) {
-            throw IllegalStateException("Addon transaction rollback is incomplete.", error)
+          try {
+            recoverPendingTransactions(performStaleSweep = false)
+          } catch (recoveryError: Exception) {
+            throw IllegalStateException(
+              "Addon transaction recovery is incomplete; transaction data was preserved.",
+              error,
+            ).also { it.addSuppressed(recoveryError) }
           }
           throw error
         } finally {
-          plans.forEach { plan -> plan.stage.deleteRecursively() }
+          // A still-present journal means recovery failed. Preserve every stage named by it.
+          if (!transaction.exists()) plans.forEach { it.stage.deleteRecursively() }
         }
       } finally {
         extraction.deleteRecursively()
@@ -299,11 +330,15 @@ class AddonLibraryRepository(
     val target = addonDirectory(folder)
     val backup = File(root, REMOVE_PREFIX + UUID.randomUUID())
     val transaction = File(root, TXN_PREFIX + UUID.randomUUID())
+    val oldIndex = readLibraryIndex(requireAddonDirectories = false)
     writeTransactionPlan(
-      transaction,
-      newRevision,
+      transaction = transaction,
+      oldRevision = oldIndex?.revision,
+      oldIndexMissing = oldIndex == null,
+      newRevision = newRevision,
       backups = listOf(folder to backup.name),
       freshTargets = emptyList(),
+      stages = emptyList(),
     )
     try {
       if (target.exists()) {
@@ -311,16 +346,18 @@ class AddonLibraryRepository(
       }
       writeIndex(next)
     } catch (error: Exception) {
-      if (backup.exists()) {
-        target.deleteRecursively()
-        check(backup.renameTo(target)) { "Could not restore addon files after removal failed." }
+      try {
+        recoverPendingTransactions(performStaleSweep = false)
+      } catch (recoveryError: Exception) {
+        throw IllegalStateException(
+          "Addon removal recovery is incomplete; transaction data was preserved.",
+          error,
+        ).also { it.addSuppressed(recoveryError) }
       }
-      check(transaction.delete()) { "Could not finalize the addon transaction record." }
       throw error
     }
-    // A failed cleanup leaves only an unreferenced hidden backup; the transaction record ensures
-    // the next library read finishes the cleanup instead of leaving mixed state.
-    backup.deleteRecursively()
+    // If cleanup fails, the journal remains and the next read safely finishes it.
+    check(backup.deleteRecursively()) { "Could not finalize removed addon files." }
     check(transaction.delete()) { "Could not finalize the addon transaction record." }
     return next
   }
@@ -364,25 +401,51 @@ class AddonLibraryRepository(
       root.listFiles { file -> file.name.startsWith(TXN_PREFIX) }?.sortedBy { it.name } ?: return
     for (transaction in pending) {
       val plan = loadTransactionPlan(transaction)
-      if (plan == null || plan.newRevision == null) {
-        return
+      val index = readLibraryIndex(requireAddonDirectories = false)
+      val committed = index?.revision == plan.newRevision
+      val matchesOldState =
+        if (plan.oldIndexMissing) index == null else index?.revision == plan.oldRevision
+      if (!committed && !matchesOldState) {
+        throw IllegalStateException(
+          "Addon transaction index state is ambiguous; transaction data was preserved.",
+        )
       }
-      if (plan.newRevision == readIndexRevision()) {
-        plan.backups.forEach { (_, backup) -> backup.deleteRecursively() }
+
+      if (committed) {
+        // A committed index is authoritative. Repeating backup/stage cleanup is safe.
+        plan.backups.forEach { (_, backup) ->
+          check(!backup.exists() || backup.deleteRecursively()) {
+            "Could not finalize addon transaction backup."
+          }
+        }
       } else {
+        // Rollback is replay-safe: once a backup has been renamed back, a later recovery pass
+        // sees backup absent + target present and leaves the restored target untouched.
         for ((target, backup) in plan.backups.asReversed()) {
-          target.deleteRecursively()
-          if (backup.exists() && !backup.renameTo(target)) {
-            return
+          if (backup.exists()) {
+            if (target.exists()) {
+              check(target.deleteRecursively()) { "Could not clear interrupted addon replacement." }
+            }
+            check(backup.renameTo(target)) { "Could not restore previous addon files." }
+            afterBackupRestore?.invoke()
+          } else {
+            check(target.exists()) {
+              "Addon transaction backup and restored target are both missing; data was preserved."
+            }
           }
         }
         for (fresh in plan.freshTargets) {
-          fresh.deleteRecursively()
+          check(!fresh.exists() || fresh.deleteRecursively()) {
+            "Could not remove an uncommitted addon folder."
+          }
         }
       }
-      if (!transaction.delete()) {
-        return
+      plan.stages.forEach { stage ->
+        check(!stage.exists() || stage.deleteRecursively()) {
+          "Could not clean an addon transaction staging folder."
+        }
       }
+      check(transaction.delete()) { "Could not finalize the addon transaction record." }
     }
     if (!performStaleSweep) return
     root
@@ -397,52 +460,166 @@ class AddonLibraryRepository(
       ?.forEach { it.deleteRecursively() }
   }
 
-  private fun readIndexRevision(): String? = runCatching {
-    if (!indexFile.exists()) return null
-    Properties().apply { FileInputStream(indexFile).use(::load) }.getProperty("revision")
+  private fun isSafeRevision(value: String): Boolean =
+    value.matches(Regex("[A-Za-z0-9_-]{1,128}"))
+
+  private fun resolveTransactionChild(name: String): File {
+    require(name.isNotBlank() && File(name).name == name && '/' !in name && '\\' !in name) {
+      "Addon transaction contains an unsafe path."
+    }
+    val rootPath = root.canonicalFile
+    val child = File(rootPath, name)
+    require(child.canonicalFile.parentFile == rootPath) {
+      "Addon transaction path escapes addon storage."
+    }
+    return child
   }
-    .getOrNull()
 
   private fun writeTransactionPlan(
     transaction: File,
+    oldRevision: String?,
+    oldIndexMissing: Boolean,
     newRevision: String,
     backups: List<Pair<String, String>>,
     freshTargets: List<String>,
+    stages: List<String>,
   ) {
+    require(isSafeRevision(newRevision)) { "Invalid addon transaction revision." }
+    require(oldIndexMissing == (oldRevision == null)) {
+      "Addon transaction previous index state is invalid."
+    }
+    if (oldRevision != null) require(isSafeRevision(oldRevision)) {
+      "Invalid previous addon transaction revision."
+    }
     val properties = Properties()
+    properties["formatVersion"] = "2"
+    properties["oldIndexMissing"] = oldIndexMissing.toString()
+    oldRevision?.let { properties["oldRevision"] = it }
     properties["newRevision"] = newRevision
     backups.forEachIndexed { index, (folder, backupName) ->
+      require(isSafeFolder(folder)) { "Invalid addon transaction target." }
+      require(
+        backupName.startsWith(BACKUP_PREFIX) || backupName.startsWith(REMOVE_PREFIX),
+      ) { "Invalid addon transaction backup." }
       properties["backup.$index"] = backupName
       properties["target.$index"] = folder
     }
-    freshTargets.forEachIndexed { index, folder -> properties["fresh.$index"] = folder }
+    freshTargets.forEachIndexed { index, folder ->
+      require(isSafeFolder(folder)) { "Invalid fresh addon transaction target." }
+      properties["fresh.$index"] = folder
+    }
+    stages.forEachIndexed { index, stage ->
+      require(stage.startsWith(STAGE_PREFIX)) { "Invalid addon transaction stage." }
+      properties["stage.$index"] = stage
+    }
     FileOutputStream(transaction).use { output ->
       properties.store(output, "LastHavenPlus addon transaction")
       output.fd.sync()
     }
   }
 
-  private fun loadTransactionPlan(transaction: File): TransactionPlan? = runCatching {
+  private fun loadTransactionPlan(transaction: File): TransactionPlan {
+    require(transaction.name.startsWith(TXN_PREFIX)) { "Invalid addon transaction filename." }
+    require(transaction.isFile && transaction.canonicalFile.parentFile == root.canonicalFile) {
+      "Addon transaction record is not a regular file inside addon storage."
+    }
     val properties = Properties()
     FileInputStream(transaction).use { properties.load(it) }
-    val newRevision = properties.getProperty("newRevision") ?: return@runCatching null
-    val backups = mutableListOf<Pair<File, File>>()
-    val freshTargets = mutableListOf<File>()
+    require(properties.getProperty("formatVersion") == "2") {
+      "Unsupported or malformed addon transaction record; data was preserved."
+    }
+    val newRevision =
+      properties.getProperty("newRevision")?.takeIf(::isSafeRevision)
+        ?: throw IllegalStateException("Addon transaction revision is invalid.")
+    val oldIndexMissing =
+      properties.getProperty("oldIndexMissing")?.toBooleanStrictOrNull()
+        ?: throw IllegalStateException("Addon transaction previous index marker is invalid.")
+    val oldRevision = properties.getProperty("oldRevision")
+    require(oldIndexMissing == (oldRevision == null)) {
+      "Addon transaction previous index record is inconsistent."
+    }
+    if (oldRevision != null) require(isSafeRevision(oldRevision)) {
+      "Addon transaction previous revision is invalid."
+    }
+
+    val backupIndices = mutableSetOf<Int>()
+    val targetIndices = mutableSetOf<Int>()
+    val freshIndices = mutableSetOf<Int>()
+    val stageIndices = mutableSetOf<Int>()
     for (key in properties.stringPropertyNames()) {
-      val value = properties.getProperty(key) ?: continue
       when {
+        key == "formatVersion" || key == "oldIndexMissing" ||
+          key == "oldRevision" || key == "newRevision" -> Unit
         key.startsWith("backup.") -> {
-          val folder =
-            properties.getProperty("target." + key.removePrefix("backup."))
-              ?: return@runCatching null
-          backups += File(root, folder) to File(root, value)
+          val index = key.removePrefix("backup.").toIntOrNull()
+          require(index != null && index >= 0) { "Malformed addon transaction backup index." }
+          backupIndices += index
         }
-        key.startsWith("fresh.") -> freshTargets += File(root, value)
+        key.startsWith("target.") -> {
+          val index = key.removePrefix("target.").toIntOrNull()
+          require(index != null && index >= 0) { "Malformed addon transaction target index." }
+          targetIndices += index
+        }
+        key.startsWith("fresh.") -> {
+          val index = key.removePrefix("fresh.").toIntOrNull()
+          require(index != null && index >= 0) { "Malformed addon transaction fresh index." }
+          freshIndices += index
+        }
+        key.startsWith("stage.") -> {
+          val index = key.removePrefix("stage.").toIntOrNull()
+          require(index != null && index >= 0) { "Malformed addon transaction stage index." }
+          stageIndices += index
+        }
+        else -> throw IllegalStateException("Unknown addon transaction field; data was preserved.")
       }
     }
-    TransactionPlan(newRevision, backups, freshTargets)
+    fun requireContiguous(indices: Set<Int>, field: String) {
+      require(indices == indices.indices.toSet()) { "Malformed addon transaction $field list." }
+    }
+    require(backupIndices == targetIndices) {
+      "Addon transaction backup/target pairs are incomplete."
+    }
+    requireContiguous(backupIndices, "backup")
+    requireContiguous(freshIndices, "fresh")
+    requireContiguous(stageIndices, "stage")
+
+    val backups = backupIndices.sorted().map { index ->
+      val folder =
+        properties.getProperty("target.$index")?.takeIf(::isSafeFolder)
+          ?: throw IllegalStateException("Addon transaction target path is invalid.")
+      val backupName = properties.getProperty("backup.$index")
+        ?: throw IllegalStateException("Addon transaction backup path is missing.")
+      require(
+        backupName.startsWith(BACKUP_PREFIX) || backupName.startsWith(REMOVE_PREFIX),
+      ) { "Addon transaction backup path is invalid." }
+      resolveTransactionChild(folder) to resolveTransactionChild(backupName)
+    }
+    val freshTargets = freshIndices.sorted().map { index ->
+      val name =
+        properties.getProperty("fresh.$index")?.takeIf(::isSafeFolder)
+          ?: throw IllegalStateException("Addon transaction fresh path is invalid.")
+      resolveTransactionChild(name)
+    }
+    val stages = stageIndices.sorted().map { index ->
+      val name = properties.getProperty("stage.$index")
+        ?: throw IllegalStateException("Addon transaction stage path is missing.")
+      require(name.startsWith(STAGE_PREFIX)) { "Addon transaction stage path is invalid." }
+      resolveTransactionChild(name)
+    }
+    val targets = backups.map { it.first.name.lowercase(Locale.ROOT) } +
+      freshTargets.map { it.name.lowercase(Locale.ROOT) }
+    require(targets.distinct().size == targets.size) {
+      "Addon transaction contains duplicate target folders."
+    }
+    val backupNames = backups.map { it.second.name }
+    require(backupNames.distinct().size == backupNames.size) {
+      "Addon transaction contains duplicate backup folders."
+    }
+    require(stages.map { it.name }.distinct().size == stages.size) {
+      "Addon transaction contains duplicate staging folders."
+    }
+    TransactionPlan(oldRevision, oldIndexMissing, newRevision, backups, freshTargets, stages)
   }
-    .getOrNull()
 
   private fun writeIndex(snapshot: AddonLibrarySnapshot) {
     val properties = Properties()
