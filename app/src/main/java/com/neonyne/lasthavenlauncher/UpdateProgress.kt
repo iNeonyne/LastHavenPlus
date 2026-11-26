@@ -103,12 +103,24 @@ internal class UpdateProgressTracker(private val clock: () -> Long = System::nan
     fallbackToFull = true
   }
 
-  /** Accumulates measured bytes and records a timestamped sample for speed estimation. */
+  /**
+   * Accumulates measured bytes and records a timestamped sample for speed estimation. Samples are
+   * decimated on a measured time cadence: a write only becomes a retained sample once at least
+   * [UpdateProgressTracker.MIN_SAMPLE_INTERVAL_NANOS] has passed since the previous retained sample
+   * (or when the window is empty). This keeps memory bounded at
+   * [UpdateProgressTracker.MAX_SAMPLE_COUNT] samples while guaranteeing the retained window still
+   * spans the full speed-measurement window even when the downloader reports far more frequently
+   * than the sample cap would allow.
+   */
   fun onBytesWritten(delta: Long) {
     require(delta >= 0) { "Byte deltas cannot be negative" }
     if (delta == 0L) return
     receivedBytes += delta
-    samples.addLast(TransferSample(clock(), receivedBytes))
+    val now = clock()
+    val last = samples.lastOrNull()
+    if (last == null || now - last.atNanos >= UpdateProgressTracker.MIN_SAMPLE_INTERVAL_NANOS) {
+      samples.addLast(TransferSample(now, receivedBytes))
+    }
     while (samples.size > UpdateProgressTracker.MAX_SAMPLE_COUNT) {
       samples.removeFirst()
     }
@@ -162,6 +174,14 @@ internal class UpdateProgressTracker(private val clock: () -> Long = System::nan
     const val UNKNOWN_TOTAL = -1L
     const val MAX_SAMPLE_COUNT = 16
     const val MIN_SPEED_WINDOW_NANOS = 500_000_000L
+
+    /**
+     * Minimum spacing between retained samples: the speed window divided by the
+     * [MAX_SAMPLE_COUNT] - 1 retained intervals, rounded up, so a full sample deque always spans at
+     * least [MIN_SPEED_WINDOW_NANOS].
+     */
+    const val MIN_SAMPLE_INTERVAL_NANOS =
+      (MIN_SPEED_WINDOW_NANOS + MAX_SAMPLE_COUNT - 2) / (MAX_SAMPLE_COUNT - 1)
     const val NANOS_PER_SECOND = 1_000_000_000L
   }
 }

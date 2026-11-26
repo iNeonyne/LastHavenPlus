@@ -75,6 +75,34 @@ class UpdateProgressTest {
   }
 
   @Test
+  fun `rate stays measurable when updates arrive far faster than the sample window`() {
+    tracker.onStageChanged(UpdateStage.FULL_DOWNLOAD)
+    tracker.onTotalBytes(contentLength = 1_000_000L, manifestSize = 1_000_000L)
+
+    // 200 updates 1 ms apart: far more than MAX_SAMPLE_COUNT inside the 500 ms window.
+    repeat(200) {
+      nowNanos += 1_000_000L
+      tracker.onBytesWritten(1_000L)
+    }
+    val duringBurst = tracker.snapshot()
+    assertNull(duringBurst.estimatedBytesPerSecond)
+    assertNull(duringBurst.estimatedSecondsRemaining)
+
+    // Sustaining the same cadence past 500 ms must produce a measured rate and ETA, not stay null.
+    repeat(400) {
+      nowNanos += 1_000_000L
+      tracker.onBytesWritten(1_000L)
+    }
+    val state = tracker.snapshot()
+    val rate = checkNotNull(state.estimatedBytesPerSecond)
+    val eta = checkNotNull(state.estimatedSecondsRemaining)
+    assertEquals(1_000_000L, rate)
+    assertEquals(600_000L, state.receivedBytes)
+    assertEquals((state.remainingBytes!! + rate - 1) / rate, eta)
+    assertEquals(1L, eta)
+  }
+
+  @Test
   fun `stage transition out of download drops stale rate estimates`() {
     tracker.onStageChanged(UpdateStage.FULL_DOWNLOAD)
     tracker.onTotalBytes(contentLength = 10_000L, manifestSize = 10_000L)
