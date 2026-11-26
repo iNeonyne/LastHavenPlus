@@ -825,7 +825,7 @@ Entry format:
 ## 2026-11-26 — Apache-2.0 and community hygiene preparation
 
 - Owner approved Apache-2.0 for original LastHavenPlus project code/documentation in issue #67.
-- Created chaty/community-hygiene-refresh-refresh from beta.
+- Created chaty/community-hygiene-refresh from beta.
 - Added canonical Apache-2.0 text from SPDX license-list data, private vulnerability reporting policy, weekly Gradle Dependabot updates, README license/third-party boundary, and contributor branch-retention rules.
 - Reconciled the existing CHANGELOG.md with an Unreleased policy entry; did not duplicate the already-existing CONTRIBUTING.md.
 - Preliminary direct-dependency license review only; transitive dependency and packaged-notice audit remains open. Owner supplied project attribution: LastHavenPlus, Copyright 2026.
