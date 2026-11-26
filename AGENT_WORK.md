@@ -1,6 +1,6 @@
 # Agent work assignments — LastHavenPlus
 
-**Current beta baseline:** 7cd898f4c1f9b7f70787a7000e1ed9343a83540d (verified after PR #132 merge).  
+**Current beta baseline:** e69656303d7e1c1e7d50f7211c8cfaeb748f07e9 (verified after PR #134 documentation reconciliation); advanced to 4c508cf5eff07d8a64dc3ec772dcc1a37a1320a8 after the #133 icon integration and its documentation follow-ups.  
 **Stable baseline:** main / v2.3.0 tag ebc5b424e83ae66c2b0accc2bec6f050b8dc0d88.
 
 ## Roles and integration
@@ -20,16 +20,17 @@
 - **Exclusions:** no branch deletion, issue/PR closure, release changes or main changes. The owner subsequently requested a three-version roadmap, now recorded in issue #18.
 
 ### Issue #133 — v2.4.0 adaptive launcher icon
-- **Owner:** Chaty (agent:chaty), following the owner's direction that Chaty owns UI/UX implementation.
-- **Scope:** launcher icon assets/resources only; deep navy fantasy-frost crest, icy-blue crystalline portal/rune, restrained gold accents; adaptive-mask safe zone and round/standard resource consistency.
-- **Exclusions:** no Compose screens, design tokens, app behavior, manifest identity, signing, build/toolchain, GeckoView, updater or game changes.
-- **State:** assigned and scoped in GitHub issue #133. Generated concept is a design reference; implementation and exact-head CI remain outstanding.
+- **Owner:** merged; issue #133 is open with `agent:owner` solely for Android adaptive-mask/physical launcher visual signoff. No agent is implementing here.
+- **Integration:** PR [#135](https://github.com/iNeonyne/LastHavenPlus/pull/135) squash-merged to `beta` at `c24b24e7125f49e86f465b1786ccfecb537e9694`; exact-head unsigned validation passed before merge.
+- **Remaining verification:** Android-generated mask output and physical launcher appearance remain unverified; the owner signoff on issue #133 is the record for it.
 
 ### Issue #107 — v2.4.0 visual system
-- **Owner:** Vibe (agent:vibe), per Chaty's 2026-11-26 02:19 GitHub assignment superseding the earlier UI/UX takeover note; #133 stays with Chaty in parallel (res/ artwork only, no file overlap).
-- **Branch:** vibe/visual-system-v240, fresh from current beta (e696563); PR #113 remains draft/open for traceability only and is not extended.
-- **Scope implemented:** icy-blue/dark-fantasy shared token refresh (frost accent replacing the gold accent family), shared primary-button component token, restrained typography token, unified card shapes across Back overlay, Settings, Diagnostics, Update and Home; updated contrast tests.
-- **Device status:** physical ARM64 rendering/haptics remain unverified; see the PR handoff for CI and limitations.
+- **Owner:** Vibe (agent:vibe), explicitly assigned by Chaty on 2026-11-26.
+- **Scope:** shared icy-blue/dark-fantasy Compose visual system and existing launcher-owned screens; gameplay remains fullscreen. See GitHub issue #107 for detailed acceptance criteria.
+- **Coordination:** Vibe uses a fresh branch from current beta. PR #113 remains draft/open for traceability only; do not merge or extend its stale branch. #133 is limited to icon resources, so the two tasks can proceed in parallel without overlapping files.
+- **Next dependency:** keep accessibility issue #9 queued until #107 is integrated.
+- **State:** PR [#136](https://github.com/iNeonyne/LastHavenPlus/pull/136) submitted on branch `vibe/visual-system-v240` — frost accent token family replacing the gold accent, shared primary-button and typography tokens, unified card shapes, updated contrast tests, and `docs/DESIGN_SYSTEM.md`.
+- **Device status:** physical ARM64 rendering/haptics remain unverified.
 
 ### Completed — issue #129 CI consolidation
 - PR [#132](https://github.com/iNeonyne/LastHavenPlus/pull/132) merged at 7cd898f4c1f9b7f70787a7000e1ed9343a83540d.
@@ -49,7 +50,7 @@
 ### Issue #18 — v2.4.0–v2.6.0 roadmap
 - Owner requested a three-version roadmap on 2026-11-26; the live issue now records v2.4.0 UI/UX, v2.5.0 updater experience and v2.6.0 settings/diagnostics.
 - These are planning targets only, not release/tag/promotion authorization.
-- v2.4.0 starts with #133 icon work, then #107 visual system and #9 accessibility in non-overlapping sequence.
+- v2.4.0 icon resources (#133, Chaty) and Compose visual-system work (#107, Vibe) proceed in parallel with separate file scopes; #9 accessibility remains queued until #107 integrates.
 
 ## Review queue and stale-base work
 
@@ -73,7 +74,7 @@
 
 ## Other preserved drafts
 
-- **PR #113:** draft/open for traceability only. Owner asked Chaty to take over future UI/UX implementation; issue #107 has been reopened under Chaty ownership. PR #113 remains draft/open for traceability only; do not merge or push further commits to the old branch. Chaty will implement fresh UI/UX work from current beta.
+- **PR #113:** draft/open for traceability only. Do not merge or push further commits to its stale branch. Following the owner's latest direction, Chaty owns #133 icon resources and Vibe owns #107 Compose visual-system work on a fresh branch from current beta.
 - **PR #131:** closed unmerged because its base became stale; superseded by PR #132. No need to reopen.
 
 ## Ownership label rules
