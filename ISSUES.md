@@ -54,7 +54,6 @@
 | [#86](https://github.com/iNeonyne/LastHavenPlus/issues/86) | Deferred | v2.4.0 deferred settings, diagnostics and supporting-feature backlog | Blocked; not an approved roadmap or release commitment |
 | [#106](https://github.com/iNeonyne/LastHavenPlus/issues/106) | Done | Gameplay loading, reconnect and load-failure UX | Closed after implementation integration; no open task remains under this issue |
 | [#107](https://github.com/iNeonyne/LastHavenPlus/issues/107) | Done | Consistent visual design and interaction polish | Closed after later UI integration; old draft PR #113 is traceability-only and must not be resumed |
-
 | [#62](https://github.com/iNeonyne/LastHavenPlus/issues/62) | Deferred | Branch lifecycle audit | Owner-deferred; PR #123 remains draft/open; do not resume |
 | [#66](https://github.com/iNeonyne/LastHavenPlus/issues/66) | Engineering | Independent unsigned APK reproducibility | PR #119 open; prior byte-identical result exists; branch refresh and exact-head reruns required |
 | [#70](https://github.com/iNeonyne/LastHavenPlus/issues/70) | Docs | Contributor/security guidance and Markdown validation | Markdownlint integrated; final reconciliation is in this housekeeping PR |
