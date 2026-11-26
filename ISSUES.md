@@ -37,7 +37,7 @@
 | [#8](#issue-8) | — | Legacy addon manager | Closed — superseded; no planned work |
 | [#9](#issue-9) | P2 | Overlay accessibility and navigation | Closed after PR #139 integration; physical-device coverage is not claimed by CI |
 | [#10](#issue-10) | P2 | Persistent app-wide network usage totals | Open; app-wide counters are implemented, automated counter tests remain |
-| [#11](#issue-11) | P2 | Privacy-conscious log tests | Vibe active; PR #154 closed unmerged because stale; fresh beta-based test PR required |
+| [#11](#issue-11) | P2 | Privacy-conscious log tests | Vibe active; fresh beta-based implementation on `vibe/diagnostics-tests-11-refresh` (closed PR #154 kept as reference only) |
 | [#12](#issue-12) | P2 | GeckoView load-error details | Open |
 | [#13](#issue-13) | — | Accessible names / legacy addon-manager compile work | Closed — consolidated into #9 |
 | [#14](#issue-14) | P2 | Connection diagnostics | Open |

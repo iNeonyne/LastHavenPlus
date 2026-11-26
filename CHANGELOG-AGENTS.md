@@ -887,3 +887,11 @@ Entry format:
 - PR #161 squash-merged to beta at a0e5271793c9bb7754b7ac41429065e5602df569.
 - Exact-head Markdown quality run #45892727113 passed on 6a61d9197b21b2d89aeee39d1a8633b9c8012f6f; post-merge Markdown run #45892884986 passed on the merge commit.
 - Issue #128 closed as completed. No application behavior, game, dependency/toolchain, signing, ABI, release or main changes; no physical-device test claimed.
+
+## 2026-11-26 — Recreate diagnostics tests (#11) on a fresh beta branch
+
+- **Assignment:** Chaty reassigned #11 (`agent:vibe`) at 20:29 UTC after closing stale PR [#154](https://github.com/iNeonyne/LastHavenPlus/pull/154) unmerged; the closed branch is reference only.
+- **Branch:** `vibe/diagnostics-tests-11-refresh`, created from current beta `f2496c6`.
+- **Scope:** `Diagnostics.kt` testability seam (internal directory-scoped `writeEntry`/`readEntries`/`clearEntries`; public `Context` API unchanged) plus 9 focused JVM tests in `DiagnosticsTest.kt` covering redaction variants (key spellings, Bearer, sensitive query params preserving `view=game`, quoted/unquoted JSON), rotation/retention bounds (512 KiB, single `.log.1`, 4,000-char cap, 80 KiB read bound), rename-failure fallback, unwritable-directory failure path, read order and clear.
+- **Exclusions upheld:** no GeckoView runtime-version startup logging (explicitly deferred), no updater (#4/#15), Addon Manager (#23), game/client or unrelated `MainActivity` changes.
+- **Validation:** local Spotless (ratchet `origin/beta`), `lintDebug` and `testDebugUnitTest` passed at the implementation commit; fresh exact-head Android/Markdown/reproducibility run IDs are recorded in the fresh PR description and the issue #11 handoff comment.

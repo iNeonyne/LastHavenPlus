@@ -610,3 +610,11 @@ No branch was deleted. The available GitHub connector exposes no branch-delete o
 - PR #161 squash-merged to beta at a0e5271793c9bb7754b7ac41429065e5602df569.
 - Exact-head Markdown run #45892727113 passed on 6a61d9197b21b2d89aeee39d1a8633b9c8012f6f; post-merge Markdown run #45892884986 passed on a0e5271793c9bb7754b7ac41429065e5602df569.
 - Issue #128 closed. No Android/device tests were applicable to this documentation-only change. No physical-device test claimed.
+
+### 2026-11-26 — Recreate issue #11 diagnostics tests after stale-PR closure
+- **Issue:** #11 (`agent:vibe`, reassigned by Chaty after PR #154 was closed unmerged as stale).
+- **Branch and starting commit:** `vibe/diagnostics-tests-11-refresh`, created from beta `f2496c6` (post-#162).
+- **Files:** app/src/main/java/com/neonyne/lasthavenlauncher/Diagnostics.kt (internal directory-scoped seam; public Context API unchanged), app/src/test/java/com/neonyne/lasthavenlauncher/DiagnosticsTest.kt (9 new tests), STATUS.md, ISSUES.md, AGENT_WORK.md, CHANGELOG-AGENTS.md, WORK_LOG.md.
+- **Validation:** `./gradlew spotlessCheck -PspotlessRatchetFrom=origin/beta testDebugUnitTest lintDebug` — Spotless pass, lint pass, JVM suite pass (0 failures) at the implementation commit; exact-head CI run IDs reported in the PR description and issue #11 handoff comment.
+- **Limitations:** JVM-only coverage; Android Context wrappers and on-device log sharing not exercised; GeckoView startup-version logging excluded per scope decision; no physical ARM64 device testing.
+- **Next action:** Chaty review of the fresh draft PR; #149 then #146 remain queued.
