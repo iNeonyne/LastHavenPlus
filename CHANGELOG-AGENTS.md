@@ -812,3 +812,12 @@ Entry format:
 - **Safety:** Vibe cannot merge or push to beta/main. Exactly one implementation owner per issue. Owner-only, blocked and review states are distinct from unassigned work.
 - **Activation caveat:** GitHub issue-event workflows must exist on the repository default branch. The PR targets beta only; automatic issue-open labeling remains inactive until the owner separately approves promotion to the default branch. No main, release, app source or game changes.
 - **Verification:** documentation and workflow source review pending PR CI/merge. No automation run or label backfill is claimed. Physical-device testing is not applicable.
+
+
+## 2026-11-26 — Reauthorize and begin native Addon Manager ZIP v0.5.1 port
+
+- **Owner decision:** the repository owner explicitly resumed issue #23 and selected the uploaded `lasthavens-addon-manager-0.5.1(1).zip` (SHA-256 `734a8af29b9e108f05666e5f1140cd58f77de87f888386fd1777b7948908b7fc`) as the active source. This Chrome Manifest V3 ZIP is distinct from the historical XPI v0.11.0.
+- **Ownership:** Chaty owns #23; draft PR #140 on `chaty/addon-manager-native-phase-a`. Vibe's #9 work still owns `MainActivity.kt` and `GameMenuScreen.kt`; #23 avoids those files until #9 integrates.
+- **Phase A:** native bounded streaming ZIP extraction, TOC metadata parsing, app-private addon storage, disabled-by-default enable/disable/remove/export and a frost-themed Compose manager screen. Initial JVM tests added.
+- **Security:** source loader's XHR/Worker/blocks.idx/WASM-memory interception remains disabled pending a separate exact-GeckoView-160 security/compatibility review. No game files/profile/index changes, automatic network downloads, toolchain changes, release or beta merge.
+- **Verification:** early exact-head CI exposed a malformed Kotlin escape and missing extraction-directory arguments in tests; both were corrected. Latest exact-head validation remains pending. No physical ARM64 test or game addon-loading claim.
