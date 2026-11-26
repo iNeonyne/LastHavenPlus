@@ -35,6 +35,16 @@ class AddonDependencyAnalyzerTest {
   }
 
   @Test
+  fun optionalDependenciesDoNotProduceMissingDependencyWarnings() {
+    val report =
+      AddonDependencyAnalyzer.analyze(
+        listOf(addon("Alpha", optionalDependencies = listOf("OptionalMissing")))
+      )
+
+    assertTrue(report.missingByFolder["Alpha"].orEmpty().isEmpty())
+  }
+
+  @Test
   fun handlesDeepDependencyChainsWithoutRecursion() {
     val addons =
       (0 until 5_000).map { index ->
@@ -54,6 +64,7 @@ class AddonDependencyAnalyzerTest {
     folder: String,
     enabled: Boolean = true,
     dependencies: List<String> = emptyList(),
+    optionalDependencies: List<String> = emptyList(),
   ) =
     AddonLibraryItem(
       title = folder,
@@ -62,6 +73,7 @@ class AddonDependencyAnalyzerTest {
       interfaceVersion = "30300",
       notes = "",
       dependencies = dependencies,
+      optionalDependencies = optionalDependencies,
       sizeBytes = 1,
       filesCount = 1,
       enabled = enabled,
