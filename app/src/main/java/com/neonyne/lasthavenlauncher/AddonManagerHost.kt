@@ -49,7 +49,7 @@ fun AddonManagerHost(onBack: () -> Unit) {
               message = successMessage
             }
             .onFailure { error ->
-              message = error.message ?: "Addon operation failed."
+              message = error.message ?: context.getString(R.string.addon_manager_operation_failed)
             }
         }
       }
@@ -60,7 +60,7 @@ fun AddonManagerHost(onBack: () -> Unit) {
       onImportSelected = { uri ->
         finishOperation(
           { documentIo.importZip(uri) },
-          "Addon ZIP imported. It remains disabled.",
+          context.getString(R.string.addon_manager_import_success),
         )
       },
       onExportSelected = { folder, uri ->
@@ -76,10 +76,10 @@ fun AddonManagerHost(onBack: () -> Unit) {
             result
               .onSuccess {
                 snapshot = it
-                message = "Addon ZIP exported."
+                message = context.getString(R.string.addon_manager_export_success)
               }
               .onFailure { error ->
-                message = error.message ?: "Addon export failed."
+                message = error.message ?: context.getString(R.string.addon_manager_export_failed)
               }
           }
         }
@@ -93,7 +93,7 @@ fun AddonManagerHost(onBack: () -> Unit) {
         busy = false
         result
           .onSuccess { snapshot = it }
-          .onFailure { error -> message = error.message ?: "Could not read addon library." }
+          .onFailure { error -> message = error.message ?: context.getString(R.string.addon_manager_read_failed) }
       }
     }
   }
@@ -106,14 +106,14 @@ fun AddonManagerHost(onBack: () -> Unit) {
     onToggle = { folder, enabled ->
       finishOperation(
         { repository.setEnabled(folder, enabled) },
-        if (enabled) "Addon enabled locally." else "Addon disabled locally.",
+        if (enabled) context.getString(R.string.addon_manager_enabled) else context.getString(R.string.addon_manager_disabled),
       )
     },
     onExport = pickers.exportZip,
     onRemove = { folder ->
       finishOperation(
         { repository.removeAddon(folder) },
-        "Addon removed from local storage.",
+        context.getString(R.string.addon_manager_remove_success),
       )
     },
     onBack = onBack,
