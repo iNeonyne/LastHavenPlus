@@ -21,6 +21,7 @@ internal object LauncherNavigationPolicy {
         Screen.Settings -> settingsReturnScreen
         Screen.Diagnostics -> diagnosticsReturnScreen
         Screen.Update -> updateReturnScreen
+        Screen.AddonManager -> Screen.Game
         Screen.Home,
         Screen.Game -> Screen.Game
       }
@@ -29,11 +30,14 @@ internal object LauncherNavigationPolicy {
 
   fun openSettings(): LauncherNavigationTarget = LauncherNavigationTarget(Screen.Settings, false)
 
+  fun openAddonManager(): LauncherNavigationTarget =
+    LauncherNavigationTarget(Screen.AddonManager, false)
+
   fun afterReload(): LauncherNavigationTarget = LauncherNavigationTarget(Screen.Game, false)
 
   fun returnToGame(): LauncherNavigationTarget = LauncherNavigationTarget(Screen.Game, false)
 
-  fun isGameplay(screen: Screen): Boolean = screen == Screen.Game
+  fun isGameplay(screen: Screen): Boolean = screen == Screen.Game || screen == Screen.AddonManager
 
   fun isImmersiveGameplay(screen: Screen, menuVisible: Boolean): Boolean =
     screen == Screen.Game && !menuVisible
