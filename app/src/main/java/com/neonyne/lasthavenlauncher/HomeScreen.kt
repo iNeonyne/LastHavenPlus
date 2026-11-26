@@ -36,19 +36,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.foundation.Image
-
-private val HavenInk = Color(0xFF080D18)
-private val HavenPanel = Color(0xFF121D2D)
-private val HavenGold = Color(0xFFE5B85C)
-private val HavenMuted = Color(0xFFAAB7C9)
 
 @Composable
 fun HomeScreen(
@@ -66,7 +61,7 @@ fun HomeScreen(
             .fillMaxSize()
             .background(
                 Brush.verticalGradient(
-                    colors = listOf(Color(0xFF17263A), HavenInk, Color(0xFF05080F)),
+                    colors = DesignTokens.homeGradient(),
                 ),
             ),
     ) {
@@ -150,8 +145,8 @@ private fun HomeBranding(modifier: Modifier = Modifier, compact: Boolean) {
     ) {
         Surface(
             modifier = Modifier.size(if (compact) 116.dp else 144.dp),
-            shape = RoundedCornerShape(32.dp),
-            color = HavenPanel,
+            shape = RoundedCornerShape(DesignTokens.cornerBadge),
+            color = DesignTokens.panel,
             shadowElevation = 16.dp,
         ) {
             Image(
@@ -164,7 +159,7 @@ private fun HomeBranding(modifier: Modifier = Modifier, compact: Boolean) {
         Spacer(Modifier.height(24.dp))
         Text(
             "LASTHAVEN",
-            color = Color.White,
+            color = DesignTokens.textPrimary,
             fontSize = if (compact) 34.sp else 46.sp,
             fontWeight = FontWeight.Black,
             letterSpacing = if (compact) 3.sp else 5.sp,
@@ -172,7 +167,7 @@ private fun HomeBranding(modifier: Modifier = Modifier, compact: Boolean) {
         )
         Text(
             "PLUS",
-            color = HavenGold,
+            color = DesignTokens.gold,
             fontSize = if (compact) 18.sp else 22.sp,
             fontWeight = FontWeight.Bold,
             letterSpacing = 8.sp,
@@ -181,7 +176,7 @@ private fun HomeBranding(modifier: Modifier = Modifier, compact: Boolean) {
         Spacer(Modifier.height(10.dp))
         Text(
             "Return to Azeroth.",
-            color = HavenMuted,
+            color = DesignTokens.textSecondary,
             fontSize = 16.sp,
             textAlign = if (compact) TextAlign.Center else TextAlign.Start,
         )
@@ -202,7 +197,7 @@ private fun HomeActions(
     ) {
         Card(
             colors = CardDefaults.cardColors(containerColor = HavenPanel.copy(alpha = 0.96f)),
-            shape = RoundedCornerShape(28.dp),
+            shape = RoundedCornerShape(DesignTokens.cornerDialog),
         ) {
             Column(
                 modifier = Modifier.fillMaxWidth().padding(22.dp),
@@ -229,7 +224,7 @@ private fun HomeActions(
                 Button(
                     onClick = onStartGame,
                     modifier = Modifier.fillMaxWidth().height(58.dp),
-                    shape = RoundedCornerShape(16.dp),
+                    shape = RoundedCornerShape(DesignTokens.cornerCard),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = HavenGold,
                         contentColor = Color(0xFF17130A),
@@ -249,7 +244,7 @@ private fun HomeActions(
         if (updateVersion != null) {
             Card(
                 onClick = onOpenUpdate,
-                colors = CardDefaults.cardColors(containerColor = Color(0xFF26364B)),
+                colors = CardDefaults.cardColors(containerColor = DesignTokens.panelBright),
                 shape = RoundedCornerShape(18.dp),
             ) {
                 Row(
