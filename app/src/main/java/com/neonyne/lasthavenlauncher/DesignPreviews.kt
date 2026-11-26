@@ -100,7 +100,7 @@ private fun TokenShowcaseThemePreview() {
 @Preview(name = "Overlay narrow (portrait phone)", widthDp = 360, heightDp = 640)
 @Composable
 private fun GameMenuNarrowPreview() {
-  GameMenuScreen(onReload = {}, onSettings = {}, onReturnToGame = {})
+  GameMenuScreen(onReload = {}, onSettings = {}, onAddonManager = {}, onReturnToGame = {})
 }
 
 @Preview(name = "Overlay wide (landscape window)", widthDp = 1040, heightDp = 620)
