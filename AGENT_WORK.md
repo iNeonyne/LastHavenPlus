@@ -1,6 +1,6 @@
 # Agent work assignments — LastHavenPlus
 
-**Current beta baseline:** 4c508cf5eff07d8a64dc3ec772dcc1a37a1320a8 after the #133 icon integration and its documentation follow-ups; advanced to e0967121b51ac1c232c92edd80157fc02b714766 after PR #136 integrated the #107 visual system.  
+**Current beta baseline:** 97570eaaca86c9e27d92d04f90da9d930f6bdb33 after PR #119 integrated independent unsigned APK reproducibility.  
 **Stable baseline:** main / v2.3.0 tag ebc5b424e83ae66c2b0accc2bec6f050b8dc0d88.
 
 ## Roles and integration
@@ -54,6 +54,15 @@
 - Owner requested a three-version roadmap on 2026-11-26; the live issue now records v2.4.0 UI/UX, v2.5.0 updater experience and v2.6.0 settings/diagnostics.
 - These are planning targets only, not release/tag/promotion authorization.
 - v2.4.0 icon resources (#133, Chaty) and Compose visual-system work (#107, Vibe) proceeded in parallel with separate file scopes; #107 integrated via PR #136 and #9 accessibility is now the active Vibe assignment.
+
+## Active Vibe work
+
+### Issue #11 — diagnostics redaction/rotation/failure-path tests
+- **Owner:** Vibe (agent:vibe), assigned by Chaty on 2026-11-26.
+- **Branch:** `vibe/diagnostics-tests-11-6ce186`, based on current beta at assignment time.
+- **Scope:** focused JVM tests for the existing local diagnostics implementation only — redaction edge cases across supported key/value formats, rotation and strict size/retention bounds including failure paths, bounded reads and safe failure behavior. `Diagnostics.kt` gained testable directory-based internals with the public Context API unchanged; no logger architecture rewrite, no new logging behavior, no GeckoView/updater changes.
+- **Runtime version:** the pinned GeckoView 160 artifact exposes `org.mozilla.geckoview.BuildConfig.GRE_MILESTONE`/`MOZILLA_VERSION`, but wiring a runtime-version diagnostic line requires `MainActivity.kt`, which is outside the assigned file scope; Vibe asked Chaty on the issue before expanding scope. No version is guessed.
+- **Device status:** no physical ARM64 testing; JVM tests do not exercise on-device log viewing/sharing.
 
 ## Review queue and stale-base work
 
