@@ -24,6 +24,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 
@@ -49,23 +50,23 @@ fun AddonManagerScreen(
     ) {
       Column(modifier = Modifier.weight(1f)) {
         Text(
-          "ADDON MANAGER",
+          stringResource(R.string.addon_manager_title),
           color = DesignTokens.frost,
           style = MaterialTheme.typography.labelSmall,
         )
-        Text("Local addons", style = MaterialTheme.typography.headlineSmall)
+        Text(stringResource(R.string.addon_manager_local_addons), style = MaterialTheme.typography.headlineSmall)
       }
       OutlinedButton(
         onClick = onBack,
         enabled = !busy,
         modifier = Modifier.heightIn(min = DesignTokens.minTouchTarget),
       ) {
-        Text("Back")
+        Text(stringResource(R.string.addon_manager_back))
       }
     }
 
     Text(
-      "Import local WoW 3.3.5a addon ZIP files. New imports start disabled and stay on this device. Runtime loading is not enabled in this draft.",
+      stringResource(R.string.addon_manager_import_description),
       color = MaterialTheme.colorScheme.onSurfaceVariant,
       style = MaterialTheme.typography.bodyMedium,
     )
@@ -81,7 +82,7 @@ fun AddonManagerScreen(
         shape = RoundedCornerShape(DesignTokens.cornerButton),
         colors = DesignTokens.primaryButtonColors(),
       ) {
-        Text("Import ZIP")
+        Text(stringResource(R.string.addon_manager_import_zip))
       }
       Surface(
         color = MaterialTheme.colorScheme.surfaceVariant,
@@ -111,7 +112,7 @@ fun AddonManagerScreen(
     if (snapshot.addons.isEmpty()) {
       Spacer(Modifier.height(20.dp))
       Text(
-        "No local addons yet. Import a ZIP containing an addon folder and its matching .toc file.",
+        stringResource(R.string.addon_manager_no_addons),
         color = MaterialTheme.colorScheme.onSurfaceVariant,
         style = MaterialTheme.typography.bodyMedium,
       )
@@ -134,7 +135,7 @@ fun AddonManagerScreen(
     }
 
     Text(
-      "Addon files remain local. Runtime loading and same-session game integration are not available in this draft.",
+      stringResource(R.string.addon_manager_runtime_unavailable),
       color = MaterialTheme.colorScheme.onSurfaceVariant,
       style = MaterialTheme.typography.bodySmall,
     )
@@ -171,7 +172,7 @@ private fun AddonCard(
             fontWeight = FontWeight.SemiBold,
           )
           Text(
-            "${addon.folder} · ${addon.version.ifBlank { "No version" }}",
+            "${addon.folder} · ${addon.version.ifBlank { stringResource(R.string.addon_manager_no_version) }}",
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             style = MaterialTheme.typography.bodySmall,
           )
@@ -185,7 +186,7 @@ private fun AddonCard(
       }
 
       Text(
-        "${addon.filesCount} files · ${formatAddonSize(addon.sizeBytes)}",
+        stringResource(R.string.addon_manager_files_summary, addon.filesCount, formatAddonSize(addon.sizeBytes)),
         color = MaterialTheme.colorScheme.onSurfaceVariant,
         style = MaterialTheme.typography.bodySmall,
       )
@@ -196,7 +197,7 @@ private fun AddonCard(
         }
       if (missing.isNotEmpty()) {
         Text(
-          "Check required dependencies: ${missing.joinToString()}",
+          stringResource(R.string.addon_manager_missing_dependencies, missing.joinToString()),
           color = MaterialTheme.colorScheme.error,
           style = MaterialTheme.typography.bodySmall,
         )
@@ -218,14 +219,14 @@ private fun AddonCard(
           enabled = !busy,
           modifier = Modifier.heightIn(min = DesignTokens.minTouchTarget),
         ) {
-          Text("Export ZIP")
+          Text(stringResource(R.string.addon_manager_export_zip))
         }
         OutlinedButton(
           onClick = onRemove,
           enabled = !busy,
           modifier = Modifier.heightIn(min = DesignTokens.minTouchTarget),
         ) {
-          Text("Remove")
+          Text(stringResource(R.string.addon_manager_remove))
         }
       }
     }
