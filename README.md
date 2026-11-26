@@ -33,6 +33,10 @@ These are features integrated into beta and covered by the repository's automate
 - **Updater:** Stable release checks and downloads remain user-initiated. Manifest, version, URL, payload and digest validation are applied; differential patch failures retain a verified full-APK fallback. Android's package installer controls installation.
 - **Addon manager:** Native local ZIP/library management is being implemented by Chaty in [draft PR #152](https://github.com/iNeonyne/LastHavenPlus/pull/152); it is not yet integrated into beta. Local enablement is library metadata only and does not activate addons in the game. The supplied Chrome MV3 runtime port remains unimplemented pending separate GeckoView 160 compatibility and security testing.
 
+## Site permissions
+
+The launcher grants only persistent site storage and audible/inaudible autoplay to `lasthavens.com` and its subdomains. Other website permission requests are denied. Android runtime-permission and camera/microphone media-capture requests are also denied, so features that require those capabilities are unavailable unless a future reviewed policy change explicitly enables them.
+
 ## GeckoView profile transition
 
 GeckoView uses its own browser profile. No supported, verified migration of Cefrium cookies or other browser data has been established. Do not copy or delete existing Cefrium profile data as part of this transition. A fresh game login may be required.
