@@ -71,6 +71,12 @@ jobs:
         if: github.event_name == 'pull_request'
         run: ./gradlew spotlessApply --stacktrace
 
+      - name: Capture formatter patch
+        if: github.event_name == 'pull_request'
+        run: |
+          git diff -- app/src/main/java/com/neonyne/lasthavenlauncher/AddonLibraryRepository.kt app/src/test/java/com/neonyne/lasthavenlauncher/AddonLibraryRepositoryTest.kt > /tmp/addon-recovery-format.patch
+          test -s /tmp/addon-recovery-format.patch
+
       - name: Upload formatted recovery sources
         if: github.event_name == 'pull_request'
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
@@ -79,6 +85,7 @@ jobs:
           path: |
             app/src/main/java/com/neonyne/lasthavenlauncher/AddonLibraryRepository.kt
             app/src/test/java/com/neonyne/lasthavenlauncher/AddonLibraryRepositoryTest.kt
+            /tmp/addon-recovery-format.patch
           retention-days: 1
 
       - name: Test release workflow helpers
