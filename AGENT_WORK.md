@@ -1,6 +1,6 @@
 # Agent work assignments — LastHavenPlus
 
-**Current beta baseline:** e69656303d7e1c1e7d50f7211c8cfaeb748f07e9 (verified after PR #134 documentation reconciliation); advanced to 4c508cf5eff07d8a64dc3ec772dcc1a37a1320a8 after the #133 icon integration and its documentation follow-ups.  
+**Current beta baseline:** 4c508cf5eff07d8a64dc3ec772dcc1a37a1320a8 after the #133 icon integration and its documentation follow-ups; advanced to e0967121b51ac1c232c92edd80157fc02b714766 after PR #136 integrated the #107 visual system.  
 **Stable baseline:** main / v2.3.0 tag ebc5b424e83ae66c2b0accc2bec6f050b8dc0d88.
 
 ## Roles and integration
@@ -24,13 +24,16 @@
 - **Integration:** PR [#135](https://github.com/iNeonyne/LastHavenPlus/pull/135) squash-merged to `beta` at `c24b24e7125f49e86f465b1786ccfecb537e9694`; exact-head unsigned validation passed before merge.
 - **Remaining verification:** Android-generated mask output and physical launcher appearance remain unverified; the owner signoff on issue #133 is the record for it.
 
-### Issue #107 — v2.4.0 visual system
-- **Owner:** Vibe (agent:vibe), explicitly assigned by Chaty on 2026-11-26.
-- **Scope:** shared icy-blue/dark-fantasy Compose visual system and existing launcher-owned screens; gameplay remains fullscreen. See GitHub issue #107 for detailed acceptance criteria.
-- **Coordination:** Vibe uses a fresh branch from current beta. PR #113 remains draft/open for traceability only; do not merge or extend its stale branch. #133 is limited to icon resources, so the two tasks can proceed in parallel without overlapping files.
-- **Next dependency:** keep accessibility issue #9 queued until #107 is integrated.
-- **State:** PR [#136](https://github.com/iNeonyne/LastHavenPlus/pull/136) submitted on branch `vibe/visual-system-v240` — frost accent token family replacing the gold accent, shared primary-button and typography tokens, unified card shapes, updated contrast tests, and `docs/DESIGN_SYSTEM.md`.
+### Issue #107 — v2.4.0 visual system (INTEGRATED)
+- **Integration:** PR [#136](https://github.com/iNeonyne/LastHavenPlus/pull/136) merged into `beta` by Chaty at `e0967121b51ac1c232c92edd80157fc02b714766`; exact-head unsigned validation passed on final head `94b06eccf2670289474d0e3ad1a7a9c5e30f7c01`. Issue #107 closed on acceptance.
 - **Device status:** physical ARM64 rendering/haptics remain unverified.
+
+### Issue #9 — overlay accessibility and navigation (v2.4.0)
+- **Owner:** Vibe (agent:vibe), assigned by Chaty on 2026-11-26 after #107 integration.
+- **Scope:** Compose semantics (pane title, heading, traversal group) and accessible focus entry for the existing Back menu overlay; TalkBack traversal order verification; reduced-motion gating of the existing overlay fade; return-to-game behavior must keep discarding no session state. No menu redesign, no new actions.
+- **Branch:** `vibe/overlay-accessibility`, fresh from beta `e0967121b51ac1c232c92edd80157fc02b714766`.
+- **State:** implementation in progress on this branch.
+- **Device status:** physical ARM64 TalkBack/gesture verification not performed; JVM-only test infra means focus/TalkBack behavior cannot be fully automated.
 
 ### Completed — issue #129 CI consolidation
 - PR [#132](https://github.com/iNeonyne/LastHavenPlus/pull/132) merged at 7cd898f4c1f9b7f70787a7000e1ed9343a83540d.
@@ -50,7 +53,7 @@
 ### Issue #18 — v2.4.0–v2.6.0 roadmap
 - Owner requested a three-version roadmap on 2026-11-26; the live issue now records v2.4.0 UI/UX, v2.5.0 updater experience and v2.6.0 settings/diagnostics.
 - These are planning targets only, not release/tag/promotion authorization.
-- v2.4.0 icon resources (#133, Chaty) and Compose visual-system work (#107, Vibe) proceed in parallel with separate file scopes; #9 accessibility remains queued until #107 integrates.
+- v2.4.0 icon resources (#133, Chaty) and Compose visual-system work (#107, Vibe) proceeded in parallel with separate file scopes; #107 integrated via PR #136 and #9 accessibility is now the active Vibe assignment.
 
 ## Review queue and stale-base work
 
@@ -74,7 +77,7 @@
 
 ## Other preserved drafts
 
-- **PR #113:** draft/open for traceability only. Do not merge or push further commits to its stale branch. Following the owner's latest direction, Chaty owns #133 icon resources and Vibe owns #107 Compose visual-system work on a fresh branch from current beta.
+- **PR #113:** draft/open for traceability only. Do not merge or push further commits to its stale branch; its substance was superseded by PR #136 on `vibe/visual-system-v240` (merged).
 - **PR #131:** closed unmerged because its base became stale; superseded by PR #132. No need to reopen.
 
 ## Ownership label rules
