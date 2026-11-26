@@ -117,3 +117,14 @@ Only Chaty changes ownership labels. Assignment comments must define expected be
 - **Scope:** canonical Apache-2.0 text, SECURITY.md, README licensing boundary, weekly Gradle Dependabot, v2.2/v2.3 changelog reconciliation, contribution guide alignment, and branch-retention policy. Keep third-party components and the LastHaven game under their respective terms.
 - **Exclusions:** no app source, dependency/toolchain version, game, updater, signing, ABI, release, tag, main or branch deletion changes. Owner supplied project attribution: LastHavenPlus, Copyright 2026.
 - **Verification:** documentation/Dependabot review and exact PR Markdown CI pending. Direct dependency license review is preliminary; transitive/package-level audit remains outstanding.
+
+## Issue #67 — latest audit checkpoint (2026-11-26)
+
+This entry supersedes the earlier Issue #67 status above.
+
+- Owner selected Apache-2.0 for original LastHavenPlus code and documentation. Attribution is owner-supplied: LastHavenPlus, Copyright 2026.
+- PR #144 adds Apache-2.0 and MPL-2.0 resources, a Settings viewer for project/third-party notices, THIRD_PARTY_NOTICES.md, SECURITY.md, Dependabot, changelog and contributor-policy updates.
+- The resolved GeckoView 160 runtime graph includes Google Play Services FIDO/Base/Basement/Tasks under Google's Android Software Development Kit License terms. These are not OSI open-source licenses and are disclosed separately.
+- PR CI now uploads the unsigned release APK with the runtime dependency report. SettingsDialogs.kt Spotless formatting was corrected after the first exact-head Android run failed.
+- Remaining: exact-head Android pass, inspect the unsigned APK and packaged runtime components, finish artifact-level notice verification, then final review. PR remains draft; no merge or release authorization is implied.
+- No game, updater, app ID, signing identity, ABI, dependency/toolchain version, GeckoView version, release/tag/main or branch-deletion changes. No physical-device test claimed.
