@@ -74,7 +74,7 @@ fun GameMenuScreen(
         OutlinedButton(
           onClick = onReturnToGame,
           modifier = Modifier.fillMaxWidth().heightIn(min = DesignTokens.minTouchTarget),
-          shape = RoundedCornerShape(14.dp),
+          shape = RoundedCornerShape(DesignTokens.cornerButton),
         ) {
           Text("Return to game")
         }
