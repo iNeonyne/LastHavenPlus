@@ -1,16 +1,50 @@
 # Project status — LastHavenPlus
 
-**Last updated:** 2026-11-25  
-**Active branch:** `beta`  
-**Latest beta integration commit:** `932e3ba65f6c8445eafe0ba466ca3952c67bd017` (PR [#99](https://github.com/iNeonyne/LastHavenPlus/pull/99), Gradle dependency/plugin version catalog; previous product integration remains PR #85/#83).  
-**Stable promotion commit:** `f22b5c2b92b6f93b201b1a9dc50a8c8095543d76` (PR [#87](https://github.com/iNeonyne/LastHavenPlus/pull/87), selective product/docs promotion to main; stable-only history preserved).  
-**v2.2.0 beta validation:** PR #85 exact-head validation [#45657071506](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45657071506) passed lint, formatting, unsigned release build and unit tests. Post-merge beta quality [#45657785104](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45657785104) and signed ARM64 build [#45657785102](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45657785102) passed; signed artifact uploaded; tag/publication steps skipped.
-**v2.2.0 main validation:** selective PR #87 merged at `f22b5c2b92b6f93b201b1a9dc50a8c8095543d76`. Exact main quality [#45658476528](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45658476528) and signed ARM64 build [#45658476677](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45658476677) passed; signed artifact uploaded; tag/publication steps skipped.
-**Earlier updater workflow integration:** PR [#54](https://github.com/iNeonyne/LastHavenPlus/pull/54) merged to beta at `b12da7651445d15080e7593d441459a8c8403070`; exact-head unsigned and post-merge signed CI both passed.  
-**Stable documentation:** owner-authorized v2.1.0 corrections are on `main`; README commit `fdae3d90cf3abb209df8a42dd73ed1667bae9808`, CHANGELOG commit `2abe7cc212b67a3b91f5dcdb108aee3a55559e32`.  
-**Stable promotion and publication:** PR [#47](https://github.com/iNeonyne/LastHavenPlus/pull/47) promoted to `main`; tag/release `v2.1.0` is published at `03fcfa9652ce4e7d1034523d640a1693e6e6b9ce`.  
-**Current phase:** v2.1.0 remains the latest published release. The v2.2.0 candidate scope (#56 direct launch/overlay and #84 recreated icon) is integrated in beta and selectively promoted to main by PR #87. Beta exact-head PR validation, post-merge quality and signed ARM64 CI passed. Main exact-commit quality [run #45658476528](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45658476528) and signed ARM64 build [run #45658476677](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45658476677) both passed. The signed artifact was uploaded; release-tag, differential-generation and publication steps were skipped. No v2.2.0 version bump, tag or publication has been created. Owner feedback is collected after release on the owner's schedule and is not a blocker. PR #54 fixed draft asset cleanup/verification by release ID; the release-ID path still needs a future owner-authorized versioned release run.
-**Earlier quality-gate integration:** issue #60 merged by PR [#72](https://github.com/iNeonyne/LastHavenPlus/pull/72) at `82e819a43e6d728a9eb8fea620eca47ac9c998df`. Exact-head PR validation passed in [run #45627915789](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45627915789). Post-merge Android quality run [#45631250015](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45631250015) and beta build run [#45631249817](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45631249817) completed successfully. The beta build verified signed release APK assembly, unit tests, established signing certificate and ARM64-only ABI; release-tag publication steps were skipped.
+**Last updated:** 2026-11-26  
+**Active branch:** beta  
+**Latest beta HEAD:** 7cd898f4c1f9b7f70787a7000e1ed9343a83540d (PR [#132](https://github.com/iNeonyne/LastHavenPlus/pull/132), CI runner consolidation).  
+**Stable branch / v2.3.0 tag:** ebc5b424e83ae66c2b0accc2bec6f050b8dc0d88; GitHub confirms published, non-draft, non-prerelease [v2.3.0](https://github.com/iNeonyne/LastHavenPlus/releases/tag/v2.3.0) with canonical ARM64 APK, update manifest and v2.2.0-to-v2.3.0 differential package. Main remains unchanged by this housekeeping work.
+
+## Latest integration — CI consolidation
+
+- **PR:** [#132](https://github.com/iNeonyne/LastHavenPlus/pull/132), squash-merged to beta at 7cd898f4c1f9b7f70787a7000e1ed9343a83540d.
+- **Previous attempt:** PR #131 was closed unmerged because its base became stale; it was superseded by #132. No implementation was lost.
+- **Exact-head PR validation:** [run #45737717923](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45737717923) passed lint, Spotless, unsigned release build, JVM tests and Python updater-helper tests. Signing/release jobs were skipped in PR context.
+- **Markdown validation:** [run #45737717837](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45737717837) passed.
+- **Post-merge beta validation:** [run #45738073790](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45738073790) passed on the exact merge commit. The changed-path detector selected beta quality checks; the single Gradle invocation ran lintDebug, spotlessCheck, assembleRelease and testDebugUnitTest and succeeded. The signed APK passed established-certificate verification (SHA-256 b3bbf7520e77dfc384a60b1eee6c5f205b978f9b453849e2be523f642018d263) and packaged exactly arm64-v8a. Artifact LastHavenPlus-2.3.0-beta-arm64-v8a uploaded (92,815,476 bytes). Tag, differential and publication steps were correctly skipped.
+- **Observed CI runner time:** the consolidated beta build job took 94 seconds. The previous comparable baseline used a 258-second signed build job plus a separate 123-second quality job (381 runner-seconds total). This single observation is approximately 75% less combined runner time; treat it as an initial measurement, not a statistically stable benchmark. The combined Gradle build/test/quality tasks completed in 57 seconds.
+- **CI security boundary:** PR validation remains unsigned, read-only and secret-free. Signing secrets remain confined to the trusted beta build job. No main workflow, release/tag, app source, dependency or toolchain change was made.
+
+## Current source and release state
+
+- Mozilla GeckoView 160 is the embedded browser engine; Cefrium is removed from production.
+- The app launches directly into the game. The Back menu is a responsive overlay; Settings, diagnostics and update details are launcher-owned full-screen pages.
+- Updater downloads and installation remain user-initiated. Preserve application ID, established signing identity and ARM64-only packaging.
+- Addon Manager issue #23 remains on hold by owner instruction.
+- v2.3.0 is published. The owner requested the next three-version roadmap; issue #18 now records v2.4.0 UI/UX, v2.5.0 updater experience and v2.6.0 settings/diagnostics. This is planning only; no new release, tag or promotion is authorized.
+
+## Open work and limitations
+
+- **Housekeeping:** issue #128 is active on branch chaty/post-v2.3-housekeeping; this PR reconciles the current records while preserving historical entries.
+- **Updater:** #4 remains open for remaining automated regression coverage. #15, #31 and #111 remain blocked/deferred; no release-ID/differential fallback verification or updater UX work is claimed complete.
+- **Reproducibility:** PR [#119](https://github.com/iNeonyne/LastHavenPlus/pull/119) / issue #66 remains open. An earlier exact commit produced byte-identical unsigned APKs; the PR branch is behind current beta and must be refreshed and revalidated before merge.
+- **Owner-paused drafts:** PR #122 / issue #20 (GeckoView dependency audit) and PR #123 / issue #62 (branch lifecycle audit) remain draft/open and blocked by explicit owner scope resets. Do not add commits or resume without reprioritization.
+- **UI/UX:** issue #107 is reopened and Chaty-owned. PR #113 remains draft/open for traceability only; do not merge or continue the old Vibe branch. Chaty will implement from current beta after the icon task.
+- **Icon:** issue #133 is Chaty-owned for a v2.4.0 adaptive icon refresh. A visual concept has been generated; repository integration, adaptive-mask review, exact-head CI and physical launcher appearance remain outstanding.
+- **Accessibility:** issue #9 remains unassigned until the visual-system pass is settled, to avoid overlapping Compose screen work.
+- **Documentation quality:** PR #120 added repository-wide markdownlint; current beta Markdown quality run [#45736853811](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45736853811) passed. Issue #70 remains open until this central reconciliation is reviewed and merged.
+- **Device status:** CI and packaging checks do not prove physical ARM64 gameplay, profile persistence, haptics, updater installation or device-specific behavior. No new physical-device testing was performed.
+
+## Next-version roadmap
+
+- **v2.4.0 — UI/UX:** new adaptive icon (#133), shared visual system and interaction polish (#107), then accessibility/navigation coverage (#9). No game/client changes or new home screen.
+- **v2.5.0 — updater:** truthful download progress and retry feedback (#111), plus coordinated regression/recovery coverage (#4/#15/#31) after prioritization.
+- **v2.6.0 — settings/diagnostics:** essential settings (#6), connection and GeckoView error diagnostics (#12/#14), orientation/keep-awake (#16), storage/network accuracy and safe backup/restore (#10/#17/#28) in dependency order.
+- Roadmap source: issue #18. Version targets are not release commitments. #23 remains on hold; #19 and #7 remain deferred.
+
+## Historical integration records
+
+STATUS historical records below this heading are retained for traceability; their dated branch heads, release candidates and roadmap wording describe earlier snapshots and must not be treated as current state.
 
 ## Latest beta integration — PR #99 (2026-11-25)
 
