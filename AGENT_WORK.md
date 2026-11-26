@@ -16,7 +16,7 @@
 
 ### Chaty — #4 / #15 updater reliability and recovery
 - **Owner:** Chaty (agent:chaty); one coordinated updater owner; do not parallelize #4/#15/#31.
-- **Current beta:** 7451b940dc0adfa1ea14234fe6d489bba688b12c.
+- **Updater candidate branch base:** 7451b940dc0adfa1ea14234fe6d489bba688b12c; branch later synced through beta f2496c66e03fd3c2e03dd465ecba3c3b053e80b9 before PR #160 was closed unmerged.
 - **Candidate:** partial-open BSDIFF cleanup exists only on chaty/updater-patch-stream-cleanup-4-beta; PRs #157/#159/#160 closed unmerged. No candidate code is integrated.
 - **Latest exact-head evidence:** old PR #160 code/test head d0cb2f5144257a2270ae0ed42f649833ad688207 passed Android #45891807118, Markdown #45891807077 and reproducibility #45891807104 on retry attempt 2. Refreshed PR #160 head faab1e0b4f0f6d913ce685d34afc6a8ad8f07772 was closed while Android #45893613690 and reproducibility #45893613642 were running; not integrated.
 - **Remaining #4 acceptance:** adversarial updater test matrix, real signed ARM64 APK-pair byte-for-byte reconstruction and signature/package/version/ABI verification, differential benchmark, current-beta signed packaging checks. No physical-device update test claimed.
