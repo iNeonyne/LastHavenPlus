@@ -78,7 +78,7 @@ class AddonLibraryRepository(private val root: File) {
     return AddonLibrarySnapshot(properties.getProperty("revision") ?: "unknown", addons)
   }
 
-  fun importZip(input: InputStream, compressedSize: Long): AddonLibrarySnapshot {
+  fun importZip(input: InputStream, compressedSize: Long?): AddonLibrarySnapshot {
     if (!root.exists() && !root.mkdirs()) {
       throw IllegalStateException("Could not create addon storage.")
     }
