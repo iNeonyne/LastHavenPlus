@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="addon_manager_title">МЕНЕДЖЕР ДОДАТКІВ</string>
+    <string name="addon_manager_local_addons">Локальні додатки</string>
+    <string name="addon_manager_back">Назад</string>
+    <string name="addon_manager_import_description">Імпортуйте ZIP-файли локальних додатків WoW 3.3.5a. Нові імпортовані додатки вимкнені та залишаються на цьому пристрої.</string>
+    <string name="addon_manager_runtime_unavailable">Завантаження додатків під час гри поки недоступне. Імпортовані файли зберігаються лише локально.</string>
+    <string name="addon_manager_import_zip">Імпортувати ZIP</string>
+    <string name="addon_manager_count">%1$d додатків\n%2$s</string>
+    <string name="addon_manager_no_addons">Локальних додатків ще немає. Імпортуйте ZIP із папкою додатка та відповідним файлом .toc.</string>
+    <string name="addon_manager_files_summary">%1$d файлів · %2$s</string>
+    <string name="addon_manager_missing_dependencies">Перевірте потрібні залежності: %1$s</string>
+    <string name="addon_manager_optional_dependencies">Необов’язкові залежності: %1$s</string>
+    <string name="addon_manager_no_version">Немає версії</string>
+    <string name="addon_manager_export_zip">Експортувати ZIP</string>
+    <string name="addon_manager_remove">Видалити</string>
+    <string name="addon_manager_import_success">ZIP додатка імпортовано. Він залишається вимкненим.</string>
+    <string name="addon_manager_enabled">Додаток локально увімкнено.</string>
+    <string name="addon_manager_disabled">Додаток локально вимкнено.</string>
+    <string name="addon_manager_export_success">ZIP додатка експортовано.</string>
+    <string name="addon_manager_remove_success">Додаток видалено з локального сховища.</string>
+    <string name="addon_manager_operation_failed">Не вдалося виконати операцію з додатком.</string>
+    <string name="addon_manager_export_failed">Не вдалося експортувати додаток.</string>
+    <string name="addon_manager_read_failed">Не вдалося прочитати бібліотеку додатків.</string>
+    <string name="addon_manager_dependency_cycle">Виявлено цикл залежностей між додатками.</string>
+    <string name="addon_manager_remove_confirm_title">Видалити додаток?</string>
+    <string name="addon_manager_remove_confirm_message">Видалити %1$s із цього пристрою? Цю дію не можна скасувати.</string>
+    <string name="addon_manager_cancel">Скасувати</string>
+</resources>
