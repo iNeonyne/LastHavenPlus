@@ -22,7 +22,8 @@ class AddonLibraryRepositoryTest {
     val repository = AddonLibraryRepository(temporaryFolder.newFolder("addons"))
     val archive =
       zipOf(
-        "Sample/Sample.toc" to "## Title: Sample Addon\n## Interface: 30300\n",
+        "Sample/Sample.toc" to
+          "## Title: Sample Addon\n## Interface: 30300\n## OptionalDeps: OptionalOne, OptionalTwo\n",
         "Sample/main.lua" to "print('sample')",
       )
 
@@ -31,10 +32,15 @@ class AddonLibraryRepositoryTest {
     assertEquals(1, imported.addons.size)
     assertFalse(imported.addons.single().enabled)
     assertEquals(2, imported.addons.single().filesCount)
+    assertEquals(listOf("OptionalOne", "OptionalTwo"), imported.addons.single().optionalDependencies)
 
     val enabled = repository.setEnabled("Sample", true)
     assertTrue(enabled.addons.single().enabled)
     assertTrue(repository.readLibrary().addons.single().enabled)
+    assertEquals(
+      listOf("OptionalOne", "OptionalTwo"),
+      repository.readLibrary().addons.single().optionalDependencies,
+    )
 
     val exported = ByteArrayOutputStream()
     repository.exportZip("Sample", exported)
