@@ -55,10 +55,9 @@ fun SettingsScreen(
   var refreshKey by remember { mutableStateOf(0) }
   var refreshing by remember { mutableStateOf(false) }
   var showLicenses by remember { mutableStateOf(false) }
-  val licenseText =
-    remember {
-      context.resources.openRawResource(R.raw.gpl_3_0).bufferedReader().use { it.readText() }
-    }
+  val licenseText = remember {
+    context.resources.openRawResource(R.raw.gpl_3_0).bufferedReader().use { it.readText() }
+  }
 
   LaunchedEffect(refreshKey) {
     refreshing = true
