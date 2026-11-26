@@ -81,7 +81,7 @@ jobs:
         run: |
           env -u ANDROID_KEYSTORE_PATH -u ANDROID_KEYSTORE_PASSWORD -u ANDROID_KEY_PASSWORD \
             ./gradlew --no-daemon --no-build-cache --no-configuration-cache \
-            clean assembleRelease --stacktrace
+            clean assembleRelease --info --stacktrace
 
       - name: Stage exactly one unsigned APK
         shell: bash
