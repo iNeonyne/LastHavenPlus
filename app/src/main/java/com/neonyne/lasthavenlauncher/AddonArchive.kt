@@ -59,7 +59,7 @@ object AddonArchive {
     compressedSize: Long?,
     extractionDirectory: File,
     beforeExtraction: (Long) -> Unit = {},
-  ): List<ImportedAddon> {
+  ): List<ImportedAddon> = input.use { archiveInput ->
     require(compressedSize == null || compressedSize in 1..MAX_ARCHIVE_BYTES) {
       "Archive must be between 1 byte and 128 MiB."
     }
@@ -76,18 +76,16 @@ object AddonArchive {
       archiveFile = sourceArchive
       var copiedBytes = 0L
       FileOutputStream(sourceArchive).use { output ->
-        input.use { source ->
-          val buffer = ByteArray(DEFAULT_BUFFER_SIZE)
-          while (true) {
-            val count = source.read(buffer)
-            if (count < 0) break
-            if (count == 0) continue
-            copiedBytes += count
-            require(copiedBytes <= MAX_ARCHIVE_BYTES) {
-              "Archive exceeds the 128 MiB compressed-size limit."
-            }
-            output.write(buffer, 0, count)
+        val buffer = ByteArray(DEFAULT_BUFFER_SIZE)
+        while (true) {
+          val count = archiveInput.read(buffer)
+          if (count < 0) break
+          if (count == 0) continue
+          copiedBytes += count
+          require(copiedBytes <= MAX_ARCHIVE_BYTES) {
+            "Archive exceeds the 128 MiB compressed-size limit."
           }
+          output.write(buffer, 0, count)
         }
         output.fd.sync()
       }
