@@ -5,10 +5,10 @@
 ## Current state after v2.3.0
 
 - **Latest stable:** v2.3.0 is published on main at tag commit ebc5b424e83ae66c2b0accc2bec6f050b8dc0d88.
-- **Development:** beta is at 97570eaaca86c9e27d92d04f90da9d930f6bdb33; v2.4.0 icon, visual-system and overlay accessibility implementations are integrated, with owner device verification still open. Addon Manager Phase A PR #152 is draft and Chaty-owned; no release or promotion is in progress.
+- **Development:** beta is at 1279f214b3fdd3ba420e090a6a90914a8a3399e7; v2.4.0 icon, visual-system and overlay accessibility implementations are integrated, with owner device verification still open. Addon Manager Phase A integrated through PR #152 at 103bb979c98589a8704459d28d13861eccca39d6; Phase B remains unimplemented and awaits owner authorization.
 - **CI:** PR #132 consolidated beta lint/format checks into the existing signed ARM64 build job and is merged. Exact-head PR validation and post-merge signed CI passed. Issue #129 is closed as completed after the measured result was recorded.
 - **Housekeeping:** #128 is Chaty-owned; it reconciles repository status and work records. #70 remains open until this reconciliation is integrated.
-- **Updater:** #4 remains open for remaining regression coverage. #15, #31 and #111 are blocked/deferred; no release-ID/differential fallback runtime verification is claimed.
+- **Updater:** #4 is active with Chaty as top project priority; #15 was reopened and assigned to Chaty as coordinated recovery work. #31 remains blocked pending owner-authorized release-workflow testing. #111 has a draft PR under review but remains held from v2.5.0 integration; no real signed APK-pair fixture or physical update installation is yet verified.
 - **Reproducibility:** #66 / PR #119 merged at `97570eaaca86c9e27d92d04f90da9d930f6bdb33`; exact-head PR checks passed. Post-merge signed ARM64 and Markdown checks passed; post-merge clean-runner reproducibility retry is in progress after a plugin-resolution failure.
 - **Owner-paused:** #20 / PR #122 and #62 / PR #123 are explicitly deferred; keep their drafts open for traceability and do not resume. #23 was explicitly reauthorized and is owned by Chaty in draft PR #152.
 - **UI/UX:** #133 icon and #107 visual system are integrated; #9 overlay accessibility/navigation is integrated by PR #139. #133 and #9 remain open as `agent:owner` for physical-device verification. PR #113 remains draft/open for traceability only.
@@ -17,7 +17,7 @@
 
 ## Current ownership
 
-- **Chaty:** #128 housekeeping, Addon Manager Phase A implementation/review (draft PR #152), #4 updater test coverage, #81 approved library-only dependency refresh, and final #70 documentation reconciliation. #129 CI consolidation is closed as completed.
+- **Chaty:** #4 updater reliability/differential test work and coordinated #15 recovery, #67 rights/notices PR #144, #81 approved library-only dependency refresh, and final #70 documentation reconciliation. Addon Manager Phase A (#23 / PR #152) is integrated; Phase B is owner-gated. #129 CI consolidation is closed as completed.
 - **Vibe:** #11 diagnostics test coverage is submitted in PR #154 and awaiting Chaty's review (`agent:review`). Owner-paused drafts #122/#123 remain paused.
 - **Chaty:** completed #133 adaptive launcher icon integration via PR #135.
 - **Owner decision:** #65 and any release/promotion/roadmap authorization remain with the repository owner.
@@ -895,3 +895,10 @@ Verify the current manifest and GeckoView delegates, then document the strict al
 - #4 now also calls out an optimized-release/R8 smoke checklist covering FileProvider configuration, package identity, signing, ARM64 packaging, release installation and GeckoView game-load verification after GeckoView bumps.
 - Theme-token centralization is already represented by integrated #107 and persisted theme preference belongs to #6; do not duplicate either.
 - Download progress remains in #111; do not duplicate its in-progress implementation.
+
+## 2026-11-26 updater audit checkpoint
+
+- The owner confirmed updater reliability and differential APK updates are the top priority. #4 and reopened #15 are both owned by Chaty; do not parallelize them.
+- A narrow BSDIFF resource-lifecycle correction is in progress on chaty/updater-patch-stream-cleanup-4, based on beta 1279f214b3fdd3ba420e090a6a90914a8a3399e7. Exact-head CI is pending; no tests are marked passed.
+- Remaining P0 evidence: malformed manifest/tag and patch/base identity cases, corrupt/truncated patch cleanup, interrupted downloads/full fallback, real signed ARM64 APK-pair byte-identical round-trip and signature/package/version/ABI checks, measured BSDIFF vs Archive Patcher/File-by-File benchmark, and current beta signed package verification.
+- #31 remains blocked; do not trigger a release/tag/publication to test release workflow behavior.
