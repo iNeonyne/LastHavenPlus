@@ -25,8 +25,8 @@ enum class GameLoadPresentation {
  * - A process failure always wins over a navigation failure and over loading.
  * - A navigation failure obscures loading.
  * - The branded loading state stays until the first successful page load completes, so the
- *   pre-onPageStart window never briefly exposes a blank game view; later in-game navigations
- *   never obscure healthy, loaded gameplay because hasCompletedLoad stays true.
+ *   pre-onPageStart window never briefly exposes a blank game view; later in-game navigations never
+ *   obscure healthy, loaded gameplay because hasCompletedLoad stays true.
  */
 object GameLoadPolicy {
   fun resolve(
