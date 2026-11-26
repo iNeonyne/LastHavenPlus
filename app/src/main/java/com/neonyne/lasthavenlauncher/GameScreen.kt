@@ -78,7 +78,7 @@ fun GameScreen(
           Spacer(modifier = Modifier.height(20.dp))
           Button(
             onClick = onRetry,
-            modifier = Modifier.heightIn(min = 48.dp),
+            modifier = Modifier.heightIn(min = DesignTokens.minTouchTarget),
             shape = RoundedCornerShape(DesignTokens.cornerButton),
             colors =
               ButtonDefaults.buttonColors(
@@ -95,7 +95,7 @@ fun GameScreen(
           Text(
             "LastHaven stopped unexpectedly",
             style = MaterialTheme.typography.headlineSmall,
-            color = Color.White,
+            color = DesignTokens.textPrimary,
           )
           Spacer(modifier = Modifier.height(8.dp))
           Text(
@@ -106,12 +106,12 @@ fun GameScreen(
           Spacer(modifier = Modifier.height(20.dp))
           Button(
             onClick = onRestore,
-            modifier = Modifier.heightIn(min = 48.dp),
-            shape = RoundedCornerShape(14.dp),
+            modifier = Modifier.heightIn(min = DesignTokens.minTouchTarget),
+            shape = RoundedCornerShape(DesignTokens.cornerButton),
             colors =
               ButtonDefaults.buttonColors(
                 containerColor = DesignTokens.gold,
-                contentColor = Color(0xFF17130A),
+                contentColor = DesignTokens.goldOnColor,
               ),
           ) {
             Text("Restore game", fontWeight = FontWeight.Bold)
