@@ -524,3 +524,13 @@ No branch was deleted. The available GitHub connector exposes no branch-delete o
 - **Visual system:** reopened issue #107 under Chaty ownership per the owner's earlier UI/UX takeover instruction. PR #113 remains draft/open for traceability only; no merge or further Vibe commits on its stale branch. Chaty will implement from current beta after #133, then handle #9 accessibility in a non-overlapping sequence.
 - **Vibe queue:** no new Vibe assignment was made because the remaining available product tasks depend on UI/UX work or overlap active/stale drafts; owner-paused #122/#123 remain untouched. Assign only when a non-overlapping issue is ready.
 - **Device status:** generated icon is a concept only; repository integration and physical ARM64 launcher appearance are not yet verified.
+
+### 2026-11-26 — Start issue #133 adaptive launcher icon refresh
+- **Issue:** #133 — v2.4.0 adaptive launcher icon.
+- **Branch and starting commit:** chaty/issue-133-icy-pixel-castle, created from beta e69656303d7e1c1e7d50f7211c8cfaeb748f07e9.
+- **Files inspected:** README.md, AGENTS.md, STATUS.md, ISSUES.md, CHANGELOG-AGENTS.md, AGENT_WORK.md, AndroidManifest.xml, app/build.gradle.kts, adaptive icon XML, foreground drawable and launcher background color.
+- **Files changed:** app/src/main/res/drawable/ic_launcher_castle.xml; app/src/main/res/drawable/ic_launcher_foreground.xml; app/src/main/res/values/colors.xml.
+- **Action:** replaced the gold portal visual direction with a native vector illustration of an icy-blue pixel-art gothic castle/moon scene; retained standard and round adaptive icon references and preserved the app identity.
+- **Commits:** artwork 530bb15f2a091ccc380ae4168a60cb1e62bb221c; foreground d159e846ac86529978befa6ed65ef55bfdb2e46c; background 409a8ff44b161ac09a84d6b46b9b9814af12334f; cleanup 1fda96cd40e7fb321548851129e696e245993124.
+- **Checks:** no Android build or automated test has run yet. Exact-head PR CI and adaptive mask inspection are pending. Physical ARM64 launcher rendering is unverified.
+- **Next safe action:** inspect the final resource diff, add this operational checkpoint and ownership updates to the task PR, then run exact-head unsigned validation. Do not merge until review and CI pass.
