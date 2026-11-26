@@ -143,3 +143,6 @@ Updater review findings were added to existing #15 and #4, not split into parall
 - **#20 / PR #122:** owner pause reaffirmed; issue is agent:blocked, PR traceability-only.
 - **#107 / PR #113:** owner stopped further commits; PR traceability-only and must not be merged/refreshed.
 - **#67 / PR #144:** issue body now reflects All Rights Reserved for original project material; unresolved Guava license evidence, GeckoView bundled notice inventory, Google Play services distribution-rights question, stale branch/docs and exact-head CI remain blockers.
+
+
+- **Current beta package evidence:** exact beta HEAD 1279f214b3fdd3ba420e090a6a90914a8a3399e7 passed signed optimized build/JVM tests and signer/ABI checks in run #45879445471; artifact LastHavenPlus-2.3.0-beta-arm64-v8a uploaded. Differential generation was skipped for a beta build; no release publication occurred.
