@@ -37,12 +37,34 @@ All PRs remain subject to Chaty's review and required CI. “Lightweight” mean
 4. Read `docs/GECKOVIEW_MIGRATION.md` before changing or debugging GeckoView integration.
 5. Work only within the assigned scope. If the scope or ownership is unclear, stop and ask Chaty to resolve it.
 
-## Ownership
+## Agent roles, ownership and communication
 
-- Chaty owns intake, triage, issue creation/updates, central documentation, assignments, review, integration, CI coordination and release coordination.
-- Ploy works only on the assignment explicitly listed in `AGENT_WORK.md`. Ploy must not change central trackers or independently integrate/push to `beta` or `main`.
-- One active owner per issue. A handoff is complete only after the previous owner stops and the assignment/status records are updated.
-- GitHub Issues and `ISSUES.md` are the project task records. TickTick may be used as a supplementary personal task tracker; it is not the source of truth.
+- **Chaty** is the orchestrator, issue intake/triage owner, assignment coordinator, reviewer, integration owner, CI/documentation coordinator and release coordinator. Chaty may also implement assigned work.
+- **Vibe** is an implementation contributor. Vibe may implement only an existing GitHub issue explicitly assigned by Chaty, then submit a PR targeting `beta`. Vibe must not create implementation PRs for untracked work, change priorities, expand scope without approval, merge PRs, or push to `beta`/`main`.
+- **GitHub is the only agent-to-agent communication channel.** Use issue comments for assignments, questions, progress, blockers and handoffs; PR descriptions/reviews for implementation and corrections; commits and Actions for evidence. Do not rely on private agent messages or undocumented handoffs.
+- **One active implementation owner per issue.** Chaty checks ownership before assigning work. Chaty and Vibe must not implement the same issue concurrently or edit overlapping files without an explicit coordinated plan.
+- Vibe posts a GitHub comment when starting, when blocked, and when handing off a PR. Chaty records assignments and status in GitHub and `AGENT_WORK.md`.
+- GitHub Issues and `ISSUES.md` are the task sources of truth. TickTick may be supplementary only.
+
+### Agent ownership labels
+
+Exactly one `agent:*` ownership label should describe each actionable issue's current state:
+
+| Label | Meaning |
+|---|---|
+| `agent:unassigned` | No agent owns it; Chaty may triage and assign it |
+| `agent:chaty` | Chaty owns the work |
+| `agent:vibe` | Vibe has an explicit assignment and may start |
+| `agent:blocked` | Work is on hold or waiting on a dependency/decision; neither agent starts |
+| `agent:review` | Implementation PR is submitted and awaiting Chaty's review |
+| `agent:owner` | Waiting for a repository-owner decision or feedback; not an agent assignment |
+
+- New issues receive `agent:unassigned` automatically.
+- Only Chaty changes ownership labels. Replace the previous `agent:*` label when an issue changes state; do not leave conflicting ownership labels.
+- An `agent:unassigned` label is not permission to begin work. Vibe must wait for Chaty's explicit `agent:vibe` assignment and scope comment.
+- On PR submission, Chaty changes the issue to `agent:review`; after review, Chaty either assigns `agent:vibe` for revisions, retains `agent:chaty`, or returns it to `agent:unassigned`.
+- After merge, Chaty updates the issue's ownership label and completion state based on verified evidence. Do not close issues merely because documentation changed.
+- The label automation is defined in `.github/workflows/agent-ownership.yml`. GitHub issue-event workflows must exist on the repository default branch to run automatically. A beta-only PR therefore prepares the automation but does not activate issue-open labeling until the owner separately approves promotion of that workflow to the default branch.
 
 ## Technical constraints
 

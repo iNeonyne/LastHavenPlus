@@ -770,3 +770,12 @@ Entry format:
 - **GeckoView API use:** only delegates already integrated against 160 (`ProgressDelegate.onPageStart/onPageStop`, `ContentDelegate.onCrash/onKill`); no new engine APIs. Error-category mapping stays with #12 as coordinated.
 - **Scope:** no game/client changes, no session-downgrade behaviors, no automatic retry, no polling, no new navigation destinations; session/profile lifecycle unchanged otherwise.
 - **Verification:** exact-head CI pending on the PR. On-device ARM64 behavior of the crash/restore path and the branded loading state remains unverified and must be confirmed on physical hardware.
+## 2026-11-26 — Establish Chaty and Vibe GitHub-only workflow
+
+- **Role:** Chaty / workflow and documentation owner.
+- **Branch:** `chaty/agent-ownership-labels`, based on beta `6c9dadc31682db75f706435437d77969fb3e505e`.
+- **Model:** Chaty owns intake, triage, assignment, review and beta integration; Vibe implements only existing issues explicitly assigned by Chaty and submits PRs targeting beta. GitHub is the only agent-to-agent communication channel.
+- **Ownership labels:** `agent:unassigned`, `agent:chaty`, `agent:vibe`, `agent:blocked`, `agent:review`, `agent:owner`. The new workflow provisions labels, labels new/reopened issues and offers an opt-in backfill for existing open issues.
+- **Safety:** Vibe cannot merge or push to beta/main. Exactly one implementation owner per issue. Owner-only, blocked and review states are distinct from unassigned work.
+- **Activation caveat:** GitHub issue-event workflows must exist on the repository default branch. The PR targets beta only; automatic issue-open labeling remains inactive until the owner separately approves promotion to the default branch. No main, release, app source or game changes.
+- **Verification:** documentation and workflow source review pending PR CI/merge. No automation run or label backfill is claimed. Physical-device testing is not applicable.
