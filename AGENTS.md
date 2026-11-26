@@ -18,6 +18,9 @@ The active embedded browser engine in `beta` is Mozilla GeckoView 160. Do not ad
 - **Chaty is the sole orchestrator and integrator.** Chaty reviews PR diffs and CI, resolves conflicts, requests changes, and merges accepted PRs into `beta`. Chaty coordinates verification and release readiness; no other agent may merge or push directly to `beta`.
 - Promote `beta` to `main` only after all release gates pass and the owner explicitly approves. Publishing a release or creating a release tag also requires explicit approval.
 - Never develop routinely on `main`, force-push shared branches or bypass required checks.
+- Task branches use `<owner>/<task-slug>` naming, one issue per branch, started from current `beta`. `infra/*` branches never merge wholesale into `beta`; `beta-legacy-*` snapshots are preserved and never wholesale-merged.
+- To sync a branch with an advanced `beta`, merge `origin/beta` into it (never rebase pushed history), rerun affected checks, and update the PR handoff with the new exact head SHA.
+- Branch deletion/retirement requires explicit owner approval recorded in the disposal log of `docs/BRANCH_LIFECYCLE.md`. Refresh that audit before any cleanup decision.
 
 ## Review depth and change sizing
 
