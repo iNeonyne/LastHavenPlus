@@ -864,3 +864,8 @@ PR #144 now packages the Apache-2.0 project license, MPL-2.0 text, a third-party
 The graph includes GeckoView 160 and Google Play Services FIDO 21.3.1, Base 18.7.2, Basement 18.9.0 and Tasks 18.3.2. The Google artifacts are declared under Google's Android Software Development Kit License terms, not an OSI-approved open-source license; they remain outside the project Apache license.
 
 The latest Android run failed at Spotless formatting only; SettingsDialogs.kt was corrected. Exact-head Android validation, APK inspection, complete artifact-level notice verification and final review remain outstanding. Keep issue open and PR draft until those gates pass.
+
+
+## Issue #67 — owner rights decision update (2026-11-26)
+
+The owner superseded the earlier Apache-2.0 selection. Original LastHavenPlus code and documentation are **All Rights Reserved** and intended for personal use; no general reuse license is granted. Third-party components retain their own licenses and required notices, including Apache-2.0 and MPL-2.0 where applicable. PR #144 has been retitled and its scope updated; its branch still needs synchronization, implementation review, exact-head CI and APK inspection. Keep the PR draft and issue open until verified.
