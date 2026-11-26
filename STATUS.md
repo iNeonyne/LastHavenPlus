@@ -177,3 +177,17 @@ The repository owner will install releases and report what works and what does n
 - **Scope:** Game menu pane title, heading/traversal semantics, Compose input-focus entry, scrollable menu and live reduced-motion observation. No GeckoSession replacement or game-client change.
 - **Outstanding:** physical ARM64 TalkBack pane announcement/focus/traversal, GeckoView-relative order, reduced-motion device behavior and large-font rendering were not tested. `FocusRequester` moves Compose input focus, not TalkBack accessibility focus. Owner authorized merge with these limitations recorded; issue #9 remains open as `agent:owner` for device verification. No physical-device compatibility claim.
 - **Post-merge:** merge commit is the current beta HEAD at this checkpoint; post-merge CI has not yet reported a result.
+
+
+## Code-review backlog additions — 2026-11-26
+
+The beta code review identified structural follow-ups rather than a broad defect backlog. New issues #146–#150 were created and remain unassigned pending dependency and file-ownership checks:
+- #146 GameSessionController and explicit GeckoSession keep-alive/close invariant (P1).
+- #147 navigation/back-stack consolidation (P1; depends on #146).
+- #148 centralized gameplay orientation/immersive state (P2; coordinate with #16).
+- #149 launcher-owned string resources (P2).
+- #150 verified documentation of the existing GeckoView/Android permission policy (P2; no runtime permission changes).
+
+Updater findings were appended to existing #15 (installer URI dismissal lifecycle, actionable error mapping, safe cancellation cleanup) and #4 (R8/release smoke verification); no parallel updater issue was created. Existing #111 progress implementation remains separately owned by Vibe.
+
+No code, CI, release, signing, dependency, ABI or device behavior changed in this documentation/triage checkpoint. No physical ARM64 device test is claimed.
