@@ -71,7 +71,7 @@ class AddonLibraryRepository(private val root: File) {
               require(it in 1..AddonArchive.MAX_ENTRIES) {
                 "Addon library file count is invalid."
               }
-            } ?: throw IllegalStateException("Addon library file count is invalid.",
+            } ?: throw IllegalStateException("Addon library file count is invalid."),
           enabled =
             properties.getProperty("addon.$index.enabled")?.toBooleanStrictOrNull() ?: false,
           importedAt = properties.getProperty("addon.$index.importedAt")?.toLongOrNull() ?: 0L,
