@@ -102,7 +102,7 @@ class AddonLibraryRepository(
     return AddonLibrarySnapshot(properties.getProperty("revision") ?: "unknown", addons)
   }
 
-  fun importZip(input: InputStream, compressedSize: Long?): AddonLibrarySnapshot {
+  fun importZip(input: InputStream, compressedSize: Long?): AddonLibrarySnapshot = input.use { source ->
     if (!root.exists() && !root.mkdirs()) {
       throw IllegalStateException("Could not create addon storage.")
     }
@@ -113,7 +113,7 @@ class AddonLibraryRepository(
     val extraction = File(root, ".extract-${UUID.randomUUID()}")
     try {
       val imported =
-        AddonArchive.importZip(input, compressedSize, extraction) { expandedBytes ->
+        AddonArchive.importZip(source, compressedSize, extraction) { expandedBytes ->
           val requiredBytes = expandedBytes * 2 + MIN_FREE_SPACE_RESERVE_BYTES
           require(availableStorageBytes() >= requiredBytes) {
             "Not enough free storage to safely extract and stage imported addons."
