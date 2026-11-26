@@ -44,7 +44,7 @@
 ### Issue #11 — privacy-conscious diagnostics tests (awaiting Chaty review)
 - **Owner:** `agent:review`; Vibe submitted [PR #154](https://github.com/iNeonyne/LastHavenPlus/pull/154), and Chaty is reviewing it.
 - **Scope:** focused JVM coverage for sensitive-value redaction, log rotation/size limits and safe failure-path logging. No telemetry, network upload, logger rewrite, updater or Addon Manager changes.
-- **Validation before latest beta sync:** exact-head Android [#45874522453](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45874522453), Markdown [#45874522448](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45874522448) and independent two-runner reproducibility [#45874522426](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45874522426) passed after the PR #119 sync. PR #154 is now synced with beta after PR #152; fresh exact-head CI is required. No physical ARM64 testing.
+- **Validation:** exact-head Android [#45874522453](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45874522453), Markdown [#45874522448](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45874522448) and independent two-runner reproducibility [#45874522426](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45874522426) passed after the PR #119 sync. Per Chaty's review checkpoint the branch was synced with beta `1279f21` (no history rewrite) and local spotless/test (149 tests, 0 failures)/lint validation passed; the fresh exact-head CI run links are recorded in the PR #154 description and the issue #11 handoff comment. No physical ARM64 testing.
 
 ### Completed — issue #129 CI consolidation
 - PR [#132](https://github.com/iNeonyne/LastHavenPlus/pull/132) merged at 7cd898f4c1f9b7f70787a7000e1ed9343a83540d.
