@@ -543,3 +543,12 @@ No branch was deleted. The available GitHub connector exposes no branch-delete o
 - **Post-merge checks:** Markdown beta push run #45743277532 passed. Signed ARM64 beta build #45743277446 was still running at this checkpoint.
 - **Issue:** #133 closed completed. Local vector/mask simulation inspected; Android-generated mask previews and physical ARM64 launcher rendering remain unverified.
 - **Next:** refresh Vibe's #107 PR #136 against the new beta commit; review its exact-head CI and UI changes. Keep #9 queued until #107 is integrated. No release/tag/promotion.
+
+
+### 2026-11-26 — Post-merge verification and release-readiness checkpoint
+- **Application merge:** PR #135 icon integration at `c24b24e7125f49e86f465b1786ccfecb537e9694`.
+- **Post-merge workflow:** run #45743277446 passed signed optimized ARM64 APK build and JVM tests; established signer SHA-256 matched `b3bbf7520e77dfc384a60b1eee6c5f205b978f9b453849e2be523f642018d263`; packaged ABI exactly `arm64-v8a`; artifact `LastHavenPlus-2.3.0-beta-arm64-v8a` uploaded (92,813,021 bytes). Tag/publication skipped.
+- **Docs integration:** PR #137 merged at `f800deebf6c8bdaa91df4ac7c3693dcf86f3e6b6`; exact Markdown run #45743490458 passed.
+- **Icon limitation:** issue #133 reopened as `agent:owner`; Android-generated adaptive-mask previews and physical ARM64 launcher rendering still need owner verification.
+- **Visual system:** PR #136 Android run #45743147121 passed on its old head, but branch is stale and non-mergeable after beta advanced. Vibe must merge current beta, resolve conflicts, and rerun exact-head checks.
+- **Release state:** no v2.4.0 tag, promotion, or publication authorized/performed. Beta CI artifact carries stable v2.3.0 identity (`versionCode 2003000`); a v2.4.0 release build requires the authorized stable tag workflow.
