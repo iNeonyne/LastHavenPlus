@@ -93,7 +93,9 @@ fun AddonManagerHost(onBack: () -> Unit) {
         busy = false
         result
           .onSuccess { snapshot = it }
-          .onFailure { error -> message = error.message ?: context.getString(R.string.addon_manager_read_failed) }
+          .onFailure { error ->
+            message = error.message ?: context.getString(R.string.addon_manager_read_failed)
+          }
       }
     }
   }
@@ -106,7 +108,8 @@ fun AddonManagerHost(onBack: () -> Unit) {
     onToggle = { folder, enabled ->
       finishOperation(
         { repository.setEnabled(folder, enabled) },
-        if (enabled) context.getString(R.string.addon_manager_enabled) else context.getString(R.string.addon_manager_disabled),
+        if (enabled) context.getString(R.string.addon_manager_enabled)
+        else context.getString(R.string.addon_manager_disabled),
       )
     },
     onExport = pickers.exportZip,
