@@ -195,7 +195,7 @@ jobs:
           fi
           git fetch --no-tags --depth=1 origin "$SPOTLESS_RATCHET_REF"
           git cat-file -e "$SPOTLESS_RATCHET_REF^{commit}"
-          if git diff --name-only "$SPOTLESS_RATCHET_REF" "$GITHUB_SHA" | grep -Eq '^(\\.github/scripts/|app/src/|app/build.gradle.kts$|app/proguard-rules.pro$|build.gradle.kts$|settings.gradle.kts$|gradle/|gradlew$|gradle.properties$|\\.github/workflows/quality.yml$)'; then
+          if git diff --name-only "$SPOTLESS_RATCHET_REF" "$GITHUB_SHA" | grep -Eq '^(\.github/scripts/|app/src/|app/build.gradle.kts$|app/proguard-rules.pro$|build.gradle.kts$|settings.gradle.kts$|gradle/|gradlew$|gradle.properties$|\.github/workflows/quality.yml$)'; then
             echo "run=true" >> "$GITHUB_OUTPUT"
             echo "Relevant source/build files changed; quality checks will run in this job."
           else
