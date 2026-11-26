@@ -1,4 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">LastHavenPlus</string>
+        <string name="addon_manager_title">ADDON MANAGER</string>
+        <string name="addon_manager_local_addons">Local addons</string>
+        <string name="addon_manager_back">Back</string>
+        <string name="addon_manager_import_description">Import local WoW 3.3.5a addon ZIP files. New imports start disabled and stay on this device.</string>
+        <string name="addon_manager_runtime_unavailable">Runtime loading and same-session game integration are not available yet.</string>
+        <string name="addon_manager_import_zip">Import ZIP</string>
+        <string name="addon_manager_count">%1$d addons\n%2$s</string>
+        <string name="addon_manager_no_addons">No local addons yet. Import a ZIP containing an addon folder and its matching .toc file.</string>
+        <string name="addon_manager_files_summary">%1$d files · %2$s</string>
+        <string name="addon_manager_missing_dependencies">Check required dependencies: %1$s</string>
+        <string name="addon_manager_no_version">No version</string>
+        <string name="addon_manager_export_zip">Export ZIP</string>
+        <string name="addon_manager_remove">Remove</string>
+        <string name="addon_manager_import_success">Addon ZIP imported. It remains disabled.</string>
+        <string name="addon_manager_enabled">Addon enabled locally.</string>
+        <string name="addon_manager_disabled">Addon disabled locally.</string>
+        <string name="addon_manager_export_success">Addon ZIP exported.</string>
+        <string name="addon_manager_remove_success">Addon removed from local storage.</string>
+        <string name="addon_manager_operation_failed">Addon operation failed.</string>
+        <string name="addon_manager_export_failed">Addon export failed.</string>
+        <string name="addon_manager_read_failed">Could not read addon library.</string>
 </resources>

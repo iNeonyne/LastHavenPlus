@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="addon_manager_title">GERENCIADOR DE ADDONS</string>
+    <string name="addon_manager_local_addons">Addons locais</string>
+    <string name="addon_manager_back">Voltar</string>
+    <string name="addon_manager_import_description">Importe arquivos ZIP de addons locais do WoW 3.3.5a. Novas importações começam desativadas e permanecem neste dispositivo.</string>
+    <string name="addon_manager_runtime_unavailable">O carregamento em tempo de execução e a integração com a sessão do jogo ainda não estão disponíveis.</string>
+    <string name="addon_manager_import_zip">Importar ZIP</string>
+    <string name="addon_manager_count">%1$d addons\n%2$s</string>
+    <string name="addon_manager_no_addons">Ainda não há addons locais. Importe um ZIP com uma pasta de addon e seu arquivo .toc correspondente.</string>
+    <string name="addon_manager_files_summary">%1$d arquivos · %2$s</string>
+    <string name="addon_manager_missing_dependencies">Verifique as dependências necessárias: %1$s</string>
+    <string name="addon_manager_no_version">Sem versão</string>
+    <string name="addon_manager_export_zip">Exportar ZIP</string>
+    <string name="addon_manager_remove">Remover</string>
+    <string name="addon_manager_import_success">ZIP do addon importado. Ele permanece desativado.</string>
+    <string name="addon_manager_enabled">Addon ativado localmente.</string>
+    <string name="addon_manager_disabled">Addon desativado localmente.</string>
+    <string name="addon_manager_export_success">ZIP do addon exportado.</string>
+    <string name="addon_manager_remove_success">Addon removido do armazenamento local.</string>
+    <string name="addon_manager_operation_failed">Falha na operação do addon.</string>
+    <string name="addon_manager_export_failed">Falha ao exportar o addon.</string>
+    <string name="addon_manager_read_failed">Não foi possível ler a biblioteca de addons.</string>
+</resources>
