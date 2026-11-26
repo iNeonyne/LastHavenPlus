@@ -828,4 +828,4 @@ Entry format:
 
 - Prepared Apache-2.0 project licensing, SECURITY.md, Gradle Dependabot, user-facing changelog reconciliation, contributor branch-retention policy, and an in-app Apache-2.0 text viewer.
 - Added a releaseRuntimeClasspath report to PR validation so transitive runtime dependencies can be audited from CI artifacts.
-- The dependency report surfaced Google Play Services runtime artifacts under the Android Software Development Kit License; GPLv3 (superseded by the owner's later Apache-2.0 selection) compatibility of the combined APK remains unresolved. Issue #67 moved to agent:owner; PR #141 returned to draft. No merge or release until the owner resolves this gate and notices are audited.
+- The dependency report surfaced Google Play Services runtime artifacts under the Android Software Development Kit License. The owner subsequently selected Apache-2.0 for original project material; third-party license/notice inventory and project copyright attribution remain open. PR #141 stays draft.
