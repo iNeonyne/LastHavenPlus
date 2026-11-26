@@ -149,18 +149,8 @@ object AddonArchive {
 
       val ownFiles =
         entries.filter { (path, _) ->
-          val inRoot = if (root.path.isEmpty()) !path.contains('/') else path.startsWith(root.path + "/")
-          val nestedRoot =
-            topRoots.any { other ->
-              other != root &&
-                other.path.startsWith(if (root.path.isEmpty()) "" else root.path + "/") &&
-                (root.path.isEmpty() || other.path != root.path)
-            }
+          val inRoot = if (root.path.isEmpty()) true else path.startsWith(root.path + "/")
           inRoot &&
-            !(nestedRoot && topRoots.any { other ->
-              other != root && other.path.isNotEmpty() &&
-                path.startsWith(other.path + "/")
-            }) &&
             !path.startsWith("__MACOSX/") &&
             !Regex("(^|/)\\.(git|svn)(/|$)").containsMatchIn(path)
         }.mapKeys { (path, _) ->
