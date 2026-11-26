@@ -2,7 +2,7 @@ name: Independent unsigned APK reproducibility
 
 on:
   push:
-    branches: [beta, main]
+    branches: [beta, main, "chaty/release-v2.4.0-selective-promotion"]
     paths:
       - "app/**"
       - "gradle/**"
