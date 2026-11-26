@@ -48,7 +48,6 @@ fun SettingsScreen(
   onBack: () -> Unit,
   onOpenDiagnostics: () -> Unit,
   onOpenUpdates: () -> Unit,
-  onOpenLicenses: () -> Unit,
   onCheckUpdates: () -> Unit,
 ) {
   var snapshot by remember { mutableStateOf<UsageSnapshot?>(null) }
@@ -125,51 +124,6 @@ fun SettingsScreen(
       TextButton(onClick = onOpenUpdates) { Text("Update details") }
       TextButton(onClick = onOpenDiagnostics) { Text("App diagnostics") }
       TextButton(onClick = { showLicenses = true }) { Text("Open-source licenses") }
-      TextButton(onClick = onOpenLicenses) { Text("Open-source licenses") }
-    }
-  }
-}
-
-@Composable
-fun OpenSourceLicenseScreen(
-  context: Context,
-  onBack: () -> Unit,
-) {
-  val licenseText =
-    remember {
-      context.resources.openRawResource(R.raw.gpl_3_0).bufferedReader().use { it.readText() }
-    }
-
-  SettingsPageFrame(title = "Open-source licenses", onBack = onBack) {
-    PageSection(title = "LastHavenPlus license") {
-      Text(
-        "LastHavenPlus original project code and documentation are licensed under the GNU " +
-          "General Public License, version 3 or (at your option) any later version. " +
-          "You may redistribute and modify this program under those terms. " +
-          "This program is provided without warranty; see the complete license below.",
-        color = DesignTokens.textSecondary,
-      )
-      Surface(
-        modifier = Modifier.fillMaxWidth(),
-        color = DesignTokens.logSurface,
-        shape = MaterialTheme.shapes.medium,
-      ) {
-        Text(
-          licenseText,
-          modifier = Modifier.padding(DesignTokens.spaceSection),
-          color = DesignTokens.textBody,
-          style = MaterialTheme.typography.bodySmall,
-        )
-      }
-    }
-    PageSection(title = "Third-party components") {
-      Text(
-        "This application includes third-party software that remains subject to its own " +
-          "license terms and notices. In particular, Mozilla GeckoView and AndroidX/Jetpack " +
-          "libraries are not relicensed by the LastHavenPlus project license. Consult the " +
-          "repository's third-party notices and the upstream projects for their terms.",
-        color = DesignTokens.textSecondary,
-      )
     }
   }
 
