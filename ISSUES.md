@@ -20,9 +20,10 @@
 ## Current ownership
 
 - **Chaty active:** #4 updater reliability and #15 coordinated recovery. #128 is complete.
-- **Chaty queued:** #81 dependency-evidence documentation after #128; #20 and #31 remain blocked, not queued, until their owner holds are lifted.
-- **Vibe active:** #11 diagnostics tests.
-- **Vibe queued:** #149 launcher-owned strings, then #146 GameSessionController; one active implementation task at a time.
+- **Chaty queued:** #81 dependency-evidence documentation only; not yet started. #20 and #31 remain blocked until owner holds are lifted.
+- **Vibe active:** #149 launcher-owned strings (PR #165 correction pass).
+- **Vibe queued:** #146 GameSessionController, then separately assigned Addon Manager Phase B child work #167–#169. #170 is dependency-blocked. One active implementation issue at a time; queued does not authorize work.
+- **Diagnostics:** #11's test work merged via PR #163; the remaining runtime-version startup reporting is deferred and blocked pending reprioritization.
 - **Owner decision:** #23 Phase B and #67 third-party rights/distribution questions.
 - **Blocked:** #7, #86, #111, #19, #16, #147, #148, #12, #14, #10, #28, #6 and #17 remain gated by dependencies/decisions recorded on their GitHub issues.
 
@@ -32,12 +33,12 @@
 |---|---:|---|---|
 | [#4](#issue-4) | P0.1 | Build reproducibility and updater test coverage | Chaty active; BSDIFF cleanup candidate PRs closed unmerged; broad adversarial tests and signed APK-pair evidence remain |
 | [#5](#issue-5) | Feedback | Owner feedback — gameplay and update behavior after release | Closed; historical owner feedback thread |
-| [#6](#issue-6) | P2 | Essential launcher settings and safe storage controls | Open; includes version identity, theme preference and accessible storage loading-state candidates |
+| [#6](#issue-6) | P2 | Essential launcher settings and safe storage controls | Open; `agent:blocked` pending #28 |
 | [#7](#issue-7) | P3 | Runtime performance and APK size | Open; measure before optimizing |
 | [#8](#issue-8) | — | Legacy addon manager | Closed — superseded; no planned work |
 | [#9](#issue-9) | P2 | Overlay accessibility and navigation | Closed after PR #139 integration; physical-device coverage is not claimed by CI |
 | [#10](#issue-10) | P2 | Persistent app-wide network usage totals | Open; app-wide counters are implemented, automated counter tests remain |
-| [#11](#issue-11) | P2 | Privacy-conscious log tests | Vibe active; fresh beta-based implementation on `vibe/diagnostics-tests-11-refresh` (closed PR #154 kept as reference only) |
+| [#11](#issue-11) | P2 | Privacy-conscious log tests | Tests merged by PR #163; remaining runtime-version reporting is deferred (`agent:blocked`) |
 | [#12](#issue-12) | P2 | GeckoView load-error details | Open |
 | [#13](#issue-13) | — | Accessible names / legacy addon-manager compile work | Closed — consolidated into #9 |
 | [#14](#issue-14) | P2 | Connection diagnostics | Open |
@@ -49,7 +50,7 @@
 | [#20](#issue-20) | Deferred | GeckoView 160 artifact/dependency audit | `agent:blocked`; PR #122 closed unmerged; resume only after owner reprioritization; unresolved notice/distribution/device evidence remains |
 | [#21](#issue-21) | Feedback | Owner feedback — GeckoView runtime/profile behavior after release | Closed; historical owner feedback thread |
 | [#22](#issue-22) | Superseded | Home screen and Play/Settings navigation | Closed; replaced by direct-launch/overlay scope #56 |
-| [#23](#issue-23) | Owner decision | Addon Manager Phase A / Phase B | Phase A integrated by PR #152 at `103bb979`; local metadata only; Phase B not implemented and awaits owner decision |
+| [#23](#issue-23) | Engineering | Addon Manager Phase A / Phase B | Phase A integrated; owner authorized Phase B; Chaty coordinates child issues #167–#170; runtime not yet implemented |
 | [#28](https://github.com/iNeonyne/LastHavenPlus/issues/28) | P2 | Storage usage accuracy and iterative directory sizing | Open; queued after #10 |
 | [#42](https://github.com/iNeonyne/LastHavenPlus/issues/42) | Superseded | v2.1.0 Home-screen UI verification | Closed as superseded by direct-launch redesign #56 |
 | [#29](https://github.com/iNeonyne/LastHavenPlus/issues/29) | Done | Reconcile beta documentation and CI evidence | Closed as completed after PR #46 merged to beta |
@@ -75,11 +76,11 @@
 
 GitHub Issues are the canonical records for each task's discussion, owner, dependencies and lifecycle. This file is the project-wide index and roadmap checklist. The GitHub issue number is the only task ID; do not invent a parallel numbering scheme.
 
-**Chaty handles intake and triage.** For every new request, search open and closed issues and this index for duplicates before creating anything. Reuse or update an existing issue whenever it already covers the requested outcome. New issues must use one of the forms in `.github/ISSUE_TEMPLATE/` and include a clear outcome, bounded scope, non-goals, testable acceptance criteria, verification plan and dependencies. New issues may briefly receive `agent:unassigned` from automation; Chaty must resolve ownership promptly by assigning `agent:chaty`, `agent:vibe`, `agent:blocked` or `agent:owner` before implementation can begin. Do not leave actionable issues unassigned after triage. The GitHub workflow that creates/applies ownership labels is `.github/workflows/agent-ownership.yml`; it must be present on the repository default branch before issue-open automation becomes active. Only then add a concise entry here.
+**Chaty handles intake and triage.** For every new request, search open and closed issues and this index for duplicates before creating anything. Reuse or update an existing issue whenever it already covers the requested outcome. New issues must use one of the forms in `.github/ISSUE_TEMPLATE/` and include a clear outcome, bounded scope, non-goals, testable acceptance criteria, verification plan and dependencies. New issues may briefly receive `agent:unassigned` from automation; Chaty must resolve ownership promptly by assigning `agent:chaty`, `agent:vibe`, `agent:queued`, `agent:blocked` or `agent:owner` before implementation can begin. Do not leave actionable issues unassigned after triage. The GitHub workflow that creates/applies ownership labels is `.github/workflows/agent-ownership.yml`; it must be present on the repository default branch before issue-open automation becomes active. Only then add a concise entry here.
 
 Priority guide: P0 = core/release blocker or data/security risk; P1 = important reliability or planned release capability; P2 = normal improvement; P3 = optional/low urgency. Priority does not guarantee scheduling or inclusion in a release. Set a target release/milestone only after triage.
 
-Lifecycle: Needs triage → Ready → Active → Review → Done; Blocked and Deferred are explicit side states. An issue is not Ready just because it is open. One active owner per issue. Every open actionable issue must have exactly one `agent:*` label; use `agent:blocked` or `agent:owner` when work cannot proceed. Owner, exact subtask, permitted files, branch and dependencies must be recorded in `STATUS.md` before editing. Vibe only works on the active assignment in `AGENT_WORK.md`; Chaty owns issue creation, triage and central tracking.
+Lifecycle: Needs triage → Ready → Active → Review → Done; Blocked and Deferred are explicit side states. An issue is not Ready just because it is open. `agent:queued` is not an active assignment; only `agent:vibe` plus a Chaty scope comment permits Vibe to start. One active implementation owner per issue. Every open actionable issue must have exactly one `agent:*` label; use `agent:queued` only for ready work waiting its turn; use `agent:blocked` for real dependencies/holds and `agent:owner` for owner decisions. Owner, exact subtask, permitted files, branch and dependencies must be recorded in `STATUS.md` before editing. Vibe only works on the active assignment in `AGENT_WORK.md`; Chaty owns issue creation, triage and central tracking.
 
 Close only when every acceptance criterion is met and evidence is recorded. If an integrated task commit only partially addresses an issue, keep it open and record the remaining work. Record blockers and decisions on the GitHub issue as well as the repository status. Do not represent unreported owner feedback as a test result; owner feedback is optional and is not a release gate.
 
