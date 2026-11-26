@@ -13,7 +13,7 @@
 ### Chaty — issue #4 / versioned CI APK artifact names
 - Scope: qualify the signed Actions APK filename and artifact display name with resolved versionName and channel; retain canonical `lasthavenplus-arm64.apk` for updater compatibility.
 - Branch: `chaty/versioned-apk-artifact-names`, based on beta `ec721c3da9a4a6f696f644ad9ad78751b36cdd10`.
-- State: implementation prepared for PR; exact-head CI and post-merge signed verification pending.
+- PR: [#127](https://github.com/iNeonyne/LastHavenPlus/pull/127), targeting beta. Exact-head CI and post-merge signed verification pending.
 - Non-goals: no Gradle/app source, updater protocol, signing, ABI, main, tag, or release changes.
 
 
