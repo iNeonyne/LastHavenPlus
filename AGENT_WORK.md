@@ -1,7 +1,7 @@
 # Agent work assignments — LastHavenPlus
 
 **Last verified:** 2026-11-26  
-**Verified beta base before PR #162:** a0e5271793c9bb7754b7ac41429065e5602df569  
+**Verified beta base before PR #164:** 0cc21b471fce646d03dad449b91acbe67a90df7d  
 **Stable release:** v2.3.0 (tag commit ebc5b424e83ae66c2b0accc2bec6f050b8dc0d88).
 
 ## Roles and integration
@@ -18,7 +18,7 @@
 - **Owner:** Chaty (agent:chaty); one coordinated updater owner; do not parallelize #4/#15/#31.
 - **Current beta:** 7451b940dc0adfa1ea14234fe6d489bba688b12c.
 - **Candidate:** partial-open BSDIFF cleanup exists only on chaty/updater-patch-stream-cleanup-4-beta; PRs #157/#159/#160 closed unmerged. No candidate code is integrated.
-- **Latest exact-head evidence:** PR #160 head d0cb2f5144257a2270ae0ed42f649833ad688207; Markdown #45891807077 passed. Reproducibility build A failed resolving org.jetbrains.kotlin.plugin.compose:2.4.21; build B and Android PR validation were incomplete when closed. No overall pass claimed.
+- **Latest exact-head evidence:** old PR #160 code/test head d0cb2f5144257a2270ae0ed42f649833ad688207 passed Android #45891807118, Markdown #45891807077 and reproducibility #45891807104 on retry attempt 2. Refreshed PR #160 head faab1e0b4f0f6d913ce685d34afc6a8ad8f07772 was closed while Android #45893613690 and reproducibility #45893613642 were running; not integrated.
 - **Remaining #4 acceptance:** adversarial updater test matrix, real signed ARM64 APK-pair byte-for-byte reconstruction and signature/package/version/ABI verification, differential benchmark, current-beta signed packaging checks. No physical-device update test claimed.
 - **#15:** recovery UX/error mapping/cancellation cleanup is sequenced behind #4. No second updater implementation.
 - **#31:** agent:blocked; release-tag packaging/runtime verification requires explicit owner authorization. Do not trigger release workflows for testing.
@@ -38,21 +38,21 @@
 
 Vibe has one active implementation task at a time. Queued tasks must not start until Chaty confirms the prior handoff and checks file overlap.
 
-### 1. #11 — diagnostics tests (active, agent:vibe)
-- Recreate the bounded diagnostics test work attempted in stale PR #154, which was closed without merge.
+### Completed test coverage — #11 (issue remains blocked for runtime-version reporting)
+- PR #163 merged to beta at 0cc21b471fce646d03dad449b91acbe67a90df7d after stale PR #154 was closed without merge.
 - Cover redaction variants, log rotation/size bounds and failure-path logging.
 - Do not add GeckoView runtime-version startup logging; explicitly deferred.
 - Preserve local-only diagnostics and avoid credentials, cookies, tokens, authorization headers, session IDs and sensitive URL parameters.
-- Require focused JVM tests, exact-head Android PR validation, Markdown and independent unsigned APK reproducibility. Update project tracking docs with exact evidence.
+- Exact-head Android #45893571423, Markdown #45893571482 and independent unsigned APK reproducibility #45893571443 all passed. The separate GeckoView runtime-version startup-reporting item remains deferred and issue #11 is agent:blocked.
 - No updater, Addon Manager or unrelated MainActivity work.
 - **Status:** recreated from current beta on branch `vibe/diagnostics-tests-11-refresh`; `Diagnostics.kt` limited to the internal directory-scoped testability seam (public `Context` API unchanged), 9 focused tests added to `DiagnosticsTest.kt`. Local validation passed (Spotless, lint, JVM suite); fresh exact-head CI run IDs are recorded in the PR description and the issue #11 handoff comment. GeckoView startup-version logging remains excluded.
 
-### 2. #149 — launcher-owned string resources (queued, agent:vibe)
+### 1. #149 — launcher-owned string resources (active, agent:vibe)
 - Move launcher-owned user-visible text to Android resources without changing wording/punctuation.
 - Exclude game content, diagnostic payloads, developer logs and protocol values. No translations or copy redesign.
 - Require resource-resolution review, exact-head lint/format/unsigned build/JVM tests and docs updates.
 
-### 3. #146 — GameSessionController (queued, agent:vibe)
+### 2. #146 — GameSessionController (queued, agent:vibe)
 - Extract GeckoSession lifecycle and load/crash UI state into a focused controller/ViewModel.
 - Preserve lazy process-scoped GeckoRuntimeProvider behavior and live-session retention while detaching for Settings/Diagnostics/Update.
 - Do not overlap navigation (#147), gameplay window state (#148), updater or profile migration. Require focused state tests and exact-head Android validation.
@@ -80,7 +80,7 @@ These issues are assigned, not unassigned. Neither agent starts until the stated
 
 ## Current ownership inventory
 
-Every open issue has exactly one agent:* label. No open issue is agent:unassigned. There are 25 open issues; #128 is closed.
+Every open issue has exactly one agent:* label. No open issue is agent:unassigned. There are 26 open issues; #128 is closed and #11 remains open but blocked.
 
 | Issue | Owner | State |
 |---|---|---|
@@ -99,9 +99,9 @@ Every open issue has exactly one agent:* label. No open issue is agent:unassigne
 | #16 | agent:blocked | Waits for #56 and #14 |
 | #148 | agent:blocked | Waits for #146/#16 |
 | #147 | agent:blocked | Waits for #146 |
-| #146 | agent:vibe | Queued third |
-| #149 | agent:vibe | Queued second |
-| #11 | agent:vibe | Active |
+| #146 | agent:vibe | Queued second |
+| #149 | agent:vibe | Active |
+| #11 | agent:blocked | Runtime-version reporting deferred |
 | #142 | agent:chaty | Queue coordination |
 | #67 | agent:owner | Owner decision |
 | #15 | agent:chaty | Active/queued behind #4 |
