@@ -104,6 +104,6 @@ Only Chaty changes ownership labels. Assignment comments must define expected be
 - **Owner decision:** repository owner selected GPL-3.0-or-later on 2026-11-26.
 - **Owner:** Chaty (agent:chaty) for implementation and review.
 - **Branch:** chaty/community-hygiene, based on beta.
-- **Scope:** canonical GPL text, SECURITY.md, README licensing boundary, weekly Gradle Dependabot, existing changelog/contribution guide alignment, and branch-retention policy. Keep third-party components and the LastHaven game under their respective terms.
+- **Scope:** canonical GPL text, SECURITY.md, README licensing boundary, weekly Gradle Dependabot, v2.2/v2.3 changelog reconciliation, contribution guide alignment, and branch-retention policy. Keep third-party components and the LastHaven game under their respective terms.
 - **Exclusions:** no app source, dependency/toolchain version, game, updater, signing, ABI, release, tag, main or branch deletion changes. Do not invent a copyright-holder identity or year.
 - **Verification:** documentation/Dependabot review and exact PR Markdown CI pending. Direct dependency license review is preliminary; transitive/package-level audit remains outstanding.
