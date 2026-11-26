@@ -124,7 +124,7 @@ object AddonArchive {
   }
 
   internal fun validateEntryPath(name: String): String {
-    val path = name.replace('\\\\', '/')
+    val path = name.replace('\\', '/')
     val segments = path.split('/')
     require(
       path.isNotEmpty() &&
