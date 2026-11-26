@@ -55,6 +55,7 @@ Vibe has exactly one active implementation issue. A queued issue is not an assig
 - **#168:** bounded XHR resource overlay; wait for #167 and Chaty's explicit assignment.
 - **#169:** Worker interception and blocks.idx read masking; wait for #167 and Chaty's explicit assignment.
 - **#170:** same-session navigation integration; blocked until #146 and the required navigation/runtime prerequisites are complete.
+- **#12 — Actionable GeckoView load-error details:** now ready and queued because #11's test work merged. Schedule after higher-priority #146 and Phase B child work; do not start until Chaty explicitly assigns it.
 - Owner authorization for Phase B does not grant blanket permission to Vibe. Chaty assigns each child issue separately, checks overlapping files, and supplies issue-specific security boundaries/tests. Never start from queue status alone.
 
 ## Owner-controlled work
@@ -92,6 +93,7 @@ Every open issue has exactly one `agent:*` label. The label distinguishes active
 | #149 | `agent:vibe` | Vibe active; PR #165 corrections |
 | #67 | `agent:owner` | Rights and third-party notice decision |
 | #81 | `agent:queued` | Chaty documentation/evidence task; not started |
+| #12 | `agent:queued` | #11 test prerequisite merged; waiting for a Vibe turn and explicit assignment |
 | #146 | `agent:queued` | Vibe next after #149 handoff and file-overlap check |
 | #167 | `agent:queued` | Phase B bridge port; waiting Vibe turn and Chaty assignment |
 | #168 | `agent:queued` | XHR overlay; wait for #167 and explicit assignment |
@@ -100,7 +102,6 @@ Every open issue has exactly one `agent:*` label. The label distinguishes active
 | #7 | `agent:blocked` | Requires comparable measured baseline and scoped authorization |
 | #10 | `agent:blocked` | Waits for #16 |
 | #11 | `agent:blocked` | Remaining runtime-version reporting is deferred pending reprioritization |
-| #12 | `agent:blocked` | Waits for #11 decision/completion |
 | #14 | `agent:blocked` | Waits for #12 |
 | #16 | `agent:blocked` | Waits for #56 and #14 |
 | #17 | `agent:blocked` | Waits for #6 |
