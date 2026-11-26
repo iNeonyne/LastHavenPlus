@@ -844,3 +844,36 @@ The additional UX proposal was reviewed and consolidated into existing issues ra
 - PR [#139](https://github.com/iNeonyne/LastHavenPlus/pull/139) merged to beta at `0d5ab712ce5195a3e71023c68da54f054645a8e2` after owner authorization.
 - Exact PR-head Android and Markdown CI passed. Physical ARM64 TalkBack/focus/traversal, reduced-motion and large-font verification remain outstanding; `FocusRequester` is Compose input focus, not TalkBack accessibility focus.
 - Issue remains open with `agent:owner` pending the outstanding device verification. Do not represent those checks as complete.
+
+
+---
+
+## Code-review follow-ups — 2026-11-26
+
+The beta code review found the strongest improvement opportunities are structural and lifecycle-focused. These are separate, unassigned tasks; they do not authorize release promotion.
+
+### Issue 146 — P1 — Extract GeckoView game-session ownership from MainActivity
+**GitHub:** https://github.com/iNeonyne/LastHavenPlus/issues/146  
+Extract session open/reload/restore/close and load/crash state into a focused controller while preserving the lazy process-scoped GeckoRuntime, current crash-vs-navigation semantics, and the same live session when Settings/Diagnostics/Update detach the view. Document the keep-alive invariant and add focused state-transition tests. Coordinate with #23 and any MainActivity/GeckoSession work.
+
+### Issue 147 — P1 — Consolidate launcher navigation and back-stack state
+**GitHub:** https://github.com/iNeonyne/LastHavenPlus/issues/147  
+Introduce one pure navigation policy or lightweight sealed back stack for Game, Settings, Diagnostics and Update. Preserve direct launch, Back overlay and return behavior; avoid adding Compose Navigation without need. Depends on #146.
+
+### Issue 148 — P2 — Centralize gameplay orientation and immersive window state
+**GitHub:** https://github.com/iNeonyne/LastHavenPlus/issues/148  
+Create a single GameplayUiState/window boundary for existing orientation and system-bar/immersive behavior. Keep persisted orientation and keep-awake preferences in #16; this issue adds no new user controls.
+
+### Issue 149 — P2 — Move launcher-owned user-facing strings into Android resources
+**GitHub:** https://github.com/iNeonyne/LastHavenPlus/issues/149  
+Move launcher-owned UI strings to Android resources without changing wording, game-hosted content, diagnostics payloads or protocol values. No translation work is included.
+
+### Issue 150 — P2 — Document GeckoView content and Android permission policy
+**GitHub:** https://github.com/iNeonyne/LastHavenPlus/issues/150  
+Verify the current manifest and GeckoView delegates, then document the strict allowlist and deny-by-default behavior. Documentation only; no permissions or runtime behavior may change.
+
+### Existing updater/release follow-ups
+- #15 remains the single coordinated updater recovery/UX scope. Its new review note covers pending installer URI dismissal/abandonment semantics, actionable user-facing error mapping with detailed redacted diagnostics, and safe explicit cancellation/partial-file cleanup. Coordinate with #111; do not create a second updater or parallel owner.
+- #4 now also calls out an optimized-release/R8 smoke checklist covering FileProvider configuration, package identity, signing, ARM64 packaging, release installation and GeckoView game-load verification after GeckoView bumps.
+- Theme-token centralization is already represented by integrated #107 and persisted theme preference belongs to #6; do not duplicate either.
+- Download progress remains in #111; do not duplicate its in-progress implementation.
