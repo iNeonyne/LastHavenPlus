@@ -43,6 +43,46 @@ class AddonArchiveTest {
   }
 
   @Test
+  fun runsStoragePreflightBeforeWritingExpandedEntries() {
+    val toc = "## Interface: 30300\n"
+    val archive = zipOf("Sample/Sample.toc" to toc, "Sample/main.lua" to "print('sample')")
+    val extraction = temporaryFolder.newFolder("preflight")
+
+    assertThrows(IllegalStateException::class.java) {
+      AddonArchive.importZip(
+        ByteArrayInputStream(archive),
+        archive.size.toLong(),
+        extraction,
+      ) { expandedBytes ->
+        assertEquals(toc.toByteArray(Charsets.UTF_8).size + "print('sample')".length.toLong(), expandedBytes)
+        assertTrue(extraction.listFiles().orEmpty().isEmpty())
+        throw IllegalStateException("forced low-storage preflight")
+      }
+    }
+
+    assertTrue(!extraction.exists())
+  }
+
+  @Test
+  fun parsesOptionalDependenciesWithoutTreatingThemAsRequired() {
+    val archive =
+      zipOf(
+        "Sample/Sample.toc" to
+          "## Dependencies: RequiredOne, RequiredTwo\n## OptionalDeps: OptionalOne, OptionalTwo\n"
+      )
+
+    val imported =
+      AddonArchive.importZip(
+        ByteArrayInputStream(archive),
+        archive.size.toLong(),
+        temporaryFolder.newFolder("optional-dependencies"),
+      )
+
+    assertEquals(listOf("RequiredOne", "RequiredTwo"), imported.single().dependencies)
+    assertEquals(listOf("OptionalOne", "OptionalTwo"), imported.single().optionalDependencies)
+  }
+
+  @Test
   fun importsFlatAddonContents() {
     val archive =
       zipOf(
