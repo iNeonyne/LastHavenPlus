@@ -88,9 +88,15 @@ See [Mozilla's GeckoView consumer documentation](https://firefox-source-docs.moz
 
 ## Addon boundary
 
-The previous ZIP addon package manager has been removed. Issue #23 and all addon-manager work are on hold by owner instruction (2026-11-25). Do not resume investigation, implementation, assignment or review until the owner explicitly approves resuming it. Do not restore the legacy ZIP manager.
+Issue #23 is active under explicit repository-owner approval (2026-11-25/26). The current source target is the owner-supplied Addon Manager ZIP 0.5.1, a Chrome Manifest V3 extension; it supersedes the earlier XPI 0.11.0 investigation as the implementation target.
 
-Before any XPI install path is integrated, verify the pinned GeckoView 160 extension APIs, unsigned XPI behavior, install confirmation, session/tab lifecycle and archive/network security constraints. A WoW 3.3.5a addon ZIP/`.toc` package is not a Firefox WebExtension. Local package storage is not game injection. Never claim that the launcher loads game addons unless a separately approved implementation is actually verified.
+Keep the work phased and accurately described:
+
+- **Phase A — native management:** bounded, user-initiated ZIP import/export, strict archive validation, app-private library storage, metadata/dependency analysis and a launcher-owned manager UI. Imported addons remain disabled by default. Local enablement is only library metadata; it does not enable runtime loading.
+- **Phase B — runtime port:** separately investigate and adapt the supplied XHR/Worker loader for the exact pinned GeckoView 160 APIs. Do not enable injection until origin/path restrictions, request/resource bounds, worker behavior, session isolation and failure handling are understood and regression-tested.
+- **Session integration:** the manager must retain and return to the existing game session; it must not start a second game instance or modify the game client or persistent game/profile data.
+
+Do not bundle the Chrome MV3 service worker unchanged. Do not assume external unsigned XPI installation is supported or treat a WoW addon ZIP/`.toc` package as a Firefox WebExtension. Never claim addon initialization or game-resource masking from local import, indexing, an enabled flag or an observed injection request.
 
 ## Tests and documentation
 
