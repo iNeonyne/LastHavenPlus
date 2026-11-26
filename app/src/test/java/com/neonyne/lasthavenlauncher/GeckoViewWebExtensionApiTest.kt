@@ -64,32 +64,32 @@ class GeckoViewWebExtensionApiTest {
         val onMessage = messageDelegate.methods.firstOrNull { it.name == "onMessage" }
         assertNotNull("MessageDelegate must expose onMessage", onMessage)
 
-    val port = Class.forName("org.mozilla.geckoview.WebExtension\$Port")
-    val portDelegate = Class.forName("org.mozilla.geckoview.WebExtension\$PortDelegate")
-    assertNotNull(
-        "WebExtension.Port must support registering a native-message delegate",
-        port.methods.firstOrNull {
-            it.name == "setDelegate" &&
-                it.parameterTypes.contentEquals(arrayOf(portDelegate))
-        },
-    )
-    assertNotNull(
-        "WebExtension.Port must support sending native messages",
-        port.methods.firstOrNull {
-            it.name == "postMessage" && it.parameterTypes.size == 1
-        },
-    )
-    assertNotNull(
-        "PortDelegate must receive messages from the extension",
-        portDelegate.methods.firstOrNull {
-            it.name == "onPortMessage" && it.parameterTypes.size == 2
-        },
-    )
-    assertNotNull(
-        "PortDelegate must receive native-port disconnects",
-        portDelegate.methods.firstOrNull {
-            it.name == "onDisconnect" && it.parameterTypes.size == 1
-        },
-    )
-    }
+        val port = Class.forName("org.mozilla.geckoview.WebExtension\$Port")
+        val portDelegate = Class.forName("org.mozilla.geckoview.WebExtension\$PortDelegate")
+        assertNotNull(
+            "WebExtension.Port must support registering a native-message delegate",
+            port.methods.firstOrNull {
+                it.name == "setDelegate" &&
+                    it.parameterTypes.contentEquals(arrayOf(portDelegate))
+            },
+        )
+        assertNotNull(
+            "WebExtension.Port must support sending native messages",
+            port.methods.firstOrNull {
+                it.name == "postMessage" && it.parameterTypes.size == 1
+            },
+        )
+        assertNotNull(
+            "PortDelegate must receive messages from the extension",
+            portDelegate.methods.firstOrNull {
+                it.name == "onPortMessage" && it.parameterTypes.size == 2
+            },
+        )
+        assertNotNull(
+            "PortDelegate must receive native-port disconnects",
+            portDelegate.methods.firstOrNull {
+                it.name == "onDisconnect" && it.parameterTypes.size == 1
+            },
+        )
+        }
 }
