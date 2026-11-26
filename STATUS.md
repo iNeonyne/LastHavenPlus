@@ -2,7 +2,7 @@
 
 **Last updated:** 2026-11-26  
 **Active branch:** beta  
-**Beta HEAD at this verification checkpoint:** f800deebf6c8bdaa91df4ac7c3693dcf86f3e6b6 (after docs PR #137; application integration remains at c24b24e).  
+**Beta HEAD at this verification checkpoint:** 0350acaee3f277e01ac51a3722346ab228e23af3.  
 **Stable branch / v2.3.0 tag:** ebc5b424e83ae66c2b0accc2bec6f050b8dc0d88; GitHub confirms published, non-draft, non-prerelease [v2.3.0](https://github.com/iNeonyne/LastHavenPlus/releases/tag/v2.3.0) with canonical ARM64 APK, update manifest and v2.2.0-to-v2.3.0 differential package. Main remains unchanged by this housekeeping work.
 
 ## Latest integration — v2.4.0 launcher icon
@@ -134,7 +134,7 @@ The repository owner will install releases and report what works and what does n
 - **Owner feedback:** #5/#21 are post-release feedback trackers. The owner will share findings on their own schedule; pending feedback does not block release.
 - **Supersession:** #42's old Home-screen-first scope is superseded by #56. The direct-launch implementation is integrated; optional owner feedback is tracked separately in #5/#21.
 - **CI gate #60:** PR #72 merged at `82e819a43e6d728a9eb8fea620eca47ac9c998df`. Exact PR validation [#45627915789](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45627915789), post-merge quality [#45631250015](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45631250015), and signed beta build [#45631249817](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45631249817) passed. The beta build skipped release-tag publication steps.
-- **Addon Manager #23:** remains on hold; no assignment or implementation without explicit owner approval.
+- **Addon Manager #23:** owner reauthorized work on 2026-11-25/26. Native Phase A is in draft PR #145; exact-head CI/review are pending. Runtime injection and in-game addon initialization remain disabled.
 
 
 ## Branch audit — 2026-11-25
@@ -149,7 +149,7 @@ The repository owner will install releases and report what works and what does n
 - **#56:** completed and integrated; no active Ploy assignment. Supporting work (#9, #11, #12, #14, #16, #10, #28, #6, #17) is deferred to the v2.3.0 backlog in #86. Do not start a new Ploy task until the owner prioritizes it.
 - **Chaty:** #4/#15 updater reliability, #20 GeckoView dependency record, #31 release workflow, #61–#66 CI/build/security, #70 docs validation, roadmap and integration.
 - **Repository owner:** optional release feedback in #5/#21; #7 measured performance work when scheduled using comparable, repeatable measurements.
-- **Owner decision:** #67 license selection. #23 Addon Manager remains ON HOLD and has no assigned agent.
+- **Owner decision:** #67 license selection. #23 Addon Manager is actively owned by Chaty (`agent:chaty`) under draft PR #145.
 - Ploy is an internal agent role, not a confirmed GitHub username; assignments are marked in issue bodies, not through an invented GitHub assignee.
 
 
@@ -177,3 +177,13 @@ The repository owner will install releases and report what works and what does n
 - **Scope:** Game menu pane title, heading/traversal semantics, Compose input-focus entry, scrollable menu and live reduced-motion observation. No GeckoSession replacement or game-client change.
 - **Outstanding:** physical ARM64 TalkBack pane announcement/focus/traversal, GeckoView-relative order, reduced-motion device behavior and large-font rendering were not tested. `FocusRequester` moves Compose input focus, not TalkBack accessibility focus. Owner authorized merge with these limitations recorded; issue #9 remains open as `agent:owner` for device verification. No physical-device compatibility claim.
 - **Post-merge:** merge commit is the current beta HEAD at this checkpoint; post-merge CI has not yet reported a result.
+
+
+## 2026-11-26 — Addon Manager Phase A review checkpoint (#23)
+
+- **Base:** current `beta` HEAD `0350acaee3f277e01ac51a3722346ab228e23af3`.
+- **PR:** [#145](https://github.com/iNeonyne/LastHavenPlus/pull/145), draft, unmerged; branch `chaty/addon-manager-phase-a-current-beta`.
+- **Implemented candidate:** bounded ZIP import/export, app-private addon library, extraction and staging cleanup, storage preflight before expanded payload writes, transactional replacement/rollback, TOC metadata including optional dependencies, iterative dependency-cycle analysis, localized removal confirmation, and overlay navigation back to the retained game screen.
+- **Latest validation history:** prior exact-head run [#45852470193](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45852470193) failed one JVM test because the rollback fixture encoded a literal backslash-n instead of a newline. The run's `minifyReleaseWithR8` task completed; R8 was not the failure. The fixture was corrected and further preflight/optional-dependency coverage was added. New exact-head validation is pending.
+- **Runtime limitation:** this candidate is native local management only. The supplied Chrome MV3 background/service worker, XHR/Worker interception, game-resource masking and in-game Lua initialization are not implemented or enabled. GeckoView 160 runtime compatibility and session/lifecycle integration still require dedicated tests.
+- **Verification limits:** no physical ARM64 device test has been performed. No merge, release, tag, or main promotion.
