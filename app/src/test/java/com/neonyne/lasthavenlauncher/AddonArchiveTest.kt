@@ -75,6 +75,44 @@ class AddonArchiveTest {
   }
 
   @Test
+  fun importsMultipleTopLevelAddonsFromOneArchive() {
+    val archive =
+      zipOf(
+        "Alpha/Alpha.toc" to "## Interface: 30300\n",
+        "Alpha/main.lua" to "print('alpha')",
+        "Beta/Beta.toc" to "## Interface: 30300\n",
+        "Beta/main.lua" to "print('beta')",
+      )
+
+    val imported =
+      AddonArchive.importZip(
+        ByteArrayInputStream(archive),
+        archive.size.toLong(),
+        temporaryFolder.newFolder("multiple-addons"),
+      )
+
+    assertEquals(setOf("Alpha", "Beta"), imported.map { it.folder }.toSet())
+  }
+
+  @Test
+  fun rejectsCaseInsensitiveDuplicatePaths() {
+    val archive =
+      zipOf(
+        "Sample/Sample.toc" to "## Interface: 30300\n",
+        "Sample/main.lua" to "print('first')",
+        "sample/MAIN.lua" to "print('second')",
+      )
+
+    assertThrows(IllegalArgumentException::class.java) {
+      AddonArchive.importZip(
+        ByteArrayInputStream(archive),
+        archive.size.toLong(),
+        temporaryFolder.newFolder("duplicate-paths"),
+      )
+    }
+  }
+
+  @Test
   fun rejectsPathTraversalAndWindowsAbsolutePaths() {
     assertThrows(IllegalArgumentException::class.java) {
       AddonArchive.validateEntryPath("../outside.lua")
