@@ -69,7 +69,7 @@ A signed release build requires the established project keystore and credentials
 - Task PRs target `beta`. Chaty alone reviews and merges into beta.
 - Chaty coordinates and reviews; Vibe implements only existing issues explicitly assigned by Chaty.
 - GitHub Issues, PRs, reviews, commits and Actions are the only agent-to-agent communication channel.
-- Agent ownership is tracked with one `agent:*` label per issue: `agent:unassigned`, `agent:chaty`, `agent:vibe`, `agent:blocked`, `agent:review` or `agent:owner`.
+- Every actionable issue has exactly one `agent:*` state/ownership label: `agent:unassigned` (intake), `agent:queued` (ready, waiting its turn), `agent:chaty`, `agent:vibe`, `agent:blocked` (dependency/hold), `agent:review` or `agent:owner`.
 - `ISSUES.md` and GitHub Issues are the task sources of truth.
 - `STATUS.md` records verified, unverified and incomplete work plus exact CI evidence.
 - `AGENTS.md` and `AGENT_WORK.md` define contributor workflow and active assignments.
