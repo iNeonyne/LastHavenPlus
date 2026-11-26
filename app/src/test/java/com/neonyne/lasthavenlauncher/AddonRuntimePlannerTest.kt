@@ -96,7 +96,8 @@ class AddonRuntimePlannerTest {
         ../escape.lua
         /absolute.lua
         UI/Panel.xml
-        """.trimIndent()
+        """
+          .trimIndent()
       )
     assertEquals(listOf("Core/Init.lua", "UI/Panel.xml"), files)
   }
