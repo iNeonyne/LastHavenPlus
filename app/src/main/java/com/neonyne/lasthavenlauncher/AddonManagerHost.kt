@@ -10,6 +10,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import java.io.File
 import java.util.concurrent.Executors
 
@@ -20,6 +21,14 @@ import java.util.concurrent.Executors
 @Composable
 fun AddonManagerHost(onBack: () -> Unit) {
   val context = LocalContext.current
+  val importSuccess = stringResource(R.string.addon_manager_import_success)
+  val exportSuccess = stringResource(R.string.addon_manager_export_success)
+  val exportFailed = stringResource(R.string.addon_manager_export_failed)
+  val operationFailed = stringResource(R.string.addon_manager_operation_failed)
+  val readFailed = stringResource(R.string.addon_manager_read_failed)
+  val enabledMessage = stringResource(R.string.addon_manager_enabled)
+  val disabledMessage = stringResource(R.string.addon_manager_disabled)
+  val removeSuccess = stringResource(R.string.addon_manager_remove_success)
   val repository = remember(context) { AddonLibraryRepository(File(context.filesDir, "addons")) }
   val documentIo = remember(context, repository) { AddonDocumentIo(context, repository) }
   val executor = remember { Executors.newSingleThreadExecutor() }
@@ -49,7 +58,7 @@ fun AddonManagerHost(onBack: () -> Unit) {
               message = successMessage
             }
             .onFailure { error ->
-              message = error.message ?: context.getString(R.string.addon_manager_operation_failed)
+              message = error.message ?: operationFailed
             }
         }
       }
@@ -60,7 +69,7 @@ fun AddonManagerHost(onBack: () -> Unit) {
       onImportSelected = { uri ->
         finishOperation(
           { documentIo.importZip(uri) },
-          context.getString(R.string.addon_manager_import_success),
+          importSuccess,
         )
       },
       onExportSelected = { folder, uri ->
@@ -76,10 +85,10 @@ fun AddonManagerHost(onBack: () -> Unit) {
             result
               .onSuccess {
                 snapshot = it
-                message = context.getString(R.string.addon_manager_export_success)
+                message = exportSuccess
               }
               .onFailure { error ->
-                message = error.message ?: context.getString(R.string.addon_manager_export_failed)
+                message = error.message ?: exportFailed
               }
           }
         }
@@ -94,7 +103,7 @@ fun AddonManagerHost(onBack: () -> Unit) {
         result
           .onSuccess { snapshot = it }
           .onFailure { error ->
-            message = error.message ?: context.getString(R.string.addon_manager_read_failed)
+            message = error.message ?: readFailed
           }
       }
     }
@@ -108,15 +117,15 @@ fun AddonManagerHost(onBack: () -> Unit) {
     onToggle = { folder, enabled ->
       finishOperation(
         { repository.setEnabled(folder, enabled) },
-        if (enabled) context.getString(R.string.addon_manager_enabled)
-        else context.getString(R.string.addon_manager_disabled),
+        if (enabled) enabledMessage
+        else disabledMessage,
       )
     },
     onExport = pickers.exportZip,
     onRemove = { folder ->
       finishOperation(
         { repository.removeAddon(folder) },
-        context.getString(R.string.addon_manager_remove_success),
+        removeSuccess,
       )
     },
     onBack = onBack,
