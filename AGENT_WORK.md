@@ -112,8 +112,8 @@ Only Chaty changes ownership labels. Assignment comments must define expected be
 ## Issue #67 — Apache-2.0/community hygiene (owner decision required)
 
 - **Implementation:** Chaty, branch chaty/community-hygiene, PR #141 to beta.
-- **Prepared:** GPL root license and packaged raw resource with Settings license dialog; SECURITY.md; weekly Gradle Dependabot; README license boundary/changelog link; tagged changelog reconciliation; retained-branch contributor policy; runtime dependency report in PR CI.
+- **Prepared:** Apache-2.0 root license and packaged raw resource with Settings license dialog; SECURITY.md; weekly Gradle Dependabot; README license boundary/changelog link; tagged changelog reconciliation; retained-branch contributor policy; runtime dependency report in PR CI.
 - **Latest head recorded:** 3f98b236830ba194a5e18648e3acc9f09d9073c3.
-- **Blocker:** releaseRuntimeClasspath includes Google Play Services FIDO 21.3.1, Base 18.7.2, Basement 18.9.0 and Tasks 18.3.2, declared under the Android Software Development Kit License. GPLv3 (superseded by the owner's later Apache-2.0 selection) combined-APK compatibility is unresolved. Issue #67 moved to agent:owner and PR #141 returned to draft. Do not merge pending owner direction and complete notice/license audit.
+- **Blocker:** releaseRuntimeClasspath includes Google Play Services FIDO 21.3.1, Base 18.7.2, Basement 18.9.0 and Tasks 18.3.2, declared under the Android Software Development Kit License. The owner selected Apache-2.0, resolving the earlier project-license choice. Issue #67 remains agent:owner pending copyright attribution; complete third-party license/notice audit before merge.
 - **No overlap:** MainActivity.kt and LauncherNavigationPolicy.kt were restored to beta to avoid Vibe's pending #9 / PR #139 overlay-accessibility changes. License dialog is contained in SettingsDialogs.kt and does not change overlay navigation.
 - **No release, main promotion, app identity/signing/ABI/toolchain/GeckoView changes, or branch deletion.**
