@@ -574,3 +574,14 @@ No branch was deleted. The available GitHub connector exposes no branch-delete o
 - Added tests for unknown-size provider import, multiple addon roots and case-insensitive duplicate archive paths.
 - Latest branch head at this documentation checkpoint: `7c6efc7ea1f8df26c2a6721115299a78a1d15671`. Markdown gate passed (#45830740836); Android lint/Spotless/unsigned build/JVM tests were still running (#45830740786).
 - Still not integrated into the in-game overlay; do not modify `MainActivity.kt` or `GameMenuScreen.kt` until Vibe's #9 PR is integrated. Runtime injection remains disabled pending security and owner-boundary review.
+
+
+### 2026-11-26 — Harden addon library state and localize manager UI
+
+- **Issue:** #23, Chaty-owned native port of the owner-supplied ZIP v0.5.1.
+- **Branch/base:** `chaty/addon-manager-native-phase-a`, based on beta `e0967121b51ac1c232c92edd80157fc02b714766`.
+- **Files changed:** `AddonLibraryRepository.kt`, `AddonLibraryRepositoryTest.kt`, `AddonManagerScreen.kt`, `AddonManagerHost.kt`, Android string resources under `values`, `values-es`, `values-fr`, `values-pt-rBR`, `values-ru`, `values-uk`, `ISSUES.md`, `STATUS.md`.
+- **Changes:** validate persisted addon size/count bounds, aggregate library size and required backing directories; stage addon directory removal before committing the index; restore the directory if index commit fails; reject removal of unknown addon IDs. Added regression tests for missing backing files and unknown addon removal. Localized manager labels, status messages and descriptions for en/es/fr/pt-BR/ru/uk.
+- **CI:** Markdown run [#45833551135](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45833551135) passed on head `94f87ed35ed28f441252cf5b7397d143a23d29d4`. Android run [#45833551137](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45833551137) was pending at the time of this entry; no pass is claimed until completed.
+- **Limitations:** menu route and same-GeckoSession return await Vibe's #9 integration; source XHR/Worker/blocks.idx/WASM loader remains disabled; duplicate central-directory, low-storage and forced rollback tests plus physical ARM64 testing remain outstanding. No beta merge, release, tag or promotion.
+- **Next safe action:** inspect exact-head Android job result and logs; fix any verified issue, then continue adversarial ZIP/storage tests and coordinate overlay integration after #9 merges.
