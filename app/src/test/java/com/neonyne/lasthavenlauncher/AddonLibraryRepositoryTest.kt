@@ -85,7 +85,7 @@ class AddonLibraryRepositoryTest {
     repository.importZip(ByteArrayInputStream(archive), archive.size.toLong())
     assertTrue(repository.addonDirectory("Sample").deleteRecursively())
 
-    assertThrows(IllegalArgumentException::class.java) { repository.readLibrary() }
+    assertThrows(IllegalStateException::class.java) { repository.readLibrary() }
   }
 
   @Test
@@ -380,7 +380,7 @@ class AddonLibraryRepositoryTest {
       newRevision = "uncommitted-revision",
       backups = listOf("Sample" to backup.name),
     )
-    File(root, "library.properties").writeText("revision=\\ncount=not-a-number\\n")
+    File(root, "library.properties").writeText("revision=\ncount=not-a-number\n")
 
     assertThrows(IllegalStateException::class.java) { repository.readLibrary() }
 
