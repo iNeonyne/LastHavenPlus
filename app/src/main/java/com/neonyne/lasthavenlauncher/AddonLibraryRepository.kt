@@ -200,7 +200,7 @@ class AddonLibraryRepository(
         val snapshot = AddonLibrarySnapshot(UUID.randomUUID().toString(), nextItems)
         writeIndex(snapshot)
         backups.forEach { (_, backup) -> backup.deleteRecursively() }
-        return snapshot
+        snapshot
       } catch (error: Exception) {
         newTargets.forEach { it.deleteRecursively() }
         for ((target, backup) in backups.asReversed()) {
