@@ -851,7 +851,7 @@ The additional UX proposal was reviewed and consolidated into existing issues ra
 ## Issue 67 — P1 — Repository license and community hygiene
 
 **GitHub:** https://github.com/iNeonyne/LastHavenPlus/issues/67
-**State:** open; agent:owner — owner decision required after transitive dependency license audit.
+**State:** open; agent:chaty — dependency/notice audit in progress.
 
 The owner selected Apache-2.0. PR #144 prepares the canonical LICENSE, SECURITY.md, Gradle Dependabot, README/license boundary, changelog and contribution-policy updates, packaged Apache-2.0 text with an in-app Settings viewer, and CI runtime dependency reporting.
 
