@@ -1,6 +1,6 @@
 # Agent work assignments — LastHavenPlus
 
-**Current beta baseline:** 4c508cf5eff07d8a64dc3ec772dcc1a37a1320a8 after the #133 icon integration and its documentation follow-ups; advanced to e0967121b51ac1c232c92edd80157fc02b714766 after PR #136 integrated the #107 visual system.  
+**Current beta baseline:** 0350acaee3f277e01ac51a3722346ab228e23af3 (after PR #139 overlay accessibility/navigation integration).  
 **Stable baseline:** main / v2.3.0 tag ebc5b424e83ae66c2b0accc2bec6f050b8dc0d88.
 
 ## Roles and integration
@@ -28,12 +28,18 @@
 - **Integration:** PR [#136](https://github.com/iNeonyne/LastHavenPlus/pull/136) merged into `beta` by Chaty at `e0967121b51ac1c232c92edd80157fc02b714766`; exact-head unsigned validation passed on final head `94b06eccf2670289474d0e3ad1a7a9c5e30f7c01`. Issue #107 closed on acceptance.
 - **Device status:** physical ARM64 rendering/haptics remain unverified.
 
-### Issue #9 — overlay accessibility and navigation (v2.4.0)
-- **Owner:** Vibe (agent:vibe), assigned by Chaty on 2026-11-26 after #107 integration.
-- **Scope:** Compose semantics (pane title, heading, traversal group) and accessible focus entry for the existing Back menu overlay; TalkBack traversal order verification; reduced-motion gating of the existing overlay fade; return-to-game behavior must keep discarding no session state. No menu redesign, no new actions.
-- **Branch:** `vibe/overlay-accessibility`, fresh from beta `e0967121b51ac1c232c92edd80157fc02b714766`.
-- **State:** implementation in progress on this branch.
-- **Device status:** physical ARM64 TalkBack/gesture verification not performed; JVM-only test infra means focus/TalkBack behavior cannot be fully automated.
+### Issue #9 — overlay accessibility and navigation (integrated)
+- **PR:** [#139](https://github.com/iNeonyne/LastHavenPlus/pull/139), squash-merged by Chaty at `0d5ab712ce5195a3e71023c68da54f054645a8e2`.
+- **Owner:** issue remains `agent:owner` for physical ARM64 TalkBack/focus/traversal, GeckoView-relative order, reduced-motion and large-font verification.
+- **Device status:** no physical-device verification is claimed.
+
+### Issue #23 — Addon Manager Phase A (active Chaty work)
+- **Owner:** Chaty (`agent:chaty`), reauthorized by the repository owner on 2026-11-25/26.
+- **PR:** [#145](https://github.com/iNeonyne/LastHavenPlus/pull/145), draft, targeting `beta`; branch `chaty/addon-manager-phase-a-current-beta`, based on beta `0350acaee3f277e01ac51a3722346ab228e23af3`.
+- **Scope implemented in candidate:** bounded ZIP import/export, app-private addon library, storage preflight before expanded extraction, staging/rollback, required and optional TOC dependency metadata, iterative cycle analysis, localized removal confirmation, and overlay navigation returning to the existing game screen.
+- **Validation:** exact-head Android CI and review pending after latest changes; no merge.
+- **Runtime limitation:** Chrome MV3 background/service-worker execution, XHR/Worker interception, game-resource masking and Lua initialization are not implemented or enabled. GeckoView 160 runtime/lifecycle integration remains a separate gate.
+- **Device status:** no physical ARM64 test has been performed.
 
 ### Completed — issue #129 CI consolidation
 - PR [#132](https://github.com/iNeonyne/LastHavenPlus/pull/132) merged at 7cd898f4c1f9b7f70787a7000e1ed9343a83540d.
@@ -53,7 +59,7 @@
 ### Issue #18 — v2.4.0–v2.6.0 roadmap
 - Owner requested a three-version roadmap on 2026-11-26; the live issue now records v2.4.0 UI/UX, v2.5.0 updater experience and v2.6.0 settings/diagnostics.
 - These are planning targets only, not release/tag/promotion authorization.
-- v2.4.0 icon resources (#133, Chaty) and Compose visual-system work (#107, Vibe) proceeded in parallel with separate file scopes; #107 integrated via PR #136 and #9 accessibility is now the active Vibe assignment.
+- v2.4.0 icon resources (#133), visual system (#107) and overlay accessibility (#9) are integrated; #9 remains open only for owner device verification.
 
 ## Review queue and stale-base work
 
@@ -71,7 +77,6 @@
 
 - **Issue #20 / PR #122:** GeckoView artifact/dependency audit. Owner explicitly deferred it; issue remains agent:blocked, PR draft/open for traceability. No further commits or workflow-dispatch requests.
 - **Issue #62 / PR #123:** branch lifecycle audit. Owner explicitly deferred it; issue remains agent:blocked, PR draft/open for traceability. No further commits.
-- **Issue #23:** Addon Manager remains on hold. No investigation, implementation or assignment without explicit owner approval.
 - **Issue #65:** waiting for owner decision; do not claim emulator/device coverage.
 - **Issue #15, #31, #111, #86 and #19:** blocked/deferred per current issue labels and owner priorities.
 
