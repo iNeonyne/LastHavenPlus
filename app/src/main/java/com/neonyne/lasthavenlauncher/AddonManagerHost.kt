@@ -20,10 +20,8 @@ import java.util.concurrent.Executors
 @Composable
 fun AddonManagerHost(onBack: () -> Unit) {
   val context = LocalContext.current
-  val repository =
-    remember(context) { AddonLibraryRepository(File(context.filesDir, "addons")) }
-  val documentIo =
-    remember(context, repository) { AddonDocumentIo(context, repository) }
+  val repository = remember(context) { AddonLibraryRepository(File(context.filesDir, "addons")) }
+  val documentIo = remember(context, repository) { AddonDocumentIo(context, repository) }
   val executor = remember { Executors.newSingleThreadExecutor() }
   val mainHandler = remember { Handler(Looper.getMainLooper()) }
 
@@ -69,11 +67,10 @@ fun AddonManagerHost(onBack: () -> Unit) {
         busy = true
         message = null
         executor.execute {
-          val result =
-            runCatching {
-              documentIo.exportZip(folder, uri)
-              repository.readLibrary()
-            }
+          val result = runCatching {
+            documentIo.exportZip(folder, uri)
+            repository.readLibrary()
+          }
           mainHandler.post {
             busy = false
             result
