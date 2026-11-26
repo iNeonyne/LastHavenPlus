@@ -731,9 +731,11 @@ The active source is a Chrome Manifest V3 ZIP addon manager, not the earlier XPI
 - [x] Preserve supplied Addon Manager MIT notice at `docs/licenses/ADDON_MANAGER_0.5.1_MIT.txt`; fflate is not used by the native importer.
 
 ### Remaining acceptance gates
-- [ ] Wire Android document picker and ZIP export destination; handle missing/untrusted document-size metadata safely.
-- [ ] Add localized strings for the supplied supported locales.
-- [ ] Add duplicate-entry, CRC-mismatch, malformed archive, nested addon/library, low-storage and rollback tests; inspect actual extracted file trees.
+- [x] Android Storage Access Framework document picker and ZIP export destination; unknown provider sizes remain subject to a hard streamed compressed-byte cap.
+- [x] Localized manager screen strings for en, es, fr, pt-BR, ru and uk.
+- [x] Validate persisted library index bounds, duplicate folder names, aggregate size and backing-directory presence; removal stages the addon directory before committing index changes.
+- [x] Regression tests for unknown-size imports, CRC mismatch, truncated central directory, multiple top-level addon roots, case-insensitive duplicate paths, missing backing directories and unknown-addon removal.
+- [ ] Add crafted duplicate-central-directory-record, nested addon package, low-storage and forced transaction-rollback tests; inspect extracted file trees and failure cleanup.
 - [ ] Integrate manager navigation from the in-game overlay only after #9 merges; preserve the live GeckoSession and return to it without creating a second game session. Do not overlap Vibe's current `MainActivity.kt` / `GameMenuScreen.kt` work.
 - [ ] Review the source loader's XMLHttpRequest/Worker interception and `blocks.idx`/WASM-memory masking against the exact pinned GeckoView 160 runtime. Keep it disabled until isolated to the exact game origin/path, resource-bounded, regression-tested and shown not to mutate game-hosted files or persistent game/profile data.
 - [ ] Verify addon file overlays and game behavior on physical ARM64 hardware before claiming that addons load or initialize.
