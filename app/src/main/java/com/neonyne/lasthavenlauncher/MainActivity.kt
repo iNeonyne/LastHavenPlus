@@ -3,8 +3,11 @@ package com.neonyne.lasthavenlauncher
 import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.ActivityInfo
+import android.database.ContentObserver
 import android.net.Uri
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.provider.Settings
 import android.view.WindowManager
 import androidx.activity.ComponentActivity
@@ -22,6 +25,7 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -333,6 +337,26 @@ private fun LastHavenApp(
         )
 
       Screen.Game -> {
+        var animatorDurationScale by remember { mutableFloatStateOf(1f) }
+        DisposableEffect(context) {
+          val resolver = context.contentResolver
+          val readAnimatorScale =
+            Settings.Global.getFloat(resolver, Settings.Global.ANIMATOR_DURATION_SCALE, 1f)
+          val listener =
+            object : ContentObserver(Handler(Looper.getMainLooper())) {
+              override fun onChange(selfChange: Boolean) {
+                animatorDurationScale =
+                  Settings.Global.getFloat(resolver, Settings.Global.ANIMATOR_DURATION_SCALE, 1f)
+              }
+            }
+          animatorDurationScale = readAnimatorScale
+          resolver.registerContentObserver(
+            Settings.Global.getUriFor(Settings.Global.ANIMATOR_DURATION_SCALE),
+            false,
+            listener,
+          )
+          onDispose { resolver.unregisterContentObserver(listener) }
+        }
         val gamePresentation =
           GameLoadPolicy.resolve(
             hasSession = session != null,
@@ -349,8 +373,16 @@ private fun LastHavenApp(
           )
           AnimatedVisibility(
             visible = menuVisible,
-            enter = fadeIn(animationSpec = tween(durationMillis = 160)),
-            exit = fadeOut(animationSpec = tween(durationMillis = 120)),
+            enter =
+              fadeIn(
+                animationSpec =
+                  tween(durationMillis = OverlayMotionPolicy.fadeInMillis(animatorDurationScale))
+              ),
+            exit =
+              fadeOut(
+                animationSpec =
+                  tween(durationMillis = OverlayMotionPolicy.fadeOutMillis(animatorDurationScale))
+              ),
           ) {
             GameMenuScreen(
               onReload = {

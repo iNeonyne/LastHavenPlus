@@ -812,3 +812,11 @@ Entry format:
 - **Safety:** Vibe cannot merge or push to beta/main. Exactly one implementation owner per issue. Owner-only, blocked and review states are distinct from unassigned work.
 - **Activation caveat:** GitHub issue-event workflows must exist on the repository default branch. The PR targets beta only; automatic issue-open labeling remains inactive until the owner separately approves promotion to the default branch. No main, release, app source or game changes.
 - **Verification:** documentation and workflow source review pending PR CI/merge. No automation run or label backfill is claimed. Physical-device testing is not applicable.
+
+
+## 2026-11-26 — Integrate accessibility overlay (#9)
+
+- **PR:** [#139](https://github.com/iNeonyne/LastHavenPlus/pull/139) squash-merged by Chaty to `beta` at `0d5ab712ce5195a3e71023c68da54f054645a8e2` (exact head `4b4d0586d2c80310d2b78e05271bc255dc4f90de`).
+- **Review/CI:** exact-head Android validation [#45829421214](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45829421214) and Markdown gate [#45829421210](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45829421210) passed. Owner authorized merge with physical device checks outstanding.
+- **Changes:** pane title, heading and traversal semantics, Compose input-focus request, scrollable overlay and live reduced-motion observer. `FocusRequester` does not move TalkBack accessibility focus.
+- **Limitations:** no physical ARM64/TalkBack, GeckoView traversal, reduced-motion or large-font test was performed. Issue #9 remains open as `agent:owner` for those checks; no device compatibility claim.

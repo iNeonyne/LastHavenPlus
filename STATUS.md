@@ -168,3 +168,12 @@ The repository owner will install releases and report what works and what does n
 - **Implemented on candidate branch:** cold startup now initializes the game directly; Android Back toggles a translucent in-game menu overlay while keeping the Game destination/session mounted; Settings opens as a separate destination and returns to gameplay; gameplay orientation remains landscape while the menu restores system bars; Settings restores normal orientation/system UI; persistent page-load progress strip removed.
 - **Still required:** focused navigation/state tests, Spotless, lint, unsigned release build, JVM/Python tests and exact-head CI. Inspect GeckoView rendering order to confirm Compose overlay appears above the game on device. The owner may report portrait/landscape rendering feedback after installing a release; this is not a release gate.
 - **Integration:** no PR opened or merge performed yet; beta and main remain unchanged. No release/tag/publication.
+
+
+## 2026-11-26 — Accessibility overlay integrated (#9)
+
+- **PR:** [#139](https://github.com/iNeonyne/LastHavenPlus/pull/139) squash-merged by Chaty to `beta` at `0d5ab712ce5195a3e71023c68da54f054645a8e2` (PR head `4b4d0586d2c80310d2b78e05271bc255dc4f90de`).
+- **Pre-merge exact-head CI:** Android validation [#45829421214](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45829421214) and Markdown gate [#45829421210](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45829421210) passed.
+- **Scope:** Game menu pane title, heading/traversal semantics, Compose input-focus entry, scrollable menu and live reduced-motion observation. No GeckoSession replacement or game-client change.
+- **Outstanding:** physical ARM64 TalkBack pane announcement/focus/traversal, GeckoView-relative order, reduced-motion device behavior and large-font rendering were not tested. `FocusRequester` moves Compose input focus, not TalkBack accessibility focus. Owner authorized merge with these limitations recorded; issue #9 remains open as `agent:owner` for device verification. No physical-device compatibility claim.
+- **Post-merge:** merge commit is the current beta HEAD at this checkpoint; post-merge CI has not yet reported a result.
