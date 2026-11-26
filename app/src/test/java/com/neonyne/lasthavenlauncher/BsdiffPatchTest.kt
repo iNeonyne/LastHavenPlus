@@ -205,6 +205,53 @@ class BsdiffPatchTest {
     }
   }
 
+  @Test
+  fun rejectsMalformedCompressedSectionsAndRemovesOutput() {
+    val directory = Files.createTempDirectory("bsdiff-malformed-section").toFile()
+    try {
+      val oldFile = File(directory, "old.apk").apply { writeBytes(byteArrayOf(0x41)) }
+      val control = compressed {
+        writeOffset(1)
+        writeOffset(0)
+        writeOffset(0)
+      }
+      val diff = compressed { write(byteArrayOf(0)) }
+      val extra = compressed {}
+      val malformed = byteArrayOf(0x42, 0x5a, 0x68, 0x31)
+
+      val cases = listOf(
+        Triple(control, malformed, extra),
+        Triple(control, diff, malformed),
+      )
+      cases.forEachIndexed { index, sections ->
+        val (controlSection, diffSection, extraSection) = sections
+        val header =
+          ByteArrayOutputStream()
+            .apply {
+              write("BSDIFF40".toByteArray(Charsets.US_ASCII))
+              writeOffset(controlSection.size.toLong())
+              writeOffset(diffSection.size.toLong())
+              writeOffset(1)
+            }
+            .toByteArray()
+        val patchFile =
+          File(directory, "malformed-$index.bsdiff").apply {
+            writeBytes(header + controlSection + diffSection + extraSection)
+          }
+        val outputFile = File(directory, "output-$index.apk").apply { writeText("stale output") }
+
+        try {
+          BsdiffPatch.apply(oldFile, patchFile, outputFile, 1024)
+          throw AssertionError("Expected malformed compressed section to be rejected")
+        } catch (_: Exception) {
+          assertEquals(false, outputFile.exists())
+        }
+      }
+    } finally {
+      directory.deleteRecursively()
+    }
+  }
+
   private fun compressed(writeContent: ByteArrayOutputStream.() -> Unit): ByteArray {
     val bytes = ByteArrayOutputStream()
     BZip2CompressorOutputStream(bytes).use { compressed ->
