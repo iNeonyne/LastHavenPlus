@@ -837,3 +837,10 @@ The additional UX proposal was reviewed and consolidated into existing issues ra
 - **#107:** restrained haptic feedback and shared theme-token coordination.
 
 **Explicit exclusions:** no new launcher HomeScreen, HomeScreen pull-to-refresh or update badge (the game has its own home screen); no automatic update check on launch; no unattended/background download or automatic installation; no external-browser fallback. Update checks and downloads remain explicitly user-initiated. Android's package installer confirmation remains mandatory. All work is deferred under #86 pending owner prioritization.
+
+
+## 2026-11-26 — Issue #9 accessibility implementation integrated
+
+- PR [#139](https://github.com/iNeonyne/LastHavenPlus/pull/139) merged to beta at `0d5ab712ce5195a3e71023c68da54f054645a8e2` after owner authorization.
+- Exact PR-head Android and Markdown CI passed. Physical ARM64 TalkBack/focus/traversal, reduced-motion and large-font verification remain outstanding; `FocusRequester` is Compose input focus, not TalkBack accessibility focus.
+- Issue remains open with `agent:owner` pending the outstanding device verification. Do not represent those checks as complete.
