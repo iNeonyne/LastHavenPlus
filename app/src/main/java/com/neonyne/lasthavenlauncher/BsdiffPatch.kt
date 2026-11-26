@@ -1,7 +1,7 @@
 package com.neonyne.lasthavenlauncher
 
-import java.io.File
 import java.io.Closeable
+import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
 import java.io.InputStream
@@ -63,11 +63,12 @@ internal object BsdiffPatch {
           }
         val extra =
           openBzipSection(
-            patchFile,
-            HEADER_SIZE + controlLength + diffLength,
-            extraLength,
-            newSize,
-          ).also { openedSections.add(it) }
+              patchFile,
+              HEADER_SIZE + controlLength + diffLength,
+              extraLength,
+              newSize,
+          )
+            .also { openedSections.add(it) }
         RandomAccessFile(oldFile, "r").use { oldApk ->
           FileOutputStream(outputFile).use { output ->
             val oldSize = oldApk.length()
