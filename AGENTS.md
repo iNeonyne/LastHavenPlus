@@ -87,6 +87,19 @@ The current beta uses the ARM64 GeckoView 160 artifact. Keep the runtime process
 
 A successful CI build does not prove browser profile persistence or game compatibility. Physical-device verification must be performed on real ARM64 hardware and recorded with device, Android version, build commit and test results.
 
+### Content and Android permission policy
+
+The current `MainActivity.setupGeckoDelegates` implementation is intentionally deny-by-default:
+
+- For the exact `lasthavens.com` host and any subdomain ending in `.lasthavens.com`, it allows only GeckoView persistent-storage, audible-autoplay and inaudible-autoplay content permissions.
+- The same three content permissions are denied for every other origin. Every other GeckoView content-permission type is denied for all origins.
+- Android runtime permission requests are rejected through `PermissionDelegate.Callback.reject()`.
+- GeckoView media-capture requests (camera/video and microphone/audio sources) are rejected through `MediaCallback.reject()`.
+- The manifest currently declares `INTERNET` and `REQUEST_INSTALL_PACKAGES`; it does not declare camera, microphone, geolocation or notification permissions. `REQUEST_INSTALL_PACKAGES` is used for the user-confirmed APK update installation flow, not website access.
+- No broader grant is implied by a successful page load. Website features requiring camera, microphone, geolocation, notifications or another unsupported permission are unavailable under the current policy.
+
+Treat this as a source-level policy description, not evidence that permission prompts or denial behavior have been exercised on a physical device. Any future change must be a separate owner-reviewed issue and must define the exact origin, permission type, Android runtime permission, user-consent UX, data handling and denial behavior. Never add wildcard grants or silently grant media capture.
+
 See [Mozilla's GeckoView consumer documentation](https://firefox-source-docs.mozilla.org/mobile/android/geckoview/consumer/index.html) and the project-specific [migration notes](docs/GECKOVIEW_MIGRATION.md).
 
 ## Addon boundary
