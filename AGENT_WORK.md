@@ -10,6 +10,13 @@
 
 ## Active handoffs
 
+### Chaty — issue #4 / versioned CI APK artifact names
+- Scope: qualify the signed Actions APK filename and artifact display name with resolved versionName and channel; retain canonical `lasthavenplus-arm64.apk` for updater compatibility.
+- Branch: `chaty/versioned-apk-artifact-names`, based on beta `ec721c3da9a4a6f696f644ad9ad78751b36cdd10`.
+- State: implementation prepared for PR; exact-head CI and post-merge signed verification pending.
+- Non-goals: no Gradle/app source, updater protocol, signing, ABI, main, tag, or release changes.
+
+
 ### Vibe — issue #106 / PR #112
 - **Scope:** gameplay initial-loading, recoverable load failure and renderer-failure presentation.
 - **PR:** https://github.com/iNeonyne/LastHavenPlus/pull/112
