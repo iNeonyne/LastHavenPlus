@@ -55,13 +55,17 @@ fun AddonManagerScreen(
         )
         Text("Local addons", style = MaterialTheme.typography.headlineSmall)
       }
-      OutlinedButton(onClick = onBack, enabled = !busy) {
+      OutlinedButton(
+        onClick = onBack,
+        enabled = !busy,
+        modifier = Modifier.heightIn(min = DesignTokens.minTouchTarget),
+      ) {
         Text("Back")
       }
     }
 
     Text(
-      "Import local WoW 3.3.5a addon ZIP files. New imports start disabled and stay on this device.",
+      "Import local WoW 3.3.5a addon ZIP files. New imports start disabled and stay on this device. Runtime loading is not enabled in this draft.",
       color = MaterialTheme.colorScheme.onSurfaceVariant,
       style = MaterialTheme.typography.bodyMedium,
     )
@@ -130,7 +134,7 @@ fun AddonManagerScreen(
     }
 
     Text(
-      "Changes to enabled addons apply after the game is restarted. Importing or removing files does not alter game settings.",
+      "Addon files remain local. Runtime loading and same-session game integration are not available in this draft.",
       color = MaterialTheme.colorScheme.onSurfaceVariant,
       style = MaterialTheme.typography.bodySmall,
     )
@@ -209,8 +213,20 @@ private fun AddonCard(
       }
 
       Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-        OutlinedButton(onClick = onExport, enabled = !busy) { Text("Export ZIP") }
-        OutlinedButton(onClick = onRemove, enabled = !busy) { Text("Remove") }
+        OutlinedButton(
+          onClick = onExport,
+          enabled = !busy,
+          modifier = Modifier.heightIn(min = DesignTokens.minTouchTarget),
+        ) {
+          Text("Export ZIP")
+        }
+        OutlinedButton(
+          onClick = onRemove,
+          enabled = !busy,
+          modifier = Modifier.heightIn(min = DesignTokens.minTouchTarget),
+        ) {
+          Text("Remove")
+        }
       }
     }
   }
