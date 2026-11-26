@@ -910,5 +910,5 @@ Verify the current manifest and GeckoView delegates, then document the strict al
 - Chaty owns the narrow BSDIFF40 cleanup fix in `chaty/updater-patch-stream-cleanup-4-beta`, based on beta `7451b940dc0adfa1ea14234fe6d489bba688b12c`.
 - Opened compressed sections are tracked as they are created and closed in reverse order even when a later section fails; cleanup errors are suppressed to preserve the original failure.
 - Regression tests cover malformed diff/extra sections and removal of stale output.
-- Exact-head CI is pending. The prior PR #157 reproducibility run had one clean-build failure caused by Kotlin Compose plugin 2.4.21 resolution; the paired clean build succeeded. Retry is required before any merge.
+- Exact-head CI passed on head `9dd377e3cd48882ef90e3e2da44c63b5d2fba98c`: Android run #45890826303, Markdown run #45890826405 and independent reproducibility run #45890826652. The prior PR #157 plugin-resolution failure was superseded by this fresh exact-head validation.
 - #4 remains open: full adversarial updater matrix, signed APK-pair reconstruction and identity verification, patch benchmark, and current beta packaging verification are not complete.
