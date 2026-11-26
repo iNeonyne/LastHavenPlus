@@ -562,3 +562,6 @@ No branch was deleted. The available GitHub connector exposes no branch-delete o
 - Reconciled the existing CHANGELOG.md with an Unreleased policy entry; did not duplicate the already-existing CONTRIBUTING.md.
 - Preliminary direct-dependency license review only; transitive dependency and packaged-notice audit remains open. No copyright-holder name/date was invented.
 - PR and CI verification pending. No Android code/build-tool/signing/ABI/release/main changes; no branch deletion or device testing.
+
+
+- Follow-up reconciliation: restored the verified v2.2.0 and v2.3.0 release-note sections from their respective tagged CHANGELOG.md snapshots, and added the README release-history link. This corrects the earlier work-log shorthand that mentioned only the Unreleased entry.
