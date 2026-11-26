@@ -1,5 +1,14 @@
 # Project status — LastHavenPlus
 
+## Active task — Versioned CI APK artifact filenames (issue #4)
+
+- Owner: Chaty (`agent:chaty`); no Vibe file overlap.
+- Branch: `chaty/versioned-apk-artifact-names`, based on beta `ec721c3da9a4a6f696f644ad9ad78751b36cdd10`.
+- Scope: versionName- and channel-qualified filename for the signed Actions APK artifact; preserve the updater's canonical `lasthavenplus-arm64.apk`.
+- State: implementation prepared for PR; exact-head validation and signed beta verification not yet run.
+- Release safety: no change to APK identity, signing, ABI, updater manifest, canonical release asset, tags, or publication.
+
+
 **Last updated:** 2026-11-25  
 **Active branch:** `beta`  
 **Latest beta integration commit:** `932e3ba65f6c8445eafe0ba466ca3952c67bd017` (PR [#99](https://github.com/iNeonyne/LastHavenPlus/pull/99), Gradle dependency/plugin version catalog; previous product integration remains PR #85/#83).  
