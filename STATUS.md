@@ -181,11 +181,11 @@ The repository owner will install releases and report what works and what does n
 
 ## Issue #67 — Apache-2.0/community hygiene candidate (2026-11-26)
 
-- **PR:**  #144, currently draft, targeting beta; branch chaty/community-hygiene-refresh; latest candidate head at this status update: 18d8912c6d934270746395b4057750c30166d731.
+- **PR:** #144, currently draft, targeting beta; branch chaty/community-hygiene-refresh. The PR head SHA and exact-head CI links are authoritative in GitHub.
 - **Owner decision:** Apache-2.0 selected. Canonical root LICENSE and packaged app resource app/src/main/res/raw/apache_2_0.txt added; Settings now exposes an Open-source licenses dialog.
 - **Other changes:** SECURITY.md, weekly Gradle Dependabot, README license boundary and changelog link, reconciled v2.2.0/v2.3.0 release notes, contributor branch-retention policy, and PR CI runtime dependency report artifact.
 - **CI:** Markdown run #45837172690 passed. The prior Android run was cancelled on a superseded head; exact-head validation for PR #144 is pending.
-- **Third-party audit:** the runtime graph includes Google Play Services FIDO/Base/Basement/Tasks artifacts declared under the Android Software Development Kit License. The earlier GPL compatibility concern is no longer the selected project-license question after the owner chose Apache-2.0. Complete artifact-level licensing and packaged notices remain pending; no dependency is relicensed by the project.
+- **Third-party audit:** the runtime graph includes Google Play Services FIDO/Base/Basement/Tasks artifacts declared under the Android Software Development Kit License. The earlier GPL compatibility concern is no longer the selected project-license question after the owner chose Apache-2.0. Complete artifact-level licensing and packaged notices remain pending; owner-supplied project attribution is recorded as LastHavenPlus, Copyright 2026. No dependency is relicensed by the project.
 - **Attribution:** owner supplied project attribution: LastHavenPlus, Copyright 2026.
 - **Scope safety:** no game/client, app ID, signing, ABI, toolchain, GeckoView version, release/tag/main changes. No branch deletions. Physical-device testing is not applicable to these repository changes.
 
