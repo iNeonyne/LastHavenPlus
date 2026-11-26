@@ -591,3 +591,15 @@ No branch was deleted. The available GitHub connector exposes no branch-delete o
 - **Non-goals preserved:** no runtime permission, manifest, delegate, GeckoView setting, app, network or game behavior changes.
 - **Checks:** Markdown quality workflow passed on initial PR head `e2ce22c44508a87f53fc4a57a03f82e0597550bc` (run #45889911748). Internal link/anchor scan covered all 15 Markdown files with zero missing local targets. No Android or physical-device tests run/claimed.
 - **Next:** final PR review and merge; permission prompt behavior remains unverified on hardware.
+
+
+### 2026-11-26 — #128 live repository/ownership reconciliation
+
+- **Branch/base:** chaty/issue-128-housekeeping-beta, based on beta 7451b940dc0adfa1ea14234fe6d489bba688b12c.
+- **Verified refs:** beta 7451b940dc0adfa1ea14234fe6d489bba688b12c; main e9c2b53d1ec84e27722da4b54fa4ddcbad65f891; published v2.3.0 release metadata confirms ARM64 APK, update manifest and differential asset.
+- **PR inventory:** no open PRs. PR #158 is merged at beta HEAD. PRs #154/#157/#159/#160/#122/#143/#144 are closed unmerged; their branch-only changes are not integrated.
+- **Source-of-truth correction:** Addon Manager Phase A is integrated by PR #152 at 103bb979c98589a8704459d28d13861eccca39d6; Phase B remains owner-controlled and unimplemented.
+- **Ownership:** reconciled all 26 open issues to exactly one ownership label; none remain agent:unassigned. Vibe active #11, queued #149 then #146. Chaty active #4/#15 and #128; #81 queued. Owner #23/#67; blocked dependencies and authorization holds are documented on each issue.
+- **Updater PR #160:** closed without merge. Markdown passed (#45891807077); reproducibility build A failed Kotlin Compose plugin 2.4.21 resolution, while build B and Android validation were still incomplete at closure. No updater candidate code is integrated.
+- **Docs scope:** README, AGENTS, STATUS, ISSUES, AGENT_WORK, CHANGELOG-AGENTS and this work log. No app/game behavior, dependency/toolchain, signing, ABI, release or main changes.
+- **Next:** exact-head Markdown/link/anchor validation; submit a docs-only PR to beta. No physical ARM64 testing claimed.
