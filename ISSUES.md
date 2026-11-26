@@ -902,4 +902,4 @@ Verify the current manifest and GeckoView delegates, then document the strict al
 - #150 is assigned to Chaty (`agent:chaty`) for documentation only.
 - Verified current beta source: `MainActivity.setupGeckoDelegates` allows only persistent storage and audible/inaudible autoplay for `lasthavens.com` and subdomains; all other content permissions/origins are denied; Android runtime and media permission requests are rejected.
 - Manifest declares `INTERNET` and `REQUEST_INSTALL_PACKAGES`; no camera, microphone, geolocation or notification permissions are declared.
-- No runtime policy change is authorized. Exact-head Markdown validation and source-backed wording review are required before closing.
+- No runtime policy change is authorized. Exact-head Markdown validation passed on PR #158 head `e2ce22c44508a87f53fc4a57a03f82e0597550bc` (run #45889911748); internal links/anchors passed across all 15 Markdown files. Final review/merge remains pending.
