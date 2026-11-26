@@ -821,3 +821,14 @@ Entry format:
 - **Phase A:** native bounded streaming ZIP extraction, TOC metadata parsing, app-private addon storage, disabled-by-default enable/disable/remove/export and a frost-themed Compose manager screen. Initial JVM tests added.
 - **Security:** source loader's XHR/Worker/blocks.idx/WASM-memory interception remains disabled pending a separate exact-GeckoView-160 security/compatibility review. No game files/profile/index changes, automatic network downloads, toolchain changes, release or beta merge.
 - **Verification:** early exact-head CI exposed a malformed Kotlin escape and missing extraction-directory arguments in tests; both were corrected. Latest exact-head validation remains pending. No physical ARM64 test or game addon-loading claim.
+
+
+## 2026-11-26 — Add Android document flow to Addon Manager port
+
+- **Role:** Chaty, issue #23.
+- **Files:** `AddonArchive.kt`, `AddonLibraryRepository.kt`, `AddonDocumentIo.kt`, `AddonManagerHost.kt`, `AddonArchiveTest.kt`, `STATUS.md`, `WORK_LOG.md`, PR #140 description.
+- **Change:** added Storage Access Framework OpenDocument/CreateDocument pickers, ContentResolver import/export, asynchronous file operations, support for providers that do not report a reliable size, and tests for unknown-size import, multiple top-level addons and case-insensitive duplicate paths.
+- **Why:** Android document providers may omit file size; imports must remain user-initiated and bounded without relying on broad storage permissions or trusting absent metadata.
+- **Verified:** source compilation completed on an earlier exact-head run; the Android workflow for current head `7c6efc7ea1f8df26c2a6721115299a78a1d15671` is running. Markdown run #45830740836 passed. Previous current-feature attempt exposed Spotless-only formatting violations; corrections were applied and are under revalidation.
+- **Do not redo:** do not add broad storage permissions; selected document URIs are used for the immediate user-requested operation only. Unknown lengths must still pass through the archive's hard compressed-byte limit.
+- **Follow-ups:** menu route and same-session return after #9 merges; localization; runtime loader security/GeckoView review; ARM64 device testing.
