@@ -872,3 +872,6 @@ Entry format:
 
 
 - **Formatter correction:** the first source commit was replaced after exact-head Spotless output showed import-order and nested-lambda indentation changes. Current source commit is 0b275726c6a19784fe42822813ec799ca10df84e; tests remain 0e6896afc6f6f17d7e038b612b01875e0ebbbc2f. The first CI run's formatting failure is not considered a code/test result.
+
+
+- **Current beta packaging evidence:** run #45879445471 on exact beta HEAD 1279f214b3fdd3ba420e090a6a90914a8a3399e7 passed optimized signed APK build, JVM tests, established signing certificate and exact ARM64-only ABI; beta artifact uploaded. Release-tag differential generation and publication were skipped as expected.
