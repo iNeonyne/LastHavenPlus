@@ -820,3 +820,13 @@ Entry format:
 - **Review/CI:** exact-head Android validation [#45829421214](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45829421214) and Markdown gate [#45829421210](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45829421210) passed. Owner authorized merge with physical device checks outstanding.
 - **Changes:** pane title, heading and traversal semantics, Compose input-focus request, scrollable overlay and live reduced-motion observer. `FocusRequester` does not move TalkBack accessibility focus.
 - **Limitations:** no physical ARM64/TalkBack, GeckoView traversal, reduced-motion or large-font test was performed. Issue #9 remains open as `agent:owner` for those checks; no device compatibility claim.
+
+
+## 2026-11-26 — Triage beta code-review follow-ups
+
+- **Role:** Chaty / issue triage and roadmap coordination.
+- **Created:** #146 GameSessionController extraction; #147 navigation/back-stack consolidation; #148 gameplay orientation/immersive state; #149 launcher string resources; #150 GeckoView/Android permission-policy documentation.
+- **Dependencies:** #147 depends on #146. #148 coordinates with #16. All five issues start as `agent:unassigned` pending file-scope checks and explicit assignment.
+- **Existing issue updates:** Added updater URI dismissal/error mapping/cancellation-cleanup findings to #15 and R8/release smoke verification to #4. Kept updater ownership consolidated; #111 remains the separate Vibe progress task.
+- **Duplicate prevention:** No new theme issue (already covered by #107/#6), no new download-progress issue (#111), and no new updater owner.
+- **Constraints:** No source, CI, dependency, toolchain, signing, ABI, release, main-branch or game-client changes. No physical-device testing was performed or claimed.
