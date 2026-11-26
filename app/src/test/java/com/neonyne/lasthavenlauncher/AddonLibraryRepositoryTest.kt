@@ -105,14 +105,14 @@ class AddonLibraryRepositoryTest {
     val originalRepository = AddonLibraryRepository(root)
     val original =
       zipOf(
-        "Sample/Sample.toc" to "## Version: 1\\n",
+        "Sample/Sample.toc" to "## Version: 1\n",
         "Sample/main.lua" to "print('original')",
       )
     originalRepository.importZip(ByteArrayInputStream(original), original.size.toLong())
 
     val replacement =
       zipOf(
-        "Sample/Sample.toc" to "## Version: 2\\n",
+        "Sample/Sample.toc" to "## Version: 2\n",
         "Sample/main.lua" to "print('replacement')",
       )
     val failingRepository =
