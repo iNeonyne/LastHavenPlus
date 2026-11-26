@@ -4,10 +4,15 @@ import android.os.Build
 import android.view.HapticFeedbackConstants
 import android.view.View
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Shapes
+import androidx.compose.material3.Typography
 import androidx.compose.material3.darkColorScheme
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 
 /** Shared palette, spacing and shape tokens for launcher-owned UI only. */
 object DesignTokens {
@@ -19,8 +24,8 @@ object DesignTokens {
   val panelOverlay = Color(0xF2121D2D)
   val logSurface = Color(0xFF080B12)
   val scrim = Color(0x58000000)
-  val gold = Color(0xFFE5B85C)
-  val goldOnColor = Color(0xFF17130A)
+  val frost = Color(0xFF9BDCF5)
+  val frostOnColor = Color(0xFF0A1621)
   val textPrimary = Color(0xFFFFFFFF)
   val textSecondary = Color(0xFFAAB7C9)
   val textBody = Color(0xFFD7E0EC)
@@ -48,10 +53,10 @@ object DesignTokens {
 
   fun colorScheme() =
     darkColorScheme(
-      primary = gold,
-      onPrimary = goldOnColor,
-      secondary = gold,
-      onSecondary = goldOnColor,
+      primary = frost,
+      onPrimary = frostOnColor,
+      secondary = frost,
+      onSecondary = frostOnColor,
       background = ink,
       onBackground = textPrimary,
       surface = panel,
@@ -60,6 +65,19 @@ object DesignTokens {
       onSurfaceVariant = textSecondary,
       error = Color(0xFFED8796),
     )
+
+  @Composable
+  fun primaryButtonColors() =
+    ButtonDefaults.buttonColors(containerColor = frost, contentColor = frostOnColor)
+
+  fun typography(): Typography {
+    val base = Typography()
+    return base.copy(
+      headlineSmall = base.headlineSmall.copy(fontWeight = FontWeight.SemiBold),
+      titleLarge = base.titleLarge.copy(fontWeight = FontWeight.SemiBold),
+      labelSmall = base.labelSmall.copy(letterSpacing = 1.5.sp, fontWeight = FontWeight.SemiBold),
+    )
+  }
 
   fun homeGradient() = listOf(gradientTop, ink, gradientBottom)
 }

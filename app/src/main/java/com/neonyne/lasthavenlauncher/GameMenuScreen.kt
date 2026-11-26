@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -48,19 +47,15 @@ fun GameMenuScreen(
       ) {
         Text(
           "GAME MENU",
-          color = DesignTokens.gold,
-          fontWeight = FontWeight.Bold,
+          color = DesignTokens.frost,
+          style = MaterialTheme.typography.labelSmall,
         )
         Spacer(Modifier.height(2.dp))
         Button(
           onClick = onReload,
           modifier = Modifier.fillMaxWidth().heightIn(min = DesignTokens.minTouchTarget),
           shape = RoundedCornerShape(DesignTokens.cornerButton),
-          colors =
-            ButtonDefaults.buttonColors(
-              containerColor = DesignTokens.gold,
-              contentColor = DesignTokens.goldOnColor,
-            ),
+          colors = DesignTokens.primaryButtonColors(),
         ) {
           Text("Reload", fontWeight = FontWeight.Bold)
         }

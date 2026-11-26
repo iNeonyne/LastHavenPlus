@@ -317,7 +317,11 @@ private fun LastHavenApp(
     menuVisible = target.menuVisible
   }
 
-  MaterialTheme(colorScheme = DesignTokens.colorScheme(), shapes = DesignTokens.shapes) {
+  MaterialTheme(
+    colorScheme = DesignTokens.colorScheme(),
+    shapes = DesignTokens.shapes,
+    typography = DesignTokens.typography(),
+  ) {
     when (currentScreen) {
       Screen.Home ->
         HomeScreen(

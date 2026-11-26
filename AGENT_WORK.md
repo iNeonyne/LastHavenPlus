@@ -25,11 +25,11 @@
 - **Exclusions:** no Compose screens, design tokens, app behavior, manifest identity, signing, build/toolchain, GeckoView, updater or game changes.
 - **State:** assigned and scoped in GitHub issue #133. Generated concept is a design reference; implementation and exact-head CI remain outstanding.
 
-### Issue #107 — v2.4.0 visual system (queued after #133)
-- **Owner:** Chaty (agent:chaty), per the owner's explicit UI/UX takeover instruction.
-- **PR #113:** draft/open for traceability only; old Vibe branch is stale/dirty and must not be merged or extended. Reuse ideas only after source review.
-- **Next step:** after #133, implement the visual system on a fresh branch from current beta; keep file scope separate from accessibility work #9.
-- **Device status:** physical ARM64 rendering/haptics remain unverified.
+### Issue #107 — v2.4.0 visual system
+- **Owner:** Vibe (agent:vibe), per Chaty's 2026-11-26 02:19 GitHub assignment superseding the earlier UI/UX takeover note; #133 stays with Chaty in parallel (res/ artwork only, no file overlap).
+- **Branch:** vibe/visual-system-v240, fresh from current beta (e696563); PR #113 remains draft/open for traceability only and is not extended.
+- **Scope implemented:** icy-blue/dark-fantasy shared token refresh (frost accent replacing the gold accent family), shared primary-button component token, restrained typography token, unified card shapes across Back overlay, Settings, Diagnostics, Update and Home; updated contrast tests.
+- **Device status:** physical ARM64 rendering/haptics remain unverified; see the PR handoff for CI and limitations.
 
 ### Completed — issue #129 CI consolidation
 - PR [#132](https://github.com/iNeonyne/LastHavenPlus/pull/132) merged at 7cd898f4c1f9b7f70787a7000e1ed9343a83540d.
