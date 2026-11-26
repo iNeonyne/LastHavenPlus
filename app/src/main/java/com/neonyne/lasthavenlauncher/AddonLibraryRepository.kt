@@ -38,7 +38,14 @@ data class AddonLibrarySnapshot(
 }
 
 /** App-private, file-backed addon library. Imported packages are never enabled automatically. */
-class AddonLibraryRepository(private val root: File) {
+class AddonLibraryRepository(
+  private val root: File,
+  private val availableStorageBytes: () -> Long = { root.usableSpace },
+  private val beforeIndexWrite: (() -> Unit)? = null,
+) {
+  private companion object {
+    const val MIN_FREE_SPACE_RESERVE_BYTES = 1024L * 1024L
+  }
   private val indexFile = File(root, "library.properties")
 
   fun readLibrary(): AddonLibrarySnapshot {
@@ -116,6 +123,10 @@ class AddonLibraryRepository(private val root: File) {
     if (total > AddonArchive.MAX_LIBRARY_BYTES) {
       extraction.deleteRecursively()
       throw IllegalArgumentException("Addon library exceeds 384 MiB.")
+    }
+    val stagedBytes = imported.sumOf { it.sizeBytes }
+    require(availableStorageBytes() >= stagedBytes + MIN_FREE_SPACE_RESERVE_BYTES) {
+      "Not enough free storage to safely commit imported addons."
     }
 
     val existing = current.addons.associateBy { it.folder.lowercase(Locale.ROOT) }
@@ -281,6 +292,7 @@ class AddonLibraryRepository(private val root: File) {
       properties["addon.$index.warnings"] = encodeList(addon.warnings)
     }
 
+    beforeIndexWrite?.invoke()
     val temporary = File(root, ".library-${UUID.randomUUID()}.tmp")
     FileOutputStream(temporary).use { output ->
       properties.store(output, "LastHavenPlus addon library")
