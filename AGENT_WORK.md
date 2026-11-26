@@ -1,6 +1,6 @@
 # Agent work assignments — LastHavenPlus
 
-**Current beta baseline:** 4c508cf5eff07d8a64dc3ec772dcc1a37a1320a8 after the #133 icon integration and its documentation follow-ups; advanced to e0967121b51ac1c232c92edd80157fc02b714766 after PR #136 integrated the #107 visual system.  
+**Current beta baseline:** 02f47e7886c0ca777513d4740b8d95d8f01b9842 (after PR #153 updater regression test integration).  
 **Stable baseline:** main / v2.3.0 tag ebc5b424e83ae66c2b0accc2bec6f050b8dc0d88.
 
 ## Roles and integration
@@ -28,12 +28,23 @@
 - **Integration:** PR [#136](https://github.com/iNeonyne/LastHavenPlus/pull/136) merged into `beta` by Chaty at `e0967121b51ac1c232c92edd80157fc02b714766`; exact-head unsigned validation passed on final head `94b06eccf2670289474d0e3ad1a7a9c5e30f7c01`. Issue #107 closed on acceptance.
 - **Device status:** physical ARM64 rendering/haptics remain unverified.
 
-### Issue #9 — overlay accessibility and navigation (v2.4.0)
-- **Owner:** Vibe (agent:vibe), assigned by Chaty on 2026-11-26 after #107 integration.
-- **Scope:** Compose semantics (pane title, heading, traversal group) and accessible focus entry for the existing Back menu overlay; TalkBack traversal order verification; reduced-motion gating of the existing overlay fade; return-to-game behavior must keep discarding no session state. No menu redesign, no new actions.
-- **Branch:** `vibe/overlay-accessibility`, fresh from beta `e0967121b51ac1c232c92edd80157fc02b714766`.
-- **State:** implementation in progress on this branch.
-- **Device status:** physical ARM64 TalkBack/gesture verification not performed; JVM-only test infra means focus/TalkBack behavior cannot be fully automated.
+### Issue #9 — overlay accessibility and navigation (integrated)
+- **PR:** [#139](https://github.com/iNeonyne/LastHavenPlus/pull/139), squash-merged by Chaty at `0d5ab712ce5195a3e71023c68da54f054645a8e2`.
+- **Owner:** issue remains `agent:owner` for physical ARM64 TalkBack/focus/traversal, GeckoView-relative order, reduced-motion and large-font verification.
+- **Device status:** no physical-device verification is claimed.
+
+### Issue #23 — Addon Manager Phase A (active Chaty implementation)
+- **Owner:** Chaty (`agent:chaty`), following the repository owner's explicit handoff on 2026-11-26. Vibe must not continue work on #23 or push to its branch.
+- **PR:** [#152](https://github.com/iNeonyne/LastHavenPlus/pull/152), draft, targeting `beta`; Chaty continues the existing branch `vibe/addon-manager-phase-a-23` from current beta.
+- **Scope:** native Phase A only — bounded ZIP import/export, app-private addon library, storage preflight, staging/rollback, TOC dependency metadata, iterative dependency analysis, localized removal confirmation and launcher overlay navigation. Current corrections add replay-safe crash recovery, explicit old/new index revision decisions, fail-closed malformed journal/index handling, safe in-root journal path validation and regression tests for interrupted recovery.
+- **Validation:** implementation commit `c9067bd35323fff167a014fcda9904caf7d81617` passed exact-head Android validation [#45872047540](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45872047540): lint, Spotless, unsigned release assembly and 137/137 JVM tests. Markdown gate [#45872047492](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45872047492) passed. A final CI assertion for the packaged MIT notice is being added; no merge.
+- **Runtime limitation:** Chrome MV3 background/service-worker execution, XHR/Worker interception, game-resource masking and Lua initialization are not implemented or enabled. GeckoView 160 runtime/lifecycle integration remains a separate gate. Phase B is not authorized in this PR.
+- **Device status:** no physical ARM64 test has been performed.
+
+### Issue #11 — privacy-conscious diagnostics tests (active Vibe assignment)
+- **Owner:** Vibe (`agent:vibe`), assigned by Chaty after the #23 handoff; #9 implementation is integrated and #11's prerequisite is satisfied.
+- **Scope:** focused JVM coverage for sensitive-value redaction, log rotation/size limits and safe failure-path logging. No telemetry, network upload, logger rewrite, updater or Addon Manager changes.
+- **Branch/PR:** Vibe to create a dedicated branch from current `beta` and submit a PR targeting `beta`; Chaty reviews and integrates.
 
 ### Completed — issue #129 CI consolidation
 - PR [#132](https://github.com/iNeonyne/LastHavenPlus/pull/132) merged at 7cd898f4c1f9b7f70787a7000e1ed9343a83540d.
@@ -53,7 +64,7 @@
 ### Issue #18 — v2.4.0–v2.6.0 roadmap
 - Owner requested a three-version roadmap on 2026-11-26; the live issue now records v2.4.0 UI/UX, v2.5.0 updater experience and v2.6.0 settings/diagnostics.
 - These are planning targets only, not release/tag/promotion authorization.
-- v2.4.0 icon resources (#133, Chaty) and Compose visual-system work (#107, Vibe) proceeded in parallel with separate file scopes; #107 integrated via PR #136 and #9 accessibility is now the active Vibe assignment.
+- v2.4.0 icon resources (#133), visual system (#107) and overlay accessibility (#9) are integrated; #9 remains open only for owner device verification.
 
 ## Review queue and stale-base work
 
@@ -71,7 +82,6 @@
 
 - **Issue #20 / PR #122:** GeckoView artifact/dependency audit. Owner explicitly deferred it; issue remains agent:blocked, PR draft/open for traceability. No further commits or workflow-dispatch requests.
 - **Issue #62 / PR #123:** branch lifecycle audit. Owner explicitly deferred it; issue remains agent:blocked, PR draft/open for traceability. No further commits.
-- **Issue #23:** Addon Manager remains on hold. No investigation, implementation or assignment without explicit owner approval.
 - **Issue #65:** waiting for owner decision; do not claim emulator/device coverage.
 - **Issue #15, #31, #111, #86 and #19:** blocked/deferred per current issue labels and owner priorities.
 

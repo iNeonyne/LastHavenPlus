@@ -552,3 +552,25 @@ No branch was deleted. The available GitHub connector exposes no branch-delete o
 - **Icon limitation:** issue #133 reopened as `agent:owner`; Android-generated adaptive-mask previews and physical ARM64 launcher rendering still need owner verification.
 - **Visual system:** PR #136 Android run #45743147121 passed on its old head, but branch is stale and non-mergeable after beta advanced. Vibe must merge current beta, resolve conflicts, and rerun exact-head checks.
 - **Release state:** no v2.4.0 tag, promotion, or publication authorized/performed. Beta CI artifact carries stable v2.3.0 identity (`versionCode 2003000`); a v2.4.0 release build requires the authorized stable tag workflow.
+
+
+### 2026-11-26 — Continue Addon Manager Phase A (#23)
+
+- **Owner:** Chaty; explicit owner approval to resume is recorded in issue #23. Work remains on `chaty/addon-manager-phase-a-current-beta`, PR #145 draft targeting beta `0350acaee3f277e01ac51a3722346ab228e23af3`.
+- **Starting state:** native archive/library and Compose manager were implemented; review found that low-storage checking happened after expansion and optional TOC dependencies were not preserved.
+- **Code changes:** preflight compressed input storage, validate ZIP central-directory metadata, check capacity for expanded extraction plus the second staging copy before writing expanded payloads; retain the post-extraction staging-space guard. Parse and persist `OptionalDeps` separately from required dependencies; show optional dependencies without treating them as required.
+- **Tests added:** preflight callback runs before expanded files are written; required/optional dependency parsing; optional dependency persistence across library reads; optional dependencies do not create missing-required warnings. Corrected rollback fixture strings to contain actual line breaks.
+- **Code commits:** `44f1672` archive preflight/optional metadata; `147619e` repository storage guard/persistence; `9131c89` archive tests; `181cd5a` persistence test; `c89949c` dependency analyzer test; localization/UI commits through `608cd73`.
+- **Documentation commits:** README `9b20c63`; STATUS `7b82bd5`; ISSUES `3dd7054`; AGENT_WORK `5a97d79`; CHANGELOG-AGENTS `a06658f`.
+- **CI evidence:** exact-head run `45852470193` failed only `AddonLibraryRepositoryTest.restoresExistingAddonWhenIndexCommitFails` because the fixture encoded a literal backslash-n; 110 other tests passed. `spotlessCheck`, lint analysis and `minifyReleaseWithR8` completed; R8 was not the cause. The test fixture and further review changes have been committed. New exact-head validation for the final branch head is still pending.
+- **GeckoView research:** exact pinned-artifact API probe confirms built-in extension lifecycle, tab delegate and native messaging method presence. Mozilla docs describe APK asset-folder packaging and indicate Firefox MV3 background execution uses event-page scripts rather than Chrome service workers. This is not proof of runtime compatibility in GeckoView 160.
+- **Known limitations:** Chrome MV3 runtime, XHR/Worker interception, game-resource masking, Lua initialization and real GeckoView extension/session lifecycle tests remain unimplemented. No physical ARM64 device testing. No merge/release/tag/main promotion.
+- **Next safe action:** run and inspect Android CI on the final PR head; review lint/test artifacts and source diff; continue the separate exact-GeckoView-160 runtime compatibility probe before enabling any injection.
+
+### 2026-11-26 — Chaty takes over Addon Manager Phase A; Vibe assigned #11
+
+- **Owner direction:** Chaty took over issue #23 / PR #152. Issue #23 is `agent:chaty`; Vibe was instructed not to continue on that branch.
+- **Vibe assignment:** issue #11 is now `agent:vibe`, scoped to diagnostics redaction, rotation/size-bound and failure-path tests. #9's implementation was integrated by PR #139, satisfying #11's prerequisite.
+- **Code changes:** replaced ambiguous recovery rollback with explicit journal format v2 old/new revision state; made rollback replay-safe when the process dies after restoring a backup; fail closed on malformed/mismatched index or journal; validate journal paths remain within app-private addon storage; record stage paths for safe cleanup; added crash-window and malformed-state tests.
+- **Verification:** commit `c9067bd35323fff167a014fcda9904caf7d81617` passed exact-head Android validation [#45872047540](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45872047540) and Markdown [#45872047492](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45872047492); 137 JVM tests passed. Final package-level MIT asset assertion is being added.
+- **State:** PR #152 remains draft; no merge, release, tag, main promotion or physical-device compatibility claim. Phase B remains excluded.

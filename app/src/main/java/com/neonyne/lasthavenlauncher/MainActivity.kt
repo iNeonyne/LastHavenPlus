@@ -50,6 +50,7 @@ enum class Screen {
   Settings,
   Diagnostics,
   Update,
+  AddonManager,
 }
 
 class MainActivity : ComponentActivity() {
@@ -392,6 +393,11 @@ private fun LastHavenApp(
                 menuVisible = target.menuVisible
               },
               onSettings = { openSettings(Screen.Game) },
+              onAddonManager = {
+                val target = LauncherNavigationPolicy.openAddonManager()
+                currentScreen = target.screen
+                menuVisible = target.menuVisible
+              },
               onReturnToGame = {
                 val target = LauncherNavigationPolicy.returnToGame()
                 currentScreen = target.screen
@@ -418,6 +424,13 @@ private fun LastHavenApp(
             currentScreen = Screen.Update
             checkForUpdates(true)
           },
+        )
+
+      Screen.AddonManager ->
+        AddonManagerHost(
+          onBack = {
+            currentScreen = LauncherNavigationPolicy.returnToGame().screen
+          }
         )
 
       Screen.Diagnostics ->
