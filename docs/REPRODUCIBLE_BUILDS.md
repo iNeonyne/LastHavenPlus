@@ -9,7 +9,7 @@ This measures byte-for-byte reproducibility of the optimized **unsigned** releas
 ## Running the check
 
 - For relevant pull requests targeting `beta`, the workflow runs automatically when application, Gradle, wrapper, SDK configuration, comparison helper, or workflow files change.
-- On pushes to `beta`, the workflow runs automatically for relevant application/build/workflow paths. The push run verifies the integrated commit; PR runs verify the proposed head before merge.
+- On pushes to `beta` and the v2.4.0 selective-promotion branch, the workflow runs automatically for relevant application/build/workflow paths. The push run verifies the integrated or promoted source commit; beta PR runs verify the proposed head before merge.
 - The two matrix jobs each check out the same exact commit SHA, disable Gradle build cache and configuration cache, run `clean assembleRelease`, and explicitly remove signing environment variables.
 - The workflow rejects a signed APK input. It does not reference or restore release signing secrets.
 
@@ -27,16 +27,12 @@ A whole-file hash mismatch fails the workflow after the report is generated and 
 
 ## Latest verified result
 
-- Source commit: `31e645cad3cc6fec04725eb2647baa72514db21a`.
-- Workflow run: [#45861894860](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45861894860).
-- Result: **byte-identical** unsigned APKs from two independent clean runners.
-- APK size: 95,890,221 bytes each.
-- SHA-256: `3f7811a8abd3091e742c459ccb7db3bda1ed6d3d80c432d4a009478f01691ab3`.
-- ZIP entries: 851 in each build; no missing/extra entries, duplicate entries or metadata/content differences.
-- Runner images: `ubuntu24 20261116.376.1` and `ubuntu24 20261122.23.1`.
-- JDKs: Temurin `25.0.5` and `25.0.5.1`; both used Gradle `9.7.1`, Android platform `37.2` and Build Tools `37.0.0`.
+- Source commit: `cd8a661a0089d311157c1c6b6746936d5f85977f` (v2.4.0 selective-promotion branch; application and Gradle inputs are unchanged in the final candidate).
+- Workflow run: [#45881898757](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45881898757).
+- Result: **byte-identical** unsigned APKs from two independent clean Ubuntu 24.04 runners.
+- APK size: 96,125,642 bytes each.
+- SHA-256: `cadaa8fb1ada530ad8973f91137d653412c82b4196c7010477f31b9d0de7806f`.
+- ZIP entries: 852 in each build; no missing/extra entries, duplicate entries or metadata/content differences.
+- The report and runner environment records are attached as the `unsigned-apk-reproducibility-report` Actions artifact.
 
-The two runners used different hosted image versions and different JDK patch versions, yet produced byte-identical APKs. This result applies to the exact source commit and recorded environments only. Repeat the check after relevant toolchain or build configuration changes.
-## F-Droid
-
-F-Droid compatibility is a separate assessment. GeckoView's binary distribution, licensing, source-build availability, and toolchain requirements must be evaluated independently before making any F-Droid compatibility claim.
+The two runners produced the same complete APK hash and matching entry-level metadata/content. This result applies to the recorded source commit and unsigned build only; it does not prove release-signing reproducibility, physical-device compatibility or publication safety.
