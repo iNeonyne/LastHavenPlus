@@ -869,3 +869,6 @@ Entry format:
 - Commits: dd33fc1af4e33b4c1d4fd89c5b37e64159115714 (source), 0e6896afc6f6f17d7e038b612b01875e0ebbbc2f (tests). Exact-head CI has not run; no pass is claimed.
 - Reviewed open PR queue: #154 scope is nine effective files and awaits branch refresh/CI; #143 has a time-window sampling correction requested and remains integration-held; #122/#113 remain owner-paused; #144 remains blocked on third-party notice and distribution evidence.
 - No release, tag, main promotion, publication, signing/toolchain/ABI/app-ID change or physical-device test occurred.
+
+
+- **Formatter correction:** the first source commit was replaced after exact-head Spotless output showed import-order and nested-lambda indentation changes. Current source commit is 0b275726c6a19784fe42822813ec799ca10df84e; tests remain 0e6896afc6f6f17d7e038b612b01875e0ebbbc2f. The first CI run's formatting failure is not considered a code/test result.
