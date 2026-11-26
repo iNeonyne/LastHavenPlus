@@ -2,7 +2,7 @@
 
 - **Branch:** chaty/community-hygiene; latest candidate commit before documentation reconciliation: 70d3e865407674f83d288f2b92bf7d397bf22a1e.
 - **Owner decision:** GPL-3.0-or-later approved; see issue #67. The complete canonical license text is included without inventing a copyright-holder name or date.
-- **Changes prepared:** add LICENSE and SECURITY.md; add weekly Gradle Dependabot updates alongside existing GitHub Actions updates; link licensing and third-party boundaries in README; document branch retention in AGENTS/CONTRIBUTING; add an Unreleased entry to CHANGELOG.
+- **Changes prepared:** add LICENSE and SECURITY.md; add weekly Gradle Dependabot updates alongside existing GitHub Actions updates; link licensing and third-party boundaries plus release history in README; document branch retention in AGENTS/CONTRIBUTING; reconcile v2.2.0/v2.3.0 release notes from their tagged changelog snapshots and add an Unreleased entry.
 - **Third-party boundary review:** direct dependencies in the version catalog include Mozilla GeckoView (separate Mozilla license), AndroidX/Compose (Apache-2.0 family), Commons Compress (Apache-2.0) and JUnit (EPL-1.0/GPL-2.0 with Classpath Exception). This is a preliminary direct-dependency review, not a complete transitive SBOM or packaged-artifact notice audit. No game client is included in the repository license.
 - **Verification:** pending PR Markdown lint and exact-head review. No Android source, Gradle version, SDK, GeckoView version, signing, ABI, release, tag or main changes. No branches deleted.
 - **Device testing:** not applicable to these documentation/configuration-only changes.
