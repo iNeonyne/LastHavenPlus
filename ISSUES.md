@@ -26,7 +26,7 @@
 
 | Issue | Priority | Summary | Current state |
 |---|---:|---|---|
-| [#4](#issue-4) | P0.1 | Build reproducibility and updater test coverage | Open; version-qualified CI artifact naming integrated; remaining updater regression tests stay with Chaty |
+| [#4](#issue-4) | P0.1 | Build reproducibility and updater test coverage | Open; top priority, Chaty-owned; BSDIFF resource-cleanup PR #157 in validation |
 | [#5](#issue-5) | Feedback | Owner feedback — gameplay and update behavior after release | Open; owner will provide release feedback on their own schedule; not a release blocker |
 | [#6](#issue-6) | P2 | Essential launcher settings and safe storage controls | Open; includes version identity, theme preference and accessible storage loading-state candidates |
 | [#7](#issue-7) | P3 | Runtime performance and APK size | Open; measure before optimizing |
@@ -37,7 +37,7 @@
 | [#12](#issue-12) | P2 | GeckoView load-error details | Open |
 | [#13](#issue-13) | — | Accessible names / legacy addon-manager compile work | Closed — consolidated into #9 |
 | [#14](#issue-14) | P2 | Connection diagnostics | Open |
-| [#15](#issue-15) | P2 | Updater recovery and download progress visibility | Open; adds measurable speed/ETA, inline retry, install-later confirmation, storage preflight, package-size comparison and release-note/history UX |
+| [#15](#issue-15) | P2 | Updater recovery and download progress visibility | Reopened per owner priority; coordinated with #4 under Chaty, no parallel implementation |
 | [#16](#issue-16) | P2 | Gameplay orientation and keep-awake settings | Open |
 | [#17](#issue-17) | P2 | Settings backup and restore | Open |
 | [#18](#issue-18) | Roadmap | v2.4.0–v2.6.0 UI/UX, updater and settings roadmap | Open; owner-requested planning targets only, no release authorization |
@@ -60,7 +60,7 @@
 | [#66](https://github.com/iNeonyne/LastHavenPlus/issues/66) | Engineering | Independent unsigned APK reproducibility | Completed; PR #119 merged to beta at `97570ea` |
 | [#70](https://github.com/iNeonyne/LastHavenPlus/issues/70) | Docs | Contributor/security guidance and Markdown validation | Markdownlint integrated; final reconciliation is in this housekeeping PR |
 | [#81](https://github.com/iNeonyne/LastHavenPlus/issues/81) | Dependencies | Compatible AndroidX and compression library refresh | Chaty-owned; only the five approved library versions are in scope |
-| [#111](https://github.com/iNeonyne/LastHavenPlus/issues/111) | Deferred | Updater download progress and retry feedback | Blocked/deferred; do not start alongside #4 |
+| [#111](https://github.com/iNeonyne/LastHavenPlus/issues/111) | Deferred | Updater download progress and retry feedback | Draft PR #143 awaiting review correction; integration held for v2.5.0 owner authorization |
 | [#133](https://github.com/iNeonyne/LastHavenPlus/issues/133) | Owner review | v2.4.0 adaptive launcher icon refresh | PR #135 merged; exact-head and signed ARM64 CI passed; owner visual/mask verification pending |
 | [#128](https://github.com/iNeonyne/LastHavenPlus/issues/128) | Housekeeping | Post-v2.3.0 repository housekeeping | Chaty-owned; current docs reconciliation in this housekeeping PR |
 | [#129](https://github.com/iNeonyne/LastHavenPlus/issues/129) | Done | Consolidate beta CI quality checks | Closed; PR #132 merged and exact-merge CI passed |
