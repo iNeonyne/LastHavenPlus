@@ -113,17 +113,17 @@ Only Chaty changes ownership labels. Assignment comments must define expected be
 
 - **Owner decision:** repository owner selected Apache-2.0 on 2026-11-26.
 - **Owner:** Chaty (agent:chaty) for implementation and review.
-- **Branch:** chaty/community-hygiene-refresh, based on beta.
+- **Branch:** chaty/community-hygiene-refresh-refresh, based on beta.
 - **Scope:** canonical Apache-2.0 text, SECURITY.md, README licensing boundary, weekly Gradle Dependabot, v2.2/v2.3 changelog reconciliation, contribution guide alignment, and branch-retention policy. Keep third-party components and the LastHaven game under their respective terms.
-- **Exclusions:** no app source, dependency/toolchain version, game, updater, signing, ABI, release, tag, main or branch deletion changes. Do not invent a copyright-holder identity or year.
+- **Exclusions:** no app source, dependency/toolchain version, game, updater, signing, ABI, release, tag, main or branch deletion changes. Owner supplied project attribution: LastHavenPlus, Copyright 2026.
 - **Verification:** documentation/Dependabot review and exact PR Markdown CI pending. Direct dependency license review is preliminary; transitive/package-level audit remains outstanding.
 
 
 ## Issue #67 — Apache-2.0/community hygiene (owner decision required)
 
-- **Implementation:** Chaty, branch chaty/community-hygiene-refresh, the refreshed community-hygiene PR to beta.
+- **Implementation:** Chaty, branch chaty/community-hygiene-refresh-refresh, PR #144 to beta.
 - **Prepared:** Apache-2.0 root license and packaged raw resource with Settings license dialog; SECURITY.md; weekly Gradle Dependabot; README license boundary/changelog link; tagged changelog reconciliation; retained-branch contributor policy; runtime dependency report in PR CI.
-- **Latest head recorded:** pending exact-head SHA.
+- **Latest head recorded:** 18d8912c6d934270746395b4057750c30166d731.
 - **Blocker:** releaseRuntimeClasspath includes Google Play Services FIDO 21.3.1, Base 18.7.2, Basement 18.9.0 and Tasks 18.3.2, declared under the Android Software Development Kit License. The owner selected Apache-2.0, resolving the earlier project-license choice. Issue #67 remains agent:owner pending copyright attribution; complete third-party license/notice audit before merge.
 - **No overlap:** MainActivity.kt and LauncherNavigationPolicy.kt were restored to beta to avoid Vibe's pending #9 / PR #139 overlay-accessibility changes. License dialog is contained in SettingsDialogs.kt and does not change overlay navigation.
 - **No release, main promotion, app identity/signing/ABI/toolchain/GeckoView changes, or branch deletion.**
