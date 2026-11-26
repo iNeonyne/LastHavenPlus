@@ -36,7 +36,11 @@ class AddonLibraryRepositoryTest {
     val exported = ByteArrayOutputStream()
     repository.exportZip("Sample", exported)
     val exportedAddons =
-      AddonArchive.importZip(ByteArrayInputStream(exported.toByteArray()), exported.size().toLong())
+      AddonArchive.importZip(
+        ByteArrayInputStream(exported.toByteArray()),
+        exported.size().toLong(),
+        temporaryFolder.newFolder("export-check"),
+      )
     assertEquals("Sample", exportedAddons.single().folder)
 
     val removed = repository.removeAddon("Sample")
