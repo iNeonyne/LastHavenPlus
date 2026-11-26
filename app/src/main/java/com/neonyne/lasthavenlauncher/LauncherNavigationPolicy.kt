@@ -21,7 +21,6 @@ internal object LauncherNavigationPolicy {
         Screen.Settings -> settingsReturnScreen
         Screen.Diagnostics -> diagnosticsReturnScreen
         Screen.Update -> updateReturnScreen
-        Screen.Licenses -> Screen.Settings
         Screen.Home,
         Screen.Game -> Screen.Game
       }
