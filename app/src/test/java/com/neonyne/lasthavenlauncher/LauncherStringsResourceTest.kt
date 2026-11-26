@@ -1,0 +1,100 @@
+package com.neonyne.lasthavenlauncher
+
+import java.io.File
+import javax.xml.parsers.DocumentBuilderFactory
+import org.junit.Assert.assertTrue
+import org.junit.Test
+
+/**
+ * Lightweight resource-resolution verification for the launcher-owned string extraction
+ * (issue #149): every `R.string` reference in launcher UI code must resolve to a declared resource,
+ * and the declared resources must be well-formed with unique names and valid positional format
+ * args.
+ */
+class LauncherStringsResourceTest {
+  private fun moduleRoot(): File =
+    sequenceOf(File("src/main/res"), File("app/src/main/res")).firstOrNull { it.isDirectory }
+      ?: error("Could not locate src/main/res from the unit-test working directory")
+
+  private fun loadDeclaredStrings(): Map<String, String> {
+    val file = File(moduleRoot(), "values/strings.xml")
+    val document = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(file)
+    val nodes = document.getElementsByTagName("string")
+    val declared = mutableMapOf<String, String>()
+    for (index in 0 until nodes.length) {
+      val element = nodes.item(index) as org.w3c.dom.Element
+      val name =
+        element.getAttribute("name")
+          ?: error("strings.xml contains a string without a name attribute")
+      assertTrue("Duplicate string name: $name", name !in declared)
+      declared[name] = element.textContent
+    }
+    return declared
+  }
+
+  @Test
+  fun `launcher string resources are declared exactly once with valid positional arguments`() {
+    val declared = loadDeclaredStrings()
+    assertTrue("No string resources found", declared.isNotEmpty())
+    val validSpecifier = Regex("%(?:\\d+\\$[sdf]|%)")
+    declared.forEach { (name, value) ->
+      assertTrue("Resource $name has a blank value", value.isNotBlank())
+      val leftover = validSpecifier.replace(value, "")
+      assertTrue(
+        "Resource $name contains a non-positional or invalid % specifier: $leftover",
+        !leftover.contains('%'),
+      )
+    }
+  }
+
+  @Test
+  fun `launcher UI code only references declared string resources`() {
+    val declared = loadDeclaredStrings()
+    val sourceRoots = sequenceOf(File("src/main/java"), File("app/src/main/java"))
+    val sources =
+      sourceRoots
+        .filter { it.isDirectory }
+        .flatMap { root -> root.walkTopDown().filter { it.extension == "kt" } }
+        .toList()
+    assertTrue("No Kotlin sources found under src/main/java", sources.isNotEmpty())
+    val reference = Regex("""R\.string\.([A-Za-z0-9_]+)""")
+    val referenced = mutableSetOf<String>()
+    sources.forEach { file ->
+      reference.findAll(file.readText()).forEach { referenced += it.groupValues[1] }
+    }
+    assertTrue("No R.string references found in launcher sources", referenced.isNotEmpty())
+    val undeclared = referenced - declared.keys
+    assertTrue("Undeclared string resources referenced: $undeclared", undeclared.isEmpty())
+  }
+
+  @Test
+  fun `extracted launcher strings preserve their exact original wording`() {
+    val declared = loadDeclaredStrings()
+    val expected =
+      mapOf(
+        "home_tagline" to "Return to Azeroth.",
+        "home_game_title" to "Wrath of the Lich King",
+        "home_game_subtitle" to "Your adventure continues where you left it.",
+        "home_exit_title" to "Exit LastHavenPlus?",
+        "home_exit_message" to "Your game data remains stored on this device.",
+        "game_load_failed_title" to "Unable to load LastHaven",
+        "game_load_failed_hint" to "Check your connection and try again.",
+        "game_crashed_title" to "LastHaven stopped unexpectedly",
+        "game_crashed_hint" to "The game session ended. Restore the game to continue playing.",
+        "settings_storage_hint" to
+          "Includes app-private files and GeckoView data; it is not a profile-only measurement.",
+        "settings_network_hint" to
+          "Per-app totals include game and updater traffic. " +
+            "They are stored locally and reset on device reboot.",
+        "diagnostics_privacy_hint" to "Logs are stored on this device. Review them before sharing.",
+        "settings_show_notices" to "Third-party notices",
+      )
+    expected.forEach { (name, wording) ->
+      assertTrue("Missing string resource: $name", name in declared)
+      assertTrue(
+        "Resource $name changed wording: was \"$wording\", now \"${declared[name]}\"",
+        declared[name] == wording,
+      )
+    }
+  }
+}
