@@ -3,7 +3,7 @@
 ## Unreleased
 
 ### Repository and contributor policy
-- License original LastHavenPlus project code and documentation under GPL-3.0-or-later; third-party components, assets and the hosted game retain their own terms.
+- License original LastHavenPlus project code and documentation under Apache-2.0; third-party components, assets and the hosted game retain their own terms.
 - Add a private vulnerability reporting policy and weekly Gradle dependency update checks.
 - Retain merged and abandoned task branches as archives; do not delete or reuse them.
 
