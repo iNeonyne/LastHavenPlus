@@ -101,19 +101,19 @@ Only Chaty changes ownership labels. Assignment comments must define expected be
 
 ## Issue #67 — repository license and community hygiene
 
-- **Owner decision:** repository owner selected GPL-3.0-or-later on 2026-11-26.
+- **Owner decision:** repository owner selected Apache-2.0 on 2026-11-26.
 - **Owner:** Chaty (agent:chaty) for implementation and review.
 - **Branch:** chaty/community-hygiene, based on beta.
-- **Scope:** canonical GPL text, SECURITY.md, README licensing boundary, weekly Gradle Dependabot, v2.2/v2.3 changelog reconciliation, contribution guide alignment, and branch-retention policy. Keep third-party components and the LastHaven game under their respective terms.
+- **Scope:** canonical Apache-2.0 text, SECURITY.md, README licensing boundary, weekly Gradle Dependabot, v2.2/v2.3 changelog reconciliation, contribution guide alignment, and branch-retention policy. Keep third-party components and the LastHaven game under their respective terms.
 - **Exclusions:** no app source, dependency/toolchain version, game, updater, signing, ABI, release, tag, main or branch deletion changes. Do not invent a copyright-holder identity or year.
 - **Verification:** documentation/Dependabot review and exact PR Markdown CI pending. Direct dependency license review is preliminary; transitive/package-level audit remains outstanding.
 
 
-## Issue #67 — GPL/community hygiene (owner decision required)
+## Issue #67 — Apache-2.0/community hygiene (owner decision required)
 
 - **Implementation:** Chaty, branch chaty/community-hygiene, PR #141 to beta.
 - **Prepared:** GPL root license and packaged raw resource with Settings license dialog; SECURITY.md; weekly Gradle Dependabot; README license boundary/changelog link; tagged changelog reconciliation; retained-branch contributor policy; runtime dependency report in PR CI.
 - **Latest head recorded:** 3f98b236830ba194a5e18648e3acc9f09d9073c3.
-- **Blocker:** releaseRuntimeClasspath includes Google Play Services FIDO 21.3.1, Base 18.7.2, Basement 18.9.0 and Tasks 18.3.2, declared under the Android Software Development Kit License. GPLv3 combined-APK compatibility is unresolved. Issue #67 moved to agent:owner and PR #141 returned to draft. Do not merge pending owner direction and complete notice/license audit.
+- **Blocker:** releaseRuntimeClasspath includes Google Play Services FIDO 21.3.1, Base 18.7.2, Basement 18.9.0 and Tasks 18.3.2, declared under the Android Software Development Kit License. GPLv3 (superseded by the owner's later Apache-2.0 selection) combined-APK compatibility is unresolved. Issue #67 moved to agent:owner and PR #141 returned to draft. Do not merge pending owner direction and complete notice/license audit.
 - **No overlap:** MainActivity.kt and LauncherNavigationPolicy.kt were restored to beta to avoid Vibe's pending #9 / PR #139 overlay-accessibility changes. License dialog is contained in SettingsDialogs.kt and does not change overlay navigation.
 - **No release, main promotion, app identity/signing/ABI/toolchain/GeckoView changes, or branch deletion.**
