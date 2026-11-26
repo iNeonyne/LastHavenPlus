@@ -580,3 +580,14 @@ No branch was deleted. The available GitHub connector exposes no branch-delete o
 
 
 2026-11-26 — Corrected current project records on PR #152 branch: #23's prior hold/XPI specification is marked superseded by owner-approved ZIP 0.5.1 Phase A; #11 is recorded as agent:review for PR #154; #66/PR #119 is recorded as merged at 97570eaaca86c9e27d92d04f90da9d930f6bdb33. Updated the PR #152 documentation head to cc15080282b24df986dee2a10788e34e1cbbe511; fresh exact-head CI required.
+
+
+### 2026-11-26 — #150 permission policy docs audit
+
+- **Branch/base:** `chaty/issue-150-permission-policy-docs`, based on beta `1279f214b3fdd3ba420e090a6a90914a8a3399e7`.
+- **Source inspected:** `app/src/main/AndroidManifest.xml`, `app/src/main/java/com/neonyne/lasthavenlauncher/MainActivity.kt` (`setupGeckoDelegates`), and `GeckoRuntimeProvider.kt`.
+- **Findings:** manifest declares INTERNET and REQUEST_INSTALL_PACKAGES only. GeckoView allows persistent storage and audible/inaudible autoplay only for exact `lasthavens.com` and subdomains. Other content permissions/origins are denied; Android runtime and media permission callbacks reject requests.
+- **Docs changed:** README.md, AGENTS.md, STATUS.md, ISSUES.md, AGENT_WORK.md, CHANGELOG-AGENTS.md and WORK_LOG.md.
+- **Non-goals preserved:** no runtime permission, manifest, delegate, GeckoView setting, app, network or game behavior changes.
+- **Checks:** Markdown quality workflow passed on initial PR head `e2ce22c44508a87f53fc4a57a03f82e0597550bc` (run #45889911748). Internal link/anchor scan covered all 15 Markdown files with zero missing local targets. No Android or physical-device tests run/claimed.
+- **Next:** final PR review and merge; permission prompt behavior remains unverified on hardware.

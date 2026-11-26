@@ -1,6 +1,6 @@
 # Agent work assignments — LastHavenPlus
 
-**Current beta baseline:** 97570eaaca86c9e27d92d04f90da9d930f6bdb33 (after PR #119 independent unsigned APK reproducibility integration).  
+**Current beta baseline:** `1279f214b3fdd3ba420e090a6a90914a8a3399e7` (observed 2026-11-26).  
 **Stable baseline:** main / v2.3.0 tag ebc5b424e83ae66c2b0accc2bec6f050b8dc0d88.
 
 ## Roles and integration
@@ -133,3 +133,13 @@ The following GitHub issues were created from the beta code review. All are curr
 Updater review findings were added to existing #15 and #4, not split into parallel updater tasks. #111 remains Vibe's active progress work and must be reviewed for file overlap before any updater follow-up is assigned.
 
 **Assignment policy:** Do not assign these issues to Vibe while an existing task/PR owns overlapping files. Keep one active owner per issue and record the exact scope in a GitHub assignment comment before work begins.
+
+
+## Active Chaty documentation task — #150
+
+- **Owner:** Chaty (`agent:chaty`), documentation only.
+- **Branch:** `chaty/issue-150-permission-policy-docs`, based on beta `1279f214b3fdd3ba420e090a6a90914a8a3399e7`.
+- **Files:** README.md, AGENTS.md, STATUS.md, ISSUES.md, AGENT_WORK.md, CHANGELOG-AGENTS.md and WORK_LOG.md.
+- **Source evidence:** AndroidManifest.xml declares INTERNET and REQUEST_INSTALL_PACKAGES. MainActivity grants persistent storage and audible/inaudible autoplay only to `lasthavens.com` and subdomains; all other content permissions/origins are denied; Android and media permission requests are rejected.
+- **Non-goals:** no manifest, GeckoView, delegate, permission, app or game behavior changes; no physical-device claim.
+- **Validation:** Markdown run #45889911748 passed on head `e2ce22c44508a87f53fc4a57a03f82e0597550bc`; internal links/anchors checked across 15 Markdown files with zero missing targets. **Next:** final review and merge.
