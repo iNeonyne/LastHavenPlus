@@ -31,14 +31,14 @@ The following dated implementation notes are retained as history. Their old draf
 - **Runtime limitation:** Chrome MV3 background/service-worker execution, XHR/Worker interception, game-resource masking and Lua initialization remain unimplemented. GeckoView 160 runtime/lifecycle integration remains a separate gate; Phase B is not authorized in this PR.
 - **Device status:** no physical ARM64 device test has been performed.
 
-## Latest integration — v2.4.0 launcher icon
+## Historical integration — v2.4.0 launcher icon
 
 - **PR:** [#135](https://github.com/iNeonyne/LastHavenPlus/pull/135), squash-merged to beta at `c24b24e7125f49e86f465b1786ccfecb537e9694`.
 - **Exact-head Android validation:** [run #45742710788](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45742710788) passed lint, Spotless, unsigned release assembly and JVM tests. PR validation remained unsigned; signing/tag/publication jobs were skipped.
 - **Exact-head Markdown validation:** [run #45742710826](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45742710826) passed.
 - **Post-merge beta validation:** Markdown push run [#45743277532](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45743277532) passed. Signed ARM64 beta build [#45743277446](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45743277446) passed on exact application merge commit `c24b24e`. It built and unit-tested the optimized APK, verified ARM64-only packaging (`arm64-v8a`), matched the established signing certificate SHA-256 `b3bbf7520e77dfc384a60b1eee6c5f205b978f9b453849e2be523f642018d263`, and uploaded artifact `LastHavenPlus-2.3.0-beta-arm64-v8a` (92,813,021 bytes). Tag and publication jobs were skipped as required.
 - **Artwork:** native icy-blue pixel-art castle/moon vector, deep-navy adaptive background and 8% foreground inset; standard and round adaptive icon resources remain wired. Local mask simulations were inspected, but Android-generated launcher screenshots and physical ARM64 appearance remain unverified.
-- **Issue #133:** implementation is merged, but the issue was reopened as `agent:owner` because Android-generated mask previews and physical ARM64 launcher appearance still need owner verification.
+- **Issue #133:** closed after source integration. The cited CI verifies build/package checks, not Android-generated adaptive-mask output or physical ARM64 launcher appearance.
 
 ## Documentation checkpoint — PR #137
 
