@@ -96,10 +96,11 @@ class AddonArchiveTest {
 
   @Test
   fun rejectsDuplicateCentralDirectoryRecords() {
-    val archive = zipOf(
-      "Sample/Sample.toc" to "## Interface: 30300\\n",
-      "Sample/main.lua" to "print('sample')",
-    )
+    val archive =
+      zipOf(
+        "Sample/Sample.toc" to "## Interface: 30300\\n",
+        "Sample/main.lua" to "print('sample')",
+      )
     val duplicated = duplicateFirstCentralDirectoryRecord(archive)
 
     assertThrows(IllegalArgumentException::class.java) {
@@ -113,18 +114,20 @@ class AddonArchiveTest {
 
   @Test
   fun importsAddonsNestedUnderCommonPackagingDirectory() {
-    val archive = zipOf(
-      "Release/Alpha/Alpha.toc" to "## Interface: 30300\\n",
-      "Release/Alpha/main.lua" to "print('alpha')",
-      "Release/Beta/Beta.toc" to "## Interface: 30300\\n",
-      "Release/Beta/main.lua" to "print('beta')",
-    )
+    val archive =
+      zipOf(
+        "Release/Alpha/Alpha.toc" to "## Interface: 30300\\n",
+        "Release/Alpha/main.lua" to "print('alpha')",
+        "Release/Beta/Beta.toc" to "## Interface: 30300\\n",
+        "Release/Beta/main.lua" to "print('beta')",
+      )
 
-    val imported = AddonArchive.importZip(
-      ByteArrayInputStream(archive),
-      archive.size.toLong(),
-      temporaryFolder.newFolder("nested-package"),
-    )
+    val imported =
+      AddonArchive.importZip(
+        ByteArrayInputStream(archive),
+        archive.size.toLong(),
+        temporaryFolder.newFolder("nested-package"),
+      )
 
     assertEquals(setOf("Alpha", "Beta"), imported.map { it.folder }.toSet())
     assertEquals(setOf("main.lua", "Alpha.toc"), imported.first { it.folder == "Alpha" }.files.keys)
