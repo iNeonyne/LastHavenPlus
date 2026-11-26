@@ -22,6 +22,15 @@ The repository owner makes final product and release decisions. `beta` is the de
 6. Never force-push shared history. Reuse an existing task branch when practical; avoid creating unnecessary branches.
 7. Do not claim physical-device verification unless a real ARM64 device was tested and the device, Android version, build SHA and results are recorded.
 
+## Branch lifecycle
+
+- Name task branches `<owner>/<task-slug>` (for example `vibe/updater-progress-111`). One issue per branch; prefer issue-keyed slugs so a branch's scope is self-describing.
+- Start task branches from current `beta` and open PRs against `beta`. `infra/*` branches never merge wholesale into `beta`.
+- To sync a branch with an advanced `beta`, merge `origin/beta` into it (never rebase pushed history), rerun affected checks, and update the PR handoff with the new exact head SHA.
+- Retire a branch only after its PR is merged or its work is superseded/abandoned, and only with explicit owner approval recorded in the disposal log of `docs/BRANCH_LIFECYCLE.md`.
+- Preserve `beta-legacy-*` snapshot branches; never delete or wholesale-merge them without owner approval.
+- The current branch inventory, integration history and disposal log live in [docs/BRANCH_LIFECYCLE.md](docs/BRANCH_LIFECYCLE.md).
+
 ## Build, test and quality checks
 
 Use the committed Gradle Wrapper and the pinned JDK/Android SDK documented in `README.md`.
