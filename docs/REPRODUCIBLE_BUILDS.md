@@ -27,16 +27,16 @@ A whole-file hash mismatch fails the workflow after the report is generated and 
 
 ## Latest verified result
 
-- Source commit: `610838b77cf4bb6cd54f8a173fac5a22bdc26eeb` (PR #119 head, before this documentation-only update).
-- Workflow run: [#45727205562](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45727205562).
-- Result: **byte-identical** unsigned APKs.
-- APK size: 95,843,465 bytes each.
-- SHA-256: `a6f7d17db91baaf705dfdd3fc55a759f90b6551c40e3f1ed8c1e45ad644850fb`.
-- ZIP entries: 850 in each build; no missing/extra entries, duplicate entries or metadata/content differences.
-- Runner images: `ubuntu24 20261116.133.1` and `ubuntu24 20261116.376.1`; both used Temurin JDK 25.0.5, Gradle 9.7.1, Android platform 37.2 and Build Tools 37.0.0.
+- Source commit: `31e645cad3cc6fec04725eb2647baa72514db21a`.
+- Workflow run: [#45861894860](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45861894860).
+- Result: **byte-identical** unsigned APKs from two independent clean runners.
+- APK size: 95,890,221 bytes each.
+- SHA-256: `3f7811a8abd3091e742c459ccb7db3bda1ed6d3d80c432d4a009478f01691ab3`.
+- ZIP entries: 851 in each build; no missing/extra entries, duplicate entries or metadata/content differences.
+- Runner images: `ubuntu24 20261116.376.1` and `ubuntu24 20261122.23.1`.
+- JDKs: Temurin `25.0.5` and `25.0.5.1`; both used Gradle `9.7.1`, Android platform `37.2` and Build Tools `37.0.0`.
 
-This is the latest verified result for the code tree at the source commit above. The current documentation-only update does not change build inputs. A successful run establishes byte identity for that specific source commit and the recorded runner/toolchain environment only. Repeat the check after relevant toolchain or build configuration changes.
-
+The two runners used different hosted image versions and different JDK patch versions, yet produced byte-identical APKs. This result applies to the exact source commit and recorded environments only. Repeat the check after relevant toolchain or build configuration changes.
 ## F-Droid
 
 F-Droid compatibility is a separate assessment. GeckoView's binary distribution, licensing, source-build availability, and toolchain requirements must be evaluated independently before making any F-Droid compatibility claim.
