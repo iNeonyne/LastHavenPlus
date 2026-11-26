@@ -1,3 +1,10 @@
+## 2026-11-26 — Integrate v2.4.0 icy pixel-castle launcher icon (#133)
+
+- **PR:** #135 squash-merged to beta at `c24b24e7125f49e86f465b1786ccfecb537e9694`.
+- **Validation:** exact-head unsigned Android checks [#45742710788](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45742710788) and Markdown checks [#45742710826](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45742710826) passed. Post-merge signed ARM64 beta run #45743277446 was still running when this record was prepared.
+- **Issue:** #133 closed completed. Android-generated launcher screenshots and physical ARM64 launcher appearance remain unverified.
+- **Next:** Vibe refreshes #107 PR #136 against the new beta head; #9 remains queued until #107 integrates.
+
 ## 2026-11-26 — Begin v2.4.0 launcher icon implementation (#133)
 
 - **Owner:** Chaty (agent:chaty), following the repository owner's explicit takeover direction.

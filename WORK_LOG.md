@@ -534,3 +534,12 @@ No branch was deleted. The available GitHub connector exposes no branch-delete o
 - **Commits:** artwork 530bb15f2a091ccc380ae4168a60cb1e62bb221c; foreground d159e846ac86529978befa6ed65ef55bfdb2e46c; background 409a8ff44b161ac09a84d6b46b9b9814af12334f; cleanup 1fda96cd40e7fb321548851129e696e245993124.
 - **Checks:** no Android build or automated test has run yet. Exact-head PR CI and adaptive mask inspection are pending. Physical ARM64 launcher rendering is unverified.
 - **Next safe action:** inspect the final resource diff, add this operational checkpoint and ownership updates to the task PR, then run exact-head unsigned validation. Do not merge until review and CI pass.
+
+
+### 2026-11-26 — Integrate v2.4.0 launcher icon (#133)
+- **PR:** #135 squash-merged into beta.
+- **Merge commit / beta HEAD:** `c24b24e7125f49e86f465b1786ccfecb537e9694`.
+- **Exact-head validation:** Android PR run #45742710788 passed lint, Spotless, unsigned release assembly and JVM tests; Markdown run #45742710826 passed.
+- **Post-merge checks:** Markdown beta push run #45743277532 passed. Signed ARM64 beta build #45743277446 was still running at this checkpoint.
+- **Issue:** #133 closed completed. Local vector/mask simulation inspected; Android-generated mask previews and physical ARM64 launcher rendering remain unverified.
+- **Next:** refresh Vibe's #107 PR #136 against the new beta commit; review its exact-head CI and UI changes. Keep #9 queued until #107 is integrated. No release/tag/promotion.
