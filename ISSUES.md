@@ -31,7 +31,7 @@
 | Issue | Priority | Summary | Current state |
 |---|---:|---|---|
 | [#4](#issue-4) | P0.1 | Build reproducibility and updater test coverage | Chaty active; BSDIFF cleanup candidate PRs closed unmerged; broad adversarial tests and signed APK-pair evidence remain |
-| [#5](#issue-5) | Feedback | Owner feedback — gameplay and update behavior after release | Open; owner will provide release feedback on their own schedule; not a release blocker |
+| [#5](#issue-5) | Feedback | Owner feedback — gameplay and update behavior after release | Closed; historical owner feedback thread |
 | [#6](#issue-6) | P2 | Essential launcher settings and safe storage controls | Open; includes version identity, theme preference and accessible storage loading-state candidates |
 | [#7](#issue-7) | P3 | Runtime performance and APK size | Open; measure before optimizing |
 | [#8](#issue-8) | — | Legacy addon manager | Closed — superseded; no planned work |
@@ -47,11 +47,11 @@
 | [#18](#issue-18) | Roadmap | v2.4.0–v2.6.0 UI/UX, updater and settings roadmap | Open; owner-requested planning targets only, no release authorization |
 | [#19](#issue-19) | P1 | Opt-in beta release channel | Open |
 | [#20](#issue-20) | Deferred | GeckoView 160 artifact/dependency audit | `agent:blocked`; PR #122 closed unmerged; resume only after owner reprioritization; unresolved notice/distribution/device evidence remains |
-| [#21](#issue-21) | Feedback | Owner feedback — GeckoView runtime/profile behavior after release | Open; optional owner feedback and reported follow-up defects; not a release blocker |
-| [#22](#issue-22) | Superseded | Home screen and Play/Settings navigation | Replaced by direct-launch/overlay scope #56; owner feedback tracked in #5/#21 |
+| [#21](#issue-21) | Feedback | Owner feedback — GeckoView runtime/profile behavior after release | Closed; historical owner feedback thread |
+| [#22](#issue-22) | Superseded | Home screen and Play/Settings navigation | Closed; replaced by direct-launch/overlay scope #56 |
 | [#23](#issue-23) | Owner decision | Addon Manager Phase A / Phase B | Phase A integrated by PR #152 at `103bb979`; local metadata only; Phase B not implemented and awaits owner decision |
 | [#28](https://github.com/iNeonyne/LastHavenPlus/issues/28) | P2 | Storage usage accuracy and iterative directory sizing | Open; queued after #10 |
-| [#42](https://github.com/iNeonyne/LastHavenPlus/issues/42) | Superseded | v2.1.0 Home-screen UI verification | Superseded by direct-launch redesign #56; new UX verification belongs to #5/#56 |
+| [#42](https://github.com/iNeonyne/LastHavenPlus/issues/42) | Superseded | v2.1.0 Home-screen UI verification | Closed as superseded by direct-launch redesign #56 |
 | [#29](https://github.com/iNeonyne/LastHavenPlus/issues/29) | Done | Reconcile beta documentation and CI evidence | Closed as completed after PR #46 merged to beta |
 | [#31](https://github.com/iNeonyne/LastHavenPlus/issues/31) | Deferred | Draft release asset verification and differential fallback | `agent:blocked`; release-tag packaging/runtime verification requires explicit owner authorization |
 | [#56](https://github.com/iNeonyne/LastHavenPlus/issues/56) | Done | Direct launch and responsive in-game overlay | PR #83 merged to beta; PR #87 selectively promoted implementation to main; exact beta validation and signed CI passed |
@@ -59,13 +59,13 @@
 | [#84](https://github.com/iNeonyne/LastHavenPlus/issues/84) | Done | Approved recreated LastHavens-inspired launcher icon | PR #85 merged to beta; PR #87 promoted icon to main; beta CI passed |
 | [#86](https://github.com/iNeonyne/LastHavenPlus/issues/86) | Deferred | Supporting settings, diagnostics and feature backlog | Deferred coordination index; detailed work is sequenced in #18 and remains dependency-gated |
 | [#106](https://github.com/iNeonyne/LastHavenPlus/issues/106) | Done | Gameplay loading, reconnect and load-failure UX | Closed after implementation integration; no open task remains under this issue |
-| [#107](https://github.com/iNeonyne/LastHavenPlus/issues/107) | P1 | Consistent visual design and interaction polish | Open; assigned to Vibe (agent:vibe); fresh branch required; PR #113 remains traceability-only |
-| [#62](https://github.com/iNeonyne/LastHavenPlus/issues/62) | Deferred | Branch lifecycle audit | Owner-deferred; PR #123 remains draft/open; do not resume |
+| [#107](https://github.com/iNeonyne/LastHavenPlus/issues/107) | Done | Consistent visual design and interaction polish | Closed after PR #136 integration |
+| [#62](https://github.com/iNeonyne/LastHavenPlus/issues/62) | Done | Branch lifecycle audit | Closed after PR #123 merged; no branch deletion performed |
 | [#66](https://github.com/iNeonyne/LastHavenPlus/issues/66) | Engineering | Independent unsigned APK reproducibility | Completed; PR #119 merged to beta at `97570ea` |
 | [#70](https://github.com/iNeonyne/LastHavenPlus/issues/70) | Done | Contributor/security guidance and Markdown validation | Closed after docs PR #158 and Markdown quality integration |
 | [#81](https://github.com/iNeonyne/LastHavenPlus/issues/81) | Dependencies | Compatible AndroidX and compression library refresh | Five approved pins integrated by PR #104; Chaty queued to finish evidence/docs reconciliation only |
 | [#111](https://github.com/iNeonyne/LastHavenPlus/issues/111) | Deferred | Updater download progress and retry feedback | `agent:blocked`; v2.5.0 integration hold requires v2.4.0 release and explicit owner authorization |
-| [#133](https://github.com/iNeonyne/LastHavenPlus/issues/133) | Owner review | v2.4.0 adaptive launcher icon refresh | PR #135 merged; exact-head and signed ARM64 CI passed; owner visual/mask verification pending |
+| [#133](https://github.com/iNeonyne/LastHavenPlus/issues/133) | Done | v2.4.0 adaptive launcher icon refresh | Closed after PR #135 integration; CI does not constitute physical-device appearance testing |
 | [#128](https://github.com/iNeonyne/LastHavenPlus/issues/128) | Housekeeping | Post-v2.3.0 repository housekeeping | Chaty active on fresh beta-based docs branch; exact-head Markdown/link validation pending |
 | [#129](https://github.com/iNeonyne/LastHavenPlus/issues/129) | Done | Consolidate beta CI quality checks | Closed; PR #132 merged and exact-merge CI passed |
 
