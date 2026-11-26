@@ -13,21 +13,21 @@ object AddonDependencyAnalyzer {
   fun analyze(addons: List<AddonLibraryItem>): AddonDependencyReport {
     val byName = addons.associateBy { it.folder.lowercase(Locale.ROOT) }
     val enabledNames = addons.filter { it.enabled }.map { it.folder.lowercase(Locale.ROOT) }.toSet()
-    val missing =
-      addons.associate { addon ->
-        addon.folder to
-          addon.dependencies.filter { dependency ->
-            dependency.lowercase(Locale.ROOT) !in enabledNames
-          }
-      }
+    val missing = addons.associate { addon ->
+      addon.folder to
+        addon.dependencies.filter { dependency ->
+          dependency.lowercase(Locale.ROOT) !in enabledNames
+        }
+    }
 
-    val graph =
-      addons.associate { addon ->
-        addon.folder.lowercase(Locale.ROOT) to
-          addon.dependencies.mapNotNull { dependency ->
+    val graph = addons.associate { addon ->
+      addon.folder.lowercase(Locale.ROOT) to
+        addon.dependencies
+          .mapNotNull { dependency ->
             dependency.lowercase(Locale.ROOT).takeIf(byName::containsKey)
-          }.distinct()
-      }
+          }
+          .distinct()
+    }
     val visited = mutableSetOf<String>()
     val finishOrder = mutableListOf<String>()
 
