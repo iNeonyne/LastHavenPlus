@@ -11,7 +11,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
@@ -56,7 +58,10 @@ fun GameMenuScreen(
       shadowElevation = 16.dp,
     ) {
       Column(
-        modifier = Modifier.fillMaxWidth().padding(horizontal = 22.dp, vertical = 20.dp),
+        modifier =
+          Modifier.fillMaxWidth()
+            .verticalScroll(rememberScrollState())
+            .padding(horizontal = 22.dp, vertical = 20.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
       ) {
