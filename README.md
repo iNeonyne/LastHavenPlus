@@ -62,7 +62,7 @@ A signed release build requires the established project keystore and credentials
 
 ## License and third-party notices
 
-Original LastHavenPlus project code and documentation are licensed under the Apache License, Version 2.0. See [LICENSE](LICENSE). Third-party components retain their own terms; see [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) and the in-app Licenses & third-party notices viewer. The project license does not relicense the LastHaven game, GeckoView, Android libraries, or other third-party components and assets. LastHavenPlus hosts the existing game and does not modify its client.
+Original LastHavenPlus code and documentation are **All Rights Reserved** and are provided in this public repository for the copyright holder's personal use. No general license to copy, modify, publish, distribute, or otherwise reuse original project material is granted. See [LICENSE](LICENSE). Third-party components retain their own licenses and terms; see [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) and the in-app Licenses & third-party notices viewer. This rights notice does not override third-party licenses or the terms governing the hosted LastHaven game. LastHavenPlus hosts the existing game and does not modify its client.
 
 ## Project workflow and records
 
