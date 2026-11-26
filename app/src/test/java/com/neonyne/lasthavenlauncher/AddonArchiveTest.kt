@@ -100,6 +100,55 @@ class AddonArchiveTest {
   }
 
   @Test
+  fun rejectsDocumentSizeMismatch() {
+    val archive = zipOf("Sample/Sample.toc" to "## Interface: 30300\\n")
+    val extraction = temporaryFolder.newFolder("size-mismatch")
+
+    assertThrows(IllegalArgumentException::class.java) {
+      AddonArchive.importZip(
+        ByteArrayInputStream(archive),
+        archive.size.toLong() - 1,
+        extraction,
+      )
+    }
+    assertTrue(!extraction.exists())
+  }
+
+  @Test
+  fun rejectsCrcMismatchFromCentralDirectory() {
+    val archive = zipOf("Sample/Sample.toc" to "## Interface: 30300\\n")
+    val corrupted = archive.copyOf()
+    val signature = byteArrayOf(0x50, 0x4b, 0x01, 0x02)
+    val centralDirectory = corrupted.indices.first { index ->
+      index + signature.size <= corrupted.size &&
+        signature.indices.all { offset -> corrupted[index + offset] == signature[offset] }
+    }
+    corrupted[centralDirectory + 16] = (corrupted[centralDirectory + 16].toInt() xor 1).toByte()
+
+    assertThrows(IllegalArgumentException::class.java) {
+      AddonArchive.importZip(
+        ByteArrayInputStream(corrupted),
+        corrupted.size.toLong(),
+        temporaryFolder.newFolder("crc-mismatch"),
+      )
+    }
+  }
+
+  @Test
+  fun rejectsTruncatedZipCentralDirectory() {
+    val archive = zipOf("Sample/Sample.toc" to "## Interface: 30300\\n")
+    val truncated = archive.copyOf(archive.size - 8)
+
+    assertThrows(Exception::class.java) {
+      AddonArchive.importZip(
+        ByteArrayInputStream(truncated),
+        truncated.size.toLong(),
+        temporaryFolder.newFolder("truncated"),
+      )
+    }
+  }
+
+  @Test
   fun rejectsArchiveAboveCompressedSizeLimitBeforeReading() {
     val input =
       object : ByteArrayInputStream(byteArrayOf()) {
