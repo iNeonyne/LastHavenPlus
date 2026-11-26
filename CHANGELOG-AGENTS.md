@@ -860,3 +860,12 @@ Entry format:
 - Reconciled active records after PR #119 merged: issue #66 is complete; issue #11 is awaiting Chaty's review of PR #154; issue #23 is owner-authorized for native Phase A under Chaty/PR #152.
 - Clarified that the former #23 hold and XPI 0.11.0 checklist are historical/superseded by the owner-approved ZIP 0.5.1 Phase A scope. Phase B/runtime injection remains unauthorized.
 - Updated beta baseline to `97570eaaca86c9e27d92d04f90da9d930f6bdb33`; PR #152 docs reconciliation is at `cc15080282b24df986dee2a10788e34e1cbbe511` and needs fresh exact-head CI.
+
+## 2026-11-26 — updater reliability audit and PR queue review (#4 / #15)
+
+- Reconfirmed the owner's top priority: updater reliability and differential APK updates. Reopened #15 and assigned it to Chaty as coordinated work with #4; no parallel updater owner.
+- Inspected current beta updater, BSDIFF40 parser, network/download/manifest/version policies, full-APK fallback, release-payload generation script and PR validation workflow.
+- Found that a failure while opening the second or third BSDIFF compressed section could leave earlier section streams unclosed. Added structured section resource scopes and malformed compressed-section regression tests on chaty/updater-patch-stream-cleanup-4.
+- Commits: dd33fc1af4e33b4c1d4fd89c5b37e64159115714 (source), 0e6896afc6f6f17d7e038b612b01875e0ebbbc2f (tests). Exact-head CI has not run; no pass is claimed.
+- Reviewed open PR queue: #154 scope is nine effective files and awaits branch refresh/CI; #143 has a time-window sampling correction requested and remains integration-held; #122/#113 remain owner-paused; #144 remains blocked on third-party notice and distribution evidence.
+- No release, tag, main promotion, publication, signing/toolchain/ABI/app-ID change or physical-device test occurred.
