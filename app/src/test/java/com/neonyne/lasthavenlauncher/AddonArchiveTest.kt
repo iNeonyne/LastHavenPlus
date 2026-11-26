@@ -49,7 +49,12 @@ class AddonArchiveTest {
         "Scripts/init.lua" to "print('flat')",
       )
 
-    val imported = AddonArchive.importZip(ByteArrayInputStream(archive), archive.size.toLong(), temporaryFolder.newFolder())
+    val imported =
+      AddonArchive.importZip(
+        ByteArrayInputStream(archive),
+        archive.size.toLong(),
+        temporaryFolder.newFolder(),
+      )
 
     assertEquals("Flat", imported.single().folder)
     assertTrue(imported.single().files.containsKey("Scripts/init.lua"))
@@ -59,7 +64,12 @@ class AddonArchiveTest {
   fun reportsUnsupportedInterfaceAsWarning() {
     val archive = zipOf("Old/Old.toc" to "## Interface: 30400\n")
 
-    val imported = AddonArchive.importZip(ByteArrayInputStream(archive), archive.size.toLong(), temporaryFolder.newFolder())
+    val imported =
+      AddonArchive.importZip(
+        ByteArrayInputStream(archive),
+        archive.size.toLong(),
+        temporaryFolder.newFolder(),
+      )
 
     assertEquals(1, imported.single().warnings.size)
   }
@@ -81,7 +91,11 @@ class AddonArchiveTest {
   fun rejectsReservedAndInvalidAddonFolderNames() {
     val archive = zipOf("Blizzard_Test/Blizzard_Test.toc" to "## Title: Blizzard\n")
     assertThrows(IllegalArgumentException::class.java) {
-      AddonArchive.importZip(ByteArrayInputStream(archive), archive.size.toLong(), temporaryFolder.newFolder())
+      AddonArchive.importZip(
+        ByteArrayInputStream(archive),
+        archive.size.toLong(),
+        temporaryFolder.newFolder(),
+      )
     }
   }
 
