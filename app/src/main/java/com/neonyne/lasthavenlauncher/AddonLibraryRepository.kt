@@ -46,6 +46,7 @@ class AddonLibraryRepository(
   private companion object {
     const val MIN_FREE_SPACE_RESERVE_BYTES = 1024L * 1024L
   }
+
   private val indexFile = File(root, "library.properties")
 
   fun readLibrary(): AddonLibrarySnapshot {
