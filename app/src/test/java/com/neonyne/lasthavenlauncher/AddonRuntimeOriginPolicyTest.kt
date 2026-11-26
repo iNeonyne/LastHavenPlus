@@ -21,25 +21,24 @@ class AddonRuntimeOriginPolicyTest {
   @Test
   fun rejectsOtherHostsSchemesPortsAndRoutes() {
     listOf(
-      "http://lasthavens.com/play",
-      "https://www.lasthavens.com/play",
-      "https://lasthavens.com.evil.example/play",
-      "https://user@lasthavens.com/play",
-      "https://lasthavens.com:444/play",
-      "https://lasthavens.com/",
-      "https://lasthavens.com/player",
-      "https://lasthavens.com/play/extra",
-      "https://lasthavens.com/%70lay",
-      "https://lasthavens.com/%2fplay",
-      "not a url",
-      "",
-    ).forEach { assertFalse("Must reject $it", AddonRuntimeOriginPolicy.allows(it)) }
+        "http://lasthavens.com/play",
+        "https://www.lasthavens.com/play",
+        "https://lasthavens.com.evil.example/play",
+        "https://user@lasthavens.com/play",
+        "https://lasthavens.com:444/play",
+        "https://lasthavens.com/",
+        "https://lasthavens.com/player",
+        "https://lasthavens.com/play/extra",
+        "https://lasthavens.com/%70lay",
+        "https://lasthavens.com/%2fplay",
+        "not a url",
+        "",
+      )
+      .forEach { assertFalse("Must reject $it", AddonRuntimeOriginPolicy.allows(it)) }
   }
 
   @Test
   fun rejectsOversizedUrlInput() {
-    assertFalse(
-      AddonRuntimeOriginPolicy.allows("https://lasthavens.com/play?" + "x".repeat(4096)),
-    )
+    assertFalse(AddonRuntimeOriginPolicy.allows("https://lasthavens.com/play?" + "x".repeat(4096)))
   }
 }
