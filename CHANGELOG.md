@@ -2,26 +2,6 @@
 
 ## v2.4.0 — 2026-11-26
 
-### Launcher UI, identity and accessibility
-- Replace the launcher artwork with an icy-blue pixel-art castle adaptive icon, retaining standard and round launcher resources.
-- Apply a shared dark-frost visual system with icy-blue accents, consistent typography, shapes, spacing and improved touch targets across launcher-owned screens.
-- Add pane/heading semantics and Compose input-focus entry for the gameplay overlay; respect Android's reduced-motion setting for overlay transitions.
-- Keep the direct-to-game startup flow and existing GeckoSession navigation behavior. The game/client is unchanged.
-
-### Native Addon Manager — Phase A
-- Add bounded, user-initiated local ZIP import/export and app-private addon library storage.
-- Parse TOC metadata and required/optional dependencies; detect dependency cycles.
-- Use staged, transactional library updates with rollback and replay-safe crash recovery.
-- Include the supplied manager's MIT license notice in the app and documentation.
-- **Limit:** enablement is library metadata only. Addons are not activated in the game; GeckoView runtime injection, XHR/Worker interception, game-resource masking and Lua initialization are not included. Phase B requires a separate owner decision.
-
-### Update behavior and compatibility
-- Release metadata checks, downloads and installation are user-initiated; startup does not contact the release API. Android's package installer retains final installation confirmation.
-- Preserve Android 10/API 29+, ARM64-only packaging (`arm64-v8a`), GeckoView 160, application ID `com.neonyne.lasthavenlauncher` and the established release signing identity.
-- No physical ARM64 device testing was performed for this release. CI does not establish gameplay, TalkBack, adaptive-icon or document-picker behavior on hardware.
-
-## v2.4.0 — 2026-11-26
-
 ### New features
 - Add the first phase of the native Addon Manager: user-initiated ZIP import/export, private local library storage, addon details, TOC metadata and required/optional dependency inspection.
 - Improve game-menu accessibility with pane and heading semantics, a Compose keyboard/controller focus entry point, and reduced-motion-aware transitions.
