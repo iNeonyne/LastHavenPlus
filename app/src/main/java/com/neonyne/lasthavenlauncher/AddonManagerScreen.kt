@@ -129,7 +129,6 @@ fun AddonManagerScreen(
         items(snapshot.addons, key = { it.folder }) { addon ->
           AddonCard(
             addon = addon,
-            library = snapshot,
             dependencyReport = dependencyReport,
             busy = busy,
             onToggle = { enabled -> onToggle(addon.folder, enabled) },
@@ -151,7 +150,6 @@ fun AddonManagerScreen(
 @Composable
 private fun AddonCard(
   addon: AddonLibraryItem,
-  library: AddonLibrarySnapshot,
   dependencyReport: AddonDependencyReport,
   busy: Boolean,
   onToggle: (Boolean) -> Unit,
