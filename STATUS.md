@@ -218,3 +218,13 @@ No code, CI, release, signing, dependency, ABI or device behavior changed in thi
 - **Manifest:** declares `INTERNET` and `REQUEST_INSTALL_PACKAGES` only. No camera, microphone, geolocation or notification permission is declared. Package-install permission supports the explicit Android installer flow.
 - **Limitations:** this is a source audit, not physical-device verification of permission prompts or game features. No manifest, delegate, GeckoView setting or runtime behavior was changed.
 - **Validation:** exact-head Markdown quality workflow passed on initial PR head `e2ce22c44508a87f53fc4a57a03f82e0597550bc` (run #45889911748); Android/device tests are not applicable to documentation-only changes.
+
+
+## 2026-11-26 — Updater BSDIFF resource cleanup (#4)
+
+- **Scope:** close any BSDIFF40 control/diff/extra decompression sections already opened when a later section fails to open/validate; close in reverse order and keep cleanup best-effort so close failures do not mask the primary reconstruction error.
+- **Regression coverage:** malformed diff and extra compressed sections must be rejected and stale/partial output removed.
+- **Branch:** `chaty/updater-patch-stream-cleanup-4-beta`, based on current beta `7451b940dc0adfa1ea14234fe6d489bba688b12c`.
+- **Current head after source/test commits:** `35f1b69448ab4e91a5acaff9950ff492c5fcf811` (test commit; source commit `a5e680e0a9fe628b41cde130f5ffa699a9dfe784`).
+- **Verification:** exact-head Android, Markdown and independent reproducibility checks pending. Prior PR #157 reproducibility failure was an external plugin-resolution error (`org.jetbrains.kotlin.plugin.compose:2.4.21` not resolved) in one clean build; its other clean build succeeded. This is not counted as a test pass.
+- **Remaining #4 work:** broader updater adversarial test matrix, real signed ARM64 APK-pair reconstruction/byte-equality/signature verification, benchmark and current-beta signed packaging evidence. No physical-device update test is claimed.
