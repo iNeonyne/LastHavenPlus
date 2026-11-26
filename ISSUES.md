@@ -57,10 +57,10 @@
 
 | [#62](https://github.com/iNeonyne/LastHavenPlus/issues/62) | Deferred | Branch lifecycle audit | Owner-deferred; PR #123 remains draft/open; do not resume |
 | [#66](https://github.com/iNeonyne/LastHavenPlus/issues/66) | Engineering | Independent unsigned APK reproducibility | PR #119 open; prior byte-identical result exists; branch refresh and exact-head reruns required |
-| [#70](https://github.com/iNeonyne/LastHavenPlus/issues/70) | Docs | Contributor/security guidance and Markdown validation | Markdownlint integrated; final reconciliation is in PR #133 |
+| [#70](https://github.com/iNeonyne/LastHavenPlus/issues/70) | Docs | Contributor/security guidance and Markdown validation | Markdownlint integrated; final reconciliation is in this housekeeping PR |
 | [#81](https://github.com/iNeonyne/LastHavenPlus/issues/81) | Dependencies | Compatible AndroidX and compression library refresh | Chaty-owned; only the five approved library versions are in scope |
 | [#111](https://github.com/iNeonyne/LastHavenPlus/issues/111) | Deferred | Updater download progress and retry feedback | Blocked/deferred; do not start alongside #4 |
-| [#128](https://github.com/iNeonyne/LastHavenPlus/issues/128) | Housekeeping | Post-v2.3.0 repository housekeeping | Chaty-owned; current docs reconciliation in PR #133 |
+| [#128](https://github.com/iNeonyne/LastHavenPlus/issues/128) | Housekeeping | Post-v2.3.0 repository housekeeping | Chaty-owned; current docs reconciliation in this housekeeping PR |
 | [#129](https://github.com/iNeonyne/LastHavenPlus/issues/129) | Done | Consolidate beta CI quality checks | Closed; PR #132 merged and exact-merge CI passed |
 ---
 
