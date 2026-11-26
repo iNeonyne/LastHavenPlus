@@ -1,6 +1,6 @@
 # Agent work assignments — LastHavenPlus
 
-**Current beta baseline:** `1279f214b3fdd3ba420e090a6a90914a8a3399e7` (observed 2026-11-26).  
+**Current beta baseline:** `7451b940dc0adfa1ea14234fe6d489bba688b12c` (observed 2026-11-26).  
 **Stable baseline:** main / v2.3.0 tag ebc5b424e83ae66c2b0accc2bec6f050b8dc0d88.
 
 ## Roles and integration
@@ -143,3 +143,13 @@ Updater review findings were added to existing #15 and #4, not split into parall
 - **Source evidence:** AndroidManifest.xml declares INTERNET and REQUEST_INSTALL_PACKAGES. MainActivity grants persistent storage and audible/inaudible autoplay only to `lasthavens.com` and subdomains; all other content permissions/origins are denied; Android and media permission requests are rejected.
 - **Non-goals:** no manifest, GeckoView, delegate, permission, app or game behavior changes; no physical-device claim.
 - **Validation:** Markdown run #45889911748 passed on head `e2ce22c44508a87f53fc4a57a03f82e0597550bc`; internal links/anchors checked across 15 Markdown files with zero missing targets. **Next:** final review and merge.
+
+
+## Active Chaty updater task — #4 / #15
+
+- **Owner:** Chaty (`agent:chaty`); no parallel updater implementation.
+- **PR preparation branch:** `chaty/updater-patch-stream-cleanup-4-beta`, based on beta `7451b940dc0adfa1ea14234fe6d489bba688b12c`.
+- **Current head:** `35f1b69448ab4e91a5acaff9950ff492c5fcf811` (source `a5e680e0a9fe628b41cde130f5ffa699a9dfe784`; tests `35f1b69448ab4e91a5acaff9950ff492c5fcf811`).
+- **Scope:** ensure already-open BSDIFF compressed sections are closed if subsequent section opening/validation fails; add malformed diff/extra section cleanup regression tests.
+- **Next:** exact-head Android, Markdown and reproducibility runs; review test behavior; only then open/review/merge PR. Full #4 acceptance remains outstanding.
+- **Non-goals:** no patch-engine switch, retry/network change, auto-download/install, release, tag, main promotion, signing or ABI changes.
