@@ -3,7 +3,7 @@
 LastHavenPlus is an Android launcher for the existing LastHaven Wrath of the Lich King browser game. It hosts the game; it does not recreate, modify or develop the game client.
 
 - **Game:** [lasthavens.com/play](https://lasthavens.com/play)
-- **Latest stable release:** [v2.1.0 on GitHub Releases](https://github.com/iNeonyne/LastHavenPlus/releases/tag/v2.1.0)
+- **Latest stable release:** [v2.3.0 on GitHub Releases](https://github.com/iNeonyne/LastHavenPlus/releases/tag/v2.3.0)
 - **Development:** `beta`; stable releases: `main`
 
 ## Compatibility and identity
@@ -19,10 +19,12 @@ LastHavenPlus is an Android launcher for the existing LastHaven Wrath of the Lic
 
 Preserve the application ID and established release signing identity to maintain update compatibility.
 
-## Current beta features
+## Features
 
-These are features integrated into beta and covered by the repository's automated build and test checks where applicable.
+The stable release includes the following verified launcher features:
 
+- **Gameplay recovery:** Honest initial loading, retryable page-load failure and renderer/process recovery states.
+- **Visual consistency:** Shared dark/gold design tokens, improved touch targets, restrained overlay transitions and haptics for explicit actions.
 - **Direct launch:** The app opens directly into the game. Android Back opens a responsive in-game menu with Reload, Settings and Return to game; Settings does not initialize a separate game session.
 - **Navigation:** Settings, diagnostics and update details are full-screen pages rather than stacked popup dialogs. The existing GeckoSession is retained when the game view is detached for launcher pages.
 - **Responsive layout:** The in-game menu adapts to available window space; settings pages cap content width on larger windows. The Activity is resizeable.
