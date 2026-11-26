@@ -1,3 +1,11 @@
+## 2026-11-26 — Owner-requested v2.4.0–v2.6.0 roadmap and UI/UX ownership
+
+- **Roadmap:** issue #18 now sequences v2.4.0 UI/UX, v2.5.0 updater experience and v2.6.0 settings/diagnostics. These are planning targets, not release authorization.
+- **UI ownership:** owner directed Chaty to take over UI/UX implementation. Issue #133 assigns Chaty the v2.4.0 adaptive launcher icon refresh; issue #107 is reopened under Chaty for the visual-system pass after the icon. Issue #9 remains unassigned until that pass is complete to avoid overlapping screen work.
+- **Draft handling:** PR #113 remains draft/open for traceability only. No further Vibe commits or merge are authorized on that old branch; Chaty will use a fresh branch based on current beta for approved UI work.
+- **Icon direction:** dark navy fantasy-frost crest, icy-blue crystalline portal/rune, restrained gold accents, strong small-size silhouette and adaptive-mask safe zone. No copied game logos, characters or wordmarks.
+- **Constraints:** preserve application ID, signing identity, GeckoView 160, ARM64-only packaging and manual updater behavior. No game/client changes, release/tag/promotion or device-compatibility claim.
+
 ## 2026-11-26 — Post-v2.3.0 housekeeping and CI consolidation
 
 - **Stable release:** v2.3.0 is published at tag/main commit ebc5b424e83ae66c2b0accc2bec6f050b8dc0d88. Canonical ARM64 APK, update manifest and v2.2.0-to-v2.3.0 differential asset are present.
