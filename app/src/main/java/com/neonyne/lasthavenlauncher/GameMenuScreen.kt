@@ -33,6 +33,12 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 
+/**
+ * In-game menu overlay. Establishes pane, heading and traversal-group semantics and requests
+ * Compose input focus for keyboard/D-pad entry. TalkBack accessibility focus is not moved
+ * programmatically from Compose; its landing point and the pane announcement must be verified
+ * manually on device.
+ */
 @Composable
 fun GameMenuScreen(
   onReload: () -> Unit,

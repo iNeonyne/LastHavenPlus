@@ -3,8 +3,11 @@ package com.neonyne.lasthavenlauncher
 import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.ActivityInfo
+import android.database.ContentObserver
 import android.net.Uri
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.provider.Settings
 import android.view.WindowManager
 import androidx.activity.ComponentActivity
@@ -22,6 +25,7 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -333,12 +337,25 @@ private fun LastHavenApp(
         )
 
       Screen.Game -> {
-        val animatorDurationScale = remember {
-          Settings.Global.getFloat(
-            context.contentResolver,
-            Settings.Global.ANIMATOR_DURATION_SCALE,
-            1f,
+        var animatorDurationScale by remember { mutableFloatStateOf(1f) }
+        DisposableEffect(context) {
+          val resolver = context.contentResolver
+          val readAnimatorScale =
+            Settings.Global.getFloat(resolver, Settings.Global.ANIMATOR_DURATION_SCALE, 1f)
+          val listener =
+            object : ContentObserver(Handler(Looper.getMainLooper())) {
+              override fun onChange(selfChange: Boolean) {
+                animatorDurationScale =
+                  Settings.Global.getFloat(resolver, Settings.Global.ANIMATOR_DURATION_SCALE, 1f)
+              }
+            }
+          animatorDurationScale = readAnimatorScale
+          resolver.registerContentObserver(
+            Settings.Global.getUriFor(Settings.Global.ANIMATOR_DURATION_SCALE),
+            false,
+            listener,
           )
+          onDispose { resolver.unregisterContentObserver(listener) }
         }
         val gamePresentation =
           GameLoadPolicy.resolve(
