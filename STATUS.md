@@ -1,7 +1,7 @@
 ## Community hygiene candidate — PR preparation (2026-11-26)
 
 - **Branch:** chaty/community-hygiene; latest candidate commit before documentation reconciliation: 70d3e865407674f83d288f2b92bf7d397bf22a1e.
-- **Owner decision:** GPL-3.0-or-later approved; see issue #67. The complete canonical license text is included without inventing a copyright-holder name or date.
+- **Owner decision:** Apache-2.0 approved; see issue #67. The complete canonical license text is included without inventing a copyright-holder name or date.
 - **Changes prepared:** add LICENSE and SECURITY.md; add weekly Gradle Dependabot updates alongside existing GitHub Actions updates; link licensing and third-party boundaries plus release history in README; document branch retention in AGENTS/CONTRIBUTING; reconcile v2.2.0/v2.3.0 release notes from their tagged changelog snapshots and add an Unreleased entry.
 - **Third-party boundary review:** direct dependencies in the version catalog include Mozilla GeckoView (separate Mozilla license), AndroidX/Compose (Apache-2.0 family), Commons Compress (Apache-2.0) and JUnit (EPL-1.0/GPL-2.0 with Classpath Exception). This is a preliminary direct-dependency review, not a complete transitive SBOM or packaged-artifact notice audit. No game client is included in the repository license.
 - **Verification:** pending PR Markdown lint and exact-head review. No Android source, Gradle version, SDK, GeckoView version, signing, ABI, release, tag or main changes. No branches deleted.
@@ -179,12 +179,19 @@ The repository owner will install releases and report what works and what does n
 - **Integration:** no PR opened or merge performed yet; beta and main remain unchanged. No release/tag/publication.
 
 
-## Issue #67 — GPL/community hygiene candidate (2026-11-26)
+## Issue #67 — Apache-2.0/community hygiene candidate (2026-11-26)
 
 - **PR:** #141, currently draft, targeting beta; branch chaty/community-hygiene; latest candidate head at this status update: 3f98b236830ba194a5e18648e3acc9f09d9073c3.
-- **Owner decision:** GPL-3.0-or-later selected. Canonical root LICENSE and packaged app resource app/src/main/res/raw/gpl_3_0.txt added; Settings now exposes an Open-source licenses dialog.
+- **Owner decision:** Apache-2.0 selected. Canonical root LICENSE and packaged app resource app/src/main/res/raw/gpl_3_0.txt added; Settings now exposes an Open-source licenses dialog.
 - **Other changes:** SECURITY.md, weekly Gradle Dependabot, README license boundary and changelog link, reconciled v2.2.0/v2.3.0 release notes, contributor branch-retention policy, and PR CI runtime dependency report artifact.
 - **CI:** Markdown run #45837172690 passed. Android run #45837172797 was still running at the time of this update; do not claim exact-head Android success until it completes.
-- **License blocker:** runtime dependency report from run #45836638591 identifies Google Play Services FIDO 21.3.1, Base 18.7.2, Basement 18.9.0 and Tasks 18.3.2 in releaseRuntimeClasspath. Their published metadata declares the Android Software Development Kit License. GPLv3 compatibility for distribution of the combined APK is unresolved; issue #67 is now agent:owner and PR #141 has been returned to draft. No merge or publication until owner resolves the blocker and a complete artifact/notice audit is done.
+- **License blocker:** runtime dependency report from run #45836638591 identifies Google Play Services FIDO 21.3.1, Base 18.7.2, Basement 18.9.0 and Tasks 18.3.2 in releaseRuntimeClasspath. Their published metadata declares the Android Software Development Kit License. GPLv3 (superseded by the owner's later Apache-2.0 selection) compatibility for distribution of the combined APK is unresolved; issue #67 is now agent:owner and PR #141 has been returned to draft. No merge or publication until owner resolves the blocker and a complete artifact/notice audit is done.
 - **Attribution:** no copyright-holder identity/year has been invented; owner confirmation remains outstanding.
 - **Scope safety:** no game/client, app ID, signing, ABI, toolchain, GeckoView version, release/tag/main changes. No branch deletions. Physical-device testing is not applicable to these repository changes.
+
+
+## Licensing decision update — 2026-11-26
+
+- The owner superseded the earlier GPL-3.0-or-later choice and selected Apache License, Version 2.0 for original LastHavenPlus project code and documentation.
+- PR #141 now carries the Apache-2.0 license text and Settings viewer. Third-party dependency notices and copyright attribution remain incomplete; do not merge until audited and verified.
+- F-Droid readiness is explicitly out of scope. Reproducible-build investigation remains independently tracked.
