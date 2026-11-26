@@ -3,8 +3,11 @@ package com.neonyne.lasthavenlauncher
 import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.ActivityInfo
+import android.database.ContentObserver
 import android.net.Uri
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.provider.Settings
 import android.view.WindowManager
 import androidx.activity.ComponentActivity
@@ -22,6 +25,7 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -46,6 +50,7 @@ enum class Screen {
   Settings,
   Diagnostics,
   Update,
+  AddonManager,
 }
 
 class MainActivity : ComponentActivity() {
@@ -299,9 +304,8 @@ private fun LastHavenApp(
   }
 
   LaunchedEffect(Unit) {
-    // Start/resume the game immediately; the metadata check never downloads or installs.
+    // Start/resume the game immediately. Update checks are explicit from the Update screen.
     startGame()
-    checkForUpdates(false)
   }
 
   BackHandler(enabled = currentScreen != Screen.Home || menuVisible) {
@@ -317,7 +321,11 @@ private fun LastHavenApp(
     menuVisible = target.menuVisible
   }
 
-  MaterialTheme(colorScheme = DesignTokens.colorScheme(), shapes = DesignTokens.shapes) {
+  MaterialTheme(
+    colorScheme = DesignTokens.colorScheme(),
+    shapes = DesignTokens.shapes,
+    typography = DesignTokens.typography(),
+  ) {
     when (currentScreen) {
       Screen.Home ->
         HomeScreen(
@@ -329,6 +337,26 @@ private fun LastHavenApp(
         )
 
       Screen.Game -> {
+        var animatorDurationScale by remember { mutableFloatStateOf(1f) }
+        DisposableEffect(context) {
+          val resolver = context.contentResolver
+          val readAnimatorScale =
+            Settings.Global.getFloat(resolver, Settings.Global.ANIMATOR_DURATION_SCALE, 1f)
+          val listener =
+            object : ContentObserver(Handler(Looper.getMainLooper())) {
+              override fun onChange(selfChange: Boolean) {
+                animatorDurationScale =
+                  Settings.Global.getFloat(resolver, Settings.Global.ANIMATOR_DURATION_SCALE, 1f)
+              }
+            }
+          animatorDurationScale = readAnimatorScale
+          resolver.registerContentObserver(
+            Settings.Global.getUriFor(Settings.Global.ANIMATOR_DURATION_SCALE),
+            false,
+            listener,
+          )
+          onDispose { resolver.unregisterContentObserver(listener) }
+        }
         val gamePresentation =
           GameLoadPolicy.resolve(
             hasSession = session != null,
@@ -345,8 +373,16 @@ private fun LastHavenApp(
           )
           AnimatedVisibility(
             visible = menuVisible,
-            enter = fadeIn(animationSpec = tween(durationMillis = 160)),
-            exit = fadeOut(animationSpec = tween(durationMillis = 120)),
+            enter =
+              fadeIn(
+                animationSpec =
+                  tween(durationMillis = OverlayMotionPolicy.fadeInMillis(animatorDurationScale))
+              ),
+            exit =
+              fadeOut(
+                animationSpec =
+                  tween(durationMillis = OverlayMotionPolicy.fadeOutMillis(animatorDurationScale))
+              ),
           ) {
             GameMenuScreen(
               onReload = {
@@ -356,6 +392,11 @@ private fun LastHavenApp(
                 menuVisible = target.menuVisible
               },
               onSettings = { openSettings(Screen.Game) },
+              onAddonManager = {
+                val target = LauncherNavigationPolicy.openAddonManager()
+                currentScreen = target.screen
+                menuVisible = target.menuVisible
+              },
               onReturnToGame = {
                 val target = LauncherNavigationPolicy.returnToGame()
                 currentScreen = target.screen
@@ -382,6 +423,13 @@ private fun LastHavenApp(
             currentScreen = Screen.Update
             checkForUpdates(true)
           },
+        )
+
+      Screen.AddonManager ->
+        AddonManagerHost(
+          onBack = {
+            currentScreen = LauncherNavigationPolicy.returnToGame().screen
+          }
         )
 
       Screen.Diagnostics ->

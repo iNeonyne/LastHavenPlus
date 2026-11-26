@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="256dp"
+    android:height="256dp"
+    android:viewportWidth="256"
+    android:viewportHeight="256">
+    <!-- Pixel-art moon and sparse frost stars. -->
+    <path android:fillColor="#B9E8FF" android:pathData="M177,39 A31,31 0,1 1,177,101 A31,31 0,1 1,177,39" />
+    <path android:fillColor="#0B172A" android:pathData="M162,38 A30,30 0,0 1,192,91 A31,31 0,0 0,162,38" />
+    <path android:fillColor="#DDF6FF" android:pathData="M75,48h5v5h-5z M112,38h4v4h-4z M218,94h5v5h-5z M36,113h4v4h-4z" />
+    <path android:fillColor="#70CFFF" android:pathData="M92,69h7v3h-2v5h-3v-5h-2z M209,54h3v8h-3z M48,82h8v3h-8z M130,43h4v4h-4z M226,127h4v4h-4z" />
+    <!-- Distant ridge and castle shadow. -->
+    <path android:fillColor="#173652" android:pathData="M27,194l18,-15 10,7 17,-24 15,15 15,-11 19,19 15,-14 15,12 17,-23 16,18 13,-8 18,18v22H27z" />
+    <path android:fillColor="#3979A5" android:pathData="M45,186h10l17,-24 15,15 8,-5 -15,22H45z M158,187l17,-23 16,18 13,-8 18,18h-47z" />
+    <path android:fillColor="#102A43" android:pathData="M42,202h172v13H42z M55,127h146v76H55z" />
+    <!-- Side towers and main keep. -->
+    <path android:fillColor="#245477" android:pathData="M86,106h84v101H86z M49,124h43v83H49z M164,124h43v83h-43z" />
+    <path android:fillColor="#3C83AE" android:pathData="M45,111h11v13H45z M61,103h11v21H61z M77,111h11v13H77z M168,111h11v13h-11z M184,103h11v21h-11z M200,111h11v13h-11z" />
+    <path android:fillColor="#8AD8F7" android:pathData="M48,116h5v5h-5z M64,108h5v5h-5z M80,116h5v5h-5z M171,116h5v5h-5z M187,108h5v5h-5z M203,116h5v5h-5z" />
+    <!-- Stepped central roof. -->
+    <path android:fillColor="#5BA9D2" android:pathData="M90,103h76v12H90z M99,91h58v12H99z M108,79h40v12h-40z M117,67h22v12h-22z M124,54h8v13h-8z" />
+    <path android:fillColor="#B9EDFF" android:pathData="M124,54h8v5h-8z M117,67h22v4h-22z M108,79h40v4h-40z M99,91h58v4H99z M90,103h76v4H90z" />
+    <!-- Icy masonry and glowing windows. -->
+    <path android:fillColor="#347BA7" android:pathData="M94,116h68v91H94z M56,128h30v79H56z M170,128h30v79h-30z" />
+    <path android:fillColor="#77C9EC" android:pathData="M94,116h6v91h-6z M56,128h5v79h-5z M170,128h5v79h-5z M156,116h6v91h-6z" />
+    <path android:fillColor="#C8F4FF" android:pathData="M68,145h8v15h-8z M180,145h8v15h-8z M119,112h18v22h-18z" />
+    <path android:fillColor="#54CFFF" android:pathData="M70,148h4v9h-4z M182,148h4v9h-4z M122,116h12v14h-12z" />
+    <path android:fillColor="#0B1B30" android:pathData="M115,174h26v33h-26z" />
+    <path android:fillColor="#73D9FF" android:pathData="M121,180h14v27h-14z M126,184h4v19h-4z" />
+    <!-- Snow caps and pixel clouds. -->
+    <path android:fillColor="#D5F5FF" android:pathData="M43,203h24v-5h10v5h20v7H43z M159,203h17v-5h10v5h26v7h-53z M91,207h74v6H91z" />
+    <path android:fillColor="#8CDCF7" android:pathData="M33,211h29v-5h12v5h16v7H33z M166,211h17v-5h12v5h28v7h-57z M78,215h100v5H78z" />
+    <path android:fillColor="#E2FAFF" android:pathData="M54,133h4v4h-4z M194,133h4v4h-4z M105,100h4v4h-4z M147,100h4v4h-4z M126,145h4v4h-4z M39,189h4v4h-4z M216,181h4v4h-4z" />
+</vector>

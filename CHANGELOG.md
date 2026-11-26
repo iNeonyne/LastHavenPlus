@@ -1,5 +1,28 @@
 # LastHavenPlus release changelog
 
+## v2.4.0 — 2026-11-26
+
+### New features
+- Add the first phase of the native Addon Manager: user-initiated ZIP import/export, private local library storage, addon details, TOC metadata and required/optional dependency inspection.
+- Improve game-menu accessibility with pane and heading semantics, a Compose keyboard/controller focus entry point, and reduced-motion-aware transitions.
+- Introduce a shared icy-blue visual theme across launcher-owned screens.
+
+### Bug fixes and reliability
+- Remove the silent update-metadata request from app startup; update checks remain user-initiated.
+- Protect addon-library changes with staging, transactional updates, rollback and replay-safe crash recovery.
+
+### Small changes
+- Replace the launcher artwork with an icy-blue pixel-art castle icon.
+- Make typography, buttons, cards, spacing and touch targets more consistent.
+- Add restrained menu transitions and haptic feedback for primary actions.
+
+### Compatibility and known limitations
+- Android 10/API 29+, ARM64-only (arm64-v8a) and Mozilla GeckoView 160.
+- Preserve application ID `com.neonyne.lasthavenlauncher` and the established release signing identity.
+- Addon Manager Phase A stores and manages addon files only; it does not activate addons in the game. Runtime injection, XHR/Worker interception, game-resource masking and Lua initialization are not included.
+- GeckoView uses a separate browser profile; a fresh game login may be required.
+- No physical ARM64 device testing was performed for this release. CI does not establish gameplay, TalkBack, adaptive-icon or document-picker behavior on hardware.
+
 ## v2.3.0 — 2026-11-26
 
 ### Launcher UI and gameplay recovery

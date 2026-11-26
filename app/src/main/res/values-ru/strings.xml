@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="addon_manager_title">МЕНЕДЖЕР АДДОНОВ</string>
+    <string name="addon_manager_local_addons">Локальные аддоны</string>
+    <string name="addon_manager_back">Назад</string>
+    <string name="addon_manager_import_description">Импорт ZIP-файлов локальных аддонов WoW 3.3.5a. Новые аддоны импортируются выключенными и остаются на этом устройстве.</string>
+    <string name="addon_manager_runtime_unavailable">Загрузка аддонов во время игры пока недоступна. Импортированные файлы хранятся только локально.</string>
+    <string name="addon_manager_import_zip">Импорт ZIP</string>
+    <string name="addon_manager_count">%1$d аддонов\n%2$s</string>
+    <string name="addon_manager_no_addons">Локальных аддонов пока нет. Импортируйте ZIP с папкой аддона и соответствующим файлом .toc.</string>
+    <string name="addon_manager_files_summary">%1$d файлов · %2$s</string>
+    <string name="addon_manager_missing_dependencies">Проверьте необходимые зависимости: %1$s</string>
+    <string name="addon_manager_optional_dependencies">Необязательные зависимости: %1$s</string>
+    <string name="addon_manager_no_version">Нет версии</string>
+    <string name="addon_manager_export_zip">Экспорт ZIP</string>
+    <string name="addon_manager_remove">Удалить</string>
+    <string name="addon_manager_import_success">ZIP аддона импортирован. Аддон остаётся выключенным.</string>
+    <string name="addon_manager_enabled">Аддон включён локально.</string>
+    <string name="addon_manager_disabled">Аддон выключен локально.</string>
+    <string name="addon_manager_export_success">ZIP аддона экспортирован.</string>
+    <string name="addon_manager_remove_success">Аддон удалён из локального хранилища.</string>
+    <string name="addon_manager_operation_failed">Не удалось выполнить операцию с аддоном.</string>
+    <string name="addon_manager_export_failed">Не удалось экспортировать аддон.</string>
+    <string name="addon_manager_read_failed">Не удалось прочитать библиотеку аддонов.</string>
+    <string name="addon_manager_dependency_cycle">Обнаружен цикл зависимостей между дополнениями.</string>
+    <string name="addon_manager_remove_confirm_title">Удалить дополнение?</string>
+    <string name="addon_manager_remove_confirm_message">Удалить %1$s с этого устройства? Это действие нельзя отменить.</string>
+    <string name="addon_manager_cancel">Отмена</string>
+</resources>

@@ -1,0 +1,21 @@
+{
+  "config": {
+    "default": true,
+    // Append-only historical logs retain spacing between dated entries.
+    "MD012": false,
+    "MD022": false,
+    "MD032": false,
+    // Repeated issue-template headings are intentionally reused in ISSUES.md.
+    "MD024": false,
+    // Existing long prose and embedded historical HTML/URLs are not mass-reflowed.
+    "MD013": false,
+    "MD033": false,
+    "MD034": false,
+    "MD036": false,
+    "MD041": false,
+    "MD060": false,
+    // One legacy code span in CHANGELOG-AGENTS.md is deferred to central docs reconciliation.
+    "MD038": false
+  },
+  "ignores": []
+}

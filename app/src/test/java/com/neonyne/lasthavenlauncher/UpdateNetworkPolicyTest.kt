@@ -2,6 +2,7 @@ package com.neonyne.lasthavenlauncher
 
 import java.io.ByteArrayInputStream
 import java.io.File
+import java.io.InputStream
 import java.nio.file.Files
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -177,6 +178,36 @@ class UpdateNetworkPolicyTest {
     listOf(200, 206, 400, 404, 500).forEach {
       assertFalse(UpdateNetworkPolicy.isRedirect(it))
     }
+  }
+
+  @Test
+  fun readLimitedTextHandlesZeroLengthReadsWithoutDroppingBytes() {
+    val payload = "zero-read-safe".toByteArray()
+    val input =
+      object : InputStream() {
+        private var returnZero = true
+        private var offset = 0
+
+        override fun read(): Int =
+          if (offset >= payload.size) -1 else payload[offset++].toInt() and 0xff
+
+        override fun read(buffer: ByteArray, start: Int, length: Int): Int {
+          if (returnZero) {
+            returnZero = false
+            return 0
+          }
+          if (offset >= payload.size) return -1
+          val count = minOf(length, payload.size - offset)
+          System.arraycopy(payload, offset, buffer, start, count)
+          offset += count
+          return count
+        }
+      }
+
+    assertEquals(
+      "zero-read-safe",
+      UpdateNetworkPolicy.readLimitedText(input, payload.size.toLong()),
+    )
   }
 
   @Test

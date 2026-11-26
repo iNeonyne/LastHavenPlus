@@ -21,23 +21,26 @@ Preserve the application ID and established release signing identity to maintain
 
 ## Features
 
-The stable release includes the following verified launcher features:
+The stable release includes the following launcher features; automated checks cover JVM behavior where applicable:
 
 - **Gameplay recovery:** Honest initial loading, retryable page-load failure and renderer/process recovery states.
-- **Visual consistency:** Shared dark/gold design tokens, improved touch targets, restrained overlay transitions and haptics for explicit actions.
+- **Visual consistency:** Shared dark-frost design tokens, icy-blue accents, improved typography and touch targets, restrained overlay transitions and haptics for explicit actions.
 - **Direct launch:** The app opens directly into the game. Android Back opens a responsive in-game menu with Reload, Settings and Return to game; Settings does not initialize a separate game session.
 - **Navigation:** Settings, diagnostics and update details are full-screen pages rather than stacked popup dialogs. The existing GeckoSession is retained when the game view is detached for launcher pages.
 - **Responsive layout:** The in-game menu adapts to available window space; settings pages cap content width on larger windows. The Activity is resizeable.
-- **Launcher icon:** Adaptive launcher icon resources are included.
+- **Launcher icon:** Adaptive icy-blue pixel-castle artwork with standard, round and mask-aware launcher resources.
+- **Accessibility:** The gameplay overlay exposes pane/heading semantics, a Compose input-focus entry point and reduced-motion-aware transitions.
 - **Settings and storage:** Installed APK size, persistent app-private data size and cache size are reported separately. App-private data includes GeckoView data and is not a profile-only measurement.
 - **Network usage:** Android per-UID counters report app traffic, including both game and updater traffic; they are not game-only totals.
 - **Diagnostics:** Bounded local diagnostic logs support viewing, clearing and explicit user-initiated sharing. Review logs before sharing.
 - **Updater:** Stable release checks and downloads remain user-initiated. Manifest, version, URL, payload and digest validation are applied; differential patch failures retain a verified full-APK fallback. Android's package installer controls installation.
-- **Addon manager:** On hold by the owner. Do not resume issue #23 or integrate the supplied XPI until the owner explicitly approves resuming it. The legacy ZIP package manager is not part of this app.
+- **Addon manager (Phase A):** Import/export local ZIPs, maintain an app-private library, inspect TOC/dependency metadata and recover interrupted library transactions. The enabled flag is local metadata only; addons are not loaded or activated in the game. GeckoView runtime injection (Phase B) is not included.
 
 ## GeckoView profile transition
 
 GeckoView uses its own browser profile. No supported, verified migration of Cefrium cookies or other browser data has been established. Do not copy or delete existing Cefrium profile data as part of this transition. A fresh game login may be required.
+
+No physical ARM64 device verification of v2.4.0 gameplay, TalkBack traversal, adaptive-icon rendering or Addon Manager document-picker/session behavior has been performed. CI success is not device testing.
 
 The repository owner evaluates releases on their own schedule and may report gameplay, profile, browser API, media and updater behavior. Feedback is recorded in GitHub Issues and used to prioritize follow-up fixes; pending feedback is not a publication prerequisite.
 
