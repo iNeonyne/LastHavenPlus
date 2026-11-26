@@ -430,7 +430,7 @@ private fun LastHavenApp(
         AddonManagerHost(
           onBack = {
             currentScreen = LauncherNavigationPolicy.returnToGame().screen
-          },
+          }
         )
 
       Screen.Diagnostics ->
