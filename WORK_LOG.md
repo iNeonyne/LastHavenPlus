@@ -481,3 +481,36 @@ Owner directed Chaty to take over #56 from Ploy. Updated issue ownership to Chat
 - **Open PR state:** #119 (issue #66) is behind beta and needs refresh/revalidation. #122/#123 remain owner-paused drafts under #20/#62; no further work authorized. #113 remains draft/open for traceability only after owner direction; #107 is closed. #23 remains on hold.
 - **No roadmap:** no v2.4.0 roadmap, release, tag, main promotion or branch deletion was created.
 - **Device status:** no physical ARM64 testing was performed; CI evidence is not device evidence.
+
+
+### Branch inventory snapshot — 2026-11-26
+
+GitHub returned 22 remote branches. Heads and current disposition at audit time:
+
+| Branch | Exact head | Disposition |
+|---|---|---|
+| agent/add-issue-agent-workflow | d45c3dac8b4d62a10fb5d04d79d7280500e11b57 | Preserve; no open PR in current inventory |
+| beta | 7cd898f4c1f9b7f70787a7000e1ed9343a83540d | Active integration branch |
+| beta-legacy-2026-11-24 | 973a81750a821f27cea630d175bc11d622a11582 | Preserve as legacy snapshot |
+| chaty/ci-runner-consolidation | 74851637a84067f5275cc80f5e28efc4d653c485 | PR #131 closed unmerged; superseded by #132 |
+| chaty/ci-runner-consolidation-refresh | 0f16fbbdc3d4dabeb5285aaf57b8b0b874db5a54 | Superseded pre-merge snapshot |
+| chaty/ci-runner-consolidation-v2 | fc809d14bf517b0ab7c9cb31025935b984629d66 | PR #132 merged; post-merge checks passed |
+| chaty/issue-4-interrupted-download-tests | 228a2bd17fb92b7e0e217f8df6f0de5b3abc0a7a | Preserve; issue #4 remains open |
+| chaty/issue-66-independent-apk-rebuilds | ab32c31cbad7a4ea3b49f7ca3f670bbbb4a0e55a | PR #119 open; stale base, refresh/revalidate required |
+| chaty/issue-81-compatible-library-refresh | 807543c5923311082236f90a90646f02372d9e84 | Preserve; issue #81 remains Chaty-owned |
+| chaty/issue-84-official-launcher-icon | 2e64f56d9dbf82fa0396d8e23b5e52a62506d9ae | PR #85 merged; potential cleanup candidate after owner approval |
+| chaty/post-v2.3-housekeeping | e048ecb0b3f02396e8d465cdcc91013438246f49 | PR #134 housekeeping documentation |
+| chaty/pr105-refresh | fcaa438b5fcf04081fd16adaa262ee626b476b5f | Preserve pending ancestry/use review |
+| chaty/v2.2.0-selective-main-promotion | c39698419353673a712f7de252c52ccb3e46e5d6 | Stable promotion branch; preserve as release history |
+| dependabot/gradle/gradle-wrapper-9.9.2 | 4413dd3a2795dfc51e548617613e5a81145437bb | Preserve pending Dependabot PR/commit audit |
+| infra/issue-pr-agent | 22bd670535881a2fc42fba573b52c28a63d0ff0c | Preserve; workflow automation branch |
+| main | ebc5b424e83ae66c2b0accc2bec6f050b8dc0d88 | Stable release branch |
+| vibe/branch-lifecycle | 5877d34871e162d1bcee7a0cca9d980f4735bd1e | PR #123 owner-paused; do not update |
+| vibe/ci-action-pinning-568e1f | 3422ec1e67e282a0723702fabc0bb7b905548cf5 | Preserve pending ancestry/use review |
+| vibe/geckoview-audit-refresh | f9a2ee4c478364165b34306d7d2849f715da8419 | PR #122 owner-paused; do not update |
+| vibe/geckoview-dep-report | 9bb936d2a2a4ff5cc514789584c1fe48265f43bd | Staged audit branch; owner-deferred with #20 |
+| vibe/governance-vibe-integrator | dc7f9d22e1c8bea9b00af75e14ca117a9d7310aa | Preserve pending ancestry/use review |
+| vibe/markdown-validation | c303cacc3060e9ed15852a4e2c3dec140bc1fa9d | PR #120 merged; potential cleanup candidate after owner approval |
+| vibe/visual-tokens-568e1f | 6b9a3c8c07d0d4f3de9892a1a36e7c9686552969 | PR #113 owner-paused/draft; do not update |
+
+No branch was deleted. The available GitHub connector exposes no branch-delete operation, and the repository rules require preserving unreviewed or owner-paused work. The two merged branches (#85 and #120) and superseded CI branches are candidates for a later owner-approved pruning pass only after ancestry and unique-commit checks.
