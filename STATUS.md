@@ -2,10 +2,15 @@
 
 **Last updated:** 2026-11-26  
 **Active branch:** beta  
-**Latest beta HEAD:** 7cd898f4c1f9b7f70787a7000e1ed9343a83540d (PR [#132](https://github.com/iNeonyne/LastHavenPlus/pull/132), CI runner consolidation).  
+**Latest beta HEAD:** e69656303d7e1c1e7d50f7211c8cfaeb748f07e9 (PR [#134](https://github.com/iNeonyne/LastHavenPlus/pull/134), documentation reconciliation).  
 **Stable branch / v2.3.0 tag:** ebc5b424e83ae66c2b0accc2bec6f050b8dc0d88; GitHub confirms published, non-draft, non-prerelease [v2.3.0](https://github.com/iNeonyne/LastHavenPlus/releases/tag/v2.3.0) with canonical ARM64 APK, update manifest and v2.2.0-to-v2.3.0 differential package. Main remains unchanged by this housekeeping work.
 
-## Latest integration — CI consolidation
+## Latest integration — documentation reconciliation
+
+- **PR:** [#134](https://github.com/iNeonyne/LastHavenPlus/pull/134), merged to beta at e69656303d7e1c1e7d50f7211c8cfaeb748f07e9.
+- **Verification:** exact-head Markdown quality gate [run #45739130533](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45739130533) passed. This was documentation-only; no Android build or device test was applicable.
+
+## Previous integration — CI consolidation
 
 - **PR:** [#132](https://github.com/iNeonyne/LastHavenPlus/pull/132), squash-merged to beta at 7cd898f4c1f9b7f70787a7000e1ed9343a83540d.
 - **Previous attempt:** PR #131 was closed unmerged because its base became stale; it was superseded by #132. No implementation was lost.
@@ -29,15 +34,15 @@
 - **Updater:** #4 remains open for remaining automated regression coverage. #15, #31 and #111 remain blocked/deferred; no release-ID/differential fallback verification or updater UX work is claimed complete.
 - **Reproducibility:** PR [#119](https://github.com/iNeonyne/LastHavenPlus/pull/119) / issue #66 remains open. An earlier exact commit produced byte-identical unsigned APKs; the PR branch is behind current beta and must be refreshed and revalidated before merge.
 - **Owner-paused drafts:** PR #122 / issue #20 (GeckoView dependency audit) and PR #123 / issue #62 (branch lifecycle audit) remain draft/open and blocked by explicit owner scope resets. Do not add commits or resume without reprioritization.
-- **UI/UX:** issue #107 is reopened and Chaty-owned. PR #113 remains draft/open for traceability only; do not merge or continue the old Vibe branch. Chaty will implement from current beta after the icon task.
-- **Icon:** issue #133 is Chaty-owned for a v2.4.0 adaptive icon refresh. A visual concept has been generated; repository integration, adaptive-mask review, exact-head CI and physical launcher appearance remain outstanding.
+- **UI/UX:** issue #107 is assigned to Vibe (agent:vibe) for the shared Compose visual system. PR #113 remains draft/open for traceability only; do not merge or continue the old branch. Vibe must use a fresh branch from current beta.
+- **Icon:** issue #133 implementation is submitted for review in [PR #135](https://github.com/iNeonyne/LastHavenPlus/pull/135), head ce4e9e2c82024ed8dd3c1117f2e7989c56d6e864. The icy-blue pixel-castle vector and deep-navy adaptive background are committed; unsigned exact-head CI is running. Android-generated mask output and physical launcher appearance remain unverified.
 - **Accessibility:** issue #9 remains unassigned until the visual-system pass is settled, to avoid overlapping Compose screen work.
 - **Documentation quality:** PR #120 added repository-wide markdownlint; current beta Markdown quality run [#45736853811](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45736853811) passed. Issue #70 remains open until this central reconciliation is reviewed and merged.
 - **Device status:** CI and packaging checks do not prove physical ARM64 gameplay, profile persistence, haptics, updater installation or device-specific behavior. No new physical-device testing was performed.
 
 ## Next-version roadmap
 
-- **v2.4.0 — UI/UX:** new adaptive icon (#133), shared visual system and interaction polish (#107), then accessibility/navigation coverage (#9). No game/client changes or new home screen.
+- **v2.4.0 — UI/UX:** icon resources (#133, Chaty) and shared Compose visual system (#107, Vibe) proceed in parallel; accessibility/navigation coverage (#9) follows #107 integration. No game/client changes or new home screen.
 - **v2.5.0 — updater:** truthful download progress and retry feedback (#111), plus coordinated regression/recovery coverage (#4/#15/#31) after prioritization.
 - **v2.6.0 — settings/diagnostics:** essential settings (#6), connection and GeckoView error diagnostics (#12/#14), orientation/keep-awake (#16), storage/network accuracy and safe backup/restore (#10/#17/#28) in dependency order.
 - Roadmap source: issue #18. Version targets are not release commitments. #23 remains on hold; #19 and #7 remain deferred.

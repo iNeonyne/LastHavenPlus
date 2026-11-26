@@ -1,6 +1,6 @@
 # Agent work assignments — LastHavenPlus
 
-**Current beta baseline:** 7cd898f4c1f9b7f70787a7000e1ed9343a83540d (verified after PR #132 merge).  
+**Current beta baseline:** e69656303d7e1c1e7d50f7211c8cfaeb748f07e9 (verified after PR #134 documentation reconciliation).  
 **Stable baseline:** main / v2.3.0 tag ebc5b424e83ae66c2b0accc2bec6f050b8dc0d88.
 
 ## Roles and integration
@@ -20,15 +20,18 @@
 - **Exclusions:** no branch deletion, issue/PR closure, release changes or main changes. The owner subsequently requested a three-version roadmap, now recorded in issue #18.
 
 ### Issue #133 — v2.4.0 adaptive launcher icon
-- **Owner:** Chaty (agent:chaty), following the owner's direction that Chaty owns UI/UX implementation.
-- **Scope:** launcher icon assets/resources only; deep navy fantasy-frost crest, icy-blue crystalline portal/rune, restrained gold accents; adaptive-mask safe zone and round/standard resource consistency.
+- **Owner:** Chaty (agent:chaty), per the repository owner's direction on 2026-11-26.
+- **Branch:** chaty/issue-133-icy-pixel-castle, based on beta e69656303d7e1c1e7d50f7211c8cfaeb748f07e9.
+- **Scope:** replace only launcher artwork with the selected icy-blue pixel-art gothic castle/moon concept; update adaptive foreground/background while preserving standard and round icon references.
+- **PR:** [#135](https://github.com/iNeonyne/LastHavenPlus/pull/135), open against beta; current PR head ce4e9e2c82024ed8dd3c1117f2e7989c56d6e864.
+- **Current implementation checkpoint:** vector artwork and deep-navy adaptive background committed on the task branch; unsigned exact-head CI is running. Android-generated mask output and physical launcher appearance remain unverified.
 - **Exclusions:** no Compose screens, design tokens, app behavior, manifest identity, signing, build/toolchain, GeckoView, updater or game changes.
-- **State:** assigned and scoped in GitHub issue #133. Generated concept is a design reference; implementation and exact-head CI remain outstanding.
 
-### Issue #107 — v2.4.0 visual system (queued after #133)
-- **Owner:** Chaty (agent:chaty), per the owner's explicit UI/UX takeover instruction.
-- **PR #113:** draft/open for traceability only; old Vibe branch is stale/dirty and must not be merged or extended. Reuse ideas only after source review.
-- **Next step:** after #133, implement the visual system on a fresh branch from current beta; keep file scope separate from accessibility work #9.
+### Issue #107 — v2.4.0 visual system
+- **Owner:** Vibe (agent:vibe), explicitly assigned by Chaty on 2026-11-26.
+- **Scope:** shared icy-blue/dark-fantasy Compose visual system and existing launcher-owned screens; gameplay remains fullscreen. See GitHub issue #107 for detailed acceptance criteria.
+- **Coordination:** Vibe uses a fresh branch from current beta. PR #113 remains draft/open for traceability only; do not merge or extend its stale branch. #133 is limited to icon resources, so the two tasks can proceed in parallel without overlapping files.
+- **Next dependency:** keep accessibility issue #9 queued until #107 is integrated.
 - **Device status:** physical ARM64 rendering/haptics remain unverified.
 
 ### Completed — issue #129 CI consolidation
@@ -49,7 +52,7 @@
 ### Issue #18 — v2.4.0–v2.6.0 roadmap
 - Owner requested a three-version roadmap on 2026-11-26; the live issue now records v2.4.0 UI/UX, v2.5.0 updater experience and v2.6.0 settings/diagnostics.
 - These are planning targets only, not release/tag/promotion authorization.
-- v2.4.0 starts with #133 icon work, then #107 visual system and #9 accessibility in non-overlapping sequence.
+- v2.4.0 icon resources (#133, Chaty) and Compose visual-system work (#107, Vibe) proceed in parallel with separate file scopes; #9 accessibility remains queued until #107 integrates.
 
 ## Review queue and stale-base work
 
@@ -73,7 +76,7 @@
 
 ## Other preserved drafts
 
-- **PR #113:** draft/open for traceability only. Owner asked Chaty to take over future UI/UX implementation; issue #107 has been reopened under Chaty ownership. PR #113 remains draft/open for traceability only; do not merge or push further commits to the old branch. Chaty will implement fresh UI/UX work from current beta.
+- **PR #113:** draft/open for traceability only. Do not merge or push further commits to its stale branch. Following the owner's latest direction, Chaty owns #133 icon resources and Vibe owns #107 Compose visual-system work on a fresh branch from current beta.
 - **PR #131:** closed unmerged because its base became stale; superseded by PR #132. No need to reopen.
 
 ## Ownership label rules
