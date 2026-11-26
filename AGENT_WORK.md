@@ -1,6 +1,6 @@
 # Agent work assignments — LastHavenPlus
 
-**Baseline:** `beta` at `6c9dadc31682db75f706435437d77969fb3e505e` (verified before this workflow change).
+**Baseline:** `beta` at `03e96c4a76cbda112702dd7f773f0a4e21b9ea7d` (verified before CI runner consolidation).
 
 ## Roles
 
@@ -10,11 +10,12 @@
 
 ## Active handoffs
 
-### Chaty — issue #4 / versioned CI APK artifact names
-- Scope: qualify the signed Actions APK filename and artifact display name with resolved versionName and channel; retain canonical `lasthavenplus-arm64.apk` for updater compatibility.
-- Branch: `chaty/versioned-apk-artifact-names`, based on beta `ec721c3da9a4a6f696f644ad9ad78751b36cdd10`.
-- PR: [#127](https://github.com/iNeonyne/LastHavenPlus/pull/127), targeting beta. Exact-head CI and post-merge signed verification pending.
-- Non-goals: no Gradle/app source, updater protocol, signing, ABI, main, tag, or release changes.
+### Chaty — issue #129 / beta CI runner consolidation
+- Scope: transfer conditional beta-push lint/Spotless checks into the existing signed ARM64 build job, preserving separate unsigned PR validation and all release/security gates.
+- Branch: `chaty/ci-runner-consolidation`, based on beta `03e96c4a76cbda112702dd7f773f0a4e21b9ea7d`.
+- State: implementation in progress; exact-head PR and post-merge timing evidence pending.
+- Non-goals: no main workflow, toolchain, dependency, app source, signing identity, ABI, updater or release behavior changes.
+
 
 
 ### Vibe — issue #106 / PR #112
