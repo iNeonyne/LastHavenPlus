@@ -16,7 +16,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 
 /** Non-persisted theme and layout previews for the #107 design system; no settings control. */
 @Composable
@@ -31,7 +30,11 @@ private fun TokenShowcase(darkTheme: Boolean) {
         modifier = Modifier.fillMaxWidth().padding(DesignTokens.spaceSection),
         verticalArrangement = Arrangement.spacedBy(DesignTokens.spaceLarge),
       ) {
-        Text("LASTHAVENPLUS", color = MaterialTheme.colorScheme.primary, style = MaterialTheme.typography.labelSmall)
+        Text(
+          "LASTHAVENPLUS",
+          color = MaterialTheme.colorScheme.primary,
+          style = MaterialTheme.typography.labelSmall,
+        )
         Text(
           "Screen headline",
           color = MaterialTheme.colorScheme.onBackground,
@@ -47,8 +50,14 @@ private fun TokenShowcase(darkTheme: Boolean) {
             modifier = Modifier.fillMaxWidth().padding(DesignTokens.spaceSection),
             verticalArrangement = Arrangement.spacedBy(DesignTokens.spaceMedium),
           ) {
-            Text("Section heading", color = MaterialTheme.colorScheme.primary, style = MaterialTheme.typography.titleSmall)
-            Button(onClick = {}, colors = DesignTokens.primaryButtonColors()) { Text("Primary action") }
+            Text(
+              "Section heading",
+              color = MaterialTheme.colorScheme.primary,
+              style = MaterialTheme.typography.titleSmall,
+            )
+            Button(onClick = {}, colors = DesignTokens.primaryButtonColors()) {
+              Text("Primary action")
+            }
             OutlinedButton(onClick = {}) { Text("Secondary action") }
           }
         }
@@ -57,10 +66,32 @@ private fun TokenShowcase(darkTheme: Boolean) {
   }
 }
 
-@Preview(name = "Theme dark", showBackground = true, backgroundColor = 0xFF080D18, uiMode = Configuration.UI_MODE_NIGHT_YES)
-@Preview(name = "Theme light", showBackground = true, backgroundColor = 0xFFF4F8FC, uiMode = Configuration.UI_MODE_NIGHT_NO)
-@Preview(name = "System dark", showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES, widthDp = 360, heightDp = 640)
-@Preview(name = "System light", showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_NO, widthDp = 360, heightDp = 640)
+@Preview(
+  name = "Theme dark",
+  showBackground = true,
+  backgroundColor = 0xFF080D18,
+  uiMode = Configuration.UI_MODE_NIGHT_YES,
+)
+@Preview(
+  name = "Theme light",
+  showBackground = true,
+  backgroundColor = 0xFFF4F8FC,
+  uiMode = Configuration.UI_MODE_NIGHT_NO,
+)
+@Preview(
+  name = "System dark",
+  showBackground = true,
+  uiMode = Configuration.UI_MODE_NIGHT_YES,
+  widthDp = 360,
+  heightDp = 640,
+)
+@Preview(
+  name = "System light",
+  showBackground = true,
+  uiMode = Configuration.UI_MODE_NIGHT_NO,
+  widthDp = 360,
+  heightDp = 640,
+)
 @Composable
 private fun TokenShowcaseThemePreview() {
   TokenShowcase(darkTheme = isSystemInDarkTheme())
