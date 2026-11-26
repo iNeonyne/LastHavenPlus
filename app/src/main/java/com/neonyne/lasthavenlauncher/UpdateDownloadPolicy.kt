@@ -6,9 +6,9 @@ import java.io.InputStream
 import java.security.MessageDigest
 
 /**
- * Streams an updater payload to a staging file and validates its exact size and
- * digest before the caller can use it. Any read, write or validation failure
- * removes the incomplete or untrusted destination.
+ * Streams an updater payload to a staging file and validates its exact size and digest before the
+ * caller can use it. Any read, write or validation failure removes the incomplete or untrusted
+ * destination.
  */
 internal object UpdateDownloadPolicy {
   fun copyAndVerify(
