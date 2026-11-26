@@ -1,7 +1,6 @@
 package com.neonyne.lasthavenlauncher
 
 import java.security.MessageDigest
-import java.util.ArrayDeque
 import java.util.Locale
 
 sealed class AddonBlockedReason {
