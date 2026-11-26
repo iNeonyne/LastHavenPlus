@@ -844,3 +844,15 @@ The additional UX proposal was reviewed and consolidated into existing issues ra
 - PR [#139](https://github.com/iNeonyne/LastHavenPlus/pull/139) merged to beta at `0d5ab712ce5195a3e71023c68da54f054645a8e2` after owner authorization.
 - Exact PR-head Android and Markdown CI passed. Physical ARM64 TalkBack/focus/traversal, reduced-motion and large-font verification remain outstanding; `FocusRequester` is Compose input focus, not TalkBack accessibility focus.
 - Issue remains open with `agent:owner` pending the outstanding device verification. Do not represent those checks as complete.
+
+
+<a id="issue-67"></a>
+
+## Issue 67 — P1 — Repository license and community hygiene
+
+**GitHub:** https://github.com/iNeonyne/LastHavenPlus/issues/67
+**State:** open; agent:owner — owner decision required after transitive dependency license audit.
+
+The owner selected Apache-2.0. the refreshed community-hygiene PR prepares the canonical LICENSE, SECURITY.md, Gradle Dependabot, README/license boundary, changelog and contribution-policy updates, packaged Apache-2.0 text with an in-app Settings viewer, and CI runtime dependency reporting.
+
+**Current blocker:** the resolved GeckoView 160 runtime graph includes Google Play Services FIDO/Base/Basement/Tasks artifacts declared under the Android Software Development Kit License. The owner subsequently selected Apache-2.0 for original project material. Complete the artifact-level license/notice inventory and confirm project copyright attribution before merging or publishing. Third-party components retain their own terms. See the refreshed community-hygiene PR and its review comment for evidence.
