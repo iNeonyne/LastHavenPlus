@@ -4,25 +4,26 @@
 
 - Workflow-level permissions default to `contents: read`.
 - In `.github/workflows/android.yml`, only `create_tag` and `publish_release` receive `contents: write`; build and PR-validation jobs are read-only.
-- `.github/workflows/quality.yml` is read-only.
+- `.github/workflows/quality.yml` and `.github/workflows/markdown-quality.yml` are read-only.
 - `.github/workflows/agent-ownership.yml` grants only `issues: write` to the issue-labeling job.
 - Pull-request validation does not reference Android signing secrets. It builds an unsigned release APK and uploads test reports only to GitHub Actions artifact storage. It does not publish GitHub releases or signed APKs.
 
 ## Immutable action pins
 
-All third-party `uses:` references in the three workflows are pinned to full commit SHAs. The values below were checked against the corresponding upstream tag refs on 2026-11-26. The Gradle v4 tag is annotated; its peeled commit is listed.
+All third-party `uses:` references in the four workflows are pinned to full commit SHAs. The values below were checked against the corresponding upstream tag refs on 2026-11-26. The Gradle v4 tag is annotated; its peeled commit is listed.
 
 | Action | Release tag | Verified commit SHA |
 | --- | --- | --- |
 | `actions/checkout` | v7.0.1 | `3d3c42e5aac5ba805825da76410c181273ba90b1` |
 | `actions/setup-java` | v6.3.0 | `d1374f8ac74474200d16ef8ecee22c7ae7a51880` |
-| `android-actions/setup-android` | v3 | `9fc6c4e9069bf8d3d10b2204b1fb8f6ef7065407` |
-| `gradle/actions/setup-gradle` | v4 (v4.4.3) | `ed408507eac070d1f99cc633dbcf757c94c7933a` |
+| `android-actions/setup-android` | v4.0.4 | `be39fa834029ff78f1a44aa3bb0819b8fc2bd8fd` |
+| `gradle/actions/setup-gradle` | v6.4.1 | `8da46b539cd8fe6ab27ca75128919a18d757604c` |
 | `actions/upload-artifact` | v7.0.2 | `cf430e030ddbb5b0abf93d22962f4752f3646cd9` |
 | `actions/download-artifact` | v4 | `d3f86a106a0bac45b974a628896c90dbdf5c8093` |
 | `softprops/action-gh-release` | v3.0.4 | `8a0cd651e5b2365bd640854a3fa5dfc70e4875f3` |
+| `DavidAnson/markdownlint-cli2-action` | v25.1.0 | `3ce8f712b5d8f31acd8e201be6d97e3d2bb23eb7` |
 
-The ownership workflow currently uses no third-party actions. A matching tag ref establishes that the pin points at the named upstream release; it is not by itself a claim that every upstream tag is cryptographically signed.
+The ownership workflow currently uses no third-party actions. The Markdown quality workflow runs the pinned markdownlint-cli2 action across all repository Markdown files; its lint configuration documents narrowly scoped legacy-style exclusions. A matching tag ref establishes that the pin points at the named upstream release; it is not by itself a claim that every upstream tag is cryptographically signed.
 
 ## Automated updates
 
