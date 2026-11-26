@@ -19,7 +19,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
@@ -27,10 +26,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import org.mozilla.geckoview.GeckoSession
 import org.mozilla.geckoview.GeckoView
-
-private val GameScrimColor = Color(0xFF080B12)
-private val GameTextColor = Color(0xFFB7C0D0)
-private val GameAccentColor = Color(0xFFE5B85C)
 
 @Composable
 fun GameScreen(
@@ -56,15 +51,15 @@ fun GameScreen(
         GameStatusSurface(contentDescription = "Preparing LastHaven") {
           LinearProgressIndicator()
           Spacer(modifier = Modifier.height(16.dp))
-          Text("Preparing game…", color = GameTextColor)
+          Text("Preparing game…", color = DesignTokens.textSecondary)
         }
 
       GameLoadPresentation.LoadingGame ->
         // Restrained branded state for the initial page load only; no fabricated progress.
         GameStatusSurface(contentDescription = "LastHaven is loading") {
-          LinearProgressIndicator(color = GameAccentColor)
+          LinearProgressIndicator(color = DesignTokens.gold)
           Spacer(modifier = Modifier.height(16.dp))
-          Text("Loading LastHaven…", color = GameTextColor)
+          Text("Loading LastHaven…", color = DesignTokens.textSecondary)
         }
 
       GameLoadPresentation.RecoverableFailure ->
@@ -72,23 +67,23 @@ fun GameScreen(
           Text(
             "Unable to load LastHaven",
             style = MaterialTheme.typography.headlineSmall,
-            color = Color.White,
+            color = DesignTokens.textPrimary,
           )
           Spacer(modifier = Modifier.height(8.dp))
           Text(
             "Check your connection and try again.",
-            color = GameTextColor,
+            color = DesignTokens.textSecondary,
             modifier = Modifier.widthIn(max = 320.dp).padding(horizontal = 8.dp),
           )
           Spacer(modifier = Modifier.height(20.dp))
           Button(
             onClick = onRetry,
-            modifier = Modifier.heightIn(min = 48.dp),
-            shape = RoundedCornerShape(14.dp),
+            modifier = Modifier.heightIn(min = DesignTokens.minTouchTarget),
+            shape = RoundedCornerShape(DesignTokens.cornerButton),
             colors =
               ButtonDefaults.buttonColors(
-                containerColor = GameAccentColor,
-                contentColor = Color(0xFF17130A),
+                containerColor = DesignTokens.gold,
+                contentColor = DesignTokens.goldOnColor,
               ),
           ) {
             Text("Retry", fontWeight = FontWeight.Bold)
@@ -100,23 +95,23 @@ fun GameScreen(
           Text(
             "LastHaven stopped unexpectedly",
             style = MaterialTheme.typography.headlineSmall,
-            color = Color.White,
+            color = DesignTokens.textPrimary,
           )
           Spacer(modifier = Modifier.height(8.dp))
           Text(
             "The game session ended. Restore the game to continue playing.",
-            color = GameTextColor,
+            color = DesignTokens.textSecondary,
             modifier = Modifier.widthIn(max = 320.dp).padding(horizontal = 8.dp),
           )
           Spacer(modifier = Modifier.height(20.dp))
           Button(
             onClick = onRestore,
-            modifier = Modifier.heightIn(min = 48.dp),
-            shape = RoundedCornerShape(14.dp),
+            modifier = Modifier.heightIn(min = DesignTokens.minTouchTarget),
+            shape = RoundedCornerShape(DesignTokens.cornerButton),
             colors =
               ButtonDefaults.buttonColors(
-                containerColor = GameAccentColor,
-                contentColor = Color(0xFF17130A),
+                containerColor = DesignTokens.gold,
+                contentColor = DesignTokens.goldOnColor,
               ),
           ) {
             Text("Restore game", fontWeight = FontWeight.Bold)
@@ -133,7 +128,7 @@ private fun GameStatusSurface(
 ) {
   Surface(
     modifier = Modifier.fillMaxSize().semantics { this.contentDescription = contentDescription },
-    color = GameScrimColor,
+    color = DesignTokens.logSurface,
   ) {
     Column(
       modifier = Modifier.fillMaxSize().padding(28.dp),
