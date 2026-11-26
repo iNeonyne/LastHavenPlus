@@ -565,3 +565,12 @@ No branch was deleted. The available GitHub connector exposes no branch-delete o
 
 
 - Follow-up reconciliation: restored the verified v2.2.0 and v2.3.0 release-note sections from their respective tagged CHANGELOG.md snapshots, and added the README release-history link. This corrects the earlier work-log shorthand that mentioned only the Unreleased entry.
+
+
+## 2026-11-26 — GPL compatibility audit follow-up
+
+- Added the canonical GPL text as app/src/main/res/raw/gpl_3_0.txt and exposed it through Settings → Open-source licenses. Avoided MainActivity/overlay navigation edits after confirming Vibe's #9 accessibility PR #139 is pending review; reverted our temporary navigation experiment to beta.
+- Added a PR CI step that records releaseRuntimeClasspath and uploads it with unit-test reports. The report artifact from run #45836638591 shows the GeckoView 160 runtime graph includes Google Play Services FIDO 21.3.1, Base 18.7.2, Basement 18.9.0 and Tasks 18.3.2.
+- Published Maven metadata declares those Google artifacts under the Android Software Development Kit License. GPLv3 compatibility for distribution of the combined APK is not established; this is a legal compatibility risk, not a definitive legal conclusion.
+- Updated issue #67 to agent:owner and returned PR #141 to draft pending owner direction, full artifact-level notice audit and copyright-holder attribution. No merge or release.
+- Markdown run #45837172690 passed. Android run #45837172797 was still running at this checkpoint. No physical-device test, app ID/signing/ABI/toolchain/GeckoView/game/main changes or branch deletions.
