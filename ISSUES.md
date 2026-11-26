@@ -11,15 +11,15 @@
 - **Open PRs:** none. PR #154, #157, #159, #160, #122, #143 and #144 were closed without merge; do not treat their branch-only changes as integrated.
 - **Updater:** #4/#15 are coordinated under Chaty. BSDIFF cleanup candidates were not merged; PR #160 Markdown passed but one reproducibility build failed resolving Kotlin Compose plugin 2.4.21, while Android and second reproducibility job were incomplete at closure. #4 acceptance remains open. #31 and #111 remain blocked for their stated authorization/release holds.
 - **Diagnostics:** #11 is active with Vibe; PR #154 was closed unmerged because stale. A fresh implementation is required.
-- **Housekeeping:** #128 is active with Chaty on a fresh branch from current beta. #70 is closed; Markdown lint is integrated.
+- **Housekeeping:** #128 closed after PR #161 merged at a0e5271793c9bb7754b7ac41429065e5602df569; exact-head and post-merge Markdown passed. #70 is closed; Markdown lint is integrated.
 - **GeckoView audit:** #20 remains owner-deferred/blocked; PR #122 closed without merge. Preserve unresolved notice/license/distribution and device-testing gaps.
 - **Rights/notices:** #67 remains agent:owner; PR #144 closed without merge. The owner's All Rights Reserved decision governs original project material; third-party distribution review remains unresolved.
-- **Ownership:** all 26 open issues have exactly one agent:* label and none are agent:unassigned. Vibe: #11 active, #149 then #146 queued. Chaty: #4/#15 and #128 active; #81 queued. Owner: #23 and #67. Blocked dependencies/holds are documented on their issues.
+- **Ownership:** all 25 open issues have exactly one agent:* label and none are agent:unassigned. Vibe: #11 active, #149 then #146 queued. Chaty: #4/#15 and #128 active; #81 queued. Owner: #23 and #67. Blocked dependencies/holds are documented on their issues.
 - **Device/release:** no new physical ARM64 testing, release, tag, publication or beta-to-main promotion is claimed or authorized.
 
 ## Current ownership
 
-- **Chaty active:** #4 updater reliability, #15 coordinated recovery and #128 documentation reconciliation.
+- **Chaty active:** #4 updater reliability and #15 coordinated recovery. #128 is complete.
 - **Chaty queued:** #81 dependency-evidence documentation after #128; #20 and #31 remain blocked, not queued, until their owner holds are lifted.
 - **Vibe active:** #11 diagnostics tests.
 - **Vibe queued:** #149 launcher-owned strings, then #146 GameSessionController; one active implementation task at a time.
@@ -66,7 +66,7 @@
 | [#81](https://github.com/iNeonyne/LastHavenPlus/issues/81) | Dependencies | Compatible AndroidX and compression library refresh | Five approved pins integrated by PR #104; Chaty queued to finish evidence/docs reconciliation only |
 | [#111](https://github.com/iNeonyne/LastHavenPlus/issues/111) | Deferred | Updater download progress and retry feedback | `agent:blocked`; v2.5.0 integration hold requires v2.4.0 release and explicit owner authorization |
 | [#133](https://github.com/iNeonyne/LastHavenPlus/issues/133) | Done | v2.4.0 adaptive launcher icon refresh | Closed after PR #135 integration; CI does not constitute physical-device appearance testing |
-| [#128](https://github.com/iNeonyne/LastHavenPlus/issues/128) | Housekeeping | Post-v2.3.0 repository housekeeping | Chaty active on fresh beta-based docs branch; exact-head Markdown/link validation pending |
+| [#128](https://github.com/iNeonyne/LastHavenPlus/issues/128) | Done | Post-v2.3.0 repository housekeeping | Closed after PR #161 merged; exact-head and post-merge Markdown passed |
 | [#129](https://github.com/iNeonyne/LastHavenPlus/issues/129) | Done | Consolidate beta CI quality checks | Closed; PR #132 merged and exact-merge CI passed |
 
 ---
