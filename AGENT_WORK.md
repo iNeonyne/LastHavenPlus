@@ -1,62 +1,70 @@
 # Agent work assignments — LastHavenPlus
 
-**Baseline:** `beta` at `932e3ba65f6c8445eafe0ba466ca3952c67bd017` after PR #99 Gradle version-catalog integration.
+**Baseline:** `beta` at `6c9dadc31682db75f706435437d77969fb3e505e` (verified before this workflow change).
 
 ## Roles
 
-- **Chaty — roadmap and housekeeping:** owns issue #18 and central tracker/documentation reconciliation, branch audit, CI evidence, PR review and integration. Chaty alone may merge accepted PRs into `beta`.
-- **Chaty — issue #56 implementation:** completed via PR [#83](https://github.com/iNeonyne/LastHavenPlus/pull/83), merged to beta. Ploy is released from this issue; no overlapping work remains.
+- **Chaty — orchestrator and integration owner:** owns issue intake, triage, prioritization, assignments, central documentation, CI coordination, PR review, merge into beta and release coordination. Chaty may implement work directly.
+- **Vibe — implementation contributor:** works only on an existing issue explicitly assigned by Chaty. Vibe submits PRs targeting beta and communicates only through GitHub Issues and PRs. Vibe cannot merge, push to beta/main, create untracked feature work or change issue priority.
+- **Repository owner:** retains final product, priority and release decisions.
 
-## Active assignments
+## Active handoffs
 
-### Chaty — v2.2.0 roadmap and immediate housekeeping
-- **Completed:** roadmap and central tracker reconciliation merged by PR [#73](https://github.com/iNeonyne/LastHavenPlus/pull/73) at `c16439bfcedc9949d8ec683039fb5df85afea122`; Gradle version catalog for #64 merged by PR [#99](https://github.com/iNeonyne/LastHavenPlus/pull/99) at `932e3ba65f6c8445eafe0ba466ca3952c67bd017`.
-- **Closed:** #42 as superseded by #56; #60 as completed after exact-head and post-merge CI evidence.
-- **Still owned by Chaty:** finish #70 Markdown syntax/lint validation; coordinate #4/#15/#31 and supporting work through v2.3.0 backlog #86 when prioritized; maintain CI/release records. Branch inventory/diff audit, #56/#84 integration and selective main promotion are complete.
-- **Exclusions:** no new feature work outside the owner-approved v2.2.0 scope, no version bump/tag/publication without explicit approval, no Addon Manager work.
-- **Evidence:** post-merge quality run #45631250015 and signed beta build #45631249817 passed; the build skipped release-tag publication steps.
+### Vibe — issue #106 / PR #112
+- **Scope:** gameplay initial-loading, recoverable load failure and renderer-failure presentation.
+- **PR:** https://github.com/iNeonyne/LastHavenPlus/pull/112
+- **State:** PR submitted; awaiting Chaty's review and requested corrections.
+- **Review gate:** verify retry/restore state-reset tests, documentation evidence and exact-head CI before merge.
+- **Device status:** physical ARM64 testing unverified.
 
-### Chaty — application implementation status
+### Vibe — issue #107 / PR #113
+- **Scope:** shared visual tokens, restrained explicit-action haptics and menu-overlay fade.
+- **PR:** https://github.com/iNeonyne/LastHavenPlus/pull/113
+- **Dependency:** stacked on PR #112. Review and integrate only after #112 is resolved and this branch is refreshed against current beta.
+- **State:** PR submitted; awaiting Chaty's review after #112.
+- **Device status:** physical ARM64 rendering and haptics verification unverified.
 
-**#56 — complete.** Direct launch and responsive overlay merged in PR #83 at `2e64f56d9dbf82fa0396d8e23b5e52a62506d9ae`; approved icon merged in PR #85 at `073f839eb3cccd9a13fae09dd091667bb86a1f0c`. Selective promotion to stable main merged in PR #87 at `f22b5c2b92b6f93b201b1a9dc50a8c8095543d76`. Exact beta PR validation and post-merge quality/signed ARM64 CI passed. Main post-merge CI is tracked in STATUS.md.
+### Chaty — central ownership workflow
+- **Scope:** two-agent coordination protocol, ownership labels, issue intake automation and project documentation.
+- **Branch:** `chaty/agent-ownership-labels`.
+- **PR:** [#114](https://github.com/iNeonyne/LastHavenPlus/pull/114), targeting beta.
+- **Constraints:** no app source, Gradle, signing, release, game or main-branch changes.
+- **Activation caveat:** GitHub issue-event workflows run only when the workflow file exists on the repository default branch. This beta PR prepares the workflow and templates; automatic issue-open labeling requires a separately owner-approved promotion to the default branch. Do not promote as part of this task.
 
-### Ploy — application issue queue (one active issue only)
+## Assignment and communication rules
 
-Ploy has no active application issue. The remaining supporting features are deferred to v2.3.0 under #86. **Do not start queued work until the owner prioritizes and assigns it.**
+1. Chaty selects an existing open GitHub issue, checks duplicates/dependencies and confirms that no agent already owns it.
+2. Chaty replaces the issue's current `agent:*` label with `agent:vibe` or `agent:chaty` and posts a scoped assignment comment.
+3. Vibe starts only after the issue has `agent:vibe` and the assignment comment defines expected behavior, allowed scope, exclusions, constraints, tests and documentation.
+4. GitHub is the only agent-to-agent communication channel. Use issue comments for assignment/progress/blockers/handoffs and PR descriptions/reviews for implementation and corrections.
+5. Vibe posts a start comment, blocker updates when needed and a complete PR handoff. The PR must target beta, link its issue and report changed files, exact head SHA, test commands/results, CI links, limitations and physical-device status.
+6. On PR submission, Chaty changes the issue label to `agent:review`. Chaty reviews the actual diff and exact-head CI. For revisions, Chaty returns ownership to `agent:vibe`; Vibe must not self-approve or merge.
+7. Chaty alone merges accepted PRs into beta, verifies the merge commit and post-merge checks, updates status and closes the issue only when its acceptance criteria are actually met.
+8. One active implementation owner per issue. Do not assign overlapping work or allow concurrent edits to the same files without an explicit coordination plan.
 
-**Deferred candidate queue (not assigned; do not start):**
+## Ownership label meanings
 
-| Order | Issue | Status | Start condition / narrow scope |
-|---:|---|---|---|
-| 1 | [#56](https://github.com/iNeonyne/LastHavenPlus/issues/56) | COMPLETE | Direct launch, responsive overlay and session-preserving navigation integrated |
-| 2 | [#9](https://github.com/iNeonyne/LastHavenPlus/issues/9) | QUEUED | Deferred to v2.3.0; start only after owner prioritization: overlay accessibility semantics, TalkBack order/labels and automated navigation coverage |
-| 3 | [#11](https://github.com/iNeonyne/LastHavenPlus/issues/11) | QUEUED | Deferred to v2.3.0; diagnostics redaction, bounded rotation/size and failure-path tests only |
-| 4 | [#12](https://github.com/iNeonyne/LastHavenPlus/issues/12) | QUEUED | Deferred to v2.3.0; safe GeckoView 160 load-error category mapping and tests |
-| 5 | [#14](https://github.com/iNeonyne/LastHavenPlus/issues/14) | QUEUED | Deferred to v2.3.0; explicit user-triggered DNS/HTTPS reachability diagnostics |
-| 6 | [#16](https://github.com/iNeonyne/LastHavenPlus/issues/16) | QUEUED | Deferred to v2.3.0; persisted gameplay orientation/keep-awake preferences and lifecycle cleanup |
-| 7 | [#10](https://github.com/iNeonyne/LastHavenPlus/issues/10) | QUEUED | Deferred to v2.3.0; persistent app-wide per-UID network totals; no telemetry or game-only attribution |
-| 8 | [#28](https://github.com/iNeonyne/LastHavenPlus/issues/28) | QUEUED | Deferred to v2.3.0; accurate APK/data/cache reporting and iterative bounded storage traversal |
-| 9 | [#6](https://github.com/iNeonyne/LastHavenPlus/issues/6) | QUEUED | Deferred to v2.3.0; essential settings surface and editable HTTPS game-URL validation/persistence only; #16/#28/#19 remain separate |
-| 10 | [#17](https://github.com/iNeonyne/LastHavenPlus/issues/17) | QUEUED | Deferred to v2.3.0; versioned import/export of an allowlist of non-sensitive launcher preferences |
+- `agent:unassigned`: no agent owns the issue; Chaty may triage and assign it. This is not permission for Vibe to start.
+- `agent:chaty`: Chaty owns the issue.
+- `agent:vibe`: Vibe has an explicit assignment and may start.
+- `agent:blocked`: on hold or waiting for a dependency/decision.
+- `agent:review`: implementation PR submitted; awaiting Chaty's review.
+- `agent:owner`: waiting for repository-owner decision or optional feedback.
 
-**Not assigned to Ploy:** #4/#15 updater code and recovery (Chaty; overlapping high-risk updater scope); #5/#21 optional owner release feedback (not an engineering or release blocker); #20 GeckoView dependency record, #31 release workflow, #61–#66 CI/build/security tasks, #70 documentation validation (Chaty); #7 requires comparable, repeatable measurements; #19 is deferred and coordinated by Chaty; #67 requires the repository owner's license decision.
+Exactly one agent ownership label should be present. Only Chaty changes ownership labels.
 
-**GitHub assignees:** Ploy is an internal agent role, not a confirmed GitHub account login. Mark assignments in issue bodies and `AGENT_WORK.md`; do not invent a GitHub username or assign an unrelated account.
+## Queue and exclusions
 
-**Per-issue constraints:** one issue per branch/PR; task branches start from current beta; never push directly to beta/main; no central tracker edits by Ploy; provide PR URL, exact head SHA, changed files, tests/CI and known limitations. Do not represent unreported owner feedback as test results.
+- **Chaty-owned coordination:** #4/#15/#31/#111 updater reliability and release verification; #20 GeckoView dependency audit; #70 documentation validation; roadmap, CI and project-wide records.
+- **Vibe candidate queue:** issues are not assigned merely because they are open or labeled `agent:unassigned`. Chaty must explicitly assign one issue at a time after prioritization and scope review.
+- **Owner-only:** #5/#21 optional post-release owner feedback and #67 license decision. Do not treat missing owner feedback as an engineering or release blocker.
+- **Blocked/deferred:** #23 Addon Manager remains ON HOLD; #19 beta release channel, #86 deferred backlog and #7 measured performance work must not start until the owner prioritizes them.
+- **Global exclusions:** no game/client modifications; no application ID or signing changes; no unapproved GeckoView/toolchain upgrades; no automatic app downloads/installations; no release/tag/publication; no Addon Manager work while #23 is on hold.
 
-**Global exclusions:** no game/client modifications; no application ID/signing changes; no GeckoView/toolchain upgrades without separate compatibility review; no automatic app downloads/installations; no changes to central README/AGENTS/STATUS/ISSUES/CHANGELOG/AGENT_WORK; no release/tag/publication; no Addon Manager work while #23 is on hold. Preserve GeckoView profile/session and all game data.
+## Shared branch and release policy
 
-## Shared workflow
-
-- Keep one issue per PR and non-overlapping scopes.
-- Contributors work on task branches and open PRs targeting beta.
-- Chaty alone reviews and merges into beta. Owner-authorized stable promotion uses a separate main-based PR that preserves main-only history.
-- If beta advances, refresh and rerun affected checks before merge.
-- Never force-push shared branches or push directly to beta/main.
-- The owner retains final product and release authority.
-
-## Deferred
-
-- **Issue #23 Addon Manager: ON HOLD.** No investigation, implementation, assignment or review until the owner explicitly approves resuming it.
-- **Issue #19 beta release channel:** deferred; not a v2.2.0 prerequisite.
+- All implementation PRs target `beta`.
+- Contributors use dedicated task branches and never push directly to beta/main.
+- Chaty alone reviews and merges into beta.
+- Never promote beta to main, create release tags or publish without explicit repository-owner approval.
+- If beta advances, refresh the task branch and rerun affected checks before merge. Never force-push shared branches or bypass required checks.
