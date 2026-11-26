@@ -48,10 +48,7 @@ class AddonArchiveTest {
 
   @Test
   fun reportsUnsupportedInterfaceAsWarning() {
-    val archive =
-      zipOf(
-        "Old/Old.toc" to "## Interface: 30400\n",
-      )
+    val archive = zipOf("Old/Old.toc" to "## Interface: 30400\n")
 
     val imported = AddonArchive.importZip(ByteArrayInputStream(archive), archive.size.toLong())
 
@@ -81,9 +78,10 @@ class AddonArchiveTest {
 
   @Test
   fun rejectsArchiveAboveCompressedSizeLimitBeforeReading() {
-    val input = object : ByteArrayInputStream(byteArrayOf()) {
-      override fun read(): Int = error("Input must not be read")
-    }
+    val input =
+      object : ByteArrayInputStream(byteArrayOf()) {
+        override fun read(): Int = error("Input must not be read")
+      }
 
     assertThrows(IllegalArgumentException::class.java) {
       AddonArchive.importZip(input, AddonArchive.MAX_ARCHIVE_BYTES + 1)

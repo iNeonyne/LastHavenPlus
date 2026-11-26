@@ -43,8 +43,9 @@ class AddonLibraryRepository(private val root: File) {
   fun readLibrary(): AddonLibrarySnapshot {
     if (!indexFile.exists()) return AddonLibrarySnapshot("empty", emptyList())
     val properties = Properties().apply { FileInputStream(indexFile).use(::load) }
-    val count = properties.getProperty("count")?.toIntOrNull()
-      ?: throw IllegalStateException("Addon library index is invalid.")
+    val count =
+      properties.getProperty("count")?.toIntOrNull()
+        ?: throw IllegalStateException("Addon library index is invalid.")
     require(count in 0..10_000) { "Addon library index contains too many entries." }
     val addons =
       (0 until count).map { index ->
@@ -59,11 +60,14 @@ class AddonLibraryRepository(private val root: File) {
           interfaceVersion = value("interface"),
           notes = value("notes"),
           dependencies = decodeList(properties.getProperty("addon.$index.dependencies").orEmpty()),
-          sizeBytes = properties.getProperty("addon.$index.size")?.toLongOrNull()
-            ?: throw IllegalStateException("Addon library size is invalid."),
-          filesCount = properties.getProperty("addon.$index.files")?.toIntOrNull()
-            ?: throw IllegalStateException("Addon library file count is invalid."),
-          enabled = properties.getProperty("addon.$index.enabled")?.toBooleanStrictOrNull() ?: false,
+          sizeBytes =
+            properties.getProperty("addon.$index.size")?.toLongOrNull()
+              ?: throw IllegalStateException("Addon library size is invalid."),
+          filesCount =
+            properties.getProperty("addon.$index.files")?.toIntOrNull()
+              ?: throw IllegalStateException("Addon library file count is invalid."),
+          enabled =
+            properties.getProperty("addon.$index.enabled")?.toBooleanStrictOrNull() ?: false,
           importedAt = properties.getProperty("addon.$index.importedAt")?.toLongOrNull() ?: 0L,
           warnings = decodeList(properties.getProperty("addon.$index.warnings").orEmpty()),
         )
@@ -88,8 +92,7 @@ class AddonLibraryRepository(private val root: File) {
       throw IllegalStateException("Could not create addon storage.")
     }
     val existing = current.addons.associateBy { it.folder.lowercase() }
-    val nextItems =
-      current.addons.filterNot { it.folder.lowercase() in replacing }.toMutableList()
+    val nextItems = current.addons.filterNot { it.folder.lowercase() in replacing }.toMutableList()
     val staged = mutableListOf<Pair<File, File>>()
     val backups = mutableListOf<Pair<File, File>>()
     try {
@@ -184,7 +187,10 @@ class AddonLibraryRepository(private val root: File) {
     val addonDirectory = File(root, folder)
     require(addonDirectory.isDirectory) { "Addon not found." }
     ZipOutputStream(BufferedOutputStream(output)).use { zip ->
-      val files = addonDirectory.walkTopDown().filter(File::isFile).sortedBy { it.relativeTo(addonDirectory).invariantSeparatorsPath }
+      val files =
+        addonDirectory.walkTopDown().filter(File::isFile).sortedBy {
+          it.relativeTo(addonDirectory).invariantSeparatorsPath
+        }
       for (file in files) {
         val relative = file.relativeTo(addonDirectory).invariantSeparatorsPath
         AddonArchive.validateEntryPath(relative)
@@ -239,8 +245,7 @@ class AddonLibraryRepository(private val root: File) {
   }
 
   private fun isSafeFolder(folder: String): Boolean =
-    folder.matches(Regex("[A-Za-z0-9_-]+")) &&
-      !folder.startsWith("blizzard_", ignoreCase = true)
+    folder.matches(Regex("[A-Za-z0-9_-]+")) && !folder.startsWith("blizzard_", ignoreCase = true)
 
   private fun encode(value: String): String =
     Base64.getEncoder().encodeToString(value.toByteArray(Charsets.UTF_8))
@@ -248,8 +253,7 @@ class AddonLibraryRepository(private val root: File) {
   private fun decode(value: String): String =
     String(Base64.getDecoder().decode(value), Charsets.UTF_8)
 
-  private fun encodeList(values: List<String>): String =
-    values.joinToString(".") { encode(it) }
+  private fun encodeList(values: List<String>): String = values.joinToString(".") { encode(it) }
 
   private fun decodeList(value: String): List<String> =
     if (value.isBlank()) emptyList() else value.split('.').map(::decode)

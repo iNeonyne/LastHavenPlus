@@ -39,8 +39,8 @@ object AddonArchive {
   /**
    * Reads a user-selected ZIP without trusting its declared entry sizes.
    *
-   * The caller must obtain and validate the selected document's compressed size before
-   * opening its stream. Expanded bytes and per-entry bytes are independently bounded here.
+   * The caller must obtain and validate the selected document's compressed size before opening its
+   * stream. Expanded bytes and per-entry bytes are independently bounded here.
    */
   fun importZip(input: InputStream, compressedSize: Long): List<ImportedAddon> {
     require(compressedSize in 1..MAX_ARCHIVE_BYTES) {
@@ -106,7 +106,7 @@ object AddonArchive {
         !Regex("^[A-Za-z]:").containsMatchIn(path) &&
         !path.contains(':') &&
         !path.any { it.code in 0..31 } &&
-        path.split('/').none { it == "." || it == ".." },
+        path.split('/').none { it == "." || it == ".." }
     ) {
       "Unsafe archive path: $name"
     }
@@ -129,18 +129,18 @@ object AddonArchive {
     }
 
     require(roots.isNotEmpty()) { "Main Folder/Folder.toc is missing." }
-    val topRoots =
-      roots.filter { root ->
-        roots.none { parent ->
-          parent != root &&
-            (parent.path.isEmpty() || root.path.startsWith(parent.path + "/"))
-        }
+    val topRoots = roots.filter { root ->
+      roots.none { parent ->
+        parent != root && (parent.path.isEmpty() || root.path.startsWith(parent.path + "/"))
       }
+    }
 
     val seenFolders = mutableSetOf<String>()
     return topRoots.map { root ->
-      require(root.folder.matches(Regex("[A-Za-z0-9_-]+")) &&
-        !root.folder.startsWith("blizzard_", ignoreCase = true)) {
+      require(
+        root.folder.matches(Regex("[A-Za-z0-9_-]+")) &&
+          !root.folder.startsWith("blizzard_", ignoreCase = true)
+      ) {
         "Invalid or reserved addon folder: ${root.folder}"
       }
       require(seenFolders.add(root.folder.lowercase(Locale.ROOT))) {
@@ -148,14 +148,16 @@ object AddonArchive {
       }
 
       val ownFiles =
-        entries.filter { (path, _) ->
-          val inRoot = if (root.path.isEmpty()) true else path.startsWith(root.path + "/")
-          inRoot &&
-            !path.startsWith("__MACOSX/") &&
-            !Regex("(^|/)\\.(git|svn)(/|$)").containsMatchIn(path)
-        }.mapKeys { (path, _) ->
-          if (root.path.isEmpty()) path else path.removePrefix(root.path + "/")
-        }
+        entries
+          .filter { (path, _) ->
+            val inRoot = if (root.path.isEmpty()) true else path.startsWith(root.path + "/")
+            inRoot &&
+              !path.startsWith("__MACOSX/") &&
+              !Regex("(^|/)\\.(git|svn)(/|$)").containsMatchIn(path)
+          }
+          .mapKeys { (path, _) ->
+            if (root.path.isEmpty()) path else path.removePrefix(root.path + "/")
+          }
 
       val tocName = "${root.folder}.toc"
       val tocBytes =
@@ -164,8 +166,9 @@ object AddonArchive {
       val metadata = parseToc(String(tocBytes, StandardCharsets.UTF_8))
       val total = ownFiles.values.sumOf { it.size.toLong() }
       val warnings =
-        if (metadata.interfaceVersion.isNotBlank() &&
-          "30300" !in metadata.interfaceVersion.split(Regex("[,\\s]+"))
+        if (
+          metadata.interfaceVersion.isNotBlank() &&
+            "30300" !in metadata.interfaceVersion.split(Regex("[,\\s]+"))
         ) {
           listOf("The TOC does not declare Interface 30300. Compatibility is unverified.")
         } else {

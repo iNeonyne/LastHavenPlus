@@ -161,7 +161,11 @@ private fun AddonCard(
         verticalAlignment = Alignment.CenterVertically,
       ) {
         Column(modifier = Modifier.weight(1f)) {
-          Text(addon.title, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
+          Text(
+            addon.title,
+            style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.SemiBold,
+          )
           Text(
             "${addon.folder} · ${addon.version.ifBlank { "No version" }}",
             color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -194,7 +198,11 @@ private fun AddonCard(
         )
       }
       addon.warnings.forEach { warning ->
-        Text(warning, color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.bodySmall)
+        Text(
+          warning,
+          color = MaterialTheme.colorScheme.error,
+          style = MaterialTheme.typography.bodySmall,
+        )
       }
       if (addon.notes.isNotBlank()) {
         Text(addon.notes, color = MaterialTheme.colorScheme.onSurfaceVariant)
