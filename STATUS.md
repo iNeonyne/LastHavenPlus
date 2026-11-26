@@ -2,20 +2,20 @@
 
 **Last updated:** 2026-11-26  
 **Active branch:** beta  
-**Verified beta HEAD:** 7451b940dc0adfa1ea14234fe6d489bba688b12c (PR #158 permission-policy documentation merge).  
+**Verified beta base before PR #162 documentation follow-up:** a0e5271793c9bb7754b7ac41429065e5602df569 (PR #161 housekeeping merge).  
 **Stable release:** [v2.3.0](https://github.com/iNeonyne/LastHavenPlus/releases/tag/v2.3.0), tag commit ebc5b424e83ae66c2b0accc2bec6f050b8dc0d88; GitHub release metadata confirms the ARM64 APK, update manifest and v2.2.0-to-v2.3.0 BSDIFF asset. Main HEAD observed as e9c2b53d1ec84e27722da4b54fa4ddcbad65f891.  
 **Open PRs:** none at this checkpoint. No release, tag, publication or beta-to-main promotion is in progress.
 
 ## Current operational checkpoint — 2026-11-26
 
-- **Latest integration:** PR #158 (GeckoView/Android permission-policy documentation) merged to beta at 7451b940dc0adfa1ea14234fe6d489bba688b12c. Post-merge Markdown quality run [#45890132670](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45890132670) passed. Documentation-only; no Android/device test was applicable.
+- **Latest integrations:** PR #158 permission-policy documentation merged at 7451b940dc0adfa1ea14234fe6d489bba688b12c; post-merge Markdown run #45890132670 passed. PR #161 repository housekeeping merged at a0e5271793c9bb7754b7ac41429065e5602df569; exact-head Markdown #45892727113 and post-merge Markdown #45892884986 passed. Both changes are documentation-only; no Android/device test was applicable.
 - **Addon Manager:** Phase A native local ZIP/library management is integrated by PR #152 at 103bb979c98589a8704459d28d13861eccca39d6. Local enablement is metadata only; addons are not activated in the game. Phase B/runtime injection is not implemented and awaits a separate owner decision. Issue #23 is agent:owner.
 - **UI integrations:** adaptive icon PR #135 merged at c24b24e7125f49e86f465b1786ccfecb537e9694; visual-system PR #136 at e0967121b51ac1c232c92edd80157fc02b714766; accessibility PR #139 at 0d5ab712ce5195a3e71023c68da54f054645a8e2. These are integrated source changes; CI is not physical-device evidence.
 - **Updater:** #4 and #15 are coordinated under Chaty. The BSDIFF partial-open cleanup candidate was not merged: PRs #157, #159 and #160 are closed unmerged. On PR #160 head d0cb2f5144257a2270ae0ed42f649833ad688207, Markdown run #45891807077 passed, but reproducibility build A failed resolving org.jetbrains.kotlin.plugin.compose:2.4.21; build B and Android validation were still running when the PR was closed. No updater code from those PRs is integrated. Full #4 acceptance remains incomplete.
 - **Diagnostics:** Vibe owns active issue #11. PR #154 was closed unmerged because its branch was stale; fresh implementation and exact-head validation are required.
-- **Housekeeping:** Chaty owns #128 on branch chaty/issue-128-housekeeping-beta, based on current beta. This pass reconciles live state and ownership; it does not alter application behavior.
+- **Housekeeping:** #128 completed through PR #161 at a0e5271793c9bb7754b7ac41429065e5602df569. Exact-head Markdown #45892727113 and post-merge Markdown #45892884986 passed.
 - **Open PR inventory:** GitHub returned no open PRs at this checkpoint. Closed unmerged work remains documented in its issues and is not treated as integrated.
-- **Issue ownership:** all 26 open issues have exactly one agent:* label; there are no agent:unassigned issues. Vibe queue: #11 active, then #149 and #146. Chaty active: #4/#15 and #128; #81 is queued. Owner-controlled: #23 and #67. Dependency/authorization holds remain agent:blocked.
+- **Issue ownership:** all 25 open issues have exactly one agent:* label; there are no agent:unassigned issues. Vibe queue: #11 active, then #149 and #146. Chaty active: #4/#15; #128 is complete and #81 is queued. Owner-controlled: #23 and #67. Dependency/authorization holds remain agent:blocked.
 - **Device status:** no new physical ARM64 device testing was performed or claimed.
 
 ## Historical Addon Manager Phase A implementation checkpoint (#23)
