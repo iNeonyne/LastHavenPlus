@@ -814,18 +814,18 @@ Entry format:
 - **Verification:** documentation and workflow source review pending PR CI/merge. No automation run or label backfill is claimed. Physical-device testing is not applicable.
 
 
-## 2026-11-26 — GPL and community hygiene preparation
+## 2026-11-26 — Apache-2.0 and community hygiene preparation
 
-- Owner approved GPL-3.0-or-later for original LastHavenPlus project code/documentation in issue #67.
+- Owner approved Apache-2.0 for original LastHavenPlus project code/documentation in issue #67.
 - Created chaty/community-hygiene from beta.
-- Added canonical GPL text from SPDX license-list data, private vulnerability reporting policy, weekly Gradle Dependabot updates, README license/third-party boundary, and contributor branch-retention rules.
+- Added canonical Apache-2.0 text from SPDX license-list data, private vulnerability reporting policy, weekly Gradle Dependabot updates, README license/third-party boundary, and contributor branch-retention rules.
 - Reconciled the existing CHANGELOG.md with an Unreleased policy entry; did not duplicate the already-existing CONTRIBUTING.md.
 - Preliminary direct-dependency license review only; transitive dependency and packaged-notice audit remains open. No copyright-holder name/date was invented.
 - PR and CI verification pending. No Android code/build-tool/signing/ABI/release/main changes; no branch deletion or device testing.
 
 
-## 2026-11-26 — GPL/community hygiene and dependency-license gate
+## 2026-11-26 — Apache-2.0/community hygiene and dependency-license gate
 
-- Prepared GPL-3.0-or-later project licensing, SECURITY.md, Gradle Dependabot, user-facing changelog reconciliation, contributor branch-retention policy, and an in-app GPL text viewer.
+- Prepared Apache-2.0 project licensing, SECURITY.md, Gradle Dependabot, user-facing changelog reconciliation, contributor branch-retention policy, and an in-app Apache-2.0 text viewer.
 - Added a releaseRuntimeClasspath report to PR validation so transitive runtime dependencies can be audited from CI artifacts.
-- The dependency report surfaced Google Play Services runtime artifacts under the Android Software Development Kit License; GPLv3 compatibility of the combined APK remains unresolved. Issue #67 moved to agent:owner; PR #141 returned to draft. No merge or release until the owner resolves this gate and notices are audited.
+- The dependency report surfaced Google Play Services runtime artifacts under the Android Software Development Kit License; GPLv3 (superseded by the owner's later Apache-2.0 selection) compatibility of the combined APK remains unresolved. Issue #67 moved to agent:owner; PR #141 returned to draft. No merge or release until the owner resolves this gate and notices are audited.
