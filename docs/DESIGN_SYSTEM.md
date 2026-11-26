@@ -39,22 +39,6 @@ Supplied as `DesignTokens.colorScheme(darkTheme = false)` and `homeGradient(dark
 
 `primaryButtonColors()` resolves from `MaterialTheme.colorScheme`, so the same component token serves both variants; under the app's fixed dark scheme it produces exactly the previous frost/frostOnColor pairing.
 
-| Token | Value | Used for |
-|---|---|---|
-| `ink` | `#080D18` | Page background, status/navigation bar color |
-| `gradientTop` / `gradientBottom` | `#17263A` / `#05080F` | Home vertical gradient |
-| `panel` | `#121D2D` | Cards, menu surface |
-| `panelBright` | `#26364B` | Attention cards (update badge) |
-| `panelOverlay` | `#F2121D2D` | Back-overlay menu panel |
-| `logSurface` | `#080B12` | Diagnostics log body |
-| `scrim` | `#58000000` (34.5% alpha) | Behind the Back overlay |
-| `frost` | `#9BDCF5` | Accent: section titles, eyebrows, labels, progress, primary buttons |
-| `frostOnColor` | `#0A1621` | Text on `frost` fills |
-| `textPrimary` | `#FFFFFF` | Headings and emphasized values |
-| `textBody` | `#D7E0EC` | Log body text |
-| `textSecondary` | `#AAB7C9` | Supporting copy |
-| `error` | `#ED8796` | M3 error role (unused by screens so far) |
-
 ## Contrast guarantees (unit-tested in `DesignTokensTest`)
 
 WCAG relative-luminance ratios computed by the shared `contrastRatio()` helper:
