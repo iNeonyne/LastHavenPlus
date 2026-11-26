@@ -6,7 +6,7 @@
 
 - **Latest stable:** v2.3.0 is published on main at tag commit ebc5b424e83ae66c2b0accc2bec6f050b8dc0d88.
 - **Development:** beta is at 7cd898f4c1f9b7f70787a7000e1ed9343a83540d; no new release or promotion is in progress.
-- **CI:** PR #132 consolidated beta lint/format checks into the existing signed ARM64 build job and is merged. Exact-head PR validation and post-merge signed CI passed. Issue #129 remains under Chaty until the measured result is recorded and final docs are merged.
+- **CI:** PR #132 consolidated beta lint/format checks into the existing signed ARM64 build job and is merged. Exact-head PR validation and post-merge signed CI passed. Issue #129 is closed as completed after the measured result was recorded.
 - **Housekeeping:** #128 is Chaty-owned; it reconciles repository status and work records. #70 remains open until this reconciliation is integrated.
 - **Updater:** #4 remains open for remaining regression coverage. #15, #31 and #111 are blocked/deferred; no release-ID/differential fallback runtime verification is claimed.
 - **Reproducibility:** #66 / PR #119 has a prior byte-identical unsigned APK result, but its branch is behind current beta and needs refresh plus exact-head reruns before merge.
