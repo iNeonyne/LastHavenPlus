@@ -61,11 +61,17 @@ class AddonLibraryRepository(private val root: File) {
           notes = value("notes"),
           dependencies = decodeList(properties.getProperty("addon.$index.dependencies").orEmpty()),
           sizeBytes =
-            properties.getProperty("addon.$index.size")?.toLongOrNull()
-              ?: throw IllegalStateException("Addon library size is invalid."),
+            properties.getProperty("addon.$index.size")?.toLongOrNull()?.also {
+              require(it in 0..AddonArchive.MAX_LIBRARY_BYTES) {
+                "Addon library size is invalid."
+              }
+            } ?: throw IllegalStateException("Addon library size is invalid."),
           filesCount =
-            properties.getProperty("addon.$index.files")?.toIntOrNull()
-              ?: throw IllegalStateException("Addon library file count is invalid."),
+            properties.getProperty("addon.$index.files")?.toIntOrNull()?.also {
+              require(it in 1..AddonArchive.MAX_ENTRIES) {
+                "Addon library file count is invalid."
+              }
+            } ?: throw IllegalStateException("Addon library file count is invalid.",
           enabled =
             properties.getProperty("addon.$index.enabled")?.toBooleanStrictOrNull() ?: false,
           importedAt = properties.getProperty("addon.$index.importedAt")?.toLongOrNull() ?: 0L,
@@ -74,6 +80,12 @@ class AddonLibraryRepository(private val root: File) {
       }
     require(addons.map { it.folder.lowercase() }.distinct().size == addons.size) {
       "Addon library contains duplicate folder names."
+    }
+    require(addons.sumOf { it.sizeBytes } <= AddonArchive.MAX_LIBRARY_BYTES) {
+      "Addon library exceeds 384 MiB."
+    }
+    require(addons.all { addonDirectory(it.folder).isDirectory }) {
+      "Addon library references missing addon files."
     }
     return AddonLibrarySnapshot(properties.getProperty("revision") ?: "unknown", addons)
   }
@@ -195,13 +207,29 @@ class AddonLibraryRepository(private val root: File) {
   fun removeAddon(folder: String): AddonLibrarySnapshot {
     require(isSafeFolder(folder)) { "Invalid addon folder." }
     val current = readLibrary()
+    require(current.addons.any { it.folder == folder }) { "Addon not found." }
     val next =
       current.copy(
         revision = UUID.randomUUID().toString(),
         addons = current.addons.filterNot { it.folder == folder },
       )
-    writeIndex(next)
-    File(root, folder).deleteRecursively()
+    val target = addonDirectory(folder)
+    val backup = File(root, ".remove-" + UUID.randomUUID())
+    if (target.exists()) {
+      check(target.renameTo(backup)) { "Could not stage addon files for removal." }
+    }
+    try {
+      writeIndex(next)
+    } catch (error: Exception) {
+      if (backup.exists()) {
+        target.deleteRecursively()
+        check(backup.renameTo(target)) { "Could not restore addon files after removal failed." }
+      }
+      throw error
+    }
+    // A failed cleanup leaves only an unreferenced hidden backup; it cannot make the addon appear
+    // installed again or corrupt the committed library index.
+    backup.deleteRecursively()
     return next
   }
 
