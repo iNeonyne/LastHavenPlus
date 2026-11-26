@@ -33,7 +33,7 @@
 | [#8](#issue-8) | — | Legacy addon manager | Closed — superseded; no planned work |
 | [#9](#issue-9) | P2 | Overlay accessibility and navigation | Open; TalkBack semantics and automated navigation coverage remain for the #56 overlay |
 | [#10](#issue-10) | P2 | Persistent app-wide network usage totals | Open; app-wide counters are implemented, automated counter tests remain |
-| [#11](#issue-11) | P2 | Privacy-conscious log tests | Open; queued after #9 |
+| [#11](#issue-11) | P2 | Privacy-conscious log tests | In progress; Vibe (agent:vibe) test-only coverage of existing diagnostics (redaction, rotation/size bounds, failure paths); runtime-version reporting deferred pending Chaty decision |
 | [#12](#issue-12) | P2 | GeckoView load-error details | Open |
 | [#13](#issue-13) | — | Accessible names / legacy addon-manager compile work | Closed — consolidated into #9 |
 | [#14](#issue-14) | P2 | Connection diagnostics | Open |

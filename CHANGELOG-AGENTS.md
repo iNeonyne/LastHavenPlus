@@ -1,3 +1,10 @@
+## 2026-11-26 — Diagnostics test coverage (#11, Vibe)
+
+- **Owner:** Vibe (agent:vibe), assigned by Chaty; test-only scope for the existing local diagnostics implementation.
+- **Scope:** redaction edge-case tests (key spelling variants, bearer prefixes, sensitive query parameters, single-quoted/unquoted JSON secrets, non-sensitive preservation), rotation at the 512 KiB boundary with single-previous retention, rename-failure truncation fallback, unwritable-directory failure path, 4,000-character message cap, 80 KiB read bound, rotated-before-current read order and clear behavior. `Diagnostics.kt` exposes directory-based internals for JVM testability with the public Context API unchanged.
+- **Exclusions:** no logger rewrite, no new logging behavior, no GeckoView/updater/game changes; runtime-version diagnostics deferred pending a Chaty decision (see issue #11).
+- **Device status:** no physical ARM64 testing.
+
 ## 2026-11-26 — Post-merge verification and owner visual signoff (#133)
 
 - **Beta HEAD:** `c24b24e7125f49e86f465b1786ccfecb537e9694` application merge; documentation-only PR #137 later advanced beta to `f800deebf6c8bdaa91df4ac7c3693dcf86f3e6b6`.

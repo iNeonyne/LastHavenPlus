@@ -55,6 +55,15 @@
 - These are planning targets only, not release/tag/promotion authorization.
 - v2.4.0 icon resources (#133, Chaty) and Compose visual-system work (#107, Vibe) proceeded in parallel with separate file scopes; #107 integrated via PR #136 and #9 accessibility is now the active Vibe assignment.
 
+## Active Vibe work
+
+### Issue #11 — diagnostics redaction/rotation/failure-path tests
+- **Owner:** Vibe (agent:vibe), assigned by Chaty on 2026-11-26.
+- **Branch:** `vibe/diagnostics-tests-11-6ce186`, based on current beta at assignment time.
+- **Scope:** focused JVM tests for the existing local diagnostics implementation only — redaction edge cases across supported key/value formats, rotation and strict size/retention bounds including failure paths, bounded reads and safe failure behavior. `Diagnostics.kt` gained testable directory-based internals with the public Context API unchanged; no logger architecture rewrite, no new logging behavior, no GeckoView/updater changes.
+- **Runtime version:** the pinned GeckoView 160 artifact exposes `org.mozilla.geckoview.BuildConfig.GRE_MILESTONE`/`MOZILLA_VERSION`, but wiring a runtime-version diagnostic line requires `MainActivity.kt`, which is outside the assigned file scope; Vibe asked Chaty on the issue before expanding scope. No version is guessed.
+- **Device status:** no physical ARM64 testing; JVM tests do not exercise on-device log viewing/sharing.
+
 ## Review queue and stale-base work
 
 ### Issue #66 / PR #119 — independent unsigned APK reproducibility
