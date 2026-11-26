@@ -69,24 +69,24 @@ The following dated implementation notes are retained as history. Their old draf
 
 ## Open work and limitations
 
-- **Updater reliability:** #4 and #15 are Chaty-owned and sequenced together. PR #157/#159/#160 BSDIFF cleanup candidates were closed without merge; no candidate code is integrated. PR #160 exact-head Markdown passed, but one clean reproducibility build failed resolving Kotlin Compose plugin 2.4.21 and Android/reproducibility were not both complete at closure. The broader adversarial matrix, signed APK-pair reconstruction, benchmark and current-beta signed packaging checks remain open.
+- **Updater reliability:** #4 and #15 are Chaty-owned and sequenced together. BSDIFF partial-open cleanup remains unintegrated; PRs #157/#159/#160 are closed unmerged. The identical code/test head d0cb2f5144257a2270ae0ed42f649833ad688207 passed Android #45891807118, Markdown #45891807077 and reproducibility #45891807104 on retry attempt 2. Refreshed PR #160 head faab1e0b4f0f6d913ce685d34afc6a8ad8f07772 was closed while Android #45893613690 and reproducibility #45893613642 were still running; neither is counted as passing. No updater candidate code is integrated. Broader #4 acceptance remains incomplete.
 - **Release workflow:** #31 is blocked pending owner authorization for release-tag packaging/runtime verification. Do not trigger a release to test it.
-- **Diagnostics:** #11 is Vibe's active assignment; the bounded tests were recreated on fresh branch `vibe/diagnostics-tests-11-refresh` from current beta (stale PR #154 kept as reference only).
-- **Housekeeping:** #128 is Chaty-owned on chaty/issue-128-housekeeping-beta; exact-head Markdown/link/anchor validation is pending.
+- **Diagnostics:** PR #163 merged at 0cc21b471fce646d03dad449b91acbe67a90df7d. Exact-head Android #45893571423, Markdown #45893571482 and independent reproducibility #45893571443 passed. Issue #11 remains open as agent:blocked for explicitly deferred GeckoView runtime-version startup reporting.
+- **Housekeeping:** #128 completed through PR #161 at a0e5271793c9bb7754b7ac41429065e5602df569; exact-head Markdown #45892727113 and post-merge Markdown #45892884986 passed.
 - **GeckoView audit:** #20 remains owner-deferred/blocked. PR #122 is closed without merge; technical POM/runtime findings remain useful, but notice packaging, unresolved license/distribution questions and physical-device verification are incomplete.
 - **Updater progress UX:** #111 remains blocked until v2.4.0 is released and the owner explicitly authorizes the v2.5.0 integration window. PR #143 is closed without merge.
 - **Addon Manager:** Phase A is integrated by PR #152; Phase B remains unimplemented and issue #23 is agent:owner. No runtime injection or game-addon activation is claimed.
 - **Rights/notices:** #67 remains agent:owner; PR #144 closed without merge. The repository owner's All Rights Reserved decision applies to original project material; third-party notices/distribution questions remain unresolved.
 - **Dependency refresh:** #81's five approved library pins are integrated by PR #104; remaining evidence/documentation reconciliation is queued to Chaty. No toolchain or GeckoView changes are included.
-- **Other holds:** #16 waits on #56 and #14; #147 waits on #146; #148 waits on #146 and coordination with #16; #12 waits on #11; #14 waits on #12; #10 waits on #16; #28 waits on #10; #6 waits on #28; #17 waits on #6. #19 waits on #4/#6. #7 and #86 remain blocked coordination/measurement items.
-- **Open PRs:** none. Closed unmerged PRs are not considered integrated.
+- **Other holds:** #16 waits on #56 and #14; #147 waits for #146; #148 waits for #146 and coordination with #16; #12 waits for its diagnostics prerequisite; #14 waits for #12; #10 waits for #16; #28 waits for #10; #6 waits for #28; #17 waits for #6. #19 waits for #4/#6. #7 and #86 remain blocked coordination/measurement items.
+- **Open PRs:** none at the checkpoint before this documentation follow-up. Closed unmerged PRs are not considered integrated.
 - **Device status:** CI and packaging checks do not prove physical ARM64 gameplay, profile persistence, permission prompts, haptics or updater installation. No new physical-device testing was performed.
 
 ## Next-version roadmap
 
 - **v2.4.0 — UI/UX:** icon (#133), visual system (#107) and overlay accessibility (#9) source changes are integrated. Any remaining owner/device verification is tracked separately; no new release is authorized.
 - **v2.5.0 — updater:** progress/retry presentation (#111) remains blocked until v2.4.0 release and explicit owner authorization. Core updater reliability (#4/#15) is being handled by Chaty first; #31 remains owner-authorization-gated.
-- **v2.6.0 — settings/diagnostics:** #11 diagnostics tests are active with Vibe; #149 string resources and #146 session extraction are queued. #12/#14, #16, #10/#28/#6/#17 remain dependency-gated.
+- **v2.6.0 — settings/diagnostics:** #149 launcher-owned strings are active with Vibe; #146 session extraction is queued. #11 test coverage is integrated but the issue remains blocked for deferred runtime-version reporting. #12/#14, #16, #10/#28/#6/#17 remain dependency-gated.
 - Roadmap source: issue #18. Version targets are planning only, not release commitments. Addon Manager Phase A is integrated; Phase B remains owner-controlled.
 
 ## Historical integration records
