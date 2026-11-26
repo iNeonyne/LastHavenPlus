@@ -10,6 +10,10 @@ import android.view.WindowManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
@@ -339,7 +343,11 @@ private fun LastHavenApp(
             onRetry = reloadGame,
             onRestore = restoreGame,
           )
-          if (menuVisible) {
+          AnimatedVisibility(
+            visible = menuVisible,
+            enter = fadeIn(animationSpec = tween(durationMillis = 160)),
+            exit = fadeOut(animationSpec = tween(durationMillis = 120)),
+          ) {
             GameMenuScreen(
               onReload = {
                 reloadGame()
