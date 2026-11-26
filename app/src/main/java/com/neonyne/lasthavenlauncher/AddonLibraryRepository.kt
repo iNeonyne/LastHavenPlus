@@ -167,7 +167,7 @@ class AddonLibraryRepository(private val root: File) {
       backups.forEach { (_, backup) -> backup.deleteRecursively() }
       return snapshot
     } catch (error: Exception) {
-      newTargets.forEach(File::deleteRecursively)
+      newTargets.forEach { it.deleteRecursively() }
       for ((target, backup) in backups.asReversed()) {
         target.deleteRecursively()
         if (backup.exists()) backup.renameTo(target)
