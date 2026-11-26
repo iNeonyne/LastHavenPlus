@@ -2,7 +2,7 @@
 
 Use this structure for every user-facing GitHub Release and matching version entry in `CHANGELOG.md`. Keep the language clear, concise and focused on what users will notice. Describe behavior, not PRs, issue numbers, commits or internal implementation details.
 
-# LastHavenPlus vX.Y.Z — Short, descriptive title
+## LastHavenPlus vX.Y.Z — Short, descriptive title
 
 One or two sentences explaining the main benefit of the update.
 
