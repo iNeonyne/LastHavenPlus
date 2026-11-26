@@ -25,11 +25,11 @@ data class AddonDocumentPickers(
 @Composable
 fun rememberAddonDocumentPickers(
   onImportSelected: (Uri) -> Unit,
-  onExportSelected: (folder: String, Uri) -> Unit,
+  onExportSelected: (String, Uri) -> Unit,
 ): AddonDocumentPickers {
   val latestImport by rememberUpdatedState(onImportSelected)
   val latestExport by rememberUpdatedState(onExportSelected)
-  val pendingExportFolder = androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateOf<String?>(null) }
+  val pendingExportFolder = remember { androidx.compose.runtime.mutableStateOf<String?>(null) }
 
   val importLauncher =
     rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
