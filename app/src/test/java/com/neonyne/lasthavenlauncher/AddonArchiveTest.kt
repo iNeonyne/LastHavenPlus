@@ -95,6 +95,43 @@ class AddonArchiveTest {
   }
 
   @Test
+  fun rejectsDuplicateCentralDirectoryRecords() {
+    val archive = zipOf(
+      "Sample/Sample.toc" to "## Interface: 30300\\n",
+      "Sample/main.lua" to "print('sample')",
+    )
+    val duplicated = duplicateFirstCentralDirectoryRecord(archive)
+
+    assertThrows(IllegalArgumentException::class.java) {
+      AddonArchive.importZip(
+        ByteArrayInputStream(duplicated),
+        duplicated.size.toLong(),
+        temporaryFolder.newFolder("duplicate-central-record"),
+      )
+    }
+  }
+
+  @Test
+  fun importsAddonsNestedUnderCommonPackagingDirectory() {
+    val archive = zipOf(
+      "Release/Alpha/Alpha.toc" to "## Interface: 30300\\n",
+      "Release/Alpha/main.lua" to "print('alpha')",
+      "Release/Beta/Beta.toc" to "## Interface: 30300\\n",
+      "Release/Beta/main.lua" to "print('beta')",
+    )
+
+    val imported = AddonArchive.importZip(
+      ByteArrayInputStream(archive),
+      archive.size.toLong(),
+      temporaryFolder.newFolder("nested-package"),
+    )
+
+    assertEquals(setOf("Alpha", "Beta"), imported.map { it.folder }.toSet())
+    assertEquals(setOf("main.lua", "Alpha.toc"), imported.first { it.folder == "Alpha" }.files.keys)
+    assertEquals(setOf("main.lua", "Beta.toc"), imported.first { it.folder == "Beta" }.files.keys)
+  }
+
+  @Test
   fun rejectsCaseInsensitiveDuplicatePaths() {
     val archive =
       zipOf(
@@ -211,6 +248,53 @@ class AddonArchiveTest {
     assertThrows(IllegalArgumentException::class.java) {
       AddonArchive.importZip(input, AddonArchive.MAX_ARCHIVE_BYTES + 1, temporaryFolder.newFolder())
     }
+  }
+
+  private fun duplicateFirstCentralDirectoryRecord(archive: ByteArray): ByteArray {
+    fun intAt(offset: Int): Int =
+      (archive[offset].toInt() and 0xff) or
+        ((archive[offset + 1].toInt() and 0xff) shl 8) or
+        ((archive[offset + 2].toInt() and 0xff) shl 16) or
+        ((archive[offset + 3].toInt() and 0xff) shl 24)
+
+    fun shortAt(offset: Int): Int =
+      (archive[offset].toInt() and 0xff) or ((archive[offset + 1].toInt() and 0xff) shl 8)
+
+    val eocdSignature = byteArrayOf(0x50, 0x4b, 0x05, 0x06)
+    val eocd = archive.indices.last { index ->
+      index + eocdSignature.size <= archive.size &&
+        eocdSignature.indices.all { archive[index + it] == eocdSignature[it] }
+    }
+    val entryCount = shortAt(eocd + 10)
+    val centralSize = intAt(eocd + 12)
+    val centralOffset = intAt(eocd + 16)
+    val firstRecordLength = 46 + shortAt(centralOffset + 28) +
+      shortAt(centralOffset + 30) + shortAt(centralOffset + 32)
+    val result = ByteArray(archive.size + firstRecordLength)
+    archive.copyInto(result, 0, 0, eocd)
+    archive.copyInto(result, 0, eocd, archive.size)
+    archive.copyInto(result, eocd + centralSize, centralOffset, centralOffset + centralSize)
+    archive.copyInto(
+      result,
+      eocd + centralSize + firstRecordLength,
+      centralOffset,
+      centralOffset + firstRecordLength,
+    )
+    val newEocd = eocd + firstRecordLength
+    fun putShort(offset: Int, value: Int) {
+      result[offset] = value.toByte()
+      result[offset + 1] = (value ushr 8).toByte()
+    }
+    fun putInt(offset: Int, value: Int) {
+      result[offset] = value.toByte()
+      result[offset + 1] = (value ushr 8).toByte()
+      result[offset + 2] = (value ushr 16).toByte()
+      result[offset + 3] = (value ushr 24).toByte()
+    }
+    putShort(newEocd + 10, entryCount + 1)
+    putShort(newEocd + 8, shortAt(eocd + 8) + 1)
+    putInt(newEocd + 12, centralSize + firstRecordLength)
+    return result
   }
 
   private fun zipOf(vararg files: Pair<String, String>): ByteArray {
