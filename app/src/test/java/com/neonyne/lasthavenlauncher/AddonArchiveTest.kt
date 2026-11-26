@@ -7,9 +7,13 @@ import java.util.zip.ZipOutputStream
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertThrows
 import org.junit.Assert.assertTrue
+import org.junit.Rule
 import org.junit.Test
+import org.junit.rules.TemporaryFolder
 
 class AddonArchiveTest {
+  @get:Rule val temporaryFolder = TemporaryFolder()
+
   @Test
   fun importsAddonFolderAndReadsTocMetadata() {
     val archive =
@@ -20,7 +24,7 @@ class AddonArchiveTest {
         "Example/Media/icon.blp" to "image",
       )
 
-    val imported = AddonArchive.importZip(ByteArrayInputStream(archive), archive.size.toLong())
+    val imported = AddonArchive.importZip(ByteArrayInputStream(archive), archive.size.toLong(), temporaryFolder.newFolder())
 
     assertEquals(1, imported.size)
     assertEquals("Example Addon", imported.single().title)
@@ -84,7 +88,7 @@ class AddonArchiveTest {
       }
 
     assertThrows(IllegalArgumentException::class.java) {
-      AddonArchive.importZip(input, AddonArchive.MAX_ARCHIVE_BYTES + 1)
+      AddonArchive.importZip(input, AddonArchive.MAX_ARCHIVE_BYTES + 1, temporaryFolder.newFolder())
     }
   }
 
