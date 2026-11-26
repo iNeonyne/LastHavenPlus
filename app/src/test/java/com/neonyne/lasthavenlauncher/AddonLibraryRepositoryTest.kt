@@ -2,6 +2,8 @@ package com.neonyne.lasthavenlauncher
 
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
+import java.io.IOException
+import java.io.File
 import java.util.zip.ZipEntry
 import java.util.zip.ZipOutputStream
 import org.junit.Assert.assertEquals
@@ -81,6 +83,51 @@ class AddonLibraryRepositoryTest {
 
     assertThrows(IllegalArgumentException::class.java) { repository.removeAddon("Missing") }
     assertEquals(listOf("Sample"), repository.readLibrary().addons.map { it.folder })
+  }
+
+  @Test
+  fun rejectsImportWhenThereIsNotEnoughSpaceForCommitStaging() {
+    val root = temporaryFolder.newFolder("low-storage")
+    val repository = AddonLibraryRepository(root, availableStorageBytes = { 0L })
+    val archive = zipOf("Sample/Sample.toc" to "## Interface: 30300\\n")
+
+    assertThrows(IllegalArgumentException::class.java) {
+      repository.importZip(ByteArrayInputStream(archive), archive.size.toLong())
+    }
+
+    assertTrue(root.listFiles().orEmpty().isEmpty())
+    assertTrue(repository.readLibrary().addons.isEmpty())
+  }
+
+  @Test
+  fun restoresExistingAddonWhenIndexCommitFails() {
+    val root = temporaryFolder.newFolder("rollback")
+    val originalRepository = AddonLibraryRepository(root)
+    val original =
+      zipOf(
+        "Sample/Sample.toc" to "## Version: 1\\n",
+        "Sample/main.lua" to "print('original')",
+      )
+    originalRepository.importZip(ByteArrayInputStream(original), original.size.toLong())
+
+    val replacement =
+      zipOf(
+        "Sample/Sample.toc" to "## Version: 2\\n",
+        "Sample/main.lua" to "print('replacement')",
+      )
+    val failingRepository =
+      AddonLibraryRepository(
+        root,
+        beforeIndexWrite = { throw IOException("forced index failure") },
+      )
+
+    assertThrows(IOException::class.java) {
+      failingRepository.importZip(ByteArrayInputStream(replacement), replacement.size.toLong())
+    }
+
+    assertEquals("1", originalRepository.readLibrary().addons.single().version)
+    assertEquals("print('original')", File(root, "Sample/main.lua").readText())
+    assertTrue(root.listFiles().orEmpty().none { it.name.startsWith(".backup-") })
   }
 
   private fun zipOf(vararg files: Pair<String, String>): ByteArray {
