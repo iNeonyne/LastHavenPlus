@@ -609,3 +609,11 @@ No branch was deleted. The available GitHub connector exposes no branch-delete o
 - **Finding:** exact-head PR run #45888473948 failed at `spotlessKotlinCheck` for import order and nested scope formatting in `BsdiffPatch.kt` and `BsdiffPatchTest.kt`; it did not reach unit tests.
 - **Correction:** replaced the initial source commit `dd33fc1af4e33b4c1d4fd89c5b37e64159115714` with `0b275726c6a19784fe42822813ec799ca10df84e`, retaining the same resource-lifecycle fix using an opened-section collection and best-effort reverse-order close. Test commit `0e6896afc6f6f17d7e038b612b01875e0ebbbc2f` remains unchanged.
 - **Next:** rerun exact-head Spotless, Android/JVM tests, Markdown and reproducibility. No test pass is claimed.
+
+
+### 2026-11-26 — Current beta signed packaging evidence
+
+- **Commit:** beta `1279f214b3fdd3ba420e090a6a90914a8a3399e7`.
+- **Run:** [#45879445471](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45879445471) completed successfully. Optimized signed release build and JVM tests passed; packaged native ABI was exactly `arm64-v8a`; certificate fingerprint matched the established LastHavenPlus signing identity; versionName `2.3.0`, versionCode `2003000`; artifact `LastHavenPlus-2.3.0-beta-arm64-v8a` uploaded.
+- **Independent reproducibility:** [run #45879445573](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45879445573) completed successfully on the same commit.
+- **Limit:** beta build correctly skipped release-tag differential generation and publication. This does not verify a new patch generation/reconstruction, APK-pair end-to-end fixture or physical update installation.
