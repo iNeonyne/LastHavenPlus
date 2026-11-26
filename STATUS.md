@@ -217,4 +217,4 @@ No code, CI, release, signing, dependency, ABI or device behavior changed in thi
 - **Documented source policy:** only persistent storage and audible/inaudible autoplay are allowed, and only for the exact `lasthavens.com` host and its subdomains. All other content permission types/origins are denied. Android runtime permission callbacks and media capture callbacks reject requests.
 - **Manifest:** declares `INTERNET` and `REQUEST_INSTALL_PACKAGES` only. No camera, microphone, geolocation or notification permission is declared. Package-install permission supports the explicit Android installer flow.
 - **Limitations:** this is a source audit, not physical-device verification of permission prompts or game features. No manifest, delegate, GeckoView setting or runtime behavior was changed.
-- **Validation:** exact-head Markdown quality workflow pending; Android/device tests are not applicable to documentation-only changes.
+- **Validation:** exact-head Markdown quality workflow passed on initial PR head `e2ce22c44508a87f53fc4a57a03f82e0597550bc` (run #45889911748); Android/device tests are not applicable to documentation-only changes.
