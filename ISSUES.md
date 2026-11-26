@@ -5,10 +5,10 @@
 ## Current state — 2026-11-27
 
 - **Latest stable:** v2.3.0 is published; release metadata confirms the ARM64 APK, update manifest and v2.2.0-to-v2.3.0 BSDIFF asset.
-- **Development:** beta HEAD is 7451b940dc0adfa1ea14234fe6d489bba688b12c; v2.4.0 icon, visual-system and overlay-accessibility source integrations are merged.
+- **Development:** beta HEAD at the PR #171 base is `0cc21b471fce646d03dad449b91acbe67a90df7d`; v2.4.0 icon, visual-system and overlay-accessibility source integrations are merged.
 - **Addon Manager:** Phase A is integrated by PR #152 at `103bb979c98589a8704459d28d13861eccca39d6`; local enablement is metadata only. The owner authorized Phase B investigation/implementation; #23 is Chaty-owned and child issues #167–#170 are separately queued/blocked. No runtime injection is claimed.
 - **Latest docs integration:** PR #158 merged at 7451b940dc0adfa1ea14234fe6d489bba688b12c; Markdown push run #45890132670 passed.
-- **Open PRs at the 2026-11-27 live check:** #164 (documentation), #165 (Vibe string resources), and #166 (Addon Manager groundwork). Recheck exact heads and CI before review/merge. PR #154, #157, #159, #160, #122, #143 and #144 were closed without merge; do not treat their branch-only changes as integrated.
+- **Open PRs at the 2026-11-27 live check:** #164 (documentation), #165 (Vibe string resources), #166 (Addon Manager groundwork), and #171 (assignment system). Recheck exact heads and CI before review/merge. PR #154, #157, #159, #160, #122, #143 and #144 were closed without merge; do not treat their branch-only changes as integrated.
 - **Updater:** #4/#15 are coordinated under Chaty. BSDIFF cleanup candidates were not merged; PR #160 Markdown passed but one reproducibility build failed resolving Kotlin Compose plugin 2.4.21, while Android and second reproducibility job were incomplete at closure. #4 acceptance remains open. #31 and #111 remain blocked for their stated authorization/release holds.
 - **Diagnostics:** #11's test work merged via PR #163; remaining GeckoView runtime-version startup reporting is deferred and marked `agent:blocked`.
 - **Housekeeping:** #128 closed after PR #161 merged at a0e5271793c9bb7754b7ac41429065e5602df569; exact-head and post-merge Markdown passed. #70 is closed; Markdown lint is integrated.
