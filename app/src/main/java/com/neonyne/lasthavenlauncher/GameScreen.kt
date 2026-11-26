@@ -59,7 +59,7 @@ fun GameScreen(
         GameStatusSurface(contentDescription = "LastHaven is loading") {
           LinearProgressIndicator(color = DesignTokens.gold)
           Spacer(modifier = Modifier.height(16.dp))
-          Text("Loading LastHaven…", color = GameTextColor)
+          Text("Loading LastHaven…", color = DesignTokens.textSecondary)
         }
 
       GameLoadPresentation.RecoverableFailure ->
@@ -72,7 +72,7 @@ fun GameScreen(
           Spacer(modifier = Modifier.height(8.dp))
           Text(
             "Check your connection and try again.",
-            color = GameTextColor,
+            color = DesignTokens.textSecondary,
             modifier = Modifier.widthIn(max = 320.dp).padding(horizontal = 8.dp),
           )
           Spacer(modifier = Modifier.height(20.dp))
@@ -82,7 +82,7 @@ fun GameScreen(
             shape = RoundedCornerShape(DesignTokens.cornerButton),
             colors =
               ButtonDefaults.buttonColors(
-                containerColor = GameAccentColor,
+                containerColor = DesignTokens.gold,
                 contentColor = DesignTokens.goldOnColor,
               ),
           ) {
@@ -100,7 +100,7 @@ fun GameScreen(
           Spacer(modifier = Modifier.height(8.dp))
           Text(
             "The game session ended. Restore the game to continue playing.",
-            color = GameTextColor,
+            color = DesignTokens.textSecondary,
             modifier = Modifier.widthIn(max = 320.dp).padding(horizontal = 8.dp),
           )
           Spacer(modifier = Modifier.height(20.dp))
@@ -110,7 +110,7 @@ fun GameScreen(
             shape = RoundedCornerShape(14.dp),
             colors =
               ButtonDefaults.buttonColors(
-                containerColor = GameAccentColor,
+                containerColor = DesignTokens.gold,
                 contentColor = Color(0xFF17130A),
               ),
           ) {
