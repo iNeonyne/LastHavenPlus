@@ -618,3 +618,12 @@ No branch was deleted. The available GitHub connector exposes no branch-delete o
 - **Validation:** `./gradlew spotlessCheck -PspotlessRatchetFrom=origin/beta testDebugUnitTest lintDebug` — Spotless pass, lint pass, JVM suite pass (0 failures) at the implementation commit; exact-head CI run IDs reported in the PR description and issue #11 handoff comment.
 - **Limitations:** JVM-only coverage; Android Context wrappers and on-device log sharing not exercised; GeckoView startup-version logging excluded per scope decision; no physical ARM64 device testing.
 - **Next action:** Chaty review of the fresh draft PR; #149 then #146 remain queued.
+
+
+### 2026-11-26 — #11 diagnostics test coverage integrated
+
+- PR #163 squash-merged to beta at 0cc21b471fce646d03dad449b91acbe67a90df7d.
+- Exact-head Android #45893571423, Markdown #45893571482 and independent unsigned APK reproducibility #45893571443 passed on 42ad38bf08652f45a53c7c3467aa85230b355298.
+- The change adds directory-scoped testability helpers and 9 JVM tests; the public Context API and callers remain unchanged.
+- Issue #11 remains open as agent:blocked for deferred GeckoView runtime-version startup reporting. No physical-device test claimed.
+- Vibe's next active assignment is #149; #146 is queued second. No updater, Addon Manager, game/client or release changes.
