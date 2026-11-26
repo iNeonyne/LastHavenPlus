@@ -574,7 +574,7 @@ class AddonLibraryRepository(
       }
     }
     fun requireContiguous(indices: Set<Int>, field: String) {
-      require(indices == indices.indices.toSet()) { "Malformed addon transaction $field list." }
+      require(indices == (0 until indices.size).toSet()) { "Malformed addon transaction $field list." }
     }
     require(backupIndices == targetIndices) {
       "Addon transaction backup/target pairs are incomplete."
