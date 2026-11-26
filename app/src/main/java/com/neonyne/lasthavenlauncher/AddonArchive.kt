@@ -26,6 +26,12 @@ object AddonArchive {
   const val MAX_EXPANDED_BYTES = 256L * 1024 * 1024
   const val MAX_FILE_BYTES = 64L * 1024 * 1024
   const val MAX_TOC_BYTES = 1024L * 1024
+  const val MAX_TITLE_CHARS = 256
+  const val MAX_VERSION_CHARS = 128
+  const val MAX_INTERFACE_CHARS = 256
+  const val MAX_NOTES_CHARS = 4096
+  const val MAX_DEPENDENCIES = 256
+  const val MAX_DEPENDENCY_NAME_CHARS = 128
   const val MAX_ENTRIES = 32_000
   const val MAX_ADDONS_PER_ARCHIVE = 256
   const val MAX_LIBRARY_BYTES = 384L * 1024 * 1024
@@ -295,20 +301,37 @@ object AddonArchive {
     fun clean(value: String?): String =
       value.orEmpty().replace(Regex("\\|c[0-9a-f]{8}|\\|r", RegexOption.IGNORE_CASE), "")
 
+    fun boundedField(key: String, maximum: Int, cleanColors: Boolean = true): String {
+      val value = if (cleanColors) clean(values[key]) else values[key].orEmpty()
+      require(value.length <= maximum) { "TOC $key metadata exceeds the $maximum-character limit." }
+      return value
+    }
+
+    fun dependencyList(raw: String): List<String> {
+      val dependencies = raw.split(Regex("[,\\s]+")).filter(String::isNotBlank)
+      require(dependencies.size <= MAX_DEPENDENCIES) {
+        "TOC contains more than $MAX_DEPENDENCIES dependencies."
+      }
+      require(
+        dependencies.all {
+          it.length <= MAX_DEPENDENCY_NAME_CHARS && it.matches(Regex("[A-Za-z0-9_-]+"))
+        }
+      ) {
+        "TOC contains an invalid dependency name."
+      }
+      return dependencies.distinctBy { it.lowercase(Locale.ROOT) }
+    }
+
     val dependencies =
-      (values["dependencies"] ?: values["requireddeps"] ?: values["deps"].orEmpty())
-        .split(Regex("[,\\s]+"))
-        .filter(String::isNotBlank)
+      dependencyList(values["dependencies"] ?: values["requireddeps"] ?: values["deps"].orEmpty())
     val optionalDependencies =
-      (values["optionaldeps"] ?: values["optional-dependencies"].orEmpty())
-        .split(Regex("[,\\s]+"))
-        .filter(String::isNotBlank)
+      dependencyList(values["optionaldeps"] ?: values["optional-dependencies"].orEmpty())
 
     return TocMetadata(
-      title = clean(values["title"]),
-      version = clean(values["version"]),
-      interfaceVersion = values["interface"].orEmpty(),
-      notes = clean(values["notes"]),
+      title = boundedField("title", MAX_TITLE_CHARS),
+      version = boundedField("version", MAX_VERSION_CHARS),
+      interfaceVersion = boundedField("interface", MAX_INTERFACE_CHARS, cleanColors = false),
+      notes = boundedField("notes", MAX_NOTES_CHARS),
       dependencies = dependencies,
       optionalDependencies = optionalDependencies,
     )
