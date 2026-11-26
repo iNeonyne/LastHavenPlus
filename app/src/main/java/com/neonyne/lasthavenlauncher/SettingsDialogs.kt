@@ -57,6 +57,12 @@ fun SettingsScreen(
   val licenseText = remember {
     context.resources.openRawResource(R.raw.apache_2_0).bufferedReader().use { it.readText() }
   }
+  val thirdPartyNotices = remember {
+    context.resources.openRawResource(R.raw.third_party_notices).bufferedReader().use { it.readText() }
+  }
+  val mplLicenseText = remember {
+    context.resources.openRawResource(R.raw.mpl_2_0).bufferedReader().use { it.readText() }
+  }
 
   LaunchedEffect(refreshKey) {
     refreshing = true
@@ -123,14 +129,14 @@ fun SettingsScreen(
       }
       TextButton(onClick = onOpenUpdates) { Text("Update details") }
       TextButton(onClick = onOpenDiagnostics) { Text("App diagnostics") }
-      TextButton(onClick = { showLicenses = true }) { Text("Open-source licenses") }
+      TextButton(onClick = { showLicenses = true }) { Text("Licenses & third-party notices") }
     }
   }
 
   if (showLicenses) {
     AlertDialog(
       onDismissRequest = { showLicenses = false },
-      title = { Text("Open-source licenses") },
+      title = { Text("Licenses & third-party notices") },
       text = {
         Column(
           modifier = Modifier.height(520.dp).verticalScroll(rememberScrollState()),
@@ -147,11 +153,17 @@ fun SettingsScreen(
             color = DesignTokens.textBody,
             style = MaterialTheme.typography.bodySmall,
           )
+          Text("Third-party components", color = DesignTokens.frost, fontWeight = FontWeight.SemiBold)
           Text(
-            "Third-party components retain their own license terms and notices. The LastHavenPlus " +
-              "project license does not relicense Mozilla GeckoView, AndroidX/Jetpack libraries, " +
-              "or other third-party software.",
-            color = DesignTokens.textSecondary,
+            thirdPartyNotices,
+            color = DesignTokens.textBody,
+            style = MaterialTheme.typography.bodySmall,
+          )
+          Text("Mozilla Public License, Version 2.0", color = DesignTokens.frost, fontWeight = FontWeight.SemiBold)
+          Text(
+            mplLicenseText,
+            color = DesignTokens.textBody,
+            style = MaterialTheme.typography.bodySmall,
           )
         }
       },
