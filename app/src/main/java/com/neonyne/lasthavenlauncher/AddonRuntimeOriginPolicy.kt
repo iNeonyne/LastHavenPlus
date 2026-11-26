@@ -2,7 +2,9 @@ package com.neonyne.lasthavenlauncher
 
 import java.net.URI
 
-/** Strict URL gate for the addon runtime. It is narrower than the launcher's general site policy. */
+/**
+ * Strict URL gate for the addon runtime. It is narrower than the launcher's general site policy.
+ */
 object AddonRuntimeOriginPolicy {
   const val GAME_ORIGIN = "https://lasthavens.com"
   private const val MAX_URL_CHARS = 4096
@@ -18,6 +20,5 @@ object AddonRuntimeOriginPolicy {
     return path == "/play" || path == "/play/"
   }
 
-  fun canonicalOrigin(url: String): String? =
-    if (allows(url)) GAME_ORIGIN else null
+  fun canonicalOrigin(url: String): String? = if (allows(url)) GAME_ORIGIN else null
 }
