@@ -574,3 +574,13 @@ No branch was deleted. The available GitHub connector exposes no branch-delete o
 - Published Maven metadata declares those Google artifacts under the Android Software Development Kit License. GPLv3 compatibility for distribution of the combined APK is not established; this is a legal compatibility risk, not a definitive legal conclusion.
 - Updated issue #67 to agent:owner and returned PR #141 to draft pending owner direction, full artifact-level notice audit and copyright-holder attribution. No merge or release.
 - Markdown run #45837172690 passed. Android run #45837172797 was still running at this checkpoint. No physical-device test, app ID/signing/ABI/toolchain/GeckoView/game/main changes or branch deletions.
+
+## 2026-11-26 — Correct Apache license decision and continue notice audit (#67)
+
+- The owner superseded the earlier GPL-3.0-or-later choice and selected Apache License 2.0 for original LastHavenPlus project code and documentation. The earlier GPL choice remains historical context only.
+- Added owner-supplied project attribution LastHavenPlus, Copyright 2026, in NOTICE.
+- Added third-party notice inventory, MPL-2.0 license text for GeckoView, and an in-app viewer for project and third-party license information.
+- PR validation uploads the unsigned release APK with the runtime dependency report so package contents can be inspected without release secrets.
+- Runtime graph review confirms GeckoView 160 and Google Play Services FIDO/Base/Basement/Tasks. The Google components carry Android Software Development Kit License terms and are not described as open-source. Package inclusion and redistribution terms remain review items.
+- Markdown lint passed after fixing the notice heading. Android CI on the preceding head failed only at Spotless formatting in SettingsDialogs.kt; the correction is committed and exact-head Android validation is pending.
+- No F-Droid work, game changes, dependency/toolchain version changes, app identity/signing/ABI changes, release/tag/main promotion, branch deletion or physical-device testing.
