@@ -25,9 +25,17 @@ It uploads `unsigned-apk-reproducibility-report` for 30 days. The report contain
 
 A whole-file hash mismatch fails the workflow after the report is generated and uploaded. If ZIP entries match but the whole-file hashes differ, inspect ZIP/container-level metadata or ordering. The entry-level report is an equivalent structured archive comparison; it is not a full diffoscope report.
 
-## Current guarantee
+## Latest verified result
 
-No reproducibility result is claimed until the workflow has completed successfully on an exact commit. A successful run establishes byte identity for that specific source commit and the recorded runner/toolchain environment only. Repeat the check after relevant toolchain or build configuration changes.
+- Source commit: `610838b77cf4bb6cd54f8a173fac5a22bdc26eeb` (PR #119 head, before this documentation-only update).
+- Workflow run: [#45727205562](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45727205562).
+- Result: **byte-identical** unsigned APKs.
+- APK size: 95,843,465 bytes each.
+- SHA-256: `a6f7d17db91baaf705dfdd3fc55a759f90b6551c40e3f1ed8c1e45ad644850fb`.
+- ZIP entries: 850 in each build; no missing/extra entries, duplicate entries or metadata/content differences.
+- Runner images: `ubuntu24 20261116.133.1` and `ubuntu24 20261116.376.1`; both used Temurin JDK 25.0.5, Gradle 9.7.1, Android platform 37.2 and Build Tools 37.0.0.
+
+This is the latest verified result for the code tree at the source commit above. The current documentation-only update does not change build inputs. A successful run establishes byte identity for that specific source commit and the recorded runner/toolchain environment only. Repeat the check after relevant toolchain or build configuration changes.
 
 ## F-Droid
 
