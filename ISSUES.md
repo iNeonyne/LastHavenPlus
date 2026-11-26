@@ -837,3 +837,15 @@ The additional UX proposal was reviewed and consolidated into existing issues ra
 - **#107:** restrained haptic feedback and shared theme-token coordination.
 
 **Explicit exclusions:** no new launcher HomeScreen, HomeScreen pull-to-refresh or update badge (the game has its own home screen); no automatic update check on launch; no unattended/background download or automatic installation; no external-browser fallback. Update checks and downloads remain explicitly user-initiated. Android's package installer confirmation remains mandatory. All work is deferred under #86 pending owner prioritization.
+
+
+<a id="issue-67"></a>
+
+## Issue 67 — P1 — Repository license and community hygiene
+
+**GitHub:** https://github.com/iNeonyne/LastHavenPlus/issues/67
+**State:** open; agent:owner — owner decision required after transitive dependency license audit.
+
+The owner selected GPL-3.0-or-later. PR #141 prepares the canonical LICENSE, SECURITY.md, Gradle Dependabot, README/license boundary, changelog and contribution-policy updates, packaged GPL text with an in-app Settings viewer, and CI runtime dependency reporting.
+
+**Current blocker:** the resolved GeckoView 160 runtime graph includes Google Play Services FIDO/Base/Basement/Tasks artifacts declared under the Android Software Development Kit License. Compatibility with distribution of the combined GPLv3 Android APK is unresolved. Do not merge or publish until the owner resolves this, the full artifact-level license/notice inventory is complete, and copyright attribution is confirmed. See PR #141 and its review comment for evidence.
