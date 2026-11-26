@@ -903,3 +903,12 @@ Verify the current manifest and GeckoView delegates, then document the strict al
 - Verified current beta source: `MainActivity.setupGeckoDelegates` allows only persistent storage and audible/inaudible autoplay for `lasthavens.com` and subdomains; all other content permissions/origins are denied; Android runtime and media permission requests are rejected.
 - Manifest declares `INTERNET` and `REQUEST_INSTALL_PACKAGES`; no camera, microphone, geolocation or notification permissions are declared.
 - No runtime policy change is authorized. Exact-head Markdown validation passed on PR #158 head `e2ce22c44508a87f53fc4a57a03f82e0597550bc` (run #45889911748); internal links/anchors passed across all 15 Markdown files. Final review/merge remains pending.
+
+
+## 2026-11-26 — #4 updater resource-lifecycle correction
+
+- Chaty owns the narrow BSDIFF40 cleanup fix in `chaty/updater-patch-stream-cleanup-4-beta`, based on beta `7451b940dc0adfa1ea14234fe6d489bba688b12c`.
+- Opened compressed sections are tracked as they are created and closed in reverse order even when a later section fails; cleanup errors are suppressed to preserve the original failure.
+- Regression tests cover malformed diff/extra sections and removal of stale output.
+- Exact-head CI is pending. The prior PR #157 reproducibility run had one clean-build failure caused by Kotlin Compose plugin 2.4.21 resolution; the paired clean build succeeded. Retry is required before any merge.
+- #4 remains open: full adversarial updater matrix, signed APK-pair reconstruction and identity verification, patch benchmark, and current beta packaging verification are not complete.
