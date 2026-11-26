@@ -469,3 +469,15 @@ Owner directed Chaty to take over #56 from Ploy. Updated issue ownership to Chat
 - Checks: no build/test run yet; exact-head Android validation and post-merge signed ARM64 workflow are required.
 - Unverified / risks: Actions workflow parsing and copy/upload behavior are not yet CI-verified.
 - Next safe action: implement the narrow workflow/docs change on this branch, inspect the diff, open a PR to beta and review exact-head CI.
+
+## 2026-11-26 — Complete CI runner consolidation and begin post-v2.3.0 housekeeping
+
+- **Starting point:** beta after PR #130 and PR #127 integration; v2.3.0 published on main/tag ebc5b424e83ae66c2b0accc2bec6f050b8dc0d88.
+- **CI implementation:** PR #131 passed its exact-head checks but was closed unmerged when beta advanced. Refreshed PR [#132](https://github.com/iNeonyne/LastHavenPlus/pull/132) from beta 0f16fbbdc3d4dabeb5285aaf57b8b0b874db5a54; reviewed its workflow diff and security boundaries; merged at 7cd898f4c1f9b7f70787a7000e1ed9343a83540d.
+- **PR validation:** run [#45737717923](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45737717923) passed lint, Spotless, unsigned release build, JVM tests and Python helper tests. Run [#45737717837](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45737717837) passed Markdown lint.
+- **Post-merge validation:** run [#45738073790](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45738073790) passed on the exact merge commit. Log confirms relevant-path detection was true, spotlessCheck and lintDebug ran in the combined Gradle invocation, and build/test succeeded. APK ABI was exactly arm64-v8a; established signing certificate SHA-256 matched b3bbf7520e77dfc384a60b1eee6c5f205b978f9b453849e2be523f642018d263. Signed beta artifact LastHavenPlus-2.3.0-beta-arm64-v8a uploaded (92,815,476 bytes); release/tag/differential steps skipped.
+- **Timing:** consolidated beta job 94s. Baseline signed build 258s plus separate quality job 123s = 381 runner-seconds. Single observation suggests ~75% lower runner time; cache state and sample size limit generalization.
+- **Housekeeping audit:** beta now 7cd898f4c1f9b7f70787a7000e1ed9343a83540d; main remains ebc5b424e83ae66c2b0accc2bec6f050b8dc0d88. Confirmed v2.3.0 release assets. Found stale STATUS/AGENT_WORK/ISSUES history; prepared current snapshot while preserving historical records.
+- **Open PR state:** #119 (issue #66) is behind beta and needs refresh/revalidation. #122/#123 remain owner-paused drafts under #20/#62; no further work authorized. #113 remains draft/open for traceability only after owner direction; #107 is closed. #23 remains on hold.
+- **No roadmap:** no v2.4.0 roadmap, release, tag, main promotion or branch deletion was created.
+- **Device status:** no physical ARM64 testing was performed; CI evidence is not device evidence.
