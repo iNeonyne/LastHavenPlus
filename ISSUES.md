@@ -5,7 +5,7 @@
 ## Current state — 2026-11-26
 
 - **Latest stable:** v2.3.0 is published; release metadata confirms the ARM64 APK, update manifest and v2.2.0-to-v2.3.0 BSDIFF asset.
-- **Development:** beta HEAD is 7451b940dc0adfa1ea14234fe6d489bba688b12c; v2.4.0 icon, visual-system and overlay-accessibility source integrations are merged.
+- **Development:** latest beta integration is PR #163 at 0cc21b471fce646d03dad449b91acbe67a90df7d; v2.4.0 icon, visual-system, overlay-accessibility and diagnostics-test source integrations are merged.
 - **Addon Manager:** Phase A is integrated by PR #152 at 103bb979c98589a8704459d28d13861eccca39d6; local enablement is metadata only. Phase B/runtime injection is not implemented and waits for owner authorization. Issue #23 is agent:owner.
 - **Latest docs integration:** PR #158 merged at 7451b940dc0adfa1ea14234fe6d489bba688b12c; Markdown push run #45890132670 passed.
 - **Open PRs:** none. PR #154, #157, #159, #160, #122, #143 and #144 were closed without merge; PR #163 is merged. Do not treat closed branch-only work as integrated.
@@ -14,7 +14,7 @@
 - **Housekeeping:** #128 closed after PR #161 merged at a0e5271793c9bb7754b7ac41429065e5602df569; exact-head and post-merge Markdown passed. #70 is closed; Markdown lint is integrated.
 - **GeckoView audit:** #20 remains owner-deferred/blocked; PR #122 closed without merge. Preserve unresolved notice/license/distribution and device-testing gaps.
 - **Rights/notices:** #67 remains agent:owner; PR #144 closed without merge. The owner's All Rights Reserved decision governs original project material; third-party distribution review remains unresolved.
-- **Ownership:** all 25 open issues have exactly one agent:* label and none are agent:unassigned. Vibe: #149 active, #146 queued; #11 blocked for runtime-version reporting. Chaty: #4/#15 and #128 active; #81 queued. Owner: #23 and #67. Blocked dependencies/holds are documented on their issues.
+- **Ownership:** all 26 open issues have exactly one agent:* label and none are agent:unassigned. Vibe: #149 active, #146 queued; #11 blocked for runtime-version reporting. Chaty: #4/#15 active; #128 complete; #81 queued. Owner: #23 and #67. Blocked dependencies/holds are documented on their issues.
 - **Device/release:** no new physical ARM64 testing, release, tag, publication or beta-to-main promotion is claimed or authorized.
 
 ## Current ownership
@@ -37,7 +37,7 @@
 | [#8](#issue-8) | — | Legacy addon manager | Closed — superseded; no planned work |
 | [#9](#issue-9) | P2 | Overlay accessibility and navigation | Closed after PR #139 integration; physical-device coverage is not claimed by CI |
 | [#10](#issue-10) | P2 | Persistent app-wide network usage totals | Open; app-wide counters are implemented, automated counter tests remain |
-| [#11](#issue-11) | P2 | Privacy-conscious log tests | Vibe active; fresh beta-based implementation on `vibe/diagnostics-tests-11-refresh` (closed PR #154 kept as reference only) |
+| [#11](#issue-11) | P2 | Privacy-conscious log tests | PR #163 test coverage merged; issue remains agent:blocked for deferred GeckoView runtime-version reporting |
 | [#12](#issue-12) | P2 | GeckoView load-error details | Open |
 | [#13](#issue-13) | — | Accessible names / legacy addon-manager compile work | Closed — consolidated into #9 |
 | [#14](#issue-14) | P2 | Connection diagnostics | Open |
