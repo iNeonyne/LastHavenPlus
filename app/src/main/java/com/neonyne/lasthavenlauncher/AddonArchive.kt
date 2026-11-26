@@ -47,10 +47,10 @@ object AddonArchive {
    */
   fun importZip(
     input: InputStream,
-    compressedSize: Long,
+    compressedSize: Long?,
     extractionDirectory: File,
   ): List<ImportedAddon> {
-    require(compressedSize in 1..MAX_ARCHIVE_BYTES) {
+    require(compressedSize == null || compressedSize in 1..MAX_ARCHIVE_BYTES) {
       "Archive must be between 1 byte and 128 MiB."
     }
     require(extractionDirectory.mkdirs() || extractionDirectory.isDirectory) {
@@ -81,9 +81,10 @@ object AddonArchive {
         }
         output.fd.sync()
       }
-      require(copiedBytes == compressedSize) {
+      require(compressedSize == null || copiedBytes == compressedSize) {
         "Selected archive size changed or could not be verified."
       }
+      require(copiedBytes > 0) { "Selected archive is empty." }
 
       val entries = linkedMapOf<String, File>()
       val seen = mutableSetOf<String>()
