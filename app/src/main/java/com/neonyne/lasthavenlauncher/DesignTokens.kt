@@ -5,9 +5,12 @@ import android.view.HapticFeedbackConstants
 import android.view.View
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.Shapes
 import androidx.compose.material3.Typography
 import androidx.compose.material3.darkColorScheme
+import androidx.compose.material3.lightColorScheme
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
@@ -26,6 +29,7 @@ object DesignTokens {
   val scrim = Color(0x58000000)
   val frost = Color(0xFF9BDCF5)
   val frostOnColor = Color(0xFF0A1621)
+  val frostDeep = Color(0xFF0A5E84)
   val textPrimary = Color(0xFFFFFFFF)
   val textSecondary = Color(0xFFAAB7C9)
   val textBody = Color(0xFFD7E0EC)
@@ -51,24 +55,45 @@ object DesignTokens {
       extraLarge = RoundedCornerShape(cornerBadge),
     )
 
-  fun colorScheme() =
-    darkColorScheme(
-      primary = frost,
-      onPrimary = frostOnColor,
-      secondary = frost,
-      onSecondary = frostOnColor,
-      background = ink,
-      onBackground = textPrimary,
-      surface = panel,
-      onSurface = textPrimary,
-      surfaceVariant = panelBright,
-      onSurfaceVariant = textSecondary,
-      error = Color(0xFFED8796),
-    )
+  fun colorScheme(): ColorScheme = colorScheme(darkTheme = true)
+
+  fun colorScheme(darkTheme: Boolean): ColorScheme =
+    if (darkTheme) {
+      darkColorScheme(
+        primary = frost,
+        onPrimary = frostOnColor,
+        secondary = frost,
+        onSecondary = frostOnColor,
+        background = ink,
+        onBackground = textPrimary,
+        surface = panel,
+        onSurface = textPrimary,
+        surfaceVariant = panelBright,
+        onSurfaceVariant = textSecondary,
+        error = Color(0xFFED8796),
+      )
+    } else {
+      lightColorScheme(
+        primary = frostDeep,
+        onPrimary = Color(0xFFFFFFFF),
+        secondary = frostDeep,
+        onSecondary = Color(0xFFFFFFFF),
+        background = Color(0xFFF4F8FC),
+        onBackground = Color(0xFF10202F),
+        surface = Color(0xFFE7F0F7),
+        onSurface = Color(0xFF10202F),
+        surfaceVariant = Color(0xFFD8E7F2),
+        onSurfaceVariant = Color(0xFF52687C),
+        error = Color(0xFFB3261E),
+      )
+    }
 
   @Composable
   fun primaryButtonColors() =
-    ButtonDefaults.buttonColors(containerColor = frost, contentColor = frostOnColor)
+    ButtonDefaults.buttonColors(
+      containerColor = MaterialTheme.colorScheme.primary,
+      contentColor = MaterialTheme.colorScheme.onPrimary,
+    )
 
   fun typography(): Typography {
     val base = Typography()
@@ -79,7 +104,12 @@ object DesignTokens {
     )
   }
 
-  fun homeGradient() = listOf(gradientTop, ink, gradientBottom)
+  fun homeGradient(darkTheme: Boolean = true): List<Color> =
+    if (darkTheme) {
+      listOf(gradientTop, ink, gradientBottom)
+    } else {
+      listOf(Color(0xFFE2EEF7), Color(0xFFF4F8FC), Color(0xFFFFFFFF))
+    }
 }
 
 /** System-preference-respecting haptic feedback for explicit primary actions only. */

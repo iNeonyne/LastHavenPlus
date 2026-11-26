@@ -314,7 +314,7 @@ private fun PageSection(
       modifier = Modifier.fillMaxWidth().padding(DesignTokens.spaceSection),
       verticalArrangement = Arrangement.spacedBy(10.dp),
     ) {
-      Text(title, color = DesignTokens.frost, style = MaterialTheme.typography.labelSmall)
+      Text(title, color = DesignTokens.frost, style = MaterialTheme.typography.titleSmall)
       content()
     }
   }

@@ -12,8 +12,9 @@ class DesignTokensTest {
   fun paletteHasExpectedBrandAnchors() {
     assertEquals(Color(0xFF080D18), DesignTokens.ink)
     assertEquals(Color(0xFF9BDCF5), DesignTokens.frost)
-    assertEquals(Color(0xFF121D2D), DesignTokens.panel)
     assertEquals(Color(0xFF0A1621), DesignTokens.frostOnColor)
+    assertEquals(Color(0xFF0A5E84), DesignTokens.frostDeep)
+    assertEquals(Color(0xFF121D2D), DesignTokens.panel)
   }
 
   @Test
@@ -42,6 +43,13 @@ class DesignTokensTest {
   @Test
   fun primaryButtonLabelMeetsContrastOnFrost() {
     assertTrue(contrastRatio(rgb(DesignTokens.frostOnColor), rgb(DesignTokens.frost)) >= 8.0)
+  }
+
+  @Test
+  fun lightSchemeAccentMeetsContrastOnLightSurfaces() {
+    assertTrue(contrastRatio(rgb(DesignTokens.frostDeep), 0xF4F8FCL) >= 4.5)
+    assertTrue(contrastRatio(rgb(DesignTokens.frostDeep), 0xE7F0F7L) >= 4.5)
+    assertTrue(contrastRatio(0xFFFFFFFCL, rgb(DesignTokens.frostDeep)) >= 4.5)
   }
 
   @Test
