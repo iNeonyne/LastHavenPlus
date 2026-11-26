@@ -54,7 +54,10 @@ class AddonArchiveTest {
         archive.size.toLong(),
         extraction,
       ) { expandedBytes ->
-        assertEquals(toc.toByteArray(Charsets.UTF_8).size + "print('sample')".length.toLong(), expandedBytes)
+        assertEquals(
+          toc.toByteArray(Charsets.UTF_8).size + "print('sample')".length.toLong(),
+          expandedBytes,
+        )
         assertTrue(extraction.listFiles().orEmpty().isEmpty())
         throw IllegalStateException("forced low-storage preflight")
       }
@@ -344,6 +347,48 @@ class AddonArchiveTest {
   }
 
   @Test
+  fun rejectsArchivesWithTooManyEntries() {
+    val entries =
+      (0..AddonArchive.MAX_ENTRIES)
+        .map { index -> "Pack/file" + index.toString().padStart(5, '0') to "" }
+        .toTypedArray()
+    val archive = zipOf(*entries)
+
+    assertThrows(IllegalArgumentException::class.java) {
+      AddonArchive.importZip(
+        ByteArrayInputStream(archive),
+        archive.size.toLong(),
+        temporaryFolder.newFolder("too-many-entries"),
+      )
+    }
+  }
+
+  @Test
+  fun rejectsExpandedSizeBombBeforeAnyExtraction() {
+    val archive =
+      inflateCentralDirectorySizes(
+        zipOf(
+          "Pack/Pack.toc" to "## Interface: 30300\n",
+          "Pack/a.lua" to "",
+          "Pack/b.lua" to "",
+          "Pack/c.lua" to "",
+          "Pack/d.lua" to "",
+        ),
+        declaredSizeBytes = 60L * 1024 * 1024,
+      )
+
+    assertThrows(IllegalArgumentException::class.java) {
+      AddonArchive.importZip(
+        ByteArrayInputStream(archive),
+        archive.size.toLong(),
+        temporaryFolder.newFolder("size-bomb"),
+      ) {
+        error("Extraction preflight must not be reached for a size-bomb archive")
+      }
+    }
+  }
+
+  @Test
   fun rejectsArchiveAboveCompressedSizeLimitBeforeReading() {
     val input =
       object : InputStream() {
@@ -356,6 +401,23 @@ class AddonArchiveTest {
     assertThrows(IllegalArgumentException::class.java) {
       AddonArchive.importZip(input, AddonArchive.MAX_ARCHIVE_BYTES + 1, temporaryFolder.newFolder())
     }
+  }
+
+  private fun inflateCentralDirectorySizes(archive: ByteArray, declaredSizeBytes: Long): ByteArray {
+    val centralSignature = byteArrayOf(0x50, 0x4b, 0x01, 0x02)
+    val result = archive.copyOf()
+    var offset = 0
+    while (offset + 4 <= result.size) {
+      if (centralSignature.indices.all { result[offset + it] == centralSignature[it] }) {
+        for (byteIndex in 0 until 4) {
+          result[offset + 24 + byteIndex] = (declaredSizeBytes ushr (8 * byteIndex)).toByte()
+        }
+        offset += 46
+      } else {
+        offset += 1
+      }
+    }
+    return result
   }
 
   private fun duplicateFirstCentralDirectoryRecord(archive: ByteArray): ByteArray {

@@ -96,7 +96,8 @@ object AddonArchive {
 
       val entries = linkedMapOf<String, File>()
       val seen = mutableSetOf<String>()
-      val acceptedEntries = mutableListOf<org.apache.commons.compress.archivers.zip.ZipArchiveEntry>()
+      val acceptedEntries =
+        mutableListOf<org.apache.commons.compress.archivers.zip.ZipArchiveEntry>()
       var declaredExpandedBytes = 0L
       var entryCount = 0
       val canonicalRoot = extractionDirectory.canonicalFile

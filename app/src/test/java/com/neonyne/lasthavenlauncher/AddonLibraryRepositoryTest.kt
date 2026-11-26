@@ -4,6 +4,7 @@ import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.IOException
+import java.io.InputStream
 import java.util.zip.ZipEntry
 import java.util.zip.ZipOutputStream
 import org.junit.Assert.assertEquals
@@ -32,7 +33,10 @@ class AddonLibraryRepositoryTest {
     assertEquals(1, imported.addons.size)
     assertFalse(imported.addons.single().enabled)
     assertEquals(2, imported.addons.single().filesCount)
-    assertEquals(listOf("OptionalOne", "OptionalTwo"), imported.addons.single().optionalDependencies)
+    assertEquals(
+      listOf("OptionalOne", "OptionalTwo"),
+      imported.addons.single().optionalDependencies,
+    )
 
     val enabled = repository.setEnabled("Sample", true)
     assertTrue(enabled.addons.single().enabled)
@@ -100,6 +104,21 @@ class AddonLibraryRepositoryTest {
     assertThrows(IllegalArgumentException::class.java) {
       repository.importZip(ByteArrayInputStream(archive), archive.size.toLong())
     }
+
+    assertTrue(root.listFiles().orEmpty().isEmpty())
+    assertTrue(repository.readLibrary().addons.isEmpty())
+  }
+
+  @Test
+  fun rejectsUnknownSizeArchiveWhenStorageCannotCoverWorstCase() {
+    val root = temporaryFolder.newFolder("unknown-size-low-storage")
+    val repository = AddonLibraryRepository(root, availableStorageBytes = { 0L })
+    val unreadable =
+      object : InputStream() {
+        override fun read(): Int = error("Input must not be read before the staging preflight")
+      }
+
+    assertThrows(IllegalArgumentException::class.java) { repository.importZip(unreadable, null) }
 
     assertTrue(root.listFiles().orEmpty().isEmpty())
     assertTrue(repository.readLibrary().addons.isEmpty())

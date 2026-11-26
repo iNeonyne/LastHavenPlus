@@ -102,119 +102,121 @@ class AddonLibraryRepository(
     return AddonLibrarySnapshot(properties.getProperty("revision") ?: "unknown", addons)
   }
 
-  fun importZip(input: InputStream, compressedSize: Long?): AddonLibrarySnapshot = input.use { source ->
-    if (!root.exists() && !root.mkdirs()) {
-      throw IllegalStateException("Could not create addon storage.")
-    }
-    val compressedBytes = compressedSize ?: 0L
-    require(availableStorageBytes() >= compressedBytes + MIN_FREE_SPACE_RESERVE_BYTES) {
-      "Not enough free storage to stage the selected archive."
-    }
-    val extraction = File(root, ".extract-${UUID.randomUUID()}")
-    try {
-      val imported =
-        AddonArchive.importZip(source, compressedSize, extraction) { expandedBytes ->
-          val requiredBytes = expandedBytes * 2 + MIN_FREE_SPACE_RESERVE_BYTES
-          require(availableStorageBytes() >= requiredBytes) {
-            "Not enough free storage to safely extract and stage imported addons."
-          }
-        }
-      require(imported.isNotEmpty()) { "The archive contains no addons." }
-
-      val current = readLibrary()
-      val replacing = imported.map { it.folder.lowercase(Locale.ROOT) }.toSet()
-      val total =
-        current.addons
-          .filterNot { it.folder.lowercase(Locale.ROOT) in replacing }
-          .sumOf { it.sizeBytes } + imported.sumOf { it.sizeBytes }
-      require(total <= AddonArchive.MAX_LIBRARY_BYTES) {
-        "Addon library exceeds 384 MiB."
+  fun importZip(input: InputStream, compressedSize: Long?): AddonLibrarySnapshot =
+    input.use { source ->
+      if (!root.exists() && !root.mkdirs()) {
+        throw IllegalStateException("Could not create addon storage.")
       }
-      val stagedBytes = imported.sumOf { it.sizeBytes }
-      require(availableStorageBytes() >= stagedBytes + MIN_FREE_SPACE_RESERVE_BYTES) {
-        "Not enough free storage to safely commit imported addons."
+      val requiredStagingBytes =
+        (compressedSize ?: AddonArchive.MAX_ARCHIVE_BYTES) + MIN_FREE_SPACE_RESERVE_BYTES
+      require(availableStorageBytes() >= requiredStagingBytes) {
+        "Not enough free storage to stage the selected archive."
       }
-
-      val existing = current.addons.associateBy { it.folder.lowercase(Locale.ROOT) }
-      val nextItems =
-        current.addons.filterNot { it.folder.lowercase(Locale.ROOT) in replacing }.toMutableList()
-      val staged = mutableListOf<Pair<File, File>>()
-      val backups = mutableListOf<Pair<File, File>>()
-      val newTargets = mutableListOf<File>()
+      val extraction = File(root, ".extract-${UUID.randomUUID()}")
       try {
-        for (addon in imported) {
-          require(isSafeFolder(addon.folder)) { "Invalid addon folder: ${addon.folder}" }
-          val stage = File(root, ".stage-${UUID.randomUUID()}")
-          require(stage.mkdirs()) { "Could not prepare addon storage." }
-          staged += stage to File(root, addon.folder)
-          for ((relativePath, sourceFile) in addon.files) {
-            val destination = File(stage, relativePath)
-            val canonicalRoot = stage.canonicalFile
-            val canonicalDestination = destination.canonicalFile
-            require(canonicalDestination.path.startsWith(canonicalRoot.path + File.separator)) {
-              "Unsafe addon file path: $relativePath"
-            }
-            destination.parentFile?.let {
-              if (!it.exists() && !it.mkdirs()) {
-                throw IllegalStateException("Could not create addon file directory.")
-              }
-            }
-            FileInputStream(sourceFile).use { source ->
-              FileOutputStream(destination).use { target -> source.copyTo(target) }
+        val imported =
+          AddonArchive.importZip(source, compressedSize, extraction) { expandedBytes ->
+            val requiredBytes = expandedBytes * 2 + MIN_FREE_SPACE_RESERVE_BYTES
+            require(availableStorageBytes() >= requiredBytes) {
+              "Not enough free storage to safely extract and stage imported addons."
             }
           }
-          val previous = existing[addon.folder.lowercase(Locale.ROOT)]
-          nextItems +=
-            AddonLibraryItem(
-              title = addon.title,
-              folder = addon.folder,
-              version = addon.version,
-              interfaceVersion = addon.interfaceVersion,
-              notes = addon.notes,
-              dependencies = addon.dependencies,
-              optionalDependencies = addon.optionalDependencies,
-              sizeBytes = addon.sizeBytes,
-              filesCount = addon.files.size,
-              enabled = previous?.enabled ?: false,
-              importedAt = System.currentTimeMillis(),
-              warnings = addon.warnings,
-            )
+        require(imported.isNotEmpty()) { "The archive contains no addons." }
+
+        val current = readLibrary()
+        val replacing = imported.map { it.folder.lowercase(Locale.ROOT) }.toSet()
+        val total =
+          current.addons
+            .filterNot { it.folder.lowercase(Locale.ROOT) in replacing }
+            .sumOf { it.sizeBytes } + imported.sumOf { it.sizeBytes }
+        require(total <= AddonArchive.MAX_LIBRARY_BYTES) {
+          "Addon library exceeds 384 MiB."
+        }
+        val stagedBytes = imported.sumOf { it.sizeBytes }
+        require(availableStorageBytes() >= stagedBytes + MIN_FREE_SPACE_RESERVE_BYTES) {
+          "Not enough free storage to safely commit imported addons."
         }
 
-        for ((stage, target) in staged) {
-          val backup =
-            if (target.exists()) {
-              File(root, ".backup-${UUID.randomUUID()}").also {
-                check(target.renameTo(it)) {
-                  "Could not stage the existing addon for replacement."
-                }
-                backups += target to it
+        val existing = current.addons.associateBy { it.folder.lowercase(Locale.ROOT) }
+        val nextItems =
+          current.addons.filterNot { it.folder.lowercase(Locale.ROOT) in replacing }.toMutableList()
+        val staged = mutableListOf<Pair<File, File>>()
+        val backups = mutableListOf<Pair<File, File>>()
+        val newTargets = mutableListOf<File>()
+        try {
+          for (addon in imported) {
+            require(isSafeFolder(addon.folder)) { "Invalid addon folder: ${addon.folder}" }
+            val stage = File(root, ".stage-${UUID.randomUUID()}")
+            require(stage.mkdirs()) { "Could not prepare addon storage." }
+            staged += stage to File(root, addon.folder)
+            for ((relativePath, sourceFile) in addon.files) {
+              val destination = File(stage, relativePath)
+              val canonicalRoot = stage.canonicalFile
+              val canonicalDestination = destination.canonicalFile
+              require(canonicalDestination.path.startsWith(canonicalRoot.path + File.separator)) {
+                "Unsafe addon file path: $relativePath"
               }
-            } else {
-              null
+              destination.parentFile?.let {
+                if (!it.exists() && !it.mkdirs()) {
+                  throw IllegalStateException("Could not create addon file directory.")
+                }
+              }
+              FileInputStream(sourceFile).use { source ->
+                FileOutputStream(destination).use { target -> source.copyTo(target) }
+              }
             }
-          check(stage.renameTo(target)) { "Could not commit imported addon files." }
-          if (backup == null) newTargets += target
-        }
+            val previous = existing[addon.folder.lowercase(Locale.ROOT)]
+            nextItems +=
+              AddonLibraryItem(
+                title = addon.title,
+                folder = addon.folder,
+                version = addon.version,
+                interfaceVersion = addon.interfaceVersion,
+                notes = addon.notes,
+                dependencies = addon.dependencies,
+                optionalDependencies = addon.optionalDependencies,
+                sizeBytes = addon.sizeBytes,
+                filesCount = addon.files.size,
+                enabled = previous?.enabled ?: false,
+                importedAt = System.currentTimeMillis(),
+                warnings = addon.warnings,
+              )
+          }
 
-        val snapshot = AddonLibrarySnapshot(UUID.randomUUID().toString(), nextItems)
-        writeIndex(snapshot)
-        backups.forEach { (_, backup) -> backup.deleteRecursively() }
-        snapshot
-      } catch (error: Exception) {
-        newTargets.forEach { it.deleteRecursively() }
-        for ((target, backup) in backups.asReversed()) {
-          target.deleteRecursively()
-          if (backup.exists()) backup.renameTo(target)
+          for ((stage, target) in staged) {
+            val backup =
+              if (target.exists()) {
+                File(root, ".backup-${UUID.randomUUID()}").also {
+                  check(target.renameTo(it)) {
+                    "Could not stage the existing addon for replacement."
+                  }
+                  backups += target to it
+                }
+              } else {
+                null
+              }
+            check(stage.renameTo(target)) { "Could not commit imported addon files." }
+            if (backup == null) newTargets += target
+          }
+
+          val snapshot = AddonLibrarySnapshot(UUID.randomUUID().toString(), nextItems)
+          writeIndex(snapshot)
+          backups.forEach { (_, backup) -> backup.deleteRecursively() }
+          snapshot
+        } catch (error: Exception) {
+          newTargets.forEach { it.deleteRecursively() }
+          for ((target, backup) in backups.asReversed()) {
+            target.deleteRecursively()
+            if (backup.exists()) backup.renameTo(target)
+          }
+          throw error
+        } finally {
+          staged.forEach { (stage, _) -> stage.deleteRecursively() }
         }
-        throw error
       } finally {
-        staged.forEach { (stage, _) -> stage.deleteRecursively() }
+        extraction.deleteRecursively()
       }
-    } finally {
-      extraction.deleteRecursively()
     }
-  }
 
   fun setEnabled(folder: String, enabled: Boolean): AddonLibrarySnapshot {
     require(isSafeFolder(folder)) { "Invalid addon folder." }
