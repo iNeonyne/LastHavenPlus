@@ -20,28 +20,31 @@ Goal: control branch growth without losing useful or unmerged work. This documen
 - **Approval is required before every deletion.** Record the approving statement and deletion in the log.
 - Preserve `beta-legacy-*` orphan snapshots until independently verified; never wholesale-merge them.
 
-## Audit — 2026-11-26
+## Audit — 2026-11-26 (refreshed)
 
-Baseline: `beta` at `6c9dadc31682db75f706435437d77969fb3e505e` (PR #96 merge). The repository has 16 remote branches: `beta` plus the 15 non-`beta` branches below. Ahead/behind figures are GitHub compare results against this exact baseline. The `vibe/branch-lifecycle` branch was reset to this baseline for this refreshed audit; after this document commit it is expected to be 1 ahead / 0 behind. Counts are point-in-time and must be refreshed before cleanup decisions.
+Baseline: `beta` at `eec16ff` (`ci: update Gradle setup action to v6.4.1 (#118)`), verified live against the remote before this write; this document branch also merges that exact baseline (merge commit `b281ec8`), so `vibe/branch-lifecycle` is 2 ahead / 0 behind after this commit. The repository has 20 remote branches: `beta`, `main` and the 18 non-beta/main branches below. Ahead/behind are `git rev-list --count` results against this exact baseline. Counts are point-in-time and must be refreshed before any cleanup decision. **No branch is deleted or rewritten by this audit.**
 
-| Branch | Current status / evidence | Compare to beta | Disposition |
-|---|---|---:|---|
-| `agent/add-issue-agent-workflow` | PR [#93](https://github.com/iNeonyne/LastHavenPlus/pull/93) closed unmerged | 1 ahead / 15 behind | Retain pending owner decision; no deletion |
-| `beta-legacy-2026-11-24` | No common ancestor with beta | orphan | Preserve pending owner verification |
-| `chaty/issue-4-interrupted-download-tests` | PR [#80](https://github.com/iNeonyne/LastHavenPlus/pull/80) closed unmerged | 18 ahead / 19 behind | Retain as possible updater-test reference |
-| `chaty/issue-81-compatible-library-refresh` | PR [#82](https://github.com/iNeonyne/LastHavenPlus/pull/82) closed unmerged; issue #81 later handled by PR #104 | 6 ahead / 19 behind | Candidate for owner review; no deletion |
-| `chaty/issue-84-official-launcher-icon` | Legacy icon branch; merged PR [#85](https://github.com/iNeonyne/LastHavenPlus/pull/85) used a different branch | 0 ahead / 18 behind | Candidate for owner review; no deletion |
-| `chaty/pr105-refresh` | Temporary staging branch; no PR | 5 ahead / 6 behind | Historical staging; retain pending owner review |
-| `chaty/v2.2.0-selective-main-promotion` | Historical promotion work; PR [#87](https://github.com/iNeonyne/LastHavenPlus/pull/87) used another branch | 50 ahead / 38 behind | Historical; retain pending owner review |
-| `dependabot/gradle/gradle-wrapper-9.9.2` | PR [#71](https://github.com/iNeonyne/LastHavenPlus/pull/71) closed unmerged | 46 ahead / 38 behind | Historical; no deletion without approval |
-| `infra/issue-pr-agent` | Separate infrastructure worker branch | 53 ahead / 38 behind | Keep isolated; do not merge wholesale |
-| `main` | Stable branch; intentionally separate history | 52 ahead / 38 behind | Preserve; no beta-to-main promotion without owner approval |
-| `vibe/branch-lifecycle` | PR [#100](https://github.com/iNeonyne/LastHavenPlus/pull/100) open; this refreshed audit | 1 ahead / 0 behind after document commit | Active |
-| `vibe/ci-action-pinning-568e1f` | PR [#110](https://github.com/iNeonyne/LastHavenPlus/pull/110) open; CI action SHA pins and permissions | 1 ahead / 6 behind | Active; refresh after PR #96 integration and review |
-| `vibe/game-load-states-568e1f` | PR [#112](https://github.com/iNeonyne/LastHavenPlus/pull/112) open; game loading/failure UX | 1 ahead / 6 behind | Active; exact-head CI currently fails formatting |
-| `vibe/governance-vibe-integrator` | PR [#94](https://github.com/iNeonyne/LastHavenPlus/pull/94) closed unmerged | 2 ahead / 15 behind | Retain pending owner policy decision |
-| `vibe/markdown-validation` | PR [#101](https://github.com/iNeonyne/LastHavenPlus/pull/101) closed unmerged; proposed fix withdrawn | 1 ahead / 15 behind | Candidate for owner review; no deletion |
-
+| Branch | Head SHA | PR / issue status | Compare vs beta | Unique content evidence | Disposition |
+|---|---|---|---:|---|---|
+| `agent/add-issue-agent-workflow` | `d45c3da` | PR [#93](https://github.com/iNeonyne/LastHavenPlus/pull/93) closed unmerged | 1 ahead / 20 behind | Adds `agent-workflow/` Python worker (never-merge infra), `.agents/` capability docs; functionally superseded by merged PR #114 ownership workflow, but files are not in beta | Retain pending owner decision; do not merge (infra) |
+| `beta-legacy-2026-11-24` | `973a817` | None; legacy snapshot | No common ancestor (217 commits) | 187 commits including pre-rename package, legacy updater and Addon Manager assets (see STATUS.md) | **Preserve / owner decision required**; never wholesale-merge |
+| `chaty/issue-4-download-stream-verification` | `d1a48d3` | PR [#121](https://github.com/iNeonyne/LastHavenPlus/pull/121) **open** (issue #4) | 6 ahead / 0 behind | Streamed download policy + interrupted/partial-file tests | Preserve — active PR |
+| `chaty/issue-4-interrupted-download-tests` | `228a2bd` | PR [#80](https://github.com/iNeonyne/LastHavenPlus/pull/80) closed unmerged | 18 ahead / 24 behind | Interrupted download test iterations; partly continued by PR #105 and now PR #121 | Retain as reference pending owner decision |
+| `chaty/issue-66-independent-apk-rebuilds` | `610838b` | PR [#119](https://github.com/iNeonyne/LastHavenPlus/pull/119) **open** (issue #66) | 11 ahead / 0 behind | Reproducibility build workflow + corrupt-archive test | Preserve — active PR |
+| `chaty/issue-70-markdown-lint` | `29fd533` | PR [#120](https://github.com/iNeonyne/LastHavenPlus/pull/120) **open** (issue #70) | 9 ahead / 0 behind | Markdown lint policy docs | Preserve — active PR |
+| `chaty/issue-81-compatible-library-refresh` | `807543c` | PR [#82](https://github.com/iNeonyne/LastHavenPlus/pull/82) closed unmerged | 6 ahead / 24 behind | `app/build.gradle.kts` + tracker docs; superseded by merged PR #104 | Superseded; candidate for owner review, no deletion |
+| `chaty/issue-84-official-launcher-icon` | `2e64f56` | No open PR; PR #85 merged from `chaty/issue-84-recreated-launcher-icon` | 0 ahead / 23 behind | Branch tip is an **ancestor of beta** (`merge-base == tip`) | Contents fully integrated; cleanup candidate with owner approval |
+| `chaty/pr105-refresh` | `fcaa438` | No PR; staging branch for PR #105 (merged from `chaty/fix-updater-bsdiff-retry`) | 5 ahead / 11 behind | 4 of 5 changed files byte-identical to final beta; `BsdiffPatch.kt` reflects the superseded earlier fix | Superseded by merged PR #105; candidate for owner review |
+| `chaty/v2.2.0-selective-main-promotion` | `c396984` | PRs [#87](https://github.com/iNeonyne/LastHavenPlus/pull/87)/[#91](https://github.com/iNeonyne/LastHavenPlus/pull/91) merged from other branches | 50 ahead / 43 behind | Only unreleased v2.2.0 candidate notes beyond promotion history (unique vs main: 2 commits) | Historical; retain pending owner review |
+| `dependabot/gradle/gradle-wrapper-9.9.2` | `4413dd3` | PR [#71](https://github.com/iNeonyne/LastHavenPlus/pull/71) closed unmerged | 46 ahead / 43 behind | Proposes Gradle wrapper 9.7.1 → 9.9.2 (beta still on 9.7.1) | Superseded proposal; toolchain change requires owner-approved compatibility validation |
+| `infra/issue-pr-agent` | `22bd670` | None; infra worker line | 53 ahead / 43 behind | Issue-to-PR worker agent; policy: infra branches never merge wholesale | Keep isolated; owner decision governs lifecycle |
+| `main` | `97353ad` | Stable release branch | — (use main as base) | 52 commits not in beta (stable-only history); beta is 43 ahead | Preserve; main-only commits require review before promotion |
+| `vibe/branch-lifecycle` | this branch | PR [#100](https://github.com/iNeonyne/LastHavenPlus/pull/100) closed unmerged | 2 ahead / 0 behind | This refreshed audit | Active (Vibe); integration route pending Chaty's decision |
+| `vibe/ci-action-pinning-568e1f` | `3422ec1` | PR [#110](https://github.com/iNeonyne/LastHavenPlus/pull/110) closed unmerged | 4 ahead / 5 behind | `dependabot.yml` + CI supply-chain docs; superseded by merged PRs #102/#115 | Superseded; candidate for owner review |
+| `vibe/game-load-states-568e1f` | `e8c353c` | PR [#112](https://github.com/iNeonyne/LastHavenPlus/pull/112) **open** (issue #106) | 3 ahead / 1 behind | Game load/failure UX + retry/restore tests; exact-head CI run #45726823497 passed (1 beta commit behind: #118) | Preserve — active PR |
+| `vibe/governance-vibe-integrator` | `dc7f9d2` | PR [#94](https://github.com/iNeonyne/LastHavenPlus/pull/94) closed unmerged | 2 ahead / 20 behind | Governance proposal for Vibe co-integrator/self-merge; conflicts with adopted #114 workflow | Rejected proposal; retain as record, owner decision |
+| `vibe/markdown-validation` | `c303cac` | PR [#101](https://github.com/iNeonyne/LastHavenPlus/pull/101) closed unmerged | 1 ahead / 20 behind | ISSUES.md anchor repair only; same repair merged via PR #78 | Superseded; candidate for owner review |
+| `vibe/visual-tokens-568e1f` | `6b9a3c8` | PR [#113](https://github.com/iNeonyne/LastHavenPlus/pull/113) **open** (issue #107) | 6 ahead / 5 behind | Design tokens + DesignTokensTest fix; stacked on PR #112 per Chaty's stack dependency | Preserve — active PR |
 ## Recent integration history
 - PR [#95](https://github.com/iNeonyne/LastHavenPlus/pull/95) merged into beta; merge commit `7bf41a369a7514c78c2d98fec62ec5296489662f` (checkout v7 pin).
 - PR [#96](https://github.com/iNeonyne/LastHavenPlus/pull/96) merged into beta; merge commit `6c9dadc31682db75f706435437d77969fb3e505e` (upload-artifact v7.0.2 pin).
