@@ -46,6 +46,7 @@ enum class Screen {
   Settings,
   Diagnostics,
   Update,
+  Licenses,
 }
 
 class MainActivity : ComponentActivity() {
@@ -168,6 +169,7 @@ private fun LastHavenApp(
   var settingsReturnScreen by remember { mutableStateOf(Screen.Game) }
   var diagnosticsReturnScreen by remember { mutableStateOf(Screen.Settings) }
   var updateReturnScreen by remember { mutableStateOf(Screen.Game) }
+  var licensesReturnScreen by remember { mutableStateOf(Screen.Settings) }
   var availableUpdate by remember { mutableStateOf<AppUpdateInfo?>(null) }
   var updateMessage by remember { mutableStateOf<String?>(null) }
   var isDownloadingUpdate by remember { mutableStateOf(false) }
@@ -381,6 +383,10 @@ private fun LastHavenApp(
             currentScreen = Screen.Diagnostics
           },
           onOpenUpdates = { openUpdate(Screen.Settings) },
+          onOpenLicenses = {
+            licensesReturnScreen = Screen.Settings
+            currentScreen = Screen.Licenses
+          },
           onCheckUpdates = {
             updateReturnScreen = Screen.Settings
             currentScreen = Screen.Update
@@ -392,6 +398,12 @@ private fun LastHavenApp(
         DiagnosticsScreen(
           context = context,
           onBack = { currentScreen = diagnosticsReturnScreen },
+        )
+
+      Screen.Licenses ->
+        OpenSourceLicenseScreen(
+          context = context,
+          onBack = { currentScreen = licensesReturnScreen },
         )
 
       Screen.Update ->
