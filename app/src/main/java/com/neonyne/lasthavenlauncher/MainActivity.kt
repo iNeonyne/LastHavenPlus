@@ -306,7 +306,6 @@ private fun LastHavenApp(
   LaunchedEffect(Unit) {
     // Start/resume the game immediately; the metadata check never downloads or installs.
     startGame()
-    checkForUpdates(false)
   }
 
   BackHandler(enabled = currentScreen != Screen.Home || menuVisible) {
