@@ -152,7 +152,7 @@ class AddonLibraryRepository(
       "Addon library exceeds 384 MiB."
     }
     if (requireAddonDirectories) {
-      require(addons.all { addonDirectory(it.folder).isDirectory }) {
+      check(addons.all { addonDirectory(it.folder).isDirectory }) {
         "Addon library references missing addon files."
       }
     }
