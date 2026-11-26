@@ -1,8 +1,5 @@
 # Third-party notices
 
-THIRD-PARTY NOTICES
-=====================
-
 This inventory is based on the resolved releaseRuntimeClasspath dependency report for this branch. It is a notice summary, not a relicensing statement. Each component remains under its own license or terms. The exact APK contents must be checked against the CI-built unsigned APK before this inventory is treated as complete.
 
 OPEN-SOURCE COMPONENTS
