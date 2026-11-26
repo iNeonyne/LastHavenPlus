@@ -143,7 +143,11 @@ fun SettingsScreen(
               "This program is provided without warranty. The complete license follows.",
             color = DesignTokens.textSecondary,
           )
-          Text(licenseText, color = DesignTokens.textBody, style = MaterialTheme.typography.bodySmall)
+          Text(
+            licenseText,
+            color = DesignTokens.textBody,
+            style = MaterialTheme.typography.bodySmall,
+          )
           Text(
             "Third-party components retain their own license terms and notices. The LastHavenPlus " +
               "project license does not relicense Mozilla GeckoView, AndroidX/Jetpack libraries, " +
