@@ -195,3 +195,11 @@ The repository owner will install releases and report what works and what does n
 - The owner superseded the earlier GPL-3.0-or-later choice and selected Apache License, Version 2.0 for original LastHavenPlus project code and documentation.
 - the refreshed community-hygiene PR now carries the Apache-2.0 license text and Settings viewer. Third-party dependency notices and copyright attribution remain incomplete; do not merge until audited and verified.
 - F-Droid readiness is explicitly out of scope. Reproducible-build investigation remains independently tracked.
+
+## Issue #67 — latest Apache-2.0 and third-party notice checkpoint (2026-11-26)
+
+- Owner selected Apache-2.0 for original LastHavenPlus code/docs. Owner-supplied attribution: LastHavenPlus, Copyright 2026.
+- PR #144 now includes root LICENSE/NOTICE, Apache-2.0 and MPL-2.0 Android resources, third-party notices in repository and Settings, SECURITY.md, weekly Gradle Dependabot, changelog reconciliation, branch-retention policy, and an unsigned APK upload in PR CI.
+- Resolved runtime graph includes GeckoView 160 and Google Play Services FIDO/Base/Basement/Tasks under Google's Android Software Development Kit License terms. These vendor components are not OSI open-source and remain outside the project Apache license.
+- Markdown lint passed on the preceding notice-doc head. Android CI exposed Spotless formatting in SettingsDialogs.kt; that correction is now committed. Exact-head Android rerun and unsigned APK inspection are pending.
+- Do not merge until the APK contents, full runtime notice inventory and vendor terms have been reviewed. No release, tag, main promotion or physical-device test.
