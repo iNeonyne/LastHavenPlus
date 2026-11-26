@@ -294,19 +294,23 @@ class AddonLibraryRepository(
 
     beforeIndexWrite?.invoke()
     val temporary = File(root, ".library-${UUID.randomUUID()}.tmp")
-    FileOutputStream(temporary).use { output ->
-      properties.store(output, "LastHavenPlus addon library")
-      output.fd.sync()
-    }
     try {
-      Files.move(
-        temporary.toPath(),
-        indexFile.toPath(),
-        StandardCopyOption.REPLACE_EXISTING,
-        StandardCopyOption.ATOMIC_MOVE,
-      )
-    } catch (_: java.nio.file.AtomicMoveNotSupportedException) {
-      Files.move(temporary.toPath(), indexFile.toPath(), StandardCopyOption.REPLACE_EXISTING)
+      FileOutputStream(temporary).use { output ->
+        properties.store(output, "LastHavenPlus addon library")
+        output.fd.sync()
+      }
+      try {
+        Files.move(
+          temporary.toPath(),
+          indexFile.toPath(),
+          StandardCopyOption.REPLACE_EXISTING,
+          StandardCopyOption.ATOMIC_MOVE,
+        )
+      } catch (_: java.nio.file.AtomicMoveNotSupportedException) {
+        Files.move(temporary.toPath(), indexFile.toPath(), StandardCopyOption.REPLACE_EXISTING)
+      }
+    } finally {
+      temporary.delete()
     }
   }
 
