@@ -2,7 +2,7 @@
 
 **Last updated:** 2026-11-26  
 **Active branch:** beta  
-**Latest beta HEAD:** f800deebf6c8bdaa91df4ac7c3693dcf86f3e6b6 (PR [#137](https://github.com/iNeonyne/LastHavenPlus/pull/137), v2.4.0 integration records; application changes are at c24b24e).  
+**Beta HEAD at this verification checkpoint:** f800deebf6c8bdaa91df4ac7c3693dcf86f3e6b6 (after docs PR #137; application integration remains at c24b24e).  
 **Stable branch / v2.3.0 tag:** ebc5b424e83ae66c2b0accc2bec6f050b8dc0d88; GitHub confirms published, non-draft, non-prerelease [v2.3.0](https://github.com/iNeonyne/LastHavenPlus/releases/tag/v2.3.0) with canonical ARM64 APK, update manifest and v2.2.0-to-v2.3.0 differential package. Main remains unchanged by this housekeeping work.
 
 ## Latest integration — v2.4.0 launcher icon
