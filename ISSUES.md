@@ -2,38 +2,42 @@
 
 **Source of truth:** GitHub Issues and this version-controlled backlog. Keep issue scope, status and acceptance criteria aligned. Do not close an issue because documentation changed.
 
-## Current state after v2.3.0
+## Current state — 2026-11-26
 
-- **Latest stable:** v2.3.0 is published on main at tag commit ebc5b424e83ae66c2b0accc2bec6f050b8dc0d88.
-- **Development:** beta is at 97570eaaca86c9e27d92d04f90da9d930f6bdb33; v2.4.0 icon, visual-system and overlay accessibility implementations are integrated, with owner device verification still open. Addon Manager Phase A PR #152 is draft and Chaty-owned; no release or promotion is in progress.
-- **CI:** PR #132 consolidated beta lint/format checks into the existing signed ARM64 build job and is merged. Exact-head PR validation and post-merge signed CI passed. Issue #129 is closed as completed after the measured result was recorded.
-- **Housekeeping:** #128 is Chaty-owned; it reconciles repository status and work records. #70 remains open until this reconciliation is integrated.
-- **Updater:** #4 remains open for remaining regression coverage. #15, #31 and #111 are blocked/deferred; no release-ID/differential fallback runtime verification is claimed.
-- **Reproducibility:** #66 / PR #119 merged at `97570eaaca86c9e27d92d04f90da9d930f6bdb33`; exact-head PR checks passed. Post-merge signed ARM64 and Markdown checks passed; post-merge clean-runner reproducibility retry is in progress after a plugin-resolution failure.
-- **Owner-paused:** #20 / PR #122 and #62 / PR #123 are explicitly deferred; keep their drafts open for traceability and do not resume. #23 was explicitly reauthorized and is owned by Chaty in draft PR #152.
-- **UI/UX:** #133 icon and #107 visual system are integrated; #9 overlay accessibility/navigation is integrated by PR #139. #133 and #9 remain open as `agent:owner` for physical-device verification. PR #113 remains draft/open for traceability only.
-- **Roadmap:** issue #18 now covers v2.4.0 UI/UX, v2.5.0 updater experience and v2.6.0 settings/diagnostics. Targets are planning only, not release authorization.
-- **Other deferred work:** #86 and #19 remain deferred outside the scoped roadmap.
+- **Latest stable:** v2.3.0 is published; release metadata confirms the ARM64 APK, update manifest and v2.2.0-to-v2.3.0 BSDIFF asset.
+- **Development:** beta HEAD is 7451b940dc0adfa1ea14234fe6d489bba688b12c; v2.4.0 icon, visual-system and overlay-accessibility source integrations are merged.
+- **Addon Manager:** Phase A is integrated by PR #152 at 103bb979c98589a8704459d28d13861eccca39d6; local enablement is metadata only. Phase B/runtime injection is not implemented and waits for owner authorization. Issue #23 is agent:owner.
+- **Latest docs integration:** PR #158 merged at 7451b940dc0adfa1ea14234fe6d489bba688b12c; Markdown push run #45890132670 passed.
+- **Open PRs:** none. PR #154, #157, #159, #160, #122, #143 and #144 were closed without merge; do not treat their branch-only changes as integrated.
+- **Updater:** #4/#15 are coordinated under Chaty. BSDIFF cleanup candidates were not merged; PR #160 Markdown passed but one reproducibility build failed resolving Kotlin Compose plugin 2.4.21, while Android and second reproducibility job were incomplete at closure. #4 acceptance remains open. #31 and #111 remain blocked for their stated authorization/release holds.
+- **Diagnostics:** #11 is active with Vibe; PR #154 was closed unmerged because stale. A fresh implementation is required.
+- **Housekeeping:** #128 closed after PR #161 merged at a0e5271793c9bb7754b7ac41429065e5602df569; exact-head and post-merge Markdown passed. #70 is closed; Markdown lint is integrated.
+- **GeckoView audit:** #20 remains owner-deferred/blocked; PR #122 closed without merge. Preserve unresolved notice/license/distribution and device-testing gaps.
+- **Rights/notices:** #67 remains agent:owner; PR #144 closed without merge. The owner's All Rights Reserved decision governs original project material; third-party distribution review remains unresolved.
+- **Ownership:** all 25 open issues have exactly one agent:* label and none are agent:unassigned. Vibe: #11 active, #149 then #146 queued. Chaty: #4/#15 and #128 active; #81 queued. Owner: #23 and #67. Blocked dependencies/holds are documented on their issues.
+- **Device/release:** no new physical ARM64 testing, release, tag, publication or beta-to-main promotion is claimed or authorized.
 
 ## Current ownership
 
-- **Chaty:** #128 housekeeping, Addon Manager Phase A implementation/review (draft PR #152), #4 updater test coverage, #81 approved library-only dependency refresh, and final #70 documentation reconciliation. #129 CI consolidation is closed as completed.
-- **Vibe:** #11 diagnostics test coverage is submitted in PR #154 and awaiting Chaty's review (`agent:review`). Owner-paused drafts #122/#123 remain paused.
-- **Chaty:** completed #133 adaptive launcher icon integration via PR #135.
-- **Owner decision:** #65 and any release/promotion/roadmap authorization remain with the repository owner.
+- **Chaty active:** #4 updater reliability and #15 coordinated recovery. #128 is complete.
+- **Chaty queued:** #81 dependency-evidence documentation after #128; #20 and #31 remain blocked, not queued, until their owner holds are lifted.
+- **Vibe active:** #11 diagnostics tests.
+- **Vibe queued:** #149 launcher-owned strings, then #146 GameSessionController; one active implementation task at a time.
+- **Owner decision:** #23 Phase B and #67 third-party rights/distribution questions.
+- **Blocked:** #7, #86, #111, #19, #16, #147, #148, #12, #14, #10, #28, #6 and #17 remain gated by dependencies/decisions recorded on their GitHub issues.
 
 ## Backlog index
 
 | Issue | Priority | Summary | Current state |
 |---|---:|---|---|
-| [#4](#issue-4) | P0.1 | Build reproducibility and updater test coverage | Open; version-qualified CI artifact naming integrated; remaining updater regression tests stay with Chaty |
-| [#5](#issue-5) | Feedback | Owner feedback — gameplay and update behavior after release | Open; owner will provide release feedback on their own schedule; not a release blocker |
+| [#4](#issue-4) | P0.1 | Build reproducibility and updater test coverage | Chaty active; BSDIFF cleanup candidate PRs closed unmerged; broad adversarial tests and signed APK-pair evidence remain |
+| [#5](#issue-5) | Feedback | Owner feedback — gameplay and update behavior after release | Closed; historical owner feedback thread |
 | [#6](#issue-6) | P2 | Essential launcher settings and safe storage controls | Open; includes version identity, theme preference and accessible storage loading-state candidates |
 | [#7](#issue-7) | P3 | Runtime performance and APK size | Open; measure before optimizing |
 | [#8](#issue-8) | — | Legacy addon manager | Closed — superseded; no planned work |
-| [#9](#issue-9) | P2 | Overlay accessibility and navigation | Implementation integrated by PR #139; open as `agent:owner` for physical ARM64 TalkBack/focus/traversal verification |
+| [#9](#issue-9) | P2 | Overlay accessibility and navigation | Closed after PR #139 integration; physical-device coverage is not claimed by CI |
 | [#10](#issue-10) | P2 | Persistent app-wide network usage totals | Open; app-wide counters are implemented, automated counter tests remain |
-| [#11](#issue-11) | P2 | Privacy-conscious log tests | Vibe submitted PR #154; `agent:review`, awaiting Chaty's exact-head review and reproducibility retry |
+| [#11](#issue-11) | P2 | Privacy-conscious log tests | Vibe active; PR #154 closed unmerged because stale; fresh beta-based test PR required |
 | [#12](#issue-12) | P2 | GeckoView load-error details | Open |
 | [#13](#issue-13) | — | Accessible names / legacy addon-manager compile work | Closed — consolidated into #9 |
 | [#14](#issue-14) | P2 | Connection diagnostics | Open |
@@ -42,27 +46,27 @@
 | [#17](#issue-17) | P2 | Settings backup and restore | Open |
 | [#18](#issue-18) | Roadmap | v2.4.0–v2.6.0 UI/UX, updater and settings roadmap | Open; owner-requested planning targets only, no release authorization |
 | [#19](#issue-19) | P1 | Opt-in beta release channel | Open |
-| [#20](#issue-20) | Deferred | GeckoView 160 artifact/dependency audit | Owner-deferred; PR #122 remains draft/open for traceability; do not resume |
-| [#21](#issue-21) | Feedback | Owner feedback — GeckoView runtime/profile behavior after release | Open; optional owner feedback and reported follow-up defects; not a release blocker |
-| [#22](#issue-22) | Superseded | Home screen and Play/Settings navigation | Replaced by direct-launch/overlay scope #56; owner feedback tracked in #5/#21 |
-| [#23](#issue-23) | P1 | Integrate and harden supplied GeckoView addon manager | Chaty-owned Phase A corrections in draft PR #152; runtime port remains out of scope |
+| [#20](#issue-20) | Deferred | GeckoView 160 artifact/dependency audit | `agent:blocked`; PR #122 closed unmerged; resume only after owner reprioritization; unresolved notice/distribution/device evidence remains |
+| [#21](#issue-21) | Feedback | Owner feedback — GeckoView runtime/profile behavior after release | Closed; historical owner feedback thread |
+| [#22](#issue-22) | Superseded | Home screen and Play/Settings navigation | Closed; replaced by direct-launch/overlay scope #56 |
+| [#23](#issue-23) | Owner decision | Addon Manager Phase A / Phase B | Phase A integrated by PR #152 at `103bb979`; local metadata only; Phase B not implemented and awaits owner decision |
 | [#28](https://github.com/iNeonyne/LastHavenPlus/issues/28) | P2 | Storage usage accuracy and iterative directory sizing | Open; queued after #10 |
-| [#42](https://github.com/iNeonyne/LastHavenPlus/issues/42) | Superseded | v2.1.0 Home-screen UI verification | Superseded by direct-launch redesign #56; new UX verification belongs to #5/#56 |
+| [#42](https://github.com/iNeonyne/LastHavenPlus/issues/42) | Superseded | v2.1.0 Home-screen UI verification | Closed as superseded by direct-launch redesign #56 |
 | [#29](https://github.com/iNeonyne/LastHavenPlus/issues/29) | Done | Reconcile beta documentation and CI evidence | Closed as completed after PR #46 merged to beta |
-| [#31](https://github.com/iNeonyne/LastHavenPlus/issues/31) | Deferred | Draft release asset verification and differential fallback | Owner-deferred; no release-ID/differential runtime verification claimed |
+| [#31](https://github.com/iNeonyne/LastHavenPlus/issues/31) | Deferred | Draft release asset verification and differential fallback | `agent:blocked`; release-tag packaging/runtime verification requires explicit owner authorization |
 | [#56](https://github.com/iNeonyne/LastHavenPlus/issues/56) | Done | Direct launch and responsive in-game overlay | PR #83 merged to beta; PR #87 selectively promoted implementation to main; exact beta validation and signed CI passed |
 | [#60](https://github.com/iNeonyne/LastHavenPlus/issues/60) | Done | Android lint and Kotlin formatting quality gate | PR #72 merged; exact-head PR and post-merge beta quality/build workflows passed |
 | [#84](https://github.com/iNeonyne/LastHavenPlus/issues/84) | Done | Approved recreated LastHavens-inspired launcher icon | PR #85 merged to beta; PR #87 promoted icon to main; beta CI passed |
 | [#86](https://github.com/iNeonyne/LastHavenPlus/issues/86) | Deferred | Supporting settings, diagnostics and feature backlog | Deferred coordination index; detailed work is sequenced in #18 and remains dependency-gated |
 | [#106](https://github.com/iNeonyne/LastHavenPlus/issues/106) | Done | Gameplay loading, reconnect and load-failure UX | Closed after implementation integration; no open task remains under this issue |
-| [#107](https://github.com/iNeonyne/LastHavenPlus/issues/107) | P1 | Consistent visual design and interaction polish | Open; assigned to Vibe (agent:vibe); fresh branch required; PR #113 remains traceability-only |
-| [#62](https://github.com/iNeonyne/LastHavenPlus/issues/62) | Deferred | Branch lifecycle audit | Owner-deferred; PR #123 remains draft/open; do not resume |
+| [#107](https://github.com/iNeonyne/LastHavenPlus/issues/107) | Done | Consistent visual design and interaction polish | Closed after PR #136 integration |
+| [#62](https://github.com/iNeonyne/LastHavenPlus/issues/62) | Done | Branch lifecycle audit | Closed after PR #123 merged; no branch deletion performed |
 | [#66](https://github.com/iNeonyne/LastHavenPlus/issues/66) | Engineering | Independent unsigned APK reproducibility | Completed; PR #119 merged to beta at `97570ea` |
-| [#70](https://github.com/iNeonyne/LastHavenPlus/issues/70) | Docs | Contributor/security guidance and Markdown validation | Markdownlint integrated; final reconciliation is in this housekeeping PR |
-| [#81](https://github.com/iNeonyne/LastHavenPlus/issues/81) | Dependencies | Compatible AndroidX and compression library refresh | Chaty-owned; only the five approved library versions are in scope |
-| [#111](https://github.com/iNeonyne/LastHavenPlus/issues/111) | Deferred | Updater download progress and retry feedback | Blocked/deferred; do not start alongside #4 |
-| [#133](https://github.com/iNeonyne/LastHavenPlus/issues/133) | Owner review | v2.4.0 adaptive launcher icon refresh | PR #135 merged; exact-head and signed ARM64 CI passed; owner visual/mask verification pending |
-| [#128](https://github.com/iNeonyne/LastHavenPlus/issues/128) | Housekeeping | Post-v2.3.0 repository housekeeping | Chaty-owned; current docs reconciliation in this housekeeping PR |
+| [#70](https://github.com/iNeonyne/LastHavenPlus/issues/70) | Done | Contributor/security guidance and Markdown validation | Closed after docs PR #158 and Markdown quality integration |
+| [#81](https://github.com/iNeonyne/LastHavenPlus/issues/81) | Dependencies | Compatible AndroidX and compression library refresh | Five approved pins integrated by PR #104; Chaty queued to finish evidence/docs reconciliation only |
+| [#111](https://github.com/iNeonyne/LastHavenPlus/issues/111) | Deferred | Updater download progress and retry feedback | `agent:blocked`; v2.5.0 integration hold requires v2.4.0 release and explicit owner authorization |
+| [#133](https://github.com/iNeonyne/LastHavenPlus/issues/133) | Done | v2.4.0 adaptive launcher icon refresh | Closed after PR #135 integration; CI does not constitute physical-device appearance testing |
+| [#128](https://github.com/iNeonyne/LastHavenPlus/issues/128) | Done | Post-v2.3.0 repository housekeeping | Closed after PR #161 merged; exact-head and post-merge Markdown passed |
 | [#129](https://github.com/iNeonyne/LastHavenPlus/issues/129) | Done | Consolidate beta CI quality checks | Closed; PR #132 merged and exact-merge CI passed |
 
 ---
@@ -71,11 +75,11 @@
 
 GitHub Issues are the canonical records for each task's discussion, owner, dependencies and lifecycle. This file is the project-wide index and roadmap checklist. The GitHub issue number is the only task ID; do not invent a parallel numbering scheme.
 
-**Chaty handles intake and triage.** For every new request, search open and closed issues and this index for duplicates before creating anything. Reuse or update an existing issue whenever it already covers the requested outcome. New issues must use one of the forms in `.github/ISSUE_TEMPLATE/` and include a clear outcome, bounded scope, non-goals, testable acceptance criteria, verification plan and dependencies. New issues receive `agent:unassigned`; Chaty then triages and explicitly assigns one owner. The GitHub workflow that creates/applies ownership labels is `.github/workflows/agent-ownership.yml`; it must be present on the repository default branch before issue-open automation becomes active. Only then add a concise entry here.
+**Chaty handles intake and triage.** For every new request, search open and closed issues and this index for duplicates before creating anything. Reuse or update an existing issue whenever it already covers the requested outcome. New issues must use one of the forms in `.github/ISSUE_TEMPLATE/` and include a clear outcome, bounded scope, non-goals, testable acceptance criteria, verification plan and dependencies. New issues may briefly receive `agent:unassigned` from automation; Chaty must resolve ownership promptly by assigning `agent:chaty`, `agent:vibe`, `agent:blocked` or `agent:owner` before implementation can begin. Do not leave actionable issues unassigned after triage. The GitHub workflow that creates/applies ownership labels is `.github/workflows/agent-ownership.yml`; it must be present on the repository default branch before issue-open automation becomes active. Only then add a concise entry here.
 
 Priority guide: P0 = core/release blocker or data/security risk; P1 = important reliability or planned release capability; P2 = normal improvement; P3 = optional/low urgency. Priority does not guarantee scheduling or inclusion in a release. Set a target release/milestone only after triage.
 
-Lifecycle: Needs triage → Ready → Active → Review → Done; Blocked and Deferred are explicit side states. An issue is not Ready just because it is open. One active owner per issue. Owner, exact subtask, permitted files, branch and dependencies must be recorded in `STATUS.md` before editing. Ploy only works on the assignment in `AGENT_WORK.md`; Chaty owns issue creation, triage and central tracking.
+Lifecycle: Needs triage → Ready → Active → Review → Done; Blocked and Deferred are explicit side states. An issue is not Ready just because it is open. One active owner per issue. Every open actionable issue must have exactly one `agent:*` label; use `agent:blocked` or `agent:owner` when work cannot proceed. Owner, exact subtask, permitted files, branch and dependencies must be recorded in `STATUS.md` before editing. Vibe only works on the active assignment in `AGENT_WORK.md`; Chaty owns issue creation, triage and central tracking.
 
 Close only when every acceptance criterion is met and evidence is recorded. If an integrated task commit only partially addresses an issue, keep it open and record the remaining work. Record blockers and decisions on the GitHub issue as well as the repository status. Do not represent unreported owner feedback as a test result; owner feedback is optional and is not a release gate.
 
@@ -903,12 +907,3 @@ Verify the current manifest and GeckoView delegates, then document the strict al
 - Verified current beta source: `MainActivity.setupGeckoDelegates` allows only persistent storage and audible/inaudible autoplay for `lasthavens.com` and subdomains; all other content permissions/origins are denied; Android runtime and media permission requests are rejected.
 - Manifest declares `INTERNET` and `REQUEST_INSTALL_PACKAGES`; no camera, microphone, geolocation or notification permissions are declared.
 - No runtime policy change is authorized. Exact-head Markdown validation passed on PR #158 head `e2ce22c44508a87f53fc4a57a03f82e0597550bc` (run #45889911748); internal links/anchors passed across all 15 Markdown files. Final review/merge remains pending.
-
-
-## 2026-11-26 — #4 updater resource-lifecycle correction
-
-- Chaty owns the narrow BSDIFF40 cleanup fix in `chaty/updater-patch-stream-cleanup-4-beta`, based on beta `7451b940dc0adfa1ea14234fe6d489bba688b12c`.
-- Opened compressed sections are tracked as they are created and closed in reverse order even when a later section fails; cleanup errors are suppressed to preserve the original failure.
-- Regression tests cover malformed diff/extra sections and removal of stale output.
-- Exact-head CI passed on head `9dd377e3cd48882ef90e3e2da44c63b5d2fba98c`: Android run #45890826303, Markdown run #45890826405 and independent reproducibility run #45890826652. The prior PR #157 plugin-resolution failure was superseded by this fresh exact-head validation.
-- #4 remains open: full adversarial updater matrix, signed APK-pair reconstruction and identity verification, patch benchmark, and current beta packaging verification are not complete.

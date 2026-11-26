@@ -593,10 +593,20 @@ No branch was deleted. The available GitHub connector exposes no branch-delete o
 - **Next:** final PR review and merge; permission prompt behavior remains unverified on hardware.
 
 
-### 2026-11-26 — #4 BSDIFF partial-open cleanup
+### 2026-11-26 — #128 live repository/ownership reconciliation
 
-- **Branch:** `chaty/updater-patch-stream-cleanup-4-beta` from beta `7451b940dc0adfa1ea14234fe6d489bba688b12c`.
-- **Changes:** `BsdiffPatch.kt` now records each opened compressed section and closes them in reverse order in a `finally` block. `BsdiffPatchTest.kt` adds malformed diff/extra section cases and verifies stale output is removed.
-- **Commits:** source `a5e680e0a9fe628b41cde130f5ffa699a9dfe784`; tests `35f1b69448ab4e91a5acaff9950ff492c5fcf811`; exact branch/PR head `9dd377e3cd48882ef90e3e2da44c63b5d2fba98c`.
-- **CI:** exact-head Android run #45890826303, Markdown run #45890826405 and independent unsigned APK reproducibility run #45890826652 all passed. PR #159 was closed without merge; the changes are not integrated.
-- **Remaining:** full updater test matrix, real signed APK-pair byte-for-byte reconstruction and signature/identity verification, benchmark and current beta signed packaging verification. No physical device test claimed.
+- **Branch/base:** chaty/issue-128-housekeeping-beta, based on beta 7451b940dc0adfa1ea14234fe6d489bba688b12c.
+- **Verified refs:** beta 7451b940dc0adfa1ea14234fe6d489bba688b12c; main e9c2b53d1ec84e27722da4b54fa4ddcbad65f891; published v2.3.0 release metadata confirms ARM64 APK, update manifest and differential asset.
+- **PR inventory:** no open PRs. PR #158 is merged at beta HEAD. PRs #154/#157/#159/#160/#122/#143/#144 are closed unmerged; their branch-only changes are not integrated.
+- **Source-of-truth correction:** Addon Manager Phase A is integrated by PR #152 at 103bb979c98589a8704459d28d13861eccca39d6; Phase B remains owner-controlled and unimplemented.
+- **Ownership:** reconciled all 26 open issues to exactly one ownership label; none remain agent:unassigned. Vibe active #11, queued #149 then #146. Chaty active #4/#15 and #128; #81 queued. Owner #23/#67; blocked dependencies and authorization holds are documented on each issue.
+- **Updater PR #160:** closed without merge. Markdown passed (#45891807077); reproducibility build A failed Kotlin Compose plugin 2.4.21 resolution, while build B and Android validation were still incomplete at closure. No updater candidate code is integrated.
+- **Docs scope:** README, AGENTS, STATUS, ISSUES, AGENT_WORK, CHANGELOG-AGENTS and this work log. No app/game behavior, dependency/toolchain, signing, ABI, release or main changes.
+- **Next:** exact-head Markdown/link/anchor validation; submit a docs-only PR to beta. No physical ARM64 testing claimed.
+
+
+### 2026-11-26 — #128 documentation integration verification
+
+- PR #161 squash-merged to beta at a0e5271793c9bb7754b7ac41429065e5602df569.
+- Exact-head Markdown run #45892727113 passed on 6a61d9197b21b2d89aeee39d1a8633b9c8012f6f; post-merge Markdown run #45892884986 passed on a0e5271793c9bb7754b7ac41429065e5602df569.
+- Issue #128 closed. No Android/device tests were applicable to this documentation-only change. No physical-device test claimed.

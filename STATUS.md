@@ -2,8 +2,25 @@
 
 **Last updated:** 2026-11-26  
 **Active branch:** beta  
-**Beta HEAD at this verification checkpoint:** 97570eaaca86c9e27d92d04f90da9d930f6bdb33 (after PR #119).  
-**Stable branch / v2.3.0 tag:** ebc5b424e83ae66c2b0accc2bec6f050b8dc0d88; GitHub confirms published, non-draft, non-prerelease [v2.3.0](https://github.com/iNeonyne/LastHavenPlus/releases/tag/v2.3.0) with canonical ARM64 APK, update manifest and v2.2.0-to-v2.3.0 differential package. Main remains unchanged by this housekeeping work.
+**Verified beta base before PR #162 documentation follow-up:** a0e5271793c9bb7754b7ac41429065e5602df569 (PR #161 housekeeping merge).  
+**Stable release:** [v2.3.0](https://github.com/iNeonyne/LastHavenPlus/releases/tag/v2.3.0), tag commit ebc5b424e83ae66c2b0accc2bec6f050b8dc0d88; GitHub release metadata confirms the ARM64 APK, update manifest and v2.2.0-to-v2.3.0 BSDIFF asset. Main HEAD observed as e9c2b53d1ec84e27722da4b54fa4ddcbad65f891.  
+**Open PRs:** none at this checkpoint. No release, tag, publication or beta-to-main promotion is in progress.
+
+## Current operational checkpoint — 2026-11-26
+
+- **Latest integrations:** PR #158 permission-policy documentation merged at 7451b940dc0adfa1ea14234fe6d489bba688b12c; post-merge Markdown run #45890132670 passed. PR #161 repository housekeeping merged at a0e5271793c9bb7754b7ac41429065e5602df569; exact-head Markdown #45892727113 and post-merge Markdown #45892884986 passed. Both changes are documentation-only; no Android/device test was applicable.
+- **Addon Manager:** Phase A native local ZIP/library management is integrated by PR #152 at 103bb979c98589a8704459d28d13861eccca39d6. Local enablement is metadata only; addons are not activated in the game. Phase B/runtime injection is not implemented and awaits a separate owner decision. Issue #23 is agent:owner.
+- **UI integrations:** adaptive icon PR #135 merged at c24b24e7125f49e86f465b1786ccfecb537e9694; visual-system PR #136 at e0967121b51ac1c232c92edd80157fc02b714766; accessibility PR #139 at 0d5ab712ce5195a3e71023c68da54f054645a8e2. These are integrated source changes; CI is not physical-device evidence.
+- **Updater:** #4 and #15 are coordinated under Chaty. The BSDIFF partial-open cleanup candidate was not merged: PRs #157, #159 and #160 are closed unmerged. On PR #160 head d0cb2f5144257a2270ae0ed42f649833ad688207, Markdown run #45891807077 passed, but reproducibility build A failed resolving org.jetbrains.kotlin.plugin.compose:2.4.21; build B and Android validation were still running when the PR was closed. No updater code from those PRs is integrated. Full #4 acceptance remains incomplete.
+- **Diagnostics:** Vibe owns active issue #11. PR #154 was closed unmerged because its branch was stale; fresh implementation and exact-head validation are required.
+- **Housekeeping:** #128 completed through PR #161 at a0e5271793c9bb7754b7ac41429065e5602df569. Exact-head Markdown #45892727113 and post-merge Markdown #45892884986 passed.
+- **Open PR inventory:** GitHub returned no open PRs at this checkpoint. Closed unmerged work remains documented in its issues and is not treated as integrated.
+- **Issue ownership:** all 25 open issues have exactly one agent:* label; there are no agent:unassigned issues. Vibe queue: #11 active, then #149 and #146. Chaty active: #4/#15; #128 is complete and #81 is queued. Owner-controlled: #23 and #67. Dependency/authorization holds remain agent:blocked.
+- **Device status:** no new physical ARM64 device testing was performed or claimed.
+
+## Historical Addon Manager Phase A implementation checkpoint (#23)
+
+The following dated implementation notes are retained as history. Their old draft-PR state, branch heads and pending CI status were superseded by PR #152 merging at 103bb979c98589a8704459d28d13861eccca39d6. Phase B remains unimplemented and owner-controlled.
 
 ## 2026-11-26 — Addon Manager Phase A implementation checkpoint (#23)
 
@@ -14,14 +31,14 @@
 - **Runtime limitation:** Chrome MV3 background/service-worker execution, XHR/Worker interception, game-resource masking and Lua initialization remain unimplemented. GeckoView 160 runtime/lifecycle integration remains a separate gate; Phase B is not authorized in this PR.
 - **Device status:** no physical ARM64 device test has been performed.
 
-## Latest integration — v2.4.0 launcher icon
+## Historical integration — v2.4.0 launcher icon
 
 - **PR:** [#135](https://github.com/iNeonyne/LastHavenPlus/pull/135), squash-merged to beta at `c24b24e7125f49e86f465b1786ccfecb537e9694`.
 - **Exact-head Android validation:** [run #45742710788](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45742710788) passed lint, Spotless, unsigned release assembly and JVM tests. PR validation remained unsigned; signing/tag/publication jobs were skipped.
 - **Exact-head Markdown validation:** [run #45742710826](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45742710826) passed.
 - **Post-merge beta validation:** Markdown push run [#45743277532](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45743277532) passed. Signed ARM64 beta build [#45743277446](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45743277446) passed on exact application merge commit `c24b24e`. It built and unit-tested the optimized APK, verified ARM64-only packaging (`arm64-v8a`), matched the established signing certificate SHA-256 `b3bbf7520e77dfc384a60b1eee6c5f205b978f9b453849e2be523f642018d263`, and uploaded artifact `LastHavenPlus-2.3.0-beta-arm64-v8a` (92,813,021 bytes). Tag and publication jobs were skipped as required.
 - **Artwork:** native icy-blue pixel-art castle/moon vector, deep-navy adaptive background and 8% foreground inset; standard and round adaptive icon resources remain wired. Local mask simulations were inspected, but Android-generated launcher screenshots and physical ARM64 appearance remain unverified.
-- **Issue #133:** implementation is merged, but the issue was reopened as `agent:owner` because Android-generated mask previews and physical ARM64 launcher appearance still need owner verification.
+- **Issue #133:** closed after source integration. The cited CI verifies build/package checks, not Android-generated adaptive-mask output or physical ARM64 launcher appearance.
 
 ## Documentation checkpoint — PR #137
 
@@ -47,28 +64,30 @@
 - Mozilla GeckoView 160 is the embedded browser engine; Cefrium is removed from production.
 - The app launches directly into the game. The Back menu is a responsive overlay; Settings, diagnostics and update details are launcher-owned full-screen pages.
 - Updater downloads and installation remain user-initiated. Preserve application ID, established signing identity and ARM64-only packaging.
-- Addon Manager Phase A (#23) is in draft PR #152 under Chaty's ownership; local enablement remains metadata only, no addon runtime is active in the game, and Phase B is not authorized.
+- Addon Manager Phase A (#23) is integrated by PR #152 at 103bb979c98589a8704459d28d13861eccca39d6; local enablement remains metadata only, no addon runtime is active in the game, and Phase B awaits a separate owner decision.
 - v2.3.0 is published. The owner requested the next three-version roadmap; issue #18 now records v2.4.0 UI/UX, v2.5.0 updater experience and v2.6.0 settings/diagnostics. This is planning only; no new release, tag or promotion is authorized.
 
 ## Open work and limitations
 
-- **Housekeeping:** issue #128 is active on branch chaty/post-v2.3-housekeeping; this PR reconciles the current records while preserving historical entries.
-- **Diagnostics:** #11 / PR #154 is `agent:review`; exact-head Android [#45874522453](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45874522453) and Markdown [#45874522448](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45874522448) passed after syncing with beta. Independent reproducibility [#45874522426](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45874522426) needs a retry after the same plugin-resolution failure. No physical ARM64 testing.
-- **Updater:** #4 remains open for remaining automated regression coverage. #15, #31 and #111 remain blocked/deferred; no release-ID/differential fallback verification or updater UX work is claimed complete.
-- **Reproducibility:** PR [#119](https://github.com/iNeonyne/LastHavenPlus/pull/119) / issue #66 merged at `97570eaaca86c9e27d92d04f90da9d930f6bdb33`. Exact-head Android, Markdown and independent two-runner reproducibility checks passed. Post-merge signed ARM64 [#45874342894](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45874342894) and Markdown [#45874342809](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45874342809) passed; post-merge reproducibility [#45874342980](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45874342980) is being retried after a clean-runner Kotlin Compose plugin-resolution failure.
-- **Owner-paused drafts:** PR #122 / issue #20 (GeckoView dependency audit) and PR #123 / issue #62 (branch lifecycle audit) remain draft/open and blocked by explicit owner scope resets. Do not add commits or resume without reprioritization.
-- **UI/UX:** issue #107 visual-system implementation is integrated via PR #136 at `e0967121b51ac1c232c92edd80157fc02b714766`; issue #9 accessibility/navigation implementation is integrated via PR #139 at `0d5ab712ce5195a3e71023c68da54f054645a8e2`. Their remaining physical-device checks stay owner-owned. PR #113 remains traceability-only.
-- **Icon:** PR #135 is merged at `c24b24e`; exact-head PR checks and post-merge signed ARM64 CI passed. Issue #133 is reopened as `agent:owner` for actual Android adaptive-mask/physical launcher appearance verification; CI does not prove launcher rendering.
-- **Accessibility:** issue #9 implementation is integrated by PR #139; issue remains `agent:owner` for physical ARM64 TalkBack/focus/traversal, GeckoView-relative order, reduced-motion and large-font verification.
-- **Documentation quality:** PR #120 added repository-wide markdownlint; current beta Markdown quality run [#45736853811](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45736853811) passed. Issue #70 remains open until this central reconciliation is reviewed and merged.
-- **Device status:** CI and packaging checks do not prove physical ARM64 gameplay, profile persistence, haptics, updater installation or device-specific behavior. No new physical-device testing was performed.
+- **Updater reliability:** #4 and #15 are Chaty-owned and sequenced together. PR #157/#159/#160 BSDIFF cleanup candidates were closed without merge; no candidate code is integrated. PR #160 exact-head Markdown passed, but one clean reproducibility build failed resolving Kotlin Compose plugin 2.4.21 and Android/reproducibility were not both complete at closure. The broader adversarial matrix, signed APK-pair reconstruction, benchmark and current-beta signed packaging checks remain open.
+- **Release workflow:** #31 is blocked pending owner authorization for release-tag packaging/runtime verification. Do not trigger a release to test it.
+- **Diagnostics:** #11 is Vibe's active assignment; PR #154 was closed unmerged because its branch was stale. Vibe must recreate the bounded tests on a fresh beta branch.
+- **Housekeeping:** #128 is Chaty-owned on chaty/issue-128-housekeeping-beta; exact-head Markdown/link/anchor validation is pending.
+- **GeckoView audit:** #20 remains owner-deferred/blocked. PR #122 is closed without merge; technical POM/runtime findings remain useful, but notice packaging, unresolved license/distribution questions and physical-device verification are incomplete.
+- **Updater progress UX:** #111 remains blocked until v2.4.0 is released and the owner explicitly authorizes the v2.5.0 integration window. PR #143 is closed without merge.
+- **Addon Manager:** Phase A is integrated by PR #152; Phase B remains unimplemented and issue #23 is agent:owner. No runtime injection or game-addon activation is claimed.
+- **Rights/notices:** #67 remains agent:owner; PR #144 closed without merge. The repository owner's All Rights Reserved decision applies to original project material; third-party notices/distribution questions remain unresolved.
+- **Dependency refresh:** #81's five approved library pins are integrated by PR #104; remaining evidence/documentation reconciliation is queued to Chaty. No toolchain or GeckoView changes are included.
+- **Other holds:** #16 waits on #56 and #14; #147 waits on #146; #148 waits on #146 and coordination with #16; #12 waits on #11; #14 waits on #12; #10 waits on #16; #28 waits on #10; #6 waits on #28; #17 waits on #6. #19 waits on #4/#6. #7 and #86 remain blocked coordination/measurement items.
+- **Open PRs:** none. Closed unmerged PRs are not considered integrated.
+- **Device status:** CI and packaging checks do not prove physical ARM64 gameplay, profile persistence, permission prompts, haptics or updater installation. No new physical-device testing was performed.
 
 ## Next-version roadmap
 
-- **v2.4.0 — UI/UX:** icon resources (#133, Chaty) and shared Compose visual system (#107, Vibe) proceed in parallel; accessibility/navigation coverage (#9) follows #107 integration. No game/client changes or new home screen.
-- **v2.5.0 — updater:** truthful download progress and retry feedback (#111), plus coordinated regression/recovery coverage (#4/#15/#31) after prioritization.
-- **v2.6.0 — settings/diagnostics:** essential settings (#6), connection and GeckoView error diagnostics (#12/#14), orientation/keep-awake (#16), storage/network accuracy and safe backup/restore (#10/#17/#28) in dependency order.
-- Roadmap source: issue #18. Version targets are not release commitments. #23 Phase A is active in draft PR #152; #19 and #7 remain deferred.
+- **v2.4.0 — UI/UX:** icon (#133), visual system (#107) and overlay accessibility (#9) source changes are integrated. Any remaining owner/device verification is tracked separately; no new release is authorized.
+- **v2.5.0 — updater:** progress/retry presentation (#111) remains blocked until v2.4.0 release and explicit owner authorization. Core updater reliability (#4/#15) is being handled by Chaty first; #31 remains owner-authorization-gated.
+- **v2.6.0 — settings/diagnostics:** #11 diagnostics tests are active with Vibe; #149 string resources and #146 session extraction are queued. #12/#14, #16, #10/#28/#6/#17 remain dependency-gated.
+- Roadmap source: issue #18. Version targets are planning only, not release commitments. Addon Manager Phase A is integrated; Phase B remains owner-controlled.
 
 ## Historical integration records
 
@@ -218,13 +237,3 @@ No code, CI, release, signing, dependency, ABI or device behavior changed in thi
 - **Manifest:** declares `INTERNET` and `REQUEST_INSTALL_PACKAGES` only. No camera, microphone, geolocation or notification permission is declared. Package-install permission supports the explicit Android installer flow.
 - **Limitations:** this is a source audit, not physical-device verification of permission prompts or game features. No manifest, delegate, GeckoView setting or runtime behavior was changed.
 - **Validation:** exact-head Markdown quality workflow passed on initial PR head `e2ce22c44508a87f53fc4a57a03f82e0597550bc` (run #45889911748); Android/device tests are not applicable to documentation-only changes.
-
-
-## 2026-11-26 — Updater BSDIFF resource cleanup (#4)
-
-- **Scope:** close any BSDIFF40 control/diff/extra decompression sections already opened when a later section fails to open/validate; close in reverse order and keep cleanup best-effort so close failures do not mask the primary reconstruction error.
-- **Regression coverage:** malformed diff and extra compressed sections must be rejected and stale/partial output removed.
-- **Branch:** `chaty/updater-patch-stream-cleanup-4-beta`, based on current beta `7451b940dc0adfa1ea14234fe6d489bba688b12c`.
-- **Current head after source/test commits:** `9dd377e3cd48882ef90e3e2da44c63b5d2fba98c` (7 commits ahead of beta; source commit `a5e680e0a9fe628b41cde130f5ffa699a9dfe784`; test commit `35f1b69448ab4e91a5acaff9950ff492c5fcf811`).
-- **Verification:** exact-head checks passed on `9dd377e3cd48882ef90e3e2da44c63b5d2fba98c`: Android workflow run #45890826303, Markdown quality run #45890826405, and independent unsigned APK reproducibility run #45890826652. All three completed successfully. The earlier PR #157 plugin-resolution failure is superseded by these fresh exact-head results.
-- **Remaining #4 work:** broader updater adversarial test matrix, real signed ARM64 APK-pair reconstruction/byte-equality/signature verification, benchmark and current-beta signed packaging evidence. No physical-device update test is claimed.

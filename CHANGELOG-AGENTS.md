@@ -871,9 +871,19 @@ Entry format:
 - Exact-head Markdown validation passed on PR #158 head `e2ce22c44508a87f53fc4a57a03f82e0597550bc` (run #45889911748); internal links/anchors checked across all 15 Markdown files with zero missing local targets. No physical-device permission-flow claim is made.
 
 
-## 2026-11-26 — Harden BSDIFF section cleanup (#4)
+## 2026-11-26 — Reconcile live ownership, Addon Manager integration and PR inventory (#128)
 
-- Track each successfully opened BSDIFF40 compressed section immediately and close opened sections in reverse order if later section setup or reconstruction fails.
-- Cleanup is best-effort to avoid replacing the primary parse/reconstruction exception with a close exception.
-- Add regression tests for malformed diff and extra sections and stale output removal.
-- Prepared a fresh branch from beta `7451b940dc0adfa1ea14234fe6d489bba688b12c` after the original PR #157 branch became stale. Exact-head Android run #45890826303, Markdown run #45890826405 and independent unsigned APK reproducibility run #45890826652 all passed on `9dd377e3cd48882ef90e3e2da44c63b5d2fba98c`. PR #159 was closed without merge; changes remain on the task branch pending Chaty's merge decision.
+- Verified beta HEAD 7451b940dc0adfa1ea14234fe6d489bba688b12c, main HEAD e9c2b53d1ec84e27722da4b54fa4ddcbad65f891, and published v2.3.0 release metadata/assets.
+- Corrected README and AGENTS to state that native Addon Manager Phase A is integrated by PR #152 at 103bb979c98589a8704459d28d13861eccca39d6; Phase B/runtime injection remains unimplemented and owner-controlled.
+- Reconciled current issue ownership and queue: all 26 open issues have exactly one agent:* label and none are unassigned. Vibe active/queued sequence is #11, #149, #146; Chaty owns #4/#15 and #128; #81 is queued; #20/#31/#111 and dependency-gated issues remain blocked; #23/#67 remain owner-controlled.
+- Closed unmerged PRs #154, #157, #159, #160, #122, #143 and #144 are not treated as integrated. GitHub reports no open PRs.
+- Recorded PR #158 merge at 7451b940dc0adfa1ea14234fe6d489bba688b12c and post-merge Markdown run #45890132670 passed.
+- Updater BSDIFF candidate PR #160 was closed without merge: Markdown #45891807077 passed, but reproducibility build A failed resolving Kotlin Compose plugin 2.4.21; Android validation and reproducibility build B were incomplete at closure. No candidate code is integrated.
+- No app/game behavior, dependencies, signing, ABI, release, tag, publication, main promotion or physical-device claims changed.
+
+
+## 2026-11-26 — Record PR #161 integration
+
+- PR #161 squash-merged to beta at a0e5271793c9bb7754b7ac41429065e5602df569.
+- Exact-head Markdown quality run #45892727113 passed on 6a61d9197b21b2d89aeee39d1a8633b9c8012f6f; post-merge Markdown run #45892884986 passed on the merge commit.
+- Issue #128 closed as completed. No application behavior, game, dependency/toolchain, signing, ABI, release or main changes; no physical-device test claimed.
