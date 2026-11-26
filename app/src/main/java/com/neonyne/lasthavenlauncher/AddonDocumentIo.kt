@@ -8,6 +8,7 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 
@@ -29,14 +30,15 @@ fun rememberAddonDocumentPickers(
 ): AddonDocumentPickers {
   val latestImport by rememberUpdatedState(onImportSelected)
   val latestExport by rememberUpdatedState(onExportSelected)
-  val pendingExportFolder = remember { androidx.compose.runtime.mutableStateOf<String?>(null) }
+  val pendingExportFolder = remember { mutableStateOf<String?>(null) }
 
   val importLauncher =
     rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
       if (uri != null) latestImport(uri)
     }
   val exportLauncher =
-    rememberLauncherForActivityResult(ActivityResultContracts.CreateDocument("application/zip")) { uri ->
+    rememberLauncherForActivityResult(ActivityResultContracts.CreateDocument("application/zip")) {
+      uri ->
       val folder = pendingExportFolder.value
       pendingExportFolder.value = null
       if (uri != null && folder != null) latestExport(folder, uri)
@@ -44,7 +46,9 @@ fun rememberAddonDocumentPickers(
 
   return remember(importLauncher, exportLauncher) {
     AddonDocumentPickers(
-      importZip = { importLauncher.launch(arrayOf("application/zip", "application/x-zip-compressed")) },
+      importZip = {
+        importLauncher.launch(arrayOf("application/zip", "application/x-zip-compressed"))
+      },
       exportZip = { folder ->
         pendingExportFolder.value = folder
         exportLauncher.launch("$folder.zip")
@@ -56,9 +60,9 @@ fun rememberAddonDocumentPickers(
 /**
  * ContentResolver adapter for selected ZIP documents.
  *
- * Some document providers report an unknown length. In that case import still proceeds through
- * the archive reader's hard streaming byte limit; it never trusts an absent or fabricated size.
- * Call these methods from a worker thread, not the main thread.
+ * Some document providers report an unknown length. In that case import still proceeds through the
+ * archive reader's hard streaming byte limit; it never trusts an absent or fabricated size. Call
+ * these methods from a worker thread, not the main thread.
  */
 class AddonDocumentIo(
   context: Context,
@@ -82,8 +86,9 @@ class AddonDocumentIo(
   }
 
   private fun querySize(uri: Uri): Long? {
-    val descriptorSize =
-      runCatching { resolver.openAssetFileDescriptor(uri, "r")?.use { it.length } }.getOrNull()
+    val descriptorSize = runCatching {
+      resolver.openAssetFileDescriptor(uri, "r")?.use { it.length }
+    }.getOrNull()
     if (descriptorSize != null && descriptorSize > 0L) return descriptorSize
 
     return runCatching {
