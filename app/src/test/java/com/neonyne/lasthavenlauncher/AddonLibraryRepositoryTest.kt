@@ -398,14 +398,15 @@ class AddonLibraryRepositoryTest {
     val oldRevision = repository.readLibrary().revision
     val backup = File(root, ".backup-crashed")
     check(File(root, "Sample").renameTo(backup))
-    val transaction = Properties().apply {
-      this["formatVersion"] = "2"
-      this["oldIndexMissing"] = "false"
-      this["oldRevision"] = oldRevision
-      this["newRevision"] = "uncommitted-revision"
-      this["backup.0"] = backup.name
-      this["target.0"] = "../outside"
-    }
+    val transaction =
+      Properties().apply {
+        this["formatVersion"] = "2"
+        this["oldIndexMissing"] = "false"
+        this["oldRevision"] = oldRevision
+        this["newRevision"] = "uncommitted-revision"
+        this["backup.0"] = backup.name
+        this["target.0"] = "../outside"
+      }
     FileOutputStream(File(root, ".txn-malformed")).use {
       transaction.store(it, "malformed test transaction")
     }
