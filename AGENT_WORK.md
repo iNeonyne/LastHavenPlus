@@ -102,6 +102,7 @@ Every open issue has exactly one agent:* label. No open issue is agent:unassigne
 | #146 | agent:vibe | Queued third |
 | #149 | agent:vibe | Queued second |
 | #11 | agent:vibe | Active |
+| #142 | agent:chaty | Queue coordination |
 | #67 | agent:owner | Owner decision |
 | #15 | agent:chaty | Active/queued behind #4 |
 | #23 | agent:owner | Phase B decision |
