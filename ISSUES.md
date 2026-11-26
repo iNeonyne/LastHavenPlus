@@ -2,27 +2,28 @@
 
 **Source of truth:** GitHub Issues and this version-controlled backlog. Keep issue scope, status and acceptance criteria aligned. Do not close an issue because documentation changed.
 
-## Current state — 2026-11-26
+## Current state — 2026-11-27
 
 - **Latest stable:** v2.3.0 is published; release metadata confirms the ARM64 APK, update manifest and v2.2.0-to-v2.3.0 BSDIFF asset.
 - **Development:** beta HEAD is 7451b940dc0adfa1ea14234fe6d489bba688b12c; v2.4.0 icon, visual-system and overlay-accessibility source integrations are merged.
-- **Addon Manager:** Phase A is integrated by PR #152 at 103bb979c98589a8704459d28d13861eccca39d6; local enablement is metadata only. Phase B/runtime injection is not implemented and waits for owner authorization. Issue #23 is agent:owner.
+- **Addon Manager:** Phase A is integrated by PR #152 at `103bb979c98589a8704459d28d13861eccca39d6`; local enablement is metadata only. The owner authorized Phase B investigation/implementation; #23 is Chaty-owned and child issues #167–#170 are separately queued/blocked. No runtime injection is claimed.
 - **Latest docs integration:** PR #158 merged at 7451b940dc0adfa1ea14234fe6d489bba688b12c; Markdown push run #45890132670 passed.
 - **Open PRs:** none. PR #154, #157, #159, #160, #122, #143 and #144 were closed without merge; do not treat their branch-only changes as integrated.
 - **Updater:** #4/#15 are coordinated under Chaty. BSDIFF cleanup candidates were not merged; PR #160 Markdown passed but one reproducibility build failed resolving Kotlin Compose plugin 2.4.21, while Android and second reproducibility job were incomplete at closure. #4 acceptance remains open. #31 and #111 remain blocked for their stated authorization/release holds.
-- **Diagnostics:** #11 is active with Vibe; PR #154 was closed unmerged because stale. A fresh implementation is required.
+- **Diagnostics:** #11's test work merged via PR #163; remaining GeckoView runtime-version startup reporting is deferred and marked `agent:blocked`.
 - **Housekeeping:** #128 closed after PR #161 merged at a0e5271793c9bb7754b7ac41429065e5602df569; exact-head and post-merge Markdown passed. #70 is closed; Markdown lint is integrated.
 - **GeckoView audit:** #20 remains owner-deferred/blocked; PR #122 closed without merge. Preserve unresolved notice/license/distribution and device-testing gaps.
 - **Rights/notices:** #67 remains agent:owner; PR #144 closed without merge. The owner's All Rights Reserved decision governs original project material; third-party distribution review remains unresolved.
-- **Ownership:** all 25 open issues have exactly one agent:* label and none are agent:unassigned. Vibe: #11 active, #149 then #146 queued. Chaty: #4/#15 and #128 active; #81 queued. Owner: #23 and #67. Blocked dependencies/holds are documented on their issues.
+- **Ownership:** each open issue has exactly one `agent:*` label. `agent:queued` means ready but waiting its turn, not permission to start; `agent:blocked` means a genuine dependency/hold. Vibe active: #149; next queued: #146, then separately assigned #167–#169; #170 is blocked. Chaty owns #4/#15/#18/#23/#142; #81 is queued. #67 is owner-controlled.
 - **Device/release:** no new physical ARM64 testing, release, tag, publication or beta-to-main promotion is claimed or authorized.
 
 ## Current ownership
 
 - **Chaty active:** #4 updater reliability and #15 coordinated recovery. #128 is complete.
-- **Chaty queued:** #81 dependency-evidence documentation only; not yet started. #20 and #31 remain blocked until owner holds are lifted.
+- **Chaty queued:** #81 dependency-evidence documentation only; not yet started. #20 and #31 remain blocked pending owner decisions.
 - **Vibe active:** #149 launcher-owned strings (PR #165 correction pass).
 - **Vibe queued:** #146 GameSessionController, then separately assigned Addon Manager Phase B child work #167–#169. #170 is dependency-blocked. One active implementation issue at a time; queued does not authorize work.
+- **Diagnostics:** #11's test work merged via PR #163; remaining runtime-version startup reporting is deferred and blocked pending reprioritization.
 - **Diagnostics:** #11's test work merged via PR #163; the remaining runtime-version startup reporting is deferred and blocked pending reprioritization.
 - **Owner decision:** #23 Phase B and #67 third-party rights/distribution questions.
 - **Blocked:** #7, #86, #111, #19, #16, #147, #148, #12, #14, #10, #28, #6 and #17 remain gated by dependencies/decisions recorded on their GitHub issues.
