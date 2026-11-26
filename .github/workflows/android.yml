@@ -91,6 +91,7 @@ jobs:
             app/build/reports/lint-results-debug.html
             app/build/reports/lint-results-debug.sarif
             app/build/reports/runtime-dependencies.txt
+            app/build/outputs/apk/release/*.apk
           if-no-files-found: ignore
           retention-days: 14
 
