@@ -36,6 +36,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -196,7 +197,7 @@ private fun HomeActions(
         verticalArrangement = Arrangement.spacedBy(14.dp),
     ) {
         Card(
-            colors = CardDefaults.cardColors(containerColor = HavenPanel.copy(alpha = 0.96f)),
+            colors = CardDefaults.cardColors(containerColor = DesignTokens.panel.copy(alpha = 0.96f)),
             shape = RoundedCornerShape(DesignTokens.cornerDialog),
         ) {
             Column(
@@ -205,29 +206,33 @@ private fun HomeActions(
             ) {
                 Text(
                     "READY TO PLAY",
-                    color = HavenGold,
+                    color = DesignTokens.gold,
                     fontSize = 12.sp,
                     fontWeight = FontWeight.Bold,
                     letterSpacing = 2.sp,
                 )
                 Text(
                     "Wrath of the Lich King",
-                    color = Color.White,
+                    color = DesignTokens.textPrimary,
                     style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.SemiBold,
                 )
                 Text(
                     "Your adventure continues where you left it.",
-                    color = HavenMuted,
+                    color = DesignTokens.textSecondary,
                     style = MaterialTheme.typography.bodyMedium,
                 )
+                val hapticView = LocalView.current
                 Button(
-                    onClick = onStartGame,
+                    onClick = {
+                        restrainedActionFeedback(hapticView)
+                        onStartGame()
+                    },
                     modifier = Modifier.fillMaxWidth().height(58.dp),
                     shape = RoundedCornerShape(DesignTokens.cornerCard),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = HavenGold,
-                        contentColor = Color(0xFF17130A),
+                        containerColor = DesignTokens.gold,
+                        contentColor = DesignTokens.goldOnColor,
                     ),
                 ) {
                     Text("PLAY", fontSize = 17.sp, fontWeight = FontWeight.Black, letterSpacing = 2.sp)
@@ -252,10 +257,10 @@ private fun HomeActions(
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Column(Modifier.weight(1f)) {
-                        Text("Update available", color = HavenGold, fontWeight = FontWeight.Bold)
-                        Text("LastHavenPlus $updateVersion", color = Color.White)
+                        Text("Update available", color = DesignTokens.gold, fontWeight = FontWeight.Bold)
+                        Text("LastHavenPlus $updateVersion", color = DesignTokens.textPrimary)
                     }
-                    Text("View", color = HavenGold, fontWeight = FontWeight.Bold)
+                    Text("View", color = DesignTokens.gold, fontWeight = FontWeight.Bold)
                 }
             }
         }
