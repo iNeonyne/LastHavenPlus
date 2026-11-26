@@ -100,3 +100,10 @@ Only Chaty changes ownership labels. Assignment comments must define expected be
 - No automatic downloads or installation. No debug APK publication.
 - Validate compatibility before any Gradle, SDK, Build Tools, GeckoView or signing changes.
 - Never claim physical-device compatibility without real ARM64 hardware evidence.
+
+
+### Issue #9 — overlay accessibility and navigation (integrated; device verification pending)
+- **PR:** [#139](https://github.com/iNeonyne/LastHavenPlus/pull/139), squash-merged by Chaty to beta at `0d5ab712ce5195a3e71023c68da54f054645a8e2` from exact head `4b4d0586d2c80310d2b78e05271bc255dc4f90de`.
+- **Pre-merge CI:** Android [#45829421214](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45829421214) and Markdown [#45829421210](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45829421210) passed.
+- **Integrated:** pane title, heading/traversal semantics, Compose input-focus request, scrollable menu and live reduced-motion observer.
+- **Remaining:** ARM64 TalkBack announcement/focus/traversal, GeckoView-relative ordering, reduced-motion behavior and large-font rendering require physical-device verification. No device test is claimed. Issue #9 remains `agent:owner` pending verification.
