@@ -1,12 +1,13 @@
 package com.neonyne.lasthavenlauncher
 
 import java.io.File
+import java.io.FileInputStream
 import java.io.FileOutputStream
 import java.io.InputStream
 import java.nio.charset.StandardCharsets
 import java.util.Locale
 import java.util.zip.CRC32
-import org.apache.commons.compress.archivers.zip.ZipArchiveInputStream
+import org.apache.commons.compress.archivers.zip.ZipFile
 
 data class ImportedAddon(
   val title: String,
@@ -39,10 +40,11 @@ object AddonArchive {
   private data class AddonRoot(val path: String, val folder: String)
 
   /**
-   * Streams a selected ZIP to a private staging directory without retaining addon payloads in RAM.
+   * Copies the selected archive to private staging storage, validates its central directory, then
+   * streams each accepted file to disk. Expanded addon payloads are never retained in RAM.
    *
-   * The caller must obtain and validate the selected document's compressed size before opening its
-   * stream. Expanded bytes and per-entry bytes are independently bounded here.
+   * The caller must obtain the selected document's size before opening its stream. The actual
+   * number of copied bytes is checked against that size and the compressed archive limit.
    */
   fun importZip(
     input: InputStream,
@@ -57,30 +59,64 @@ object AddonArchive {
     }
 
     try {
+      val archiveFile = File(extractionDirectory, ".source.zip")
+      var copiedBytes = 0L
+      FileOutputStream(archiveFile).use { output ->
+        input.use { source ->
+          val buffer = ByteArray(DEFAULT_BUFFER_SIZE)
+          while (true) {
+            val count = source.read(buffer)
+            if (count < 0) break
+            if (count == 0) continue
+            copiedBytes += count
+            require(copiedBytes <= MAX_ARCHIVE_BYTES) {
+              "Archive exceeds the 128 MiB compressed-size limit."
+            }
+            output.write(buffer, 0, count)
+          }
+        }
+        output.fd.sync()
+      }
+      require(copiedBytes == compressedSize) {
+        "Selected archive size changed or could not be verified."
+      }
+
       val entries = linkedMapOf<String, File>()
       val seen = mutableSetOf<String>()
       var expandedBytes = 0L
       var entryCount = 0
       val canonicalRoot = extractionDirectory.canonicalFile
 
-      ZipArchiveInputStream(input).use { zip ->
-        while (true) {
-          val entry = zip.nextZipEntry ?: break
+      ZipFile(archiveFile).use { zip ->
+        val archiveEntries = zip.entries
+        while (archiveEntries.hasMoreElements()) {
+          val entry = archiveEntries.nextElement()
           entryCount += 1
           require(entryCount <= MAX_ENTRIES) { "Archive contains too many entries." }
 
           val path = validateEntryPath(entry.name)
           require(seen.add(path.lowercase(Locale.ROOT))) { "Duplicate archive path: $path" }
           require(!entry.isUnixSymlink) { "Symbolic links are not supported: $path" }
+          require(!entry.generalPurposeBit.usesEncryption()) {
+            "Encrypted ZIP entries are not supported: $path"
+          }
+          require(entry.method == 0 || entry.method == 8) {
+            "Unsupported ZIP compression method: $path"
+          }
           require(zip.canReadEntryData(entry)) { "Unsupported ZIP entry: $path" }
 
           if (entry.isDirectory) continue
-          require(entry.size < 0 || entry.size <= MAX_FILE_BYTES) {
-            "File exceeds the 64 MiB limit: $path"
+          require(entry.size in 0..MAX_FILE_BYTES) {
+            "File exceeds the 64 MiB limit or has an invalid size: $path"
+          }
+          require(entry.compressedSize >= 0 && entry.crc >= 0) {
+            "ZIP entry metadata is incomplete: $path"
           }
 
           val destination = File(extractionDirectory, path)
-          require(destination.canonicalFile.path.startsWith(canonicalRoot.path + File.separator)) {
+          require(
+            destination.canonicalFile.path.startsWith(canonicalRoot.path + File.separator)
+          ) {
             "Unsafe archive path: $path"
           }
           destination.parentFile?.let { parent ->
@@ -91,29 +127,34 @@ object AddonArchive {
 
           val crc = CRC32()
           var fileBytes = 0L
-          FileOutputStream(destination).use { output ->
-            val buffer = ByteArray(DEFAULT_BUFFER_SIZE)
-            while (true) {
-              val count = zip.read(buffer)
-              if (count < 0) break
-              if (count == 0) continue
-              fileBytes += count
-              expandedBytes += count
-              require(fileBytes <= MAX_FILE_BYTES) { "File exceeds the 64 MiB limit: $path" }
-              require(expandedBytes <= MAX_EXPANDED_BYTES) {
-                "Expanded archive exceeds the 256 MiB limit."
+          zip.getInputStream(entry).use { source ->
+            FileOutputStream(destination).use { output ->
+              val buffer = ByteArray(DEFAULT_BUFFER_SIZE)
+              while (true) {
+                val count = source.read(buffer)
+                if (count < 0) break
+                if (count == 0) continue
+                fileBytes += count
+                expandedBytes += count
+                require(fileBytes <= MAX_FILE_BYTES) {
+                  "File exceeds the 64 MiB limit: $path"
+                }
+                require(expandedBytes <= MAX_EXPANDED_BYTES) {
+                  "Expanded archive exceeds the 256 MiB limit."
+                }
+                crc.update(buffer, 0, count)
+                output.write(buffer, 0, count)
               }
-              crc.update(buffer, 0, count)
-              output.write(buffer, 0, count)
             }
           }
-          if (entry.crc >= 0) {
-            require(crc.value == entry.crc) { "File integrity check failed: $path" }
+          require(fileBytes == entry.size && crc.value == entry.crc) {
+            "File integrity check failed: $path"
           }
           entries[path] = destination
         }
       }
 
+      archiveFile.delete()
       return parseAddons(entries)
     } catch (error: Exception) {
       extractionDirectory.deleteRecursively()
@@ -122,7 +163,7 @@ object AddonArchive {
   }
 
   internal fun validateEntryPath(name: String): String {
-    val path = name.replace('\\', '/')
+    val path = name.replace('\\\\', '/')
     val segments = path.split('/')
     require(
       path.isNotEmpty() &&
@@ -132,7 +173,7 @@ object AddonArchive {
         !path.any { it.code in 0..31 } &&
         segments.dropLast(if (path.endsWith('/')) 1 else 0).none {
           it.isEmpty() || it == "." || it == ".."
-        }
+        },
     ) {
       "Unsafe archive path: $name"
     }
@@ -155,11 +196,13 @@ object AddonArchive {
     }
 
     require(roots.isNotEmpty()) { "Main Folder/Folder.toc is missing." }
-    val topRoots = roots.filter { root ->
-      roots.none { parent ->
-        parent != root && (parent.path.isEmpty() || root.path.startsWith(parent.path + "/"))
+    val topRoots =
+      roots.filter { root ->
+        roots.none { parent ->
+          parent != root &&
+            (parent.path.isEmpty() || root.path.startsWith(parent.path + "/"))
+        }
       }
-    }
 
     val seenFolders = mutableSetOf<String>()
     return topRoots.map { root ->
@@ -174,16 +217,14 @@ object AddonArchive {
       }
 
       val ownFiles =
-        entries
-          .filter { (path, _) ->
-            val inRoot = if (root.path.isEmpty()) true else path.startsWith(root.path + "/")
-            inRoot &&
-              !path.startsWith("__MACOSX/") &&
-              !Regex("(^|/)\\.(git|svn)(/|$)").containsMatchIn(path)
-          }
-          .mapKeys { (path, _) ->
-            if (root.path.isEmpty()) path else path.removePrefix(root.path + "/")
-          }
+        entries.filter { (path, _) ->
+          val inRoot = if (root.path.isEmpty()) true else path.startsWith(root.path + "/")
+          inRoot &&
+            !path.startsWith("__MACOSX/") &&
+            !Regex("(^|/)\\.(git|svn)(/|$)").containsMatchIn(path)
+        }.mapKeys { (path, _) ->
+          if (root.path.isEmpty()) path else path.removePrefix(root.path + "/")
+        }
 
       val tocName = "${root.folder}.toc"
       val tocFile =
@@ -193,9 +234,8 @@ object AddonArchive {
       val metadata = parseToc(String(tocFile.readBytes(), StandardCharsets.UTF_8))
       val total = ownFiles.values.sumOf { it.length() }
       val warnings =
-        if (
-          metadata.interfaceVersion.isNotBlank() &&
-            "30300" !in metadata.interfaceVersion.split(Regex("[,\\s]+"))
+        if (metadata.interfaceVersion.isNotBlank() &&
+          "30300" !in metadata.interfaceVersion.split(Regex("[,\\s]+"))
         ) {
           listOf("The TOC does not declare Interface 30300. Compatibility is unverified.")
         } else {
