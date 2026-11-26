@@ -2,6 +2,7 @@ package com.neonyne.lasthavenlauncher
 
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
+import java.io.InputStream
 import java.util.zip.ZipEntry
 import java.util.zip.ZipOutputStream
 import org.junit.Assert.assertEquals
@@ -135,6 +136,23 @@ class AddonArchiveTest {
   }
 
   @Test
+  fun rejectsArchivesWithTooManyAddonRoots() {
+    val files =
+      Array(AddonArchive.MAX_ADDONS_PER_ARCHIVE + 1) { index ->
+        "Addon$index/Addon$index.toc" to "## Interface: 30300\\n"
+      }
+    val archive = zipOf(*files)
+
+    assertThrows(IllegalArgumentException::class.java) {
+      AddonArchive.importZip(
+        ByteArrayInputStream(archive),
+        archive.size.toLong(),
+        temporaryFolder.newFolder("too-many-addons"),
+      )
+    }
+  }
+
+  @Test
   fun rejectsMultipleFlatAddonsWithoutFolderBoundaries() {
     val archive =
       zipOf(
@@ -263,8 +281,11 @@ class AddonArchiveTest {
   @Test
   fun rejectsArchiveAboveCompressedSizeLimitBeforeReading() {
     val input =
-      object : ByteArrayInputStream(byteArrayOf()) {
+      object : InputStream() {
         override fun read(): Int = error("Input must not be read")
+
+        override fun read(buffer: ByteArray, offset: Int, length: Int): Int =
+          error("Input must not be read")
       }
 
     assertThrows(IllegalArgumentException::class.java) {

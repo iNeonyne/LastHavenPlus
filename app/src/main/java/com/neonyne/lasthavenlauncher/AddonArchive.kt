@@ -26,6 +26,7 @@ object AddonArchive {
   const val MAX_FILE_BYTES = 64L * 1024 * 1024
   const val MAX_TOC_BYTES = 1024L * 1024
   const val MAX_ENTRIES = 32_000
+  const val MAX_ADDONS_PER_ARCHIVE = 256
   const val MAX_LIBRARY_BYTES = 384L * 1024 * 1024
 
   private data class TocMetadata(
@@ -201,6 +202,9 @@ object AddonArchive {
     }
 
     require(roots.isNotEmpty()) { "Main Folder/Folder.toc is missing." }
+    require(roots.size <= MAX_ADDONS_PER_ARCHIVE) {
+      "Archive contains too many addons (maximum $MAX_ADDONS_PER_ARCHIVE)."
+    }
     require(roots.size == 1 || roots.none { it.path.isEmpty() }) {
       "Multiple addons must each be packaged in a separate folder."
     }
