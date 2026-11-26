@@ -93,7 +93,6 @@ Every open issue has exactly one agent:* label. No open issue is agent:unassigne
 | #14 | agent:blocked | Waits for #12 |
 | #12 | agent:blocked | Waits for #11 |
 | #111 | agent:blocked | v2.5.0 release/owner hold |
-| #128 | Done | PR #161 merged |
 | #31 | agent:blocked | Owner authorization |
 | #20 | agent:blocked | Owner-deferred |
 | #16 | agent:blocked | Waits for #56 and #14 |
