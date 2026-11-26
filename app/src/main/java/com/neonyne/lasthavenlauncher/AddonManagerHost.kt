@@ -2,6 +2,7 @@ package com.neonyne.lasthavenlauncher
 
 import android.os.Handler
 import android.os.Looper
+import androidx.activity.compose.BackHandler
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -43,6 +44,9 @@ fun AddonManagerHost(onBack: () -> Unit) {
   DisposableEffect(executor) {
     onDispose { executor.shutdown() }
   }
+
+  // Do not leave the manager mid-commit; archive and index transactions must finish first.
+  BackHandler(enabled = busy) {}
 
   val finishOperation: ((() -> AddonLibrarySnapshot), String) -> Unit =
     { operation, successMessage ->
