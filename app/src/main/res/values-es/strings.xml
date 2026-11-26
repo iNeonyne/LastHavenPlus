@@ -10,6 +10,7 @@
     <string name="addon_manager_no_addons">Aún no hay complementos locales. Importa un ZIP con una carpeta de complemento y su archivo .toc correspondiente.</string>
     <string name="addon_manager_files_summary">%1$d archivos · %2$s</string>
     <string name="addon_manager_missing_dependencies">Revisa las dependencias necesarias: %1$s</string>
+    <string name="addon_manager_optional_dependencies">Dependencias opcionales: %1$s</string>
     <string name="addon_manager_no_version">Sin versión</string>
     <string name="addon_manager_export_zip">Exportar ZIP</string>
     <string name="addon_manager_remove">Eliminar</string>
