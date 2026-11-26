@@ -822,3 +822,10 @@ Entry format:
 - Reconciled the existing CHANGELOG.md with an Unreleased policy entry; did not duplicate the already-existing CONTRIBUTING.md.
 - Preliminary direct-dependency license review only; transitive dependency and packaged-notice audit remains open. No copyright-holder name/date was invented.
 - PR and CI verification pending. No Android code/build-tool/signing/ABI/release/main changes; no branch deletion or device testing.
+
+
+## 2026-11-26 — GPL/community hygiene and dependency-license gate
+
+- Prepared GPL-3.0-or-later project licensing, SECURITY.md, Gradle Dependabot, user-facing changelog reconciliation, contributor branch-retention policy, and an in-app GPL text viewer.
+- Added a releaseRuntimeClasspath report to PR validation so transitive runtime dependencies can be audited from CI artifacts.
+- The dependency report surfaced Google Play Services runtime artifacts under the Android Software Development Kit License; GPLv3 compatibility of the combined APK remains unresolved. Issue #67 moved to agent:owner; PR #141 returned to draft. No merge or release until the owner resolves this gate and notices are audited.
