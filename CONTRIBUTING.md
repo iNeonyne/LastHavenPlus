@@ -26,7 +26,7 @@ The repository owner makes final product and release decisions. `beta` is the de
 
 - Name task branches `<owner>/<task-slug>` (for example `vibe/updater-progress-111`). One issue per branch; prefer issue-keyed slugs so a branch's scope is self-describing.
 - Start task branches from current `beta` and open PRs against `beta`. `infra/*` branches never merge wholesale into `beta`.
-- To sync a branch with an advanced `beta`, merge `origin/beta` into it (never rebase pushed history), rerun affected checks, and update the PR handoff with the new exact head SHA.
+- To sync a branch with an advanced `beta`, merge `origin/beta` into it (never rebase pushed history), resolve conflicts, rerun affected checks and update the PR handoff with the new exact head SHA.
 - Retire a branch only after its PR is merged or its work is superseded/abandoned, and only with explicit owner approval recorded in the disposal log of `docs/BRANCH_LIFECYCLE.md`.
 - Preserve `beta-legacy-*` snapshot branches; never delete or wholesale-merge them without owner approval.
 - The current branch inventory, integration history and disposal log live in [docs/BRANCH_LIFECYCLE.md](docs/BRANCH_LIFECYCLE.md).
