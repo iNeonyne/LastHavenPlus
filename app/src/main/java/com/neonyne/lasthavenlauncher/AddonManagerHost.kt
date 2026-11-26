@@ -20,12 +20,16 @@ import java.util.concurrent.Executors
 @Composable
 fun AddonManagerHost(onBack: () -> Unit) {
   val context = LocalContext.current
-  val repository = remember(context) { AddonLibraryRepository(File(context.filesDir, "addons")) }
-  val documentIo = remember(context, repository) { AddonDocumentIo(context, repository) }
+  val repository =
+    remember(context) { AddonLibraryRepository(File(context.filesDir, "addons")) }
+  val documentIo =
+    remember(context, repository) { AddonDocumentIo(context, repository) }
   val executor = remember { Executors.newSingleThreadExecutor() }
   val mainHandler = remember { Handler(Looper.getMainLooper()) }
 
-  var snapshot by remember { mutableStateOf(AddonLibrarySnapshot("loading", emptyList())) }
+  var snapshot by remember {
+    mutableStateOf(AddonLibrarySnapshot("loading", emptyList()))
+  }
   var busy by remember { mutableStateOf(true) }
   var message by remember { mutableStateOf<String?>(null) }
 
@@ -56,7 +60,10 @@ fun AddonManagerHost(onBack: () -> Unit) {
   val pickers =
     rememberAddonDocumentPickers(
       onImportSelected = { uri ->
-        finishOperation({ documentIo.importZip(uri) }, "Addon ZIP imported. It remains disabled.")
+        finishOperation(
+          { documentIo.importZip(uri) },
+          "Addon ZIP imported. It remains disabled.",
+        )
       },
       onExportSelected = { folder, uri ->
         busy = true
@@ -107,7 +114,10 @@ fun AddonManagerHost(onBack: () -> Unit) {
     },
     onExport = pickers.exportZip,
     onRemove = { folder ->
-      finishOperation({ repository.removeAddon(folder) }, "Addon removed from local storage.")
+      finishOperation(
+        { repository.removeAddon(folder) },
+        "Addon removed from local storage.",
+      )
     },
     onBack = onBack,
   )
