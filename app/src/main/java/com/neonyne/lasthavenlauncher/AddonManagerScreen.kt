@@ -54,7 +54,10 @@ fun AddonManagerScreen(
           color = DesignTokens.frost,
           style = MaterialTheme.typography.labelSmall,
         )
-        Text(stringResource(R.string.addon_manager_local_addons), style = MaterialTheme.typography.headlineSmall)
+        Text(
+          stringResource(R.string.addon_manager_local_addons),
+          style = MaterialTheme.typography.headlineSmall,
+        )
       }
       OutlinedButton(
         onClick = onBack,
@@ -186,7 +189,11 @@ private fun AddonCard(
       }
 
       Text(
-        stringResource(R.string.addon_manager_files_summary, addon.filesCount, formatAddonSize(addon.sizeBytes)),
+        stringResource(
+          R.string.addon_manager_files_summary,
+          addon.filesCount,
+          formatAddonSize(addon.sizeBytes),
+        ),
         color = MaterialTheme.colorScheme.onSurfaceVariant,
         style = MaterialTheme.typography.bodySmall,
       )
