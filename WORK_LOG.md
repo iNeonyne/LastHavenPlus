@@ -456,3 +456,15 @@
 ## 2026-11-25 — Issue #56 direct-launch implementation started
 
 Owner directed Chaty to take over #56 from Ploy. Updated issue ownership to Chaty and created `chaty/issue-56-direct-launch-overlay` from beta `01af3f488225eaa5321b994a3957e53dcdb70c55`. Implemented direct startup, a translucent Back-triggered overlay while retaining the Game destination, separate Settings navigation, landscape gameplay with system bars restored for the menu, status/navigation bar dark scrim outside immersive gameplay, and removal of the persistent page-load progress strip. Updated AGENT_WORK and migration/status records to reflect the takeover. Source review only; tests, CI and physical device verification remain outstanding. No beta/main merge or release action.
+
+
+### 2026-11-26 — Start version-qualified CI APK artifact naming (#4)
+
+- Issue/task: #4, Chaty-owned CI artifact naming improvement.
+- Branch and starting commit: `chaty/versioned-apk-artifact-names`, based on beta `ec721c3da9a4a6f696f644ad9ad78751b36cdd10`.
+- Files inspected: `README.md`, `AGENTS.md`, `STATUS.md`, `ISSUES.md`, `CHANGELOG-AGENTS.md`, `AGENT_WORK.md`, `WORK_LOG.md`, `app/build.gradle.kts`, `.github/workflows/android.yml`, `.github/scripts/prepare_release_payload.sh`; checked issue #4 and searched for duplicate issues/PRs.
+- Action: recorded a bounded GitHub issue #4 subtask. Plan is to create a versionName- and channel-qualified signed Actions APK copy while retaining `app-release.apk` and the updater's canonical `lasthavenplus-arm64.apk`.
+- Files changed: pending.
+- Checks: no build/test run yet; exact-head Android validation and post-merge signed ARM64 workflow are required.
+- Unverified / risks: Actions workflow parsing and copy/upload behavior are not yet CI-verified.
+- Next safe action: implement the narrow workflow/docs change on this branch, inspect the diff, open a PR to beta and review exact-head CI.
