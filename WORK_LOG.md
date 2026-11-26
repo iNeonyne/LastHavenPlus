@@ -580,3 +580,15 @@ No branch was deleted. The available GitHub connector exposes no branch-delete o
 
 
 2026-11-26 — Corrected current project records on PR #152 branch: #23's prior hold/XPI specification is marked superseded by owner-approved ZIP 0.5.1 Phase A; #11 is recorded as agent:review for PR #154; #66/PR #119 is recorded as merged at 97570eaaca86c9e27d92d04f90da9d930f6bdb33. Updated the PR #152 documentation head to cc15080282b24df986dee2a10788e34e1cbbe511; fresh exact-head CI required.
+
+
+### 2026-11-26 — #4 updater audit: BSDIFF section stream cleanup
+
+- **Issue/task:** #4 (P0 updater reliability); focused malformed-patch resource cleanup correction. #15 remains coordinated under the same owner and is closed as completed; #31 remains blocked pending owner-authorized release-workflow verification.
+- **Branch and starting commit:** `chaty/updater-patch-stream-cleanup-4`, created from current beta `1279f214b3fdd3ba420e090a6a90914a8a3399e7`.
+- **Files inspected:** `AppUpdater.kt`, `BsdiffPatch.kt`, `UpdateFallback.kt`, `UpdateDownloadPolicy.kt`, `UpdateManifestPolicy.kt`, `UpdateNetworkPolicy.kt`, `UpdateVersionPolicy.kt`, updater JVM tests, `.github/workflows/android.yml`, and `.github/scripts/prepare_release_payload.sh`.
+- **Finding:** `BsdiffPatch.apply` opens the control, diff and extra compressed streams before entering the `try/finally` that closes them. If opening a later section fails, earlier file streams are not closed. The patch failure is caught by the full-APK fallback, so repeated malformed patch attempts can leak file descriptors until process cleanup.
+- **Planned change:** use structured resource scopes for each opened BSDIFF section and add malformed-section regression coverage. Preserve BSDIFF40 format, output bounds, exact-byte reconstruction, digest/signature checks and full-APK fallback.
+- **Exclusions:** no updater redesign, patch-format switch, network/retry policy change, automatic check/download/install, signing/toolchain/ABI/app-ID changes, release/tag/main action, or physical-device claim.
+- **Checks:** pending exact-head Android PR validation, Markdown/reproducibility if relevant, and post-merge signed ARM64 beta verification. Physical updater installation remains unverified.
+- **Next safe action:** apply the narrow resource-lifecycle fix and focused tests, then inspect the complete diff and exact-head CI before review/merge.
