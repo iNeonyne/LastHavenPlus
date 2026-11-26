@@ -54,8 +54,10 @@ fun SettingsScreen(
   var refreshKey by remember { mutableStateOf(0) }
   var refreshing by remember { mutableStateOf(false) }
   var showLicenses by remember { mutableStateOf(false) }
-  val licenseText = remember {
-    context.resources.openRawResource(R.raw.apache_2_0).bufferedReader().use { it.readText() }
+  val projectRightsNotice = remember {
+    context.resources.openRawResource(R.raw.project_rights_notice).bufferedReader().use {
+      it.readText()
+    }
   }
   val thirdPartyNotices = remember {
     context.resources.openRawResource(R.raw.third_party_notices).bufferedReader().use {
@@ -145,13 +147,12 @@ fun SettingsScreen(
           verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
           Text(
-            "LastHavenPlus original project code and documentation are licensed under the Apache License, " +
-              "Version 2.0. You may use, reproduce and distribute the work under those terms. " +
-              "The license is provided without warranty. The complete license follows.",
-            color = DesignTokens.textSecondary,
+            "Project copyright and rights",
+            color = DesignTokens.frost,
+            fontWeight = FontWeight.SemiBold,
           )
           Text(
-            licenseText,
+            projectRightsNotice,
             color = DesignTokens.textBody,
             style = MaterialTheme.typography.bodySmall,
           )
