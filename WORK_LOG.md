@@ -552,3 +552,15 @@ No branch was deleted. The available GitHub connector exposes no branch-delete o
 - **Icon limitation:** issue #133 reopened as `agent:owner`; Android-generated adaptive-mask previews and physical ARM64 launcher rendering still need owner verification.
 - **Visual system:** PR #136 Android run #45743147121 passed on its old head, but branch is stale and non-mergeable after beta advanced. Vibe must merge current beta, resolve conflicts, and rerun exact-head checks.
 - **Release state:** no v2.4.0 tag, promotion, or publication authorized/performed. Beta CI artifact carries stable v2.3.0 identity (`versionCode 2003000`); a v2.4.0 release build requires the authorized stable tag workflow.
+
+
+### 2026-11-26 — Begin Addon Manager ZIP v0.5.1 native port (#23)
+
+- **Owner authorization:** owner requested port of uploaded `lasthavens-addon-manager-0.5.1(1).zip`; archive SHA-256 `734a8af29b9e108f05666e5f1140cd58f77de87f888386fd1777b7948908b7fc`. This Chrome MV3 ZIP is not the historical XPI v0.11.0.
+- **GitHub ownership:** issue #23 assigned to Chaty. Branch `chaty/addon-manager-native-phase-a`; draft PR #140 targets beta at base `e0967121b51ac1c232c92edd80157fc02b714766`.
+- **Source audit:** manager supports local ZIP import/export, .toc metadata, dependency display, enable/disable/remove and an injection loader. Loader intercepts XMLHttpRequest and Worker and masks selected blocks.idx records in worker memory; this is a separate high-risk GeckoView integration gate.
+- **Code added on branch:** streaming bounded ZIP extraction into private staging files, path/duplicate/symlink/entry checks, CRC check when archive metadata supplies it, TOC parsing, Interface 30300 warning, file-backed app-private library and frost-themed Compose manager UI. New JVM tests cover import, metadata, path validation and repository round trips.
+- **Resource handling:** extraction streams files to staging rather than retaining expanded payloads in RAM. Limits are 128 MiB compressed archive, 256 MiB expanded total, 64 MiB per file, 1 MiB TOC, 32,000 entries and 384 MiB library.
+- **Coordination:** do not edit `MainActivity.kt` or `GameMenuScreen.kt` while Vibe's #9 PR is open. Menu entry and same-session return are deferred until #9 is integrated.
+- **CI history:** first PR validation failed on a malformed Kotlin backslash literal; after correction, the next exact-head run compiled main code but test compilation found three calls missing the new extraction-directory argument. Those calls were corrected. Formatting was applied with the repository's Spotless task. Exact-head PR validation for the corrected branch head is pending.
+- **Limitations:** document picker/export destination and route integration are not wired yet; runtime loader is disabled; translations and physical ARM64 tests remain outstanding. No beta merge, release, tag or promotion.
