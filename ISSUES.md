@@ -8,21 +8,21 @@
 - **Development:** beta HEAD is 7451b940dc0adfa1ea14234fe6d489bba688b12c; v2.4.0 icon, visual-system and overlay-accessibility source integrations are merged.
 - **Addon Manager:** Phase A is integrated by PR #152 at 103bb979c98589a8704459d28d13861eccca39d6; local enablement is metadata only. Phase B/runtime injection is not implemented and waits for owner authorization. Issue #23 is agent:owner.
 - **Latest docs integration:** PR #158 merged at 7451b940dc0adfa1ea14234fe6d489bba688b12c; Markdown push run #45890132670 passed.
-- **Open PRs:** none. PR #154, #157, #159, #160, #122, #143 and #144 were closed without merge; do not treat their branch-only changes as integrated.
-- **Updater:** #4/#15 are coordinated under Chaty. BSDIFF cleanup candidates were not merged; PR #160 Markdown passed but one reproducibility build failed resolving Kotlin Compose plugin 2.4.21, while Android and second reproducibility job were incomplete at closure. #4 acceptance remains open. #31 and #111 remain blocked for their stated authorization/release holds.
-- **Diagnostics:** #11 is active with Vibe; PR #154 was closed unmerged because stale. A fresh implementation is required.
+- **Open PRs:** none. PR #154, #157, #159, #160, #122, #143 and #144 were closed without merge; PR #163 is merged. Do not treat closed branch-only work as integrated.
+- **Updater:** #4/#15 are coordinated under Chaty. BSDIFF cleanup candidates remain unmerged. On old code/test head d0cb2f5144257a2270ae0ed42f649833ad688207, Android/Markdown/reproducibility passed after retry; refreshed PR #160 head faab1e0b4f0f6d913ce685d34afc6a8ad8f07772 was closed while exact-head Android/reproducibility were still running. #4 acceptance remains open. #31 and #111 remain blocked for their stated authorization/release holds.
+- **Diagnostics:** PR #163 merged at 0cc21b471fce646d03dad449b91acbe67a90df7d; exact-head Android #45893571423, Markdown #45893571482 and reproducibility #45893571443 passed. Issue #11 remains open as agent:blocked for deferred GeckoView runtime-version reporting. Vibe's active assignment is now #149.
 - **Housekeeping:** #128 closed after PR #161 merged at a0e5271793c9bb7754b7ac41429065e5602df569; exact-head and post-merge Markdown passed. #70 is closed; Markdown lint is integrated.
 - **GeckoView audit:** #20 remains owner-deferred/blocked; PR #122 closed without merge. Preserve unresolved notice/license/distribution and device-testing gaps.
 - **Rights/notices:** #67 remains agent:owner; PR #144 closed without merge. The owner's All Rights Reserved decision governs original project material; third-party distribution review remains unresolved.
-- **Ownership:** all 25 open issues have exactly one agent:* label and none are agent:unassigned. Vibe: #11 active, #149 then #146 queued. Chaty: #4/#15 and #128 active; #81 queued. Owner: #23 and #67. Blocked dependencies/holds are documented on their issues.
+- **Ownership:** all 25 open issues have exactly one agent:* label and none are agent:unassigned. Vibe: #149 active, #146 queued; #11 blocked for runtime-version reporting. Chaty: #4/#15 and #128 active; #81 queued. Owner: #23 and #67. Blocked dependencies/holds are documented on their issues.
 - **Device/release:** no new physical ARM64 testing, release, tag, publication or beta-to-main promotion is claimed or authorized.
 
 ## Current ownership
 
 - **Chaty active:** #4 updater reliability and #15 coordinated recovery. #128 is complete.
 - **Chaty queued:** #81 dependency-evidence documentation after #128; #20 and #31 remain blocked, not queued, until their owner holds are lifted.
-- **Vibe active:** #11 diagnostics tests.
-- **Vibe queued:** #149 launcher-owned strings, then #146 GameSessionController; one active implementation task at a time.
+- **Vibe active:** #149 launcher-owned strings.
+- **Vibe queued:** #146 GameSessionController; #11 is blocked for deferred runtime-version reporting.
 - **Owner decision:** #23 Phase B and #67 third-party rights/distribution questions.
 - **Blocked:** #7, #86, #111, #19, #16, #147, #148, #12, #14, #10, #28, #6 and #17 remain gated by dependencies/decisions recorded on their GitHub issues.
 
