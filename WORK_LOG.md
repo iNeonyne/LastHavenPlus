@@ -48,6 +48,7 @@
 - **Unverified / risks:** ...
 - **Next safe action:** ...
 ```
+
 ### 2026-11-25 — Remove legacy addon manager and prepare GeckoView agent references
 
 - **Issue/task:** owner instruction; #9, #11, #20, #21, #22, #23.
@@ -456,3 +457,98 @@
 ## 2026-11-25 — Issue #56 direct-launch implementation started
 
 Owner directed Chaty to take over #56 from Ploy. Updated issue ownership to Chaty and created `chaty/issue-56-direct-launch-overlay` from beta `01af3f488225eaa5321b994a3957e53dcdb70c55`. Implemented direct startup, a translucent Back-triggered overlay while retaining the Game destination, separate Settings navigation, landscape gameplay with system bars restored for the menu, status/navigation bar dark scrim outside immersive gameplay, and removal of the persistent page-load progress strip. Updated AGENT_WORK and migration/status records to reflect the takeover. Source review only; tests, CI and physical device verification remain outstanding. No beta/main merge or release action.
+
+
+### 2026-11-26 — Start version-qualified CI APK artifact naming (#4)
+
+- Issue/task: #4, Chaty-owned CI artifact naming improvement.
+- Branch and starting commit: `chaty/versioned-apk-artifact-names`, based on beta `ec721c3da9a4a6f696f644ad9ad78751b36cdd10`.
+- Files inspected: `README.md`, `AGENTS.md`, `STATUS.md`, `ISSUES.md`, `CHANGELOG-AGENTS.md`, `AGENT_WORK.md`, `WORK_LOG.md`, `app/build.gradle.kts`, `.github/workflows/android.yml`, `.github/scripts/prepare_release_payload.sh`; checked issue #4 and searched for duplicate issues/PRs.
+- Action: recorded a bounded GitHub issue #4 subtask. Plan is to create a versionName- and channel-qualified signed Actions APK copy while retaining `app-release.apk` and the updater's canonical `lasthavenplus-arm64.apk`.
+- Files changed: pending.
+- Checks: no build/test run yet; exact-head Android validation and post-merge signed ARM64 workflow are required.
+- Unverified / risks: Actions workflow parsing and copy/upload behavior are not yet CI-verified.
+- Next safe action: implement the narrow workflow/docs change on this branch, inspect the diff, open a PR to beta and review exact-head CI.
+
+## 2026-11-26 — Complete CI runner consolidation and begin post-v2.3.0 housekeeping
+
+- **Starting point:** beta after PR #130 and PR #127 integration; v2.3.0 published on main/tag ebc5b424e83ae66c2b0accc2bec6f050b8dc0d88.
+- **CI implementation:** PR #131 passed its exact-head checks but was closed unmerged when beta advanced. Refreshed PR [#132](https://github.com/iNeonyne/LastHavenPlus/pull/132) from beta 0f16fbbdc3d4dabeb5285aaf57b8b0b874db5a54; reviewed its workflow diff and security boundaries; merged at 7cd898f4c1f9b7f70787a7000e1ed9343a83540d.
+- **PR validation:** run [#45737717923](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45737717923) passed lint, Spotless, unsigned release build, JVM tests and Python helper tests. Run [#45737717837](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45737717837) passed Markdown lint.
+- **Post-merge validation:** run [#45738073790](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45738073790) passed on the exact merge commit. Log confirms relevant-path detection was true, spotlessCheck and lintDebug ran in the combined Gradle invocation, and build/test succeeded. APK ABI was exactly arm64-v8a; established signing certificate SHA-256 matched b3bbf7520e77dfc384a60b1eee6c5f205b978f9b453849e2be523f642018d263. Signed beta artifact LastHavenPlus-2.3.0-beta-arm64-v8a uploaded (92,815,476 bytes); release/tag/differential steps skipped.
+- **Timing:** consolidated beta job 94s. Baseline signed build 258s plus separate quality job 123s = 381 runner-seconds. Single observation suggests ~75% lower runner time; cache state and sample size limit generalization.
+- **Housekeeping audit:** beta now 7cd898f4c1f9b7f70787a7000e1ed9343a83540d; main remains ebc5b424e83ae66c2b0accc2bec6f050b8dc0d88. Confirmed v2.3.0 release assets. Found stale STATUS/AGENT_WORK/ISSUES history; prepared current snapshot while preserving historical records.
+- **Open PR state:** #119 (issue #66) is behind beta and needs refresh/revalidation. #122/#123 remain owner-paused drafts under #20/#62; no further work authorized. #113 remains draft/open for traceability only after owner direction; #107 is closed. #23 remains on hold.
+- **No roadmap:** no v2.4.0 roadmap, release, tag, main promotion or branch deletion was created.
+- **Device status:** no physical ARM64 testing was performed; CI evidence is not device evidence.
+
+
+### Branch inventory snapshot — 2026-11-26
+
+GitHub returned 22 remote branches. Heads and current disposition at audit time:
+
+| Branch | Exact head | Disposition |
+|---|---|---|
+| agent/add-issue-agent-workflow | d45c3dac8b4d62a10fb5d04d79d7280500e11b57 | Preserve; no open PR in current inventory |
+| beta | 7cd898f4c1f9b7f70787a7000e1ed9343a83540d | Active integration branch |
+| beta-legacy-2026-11-24 | 973a81750a821f27cea630d175bc11d622a11582 | Preserve as legacy snapshot |
+| chaty/ci-runner-consolidation | 74851637a84067f5275cc80f5e28efc4d653c485 | PR #131 closed unmerged; superseded by #132 |
+| chaty/ci-runner-consolidation-refresh | 0f16fbbdc3d4dabeb5285aaf57b8b0b874db5a54 | Superseded pre-merge snapshot |
+| chaty/ci-runner-consolidation-v2 | fc809d14bf517b0ab7c9cb31025935b984629d66 | PR #132 merged; post-merge checks passed |
+| chaty/issue-4-interrupted-download-tests | 228a2bd17fb92b7e0e217f8df6f0de5b3abc0a7a | Preserve; issue #4 remains open |
+| chaty/issue-66-independent-apk-rebuilds | ab32c31cbad7a4ea3b49f7ca3f670bbbb4a0e55a | PR #119 open; stale base, refresh/revalidate required |
+| chaty/issue-81-compatible-library-refresh | 807543c5923311082236f90a90646f02372d9e84 | Preserve; issue #81 remains Chaty-owned |
+| chaty/issue-84-official-launcher-icon | 2e64f56d9dbf82fa0396d8e23b5e52a62506d9ae | PR #85 merged; potential cleanup candidate after owner approval |
+| chaty/post-v2.3-housekeeping | e048ecb0b3f02396e8d465cdcc91013438246f49 | PR #134 housekeeping documentation |
+| chaty/pr105-refresh | fcaa438b5fcf04081fd16adaa262ee626b476b5f | Preserve pending ancestry/use review |
+| chaty/v2.2.0-selective-main-promotion | c39698419353673a712f7de252c52ccb3e46e5d6 | Stable promotion branch; preserve as release history |
+| dependabot/gradle/gradle-wrapper-9.9.2 | 4413dd3a2795dfc51e548617613e5a81145437bb | Preserve pending Dependabot PR/commit audit |
+| infra/issue-pr-agent | 22bd670535881a2fc42fba573b52c28a63d0ff0c | Preserve; workflow automation branch |
+| main | ebc5b424e83ae66c2b0accc2bec6f050b8dc0d88 | Stable release branch |
+| vibe/branch-lifecycle | 5877d34871e162d1bcee7a0cca9d980f4735bd1e | PR #123 owner-paused; do not update |
+| vibe/ci-action-pinning-568e1f | 3422ec1e67e282a0723702fabc0bb7b905548cf5 | Preserve pending ancestry/use review |
+| vibe/geckoview-audit-refresh | f9a2ee4c478364165b34306d7d2849f715da8419 | PR #122 owner-paused; do not update |
+| vibe/geckoview-dep-report | 9bb936d2a2a4ff5cc514789584c1fe48265f43bd | Staged audit branch; owner-deferred with #20 |
+| vibe/governance-vibe-integrator | dc7f9d22e1c8bea9b00af75e14ca117a9d7310aa | Preserve pending ancestry/use review |
+| vibe/markdown-validation | c303cacc3060e9ed15852a4e2c3dec140bc1fa9d | PR #120 merged; potential cleanup candidate after owner approval |
+| vibe/visual-tokens-568e1f | 6b9a3c8c07d0d4f3de9892a1a36e7c9686552969 | PR #113 owner-paused/draft; do not update |
+
+No branch was deleted. The available GitHub connector exposes no branch-delete operation, and the repository rules require preserving unreviewed or owner-paused work. The two merged branches (#85 and #120) and superseded CI branches are candidates for a later owner-approved pruning pass only after ancestry and unique-commit checks.
+
+
+## 2026-11-26 — Owner-requested next-version roadmap and UI/UX assignments
+
+- **Owner request:** prepare the next three-version roadmap and start assigning work, with the next update UI/UX-focused.
+- **Roadmap:** updated GitHub issue #18 to v2.4.0 UI/UX, v2.5.0 updater experience and v2.6.0 settings/diagnostics. These are planning targets only; no release/tag/promotion was authorized.
+- **Icon concept:** generated a LastHavenPlus fantasy-frost crest concept (navy, icy-blue crystalline portal/rune, restrained gold). Created issue #133 and assigned it to Chaty (`agent:chaty`) with adaptive icon scope, safe-zone requirements, non-goals and verification criteria.
+- **Visual system:** reopened issue #107 under Chaty ownership per the owner's earlier UI/UX takeover instruction. PR #113 remains draft/open for traceability only; no merge or further Vibe commits on its stale branch. Chaty will implement from current beta after #133, then handle #9 accessibility in a non-overlapping sequence.
+- **Vibe queue:** no new Vibe assignment was made because the remaining available product tasks depend on UI/UX work or overlap active/stale drafts; owner-paused #122/#123 remain untouched. Assign only when a non-overlapping issue is ready.
+- **Device status:** generated icon is a concept only; repository integration and physical ARM64 launcher appearance are not yet verified.
+
+### 2026-11-26 — Start issue #133 adaptive launcher icon refresh
+- **Issue:** #133 — v2.4.0 adaptive launcher icon.
+- **Branch and starting commit:** chaty/issue-133-icy-pixel-castle, created from beta e69656303d7e1c1e7d50f7211c8cfaeb748f07e9.
+- **Files inspected:** README.md, AGENTS.md, STATUS.md, ISSUES.md, CHANGELOG-AGENTS.md, AGENT_WORK.md, AndroidManifest.xml, app/build.gradle.kts, adaptive icon XML, foreground drawable and launcher background color.
+- **Files changed:** app/src/main/res/drawable/ic_launcher_castle.xml; app/src/main/res/drawable/ic_launcher_foreground.xml; app/src/main/res/values/colors.xml.
+- **Action:** replaced the gold portal visual direction with a native vector illustration of an icy-blue pixel-art gothic castle/moon scene; retained standard and round adaptive icon references and preserved the app identity.
+- **Commits:** artwork 530bb15f2a091ccc380ae4168a60cb1e62bb221c; foreground d159e846ac86529978befa6ed65ef55bfdb2e46c; background 409a8ff44b161ac09a84d6b46b9b9814af12334f; cleanup 1fda96cd40e7fb321548851129e696e245993124.
+- **Checks:** no Android build or automated test has run yet. Exact-head PR CI and adaptive mask inspection are pending. Physical ARM64 launcher rendering is unverified.
+- **Next safe action:** inspect the final resource diff, add this operational checkpoint and ownership updates to the task PR, then run exact-head unsigned validation. Do not merge until review and CI pass.
+
+
+### 2026-11-26 — Integrate v2.4.0 launcher icon (#133)
+- **PR:** #135 squash-merged into beta.
+- **Merge commit / beta HEAD:** `c24b24e7125f49e86f465b1786ccfecb537e9694`.
+- **Exact-head validation:** Android PR run #45742710788 passed lint, Spotless, unsigned release assembly and JVM tests; Markdown run #45742710826 passed.
+- **Post-merge checks:** Markdown beta push run #45743277532 passed. Signed ARM64 beta build #45743277446 was still running at this checkpoint.
+- **Issue:** #133 closed completed. Local vector/mask simulation inspected; Android-generated mask previews and physical ARM64 launcher rendering remain unverified.
+- **Next:** refresh Vibe's #107 PR #136 against the new beta commit; review its exact-head CI and UI changes. Keep #9 queued until #107 is integrated. No release/tag/promotion.
+
+
+### 2026-11-26 — Post-merge verification and release-readiness checkpoint
+- **Application merge:** PR #135 icon integration at `c24b24e7125f49e86f465b1786ccfecb537e9694`.
+- **Post-merge workflow:** run #45743277446 passed signed optimized ARM64 APK build and JVM tests; established signer SHA-256 matched `b3bbf7520e77dfc384a60b1eee6c5f205b978f9b453849e2be523f642018d263`; packaged ABI exactly `arm64-v8a`; artifact `LastHavenPlus-2.3.0-beta-arm64-v8a` uploaded (92,813,021 bytes). Tag/publication skipped.
+- **Docs integration:** PR #137 merged at `f800deebf6c8bdaa91df4ac7c3693dcf86f3e6b6`; exact Markdown run #45743490458 passed.
+- **Icon limitation:** issue #133 reopened as `agent:owner`; Android-generated adaptive-mask previews and physical ARM64 launcher rendering still need owner verification.
+- **Visual system:** PR #136 Android run #45743147121 passed on its old head, but branch is stale and non-mergeable after beta advanced. Vibe must merge current beta, resolve conflicts, and rerun exact-head checks.
+- **Release state:** no v2.4.0 tag, promotion, or publication authorized/performed. Beta CI artifact carries stable v2.3.0 identity (`versionCode 2003000`); a v2.4.0 release build requires the authorized stable tag workflow.

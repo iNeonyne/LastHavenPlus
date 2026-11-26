@@ -2,36 +2,31 @@
 
 **Source of truth:** GitHub Issues and this version-controlled backlog. Keep issue scope, status and acceptance criteria aligned. Do not close an issue because documentation changed.
 
-## Current priorities — v2.2.0
+## Current state after v2.3.0
 
-1. **Deferred to v2.3.0 (#4, #15, #31):** complete automated updater regression coverage, accurate download progress/stage visibility (including navigation-persistent status and evaluation of Android progress notifications), and future owner-authorized release-ID/differential fallback verification. No remaining updater work is a v2.2.0 implementation task.
-2. **P1 — v2.2.0 launcher experience (#56, #84):** direct launch, responsive in-game overlay, session-preserving navigation and the approved recreated icon are integrated in beta and selectively promoted to main. No further v2.2.0 feature work is active.
-3. **Deferred to v2.3.0 (#86):** accessibility, diagnostics, settings, storage/network accuracy, updater recovery and release engineering follow-ups. Owner feedback is tracked separately after releases.
-4. **P1/P2 — Engineering reliability (#60 complete; #61–#66):** keep CI hardening and dependency review separate from product work; no unverified toolchain upgrades.
-5. **Deferred to v2.3.0 (#6, #9–#17, #28):** settings, diagnostics, accessibility and storage/network accuracy; preserve data and privacy boundaries.
-6. **P3 — Performance/APK size (#7):** measure before optimizing.
-7. **Deferred — Addon Manager (#23) and beta channel (#19):** no Addon Manager work without explicit owner approval; beta channel is not a v2.2.0 prerequisite.
+- **Latest stable:** v2.3.0 is published on main at tag commit ebc5b424e83ae66c2b0accc2bec6f050b8dc0d88.
+- **Development:** beta is at f800deebf6c8bdaa91df4ac7c3693dcf86f3e6b6; v2.4.0 icon code is integrated at c24b24e, with owner visual signoff pending. No release or promotion is in progress.
+- **CI:** PR #132 consolidated beta lint/format checks into the existing signed ARM64 build job and is merged. Exact-head PR validation and post-merge signed CI passed. Issue #129 is closed as completed after the measured result was recorded.
+- **Housekeeping:** #128 is Chaty-owned; it reconciles repository status and work records. #70 remains open until this reconciliation is integrated.
+- **Updater:** #4 remains open for remaining regression coverage. #15, #31 and #111 are blocked/deferred; no release-ID/differential fallback runtime verification is claimed.
+- **Reproducibility:** #66 / PR #119 has a prior byte-identical unsigned APK result, but its branch is behind current beta and needs refresh plus exact-head reruns before merge.
+- **Owner-paused:** #20 / PR #122 and #62 / PR #123 are explicitly deferred; keep their drafts open for traceability and do not resume. #23 Addon Manager remains on hold.
+- **UI/UX:** #133 implementation is merged via PR #135, but issue remains open as `agent:owner` for Android mask/physical launcher visual verification. #107 visual-system implementation is assigned to Vibe (`agent:vibe`) in PR #136, whose original CI passed but whose branch needs a beta refresh and new exact-head validation before review/merge. PR #113 remains draft/open for traceability only. #9 accessibility remains queued until #107 integrates.
+- **Roadmap:** issue #18 now covers v2.4.0 UI/UX, v2.5.0 updater experience and v2.6.0 settings/diagnostics. Targets are planning only, not release authorization.
+- **Other deferred work:** #86 and #19 remain deferred outside the scoped roadmap; #23 remains on hold.
 
-**Release roadmap:** [#18 — v2.2.0 roadmap](https://github.com/iNeonyne/LastHavenPlus/issues/18). v2.1.0 is published. v2.2.0 is a planning target, not a release commitment. No tag or publication is authorized by this roadmap. The selective main promotion was separately approved by the owner.
+## Current ownership
 
-## Agent work queue
-
-**Chaty:** owns intake, triage, assignments, roadmap and central documentation, CI coordination, PR review and beta integration. Chaty also owns high-risk updater coordination (#4/#15/#31) and documentation validation (#70).
-
-**Vibe:** implementation contributor. Vibe works only on existing issues explicitly assigned by Chaty with the `agent:vibe` label and a scoped GitHub assignment comment. Vibe submits PRs targeting beta and does not merge or change the backlog.
-
-**Current Vibe handoffs:** #106 and #107 have implementation PRs #112 and #113 respectively; both are awaiting Chaty's review. Do not assign overlapping implementation while these PRs remain open.
-
-**Owner-only / blocked:** #5 and #21 await optional owner feedback; #23 is ON HOLD; #19 and #86 are deferred coordination/backlog items; #7 remains deferred until measured work is prioritized. These are not start permissions.
-
-Every actionable issue carries exactly one agent ownership label. New issues are labeled `agent:unassigned`; Chaty selects an owner and changes the label. `agent:unassigned` does not authorize Vibe to begin. See `AGENTS.md` for label transitions and communication requirements.
-
+- **Chaty:** #128 housekeeping, #4 updater test coverage, #81 approved library-only dependency refresh, and final #70 documentation reconciliation. #129 CI consolidation is closed as completed.
+- **Vibe:** #107 shared visual-system implementation (agent:vibe). Owner-paused drafts #122/#123 must remain paused.
+- **Chaty:** completed #133 adaptive launcher icon integration via PR #135.
+- **Owner decision:** #65 and any release/promotion/roadmap authorization remain with the repository owner.
 
 ## Backlog index
 
 | Issue | Priority | Summary | Current state |
 |---|---:|---|---|
-| [#4](#issue-4) | P0.1 | Build reproducibility and updater test coverage | Open; signed ARM64 CI verified, automated updater edge-case coverage remains |
+| [#4](#issue-4) | P0.1 | Build reproducibility and updater test coverage | Open; version-qualified CI artifact naming integrated; remaining updater regression tests stay with Chaty |
 | [#5](#issue-5) | Feedback | Owner feedback — gameplay and update behavior after release | Open; owner will provide release feedback on their own schedule; not a release blocker |
 | [#6](#issue-6) | P2 | Essential launcher settings and safe storage controls | Open; includes version identity, theme preference and accessible storage loading-state candidates |
 | [#7](#issue-7) | P3 | Runtime performance and APK size | Open; measure before optimizing |
@@ -45,22 +40,30 @@ Every actionable issue carries exactly one agent ownership label. New issues are
 | [#15](#issue-15) | P2 | Updater recovery and download progress visibility | Open; adds measurable speed/ETA, inline retry, install-later confirmation, storage preflight, package-size comparison and release-note/history UX |
 | [#16](#issue-16) | P2 | Gameplay orientation and keep-awake settings | Open |
 | [#17](#issue-17) | P2 | Settings backup and restore | Open |
-| [#18](#issue-18) | Roadmap | v2.2.0 roadmap and release gates | Open; planning and sequencing updated |
+| [#18](#issue-18) | Roadmap | v2.4.0–v2.6.0 UI/UX, updater and settings roadmap | Open; owner-requested planning targets only, no release authorization |
 | [#19](#issue-19) | P1 | Opt-in beta release channel | Open |
-| [#20](#issue-20) | P1 | GeckoView 160 artifact/dependency audit | Decision implemented; POM, transitive dependencies, notices and size evidence remain |
+| [#20](#issue-20) | Deferred | GeckoView 160 artifact/dependency audit | Owner-deferred; PR #122 remains draft/open for traceability; do not resume |
 | [#21](#issue-21) | Feedback | Owner feedback — GeckoView runtime/profile behavior after release | Open; optional owner feedback and reported follow-up defects; not a release blocker |
 | [#22](#issue-22) | Superseded | Home screen and Play/Settings navigation | Replaced by direct-launch/overlay scope #56; owner feedback tracked in #5/#21 |
 | [#23](#issue-23) | Deferred | Integrate and harden supplied GeckoView addon manager | On hold by owner instruction; do not resume without explicit approval |
 | [#28](https://github.com/iNeonyne/LastHavenPlus/issues/28) | P2 | Storage usage accuracy and iterative directory sizing | Open; queued after #10 |
 | [#42](https://github.com/iNeonyne/LastHavenPlus/issues/42) | Superseded | v2.1.0 Home-screen UI verification | Superseded by direct-launch redesign #56; new UX verification belongs to #5/#56 |
 | [#29](https://github.com/iNeonyne/LastHavenPlus/issues/29) | Done | Reconcile beta documentation and CI evidence | Closed as completed after PR #46 merged to beta |
-| [#31](https://github.com/iNeonyne/LastHavenPlus/issues/31) | P0 | Draft release asset verification and differential fallback | PR #54 merged; exact-head unsigned and post-merge signed beta runs passed; live release-ID path/fallback checks remain |
+| [#31](https://github.com/iNeonyne/LastHavenPlus/issues/31) | Deferred | Draft release asset verification and differential fallback | Owner-deferred; no release-ID/differential runtime verification claimed |
 | [#56](https://github.com/iNeonyne/LastHavenPlus/issues/56) | Done | Direct launch and responsive in-game overlay | PR #83 merged to beta; PR #87 selectively promoted implementation to main; exact beta validation and signed CI passed |
 | [#60](https://github.com/iNeonyne/LastHavenPlus/issues/60) | Done | Android lint and Kotlin formatting quality gate | PR #72 merged; exact-head PR and post-merge beta quality/build workflows passed |
 | [#84](https://github.com/iNeonyne/LastHavenPlus/issues/84) | Done | Approved recreated LastHavens-inspired launcher icon | PR #85 merged to beta; PR #87 promoted icon to main; beta CI passed |
-| [#86](https://github.com/iNeonyne/LastHavenPlus/issues/86) | Deferred | v2.3.0 deferred reliability, updater and supporting-feature backlog | Open coordination index; linked issues remain the detailed sources of truth |
-| [#106](https://github.com/iNeonyne/LastHavenPlus/issues/106) | P2 | Gameplay loading, reconnect and load-failure UX | Open; deferred candidate; coordinate with #12 |
-| [#107](https://github.com/iNeonyne/LastHavenPlus/issues/107) | P3 | Consistent visual design and interaction polish | Open; deferred; includes restrained haptics and theme-token coordination; no home screen |
+| [#86](https://github.com/iNeonyne/LastHavenPlus/issues/86) | Deferred | Supporting settings, diagnostics and feature backlog | Deferred coordination index; detailed work is sequenced in #18 and remains dependency-gated |
+| [#106](https://github.com/iNeonyne/LastHavenPlus/issues/106) | Done | Gameplay loading, reconnect and load-failure UX | Closed after implementation integration; no open task remains under this issue |
+| [#107](https://github.com/iNeonyne/LastHavenPlus/issues/107) | P1 | Consistent visual design and interaction polish | Open; assigned to Vibe (agent:vibe); fresh branch required; PR #113 remains traceability-only |
+| [#62](https://github.com/iNeonyne/LastHavenPlus/issues/62) | Deferred | Branch lifecycle audit | Owner-deferred; PR #123 remains draft/open; do not resume |
+| [#66](https://github.com/iNeonyne/LastHavenPlus/issues/66) | Engineering | Independent unsigned APK reproducibility | PR #119 open; prior byte-identical result exists; branch refresh and exact-head reruns required |
+| [#70](https://github.com/iNeonyne/LastHavenPlus/issues/70) | Docs | Contributor/security guidance and Markdown validation | Markdownlint integrated; final reconciliation is in this housekeeping PR |
+| [#81](https://github.com/iNeonyne/LastHavenPlus/issues/81) | Dependencies | Compatible AndroidX and compression library refresh | Chaty-owned; only the five approved library versions are in scope |
+| [#111](https://github.com/iNeonyne/LastHavenPlus/issues/111) | Deferred | Updater download progress and retry feedback | Blocked/deferred; do not start alongside #4 |
+| [#133](https://github.com/iNeonyne/LastHavenPlus/issues/133) | Owner review | v2.4.0 adaptive launcher icon refresh | PR #135 merged; exact-head and signed ARM64 CI passed; owner visual/mask verification pending |
+| [#128](https://github.com/iNeonyne/LastHavenPlus/issues/128) | Housekeeping | Post-v2.3.0 repository housekeeping | Chaty-owned; current docs reconciliation in this housekeeping PR |
+| [#129](https://github.com/iNeonyne/LastHavenPlus/issues/129) | Done | Consolidate beta CI quality checks | Closed; PR #132 merged and exact-merge CI passed |
 
 ---
 
@@ -114,6 +117,7 @@ Harden the existing build and updater without replacing the current update archi
 
 ## CI verification
 - [ ] Verify release APK package identity in CI.
+- [ ] Name signed Actions APK artifacts with resolved versionName and build channel while preserving canonical updater release assets.
 - [ ] Verify ARM64-only native libraries and established signing certificate for current beta. Run #232 restored the keystore but skipped APK checks.
 - [ ] Publish APK size information and checksum results in the workflow summary.
 
@@ -727,8 +731,8 @@ The owner later placed all addon-manager work on hold. The previous XPI specific
 - [ ] Implement app-owned tab/session delegation; do not leave manager options, source, screenshot or Play flows creating unmanaged sessions.
 - [ ] Add security, archive, network, dependency, range, cache and GeckoView integration tests.
 
-Preserve archive path/CRC/duplicate/count/expanded-size checks. Keep Android 10/API 29+, ARM64-only, app ID and signing identity. Do not modify the game client or claim Lua initialization from injection-layer requests alone. See the GitHub issue for full scope and acceptance criteria.
----
+- **Constraints:** Preserve archive path/CRC/duplicate/count/expanded-size checks. Keep Android 10/API 29+, ARM64-only, app ID and signing identity. Do not modify the game client or claim Lua initialization from injection-layer requests alone. See the GitHub issue for full scope and acceptance criteria.
+
 ---
 
 **Integration checkpoint (2026-11-25):** PR #26 merged to beta at `e924c580699ad34f1083d1a9a0fe96901037c0ae`. PR run #329 passed unsigned release build and unit tests for the exact PR head. Signed post-merge ARM64 CI and owner feedback remains optional. `main` and `beta` are diverged (beta ahead 166, main ahead 9); review the nine main-only commits before any promotion.
@@ -833,3 +837,43 @@ The additional UX proposal was reviewed and consolidated into existing issues ra
 - **#107:** restrained haptic feedback and shared theme-token coordination.
 
 **Explicit exclusions:** no new launcher HomeScreen, HomeScreen pull-to-refresh or update badge (the game has its own home screen); no automatic update check on launch; no unattended/background download or automatic installation; no external-browser fallback. Update checks and downloads remain explicitly user-initiated. Android's package installer confirmation remains mandatory. All work is deferred under #86 pending owner prioritization.
+
+
+## 2026-11-26 — Issue #9 accessibility implementation integrated
+
+- PR [#139](https://github.com/iNeonyne/LastHavenPlus/pull/139) merged to beta at `0d5ab712ce5195a3e71023c68da54f054645a8e2` after owner authorization.
+- Exact PR-head Android and Markdown CI passed. Physical ARM64 TalkBack/focus/traversal, reduced-motion and large-font verification remain outstanding; `FocusRequester` is Compose input focus, not TalkBack accessibility focus.
+- Issue remains open with `agent:owner` pending the outstanding device verification. Do not represent those checks as complete.
+
+
+---
+
+## Code-review follow-ups — 2026-11-26
+
+The beta code review found the strongest improvement opportunities are structural and lifecycle-focused. These are separate, unassigned tasks; they do not authorize release promotion.
+
+### Issue 146 — P1 — Extract GeckoView game-session ownership from MainActivity
+**GitHub:** https://github.com/iNeonyne/LastHavenPlus/issues/146  
+Extract session open/reload/restore/close and load/crash state into a focused controller while preserving the lazy process-scoped GeckoRuntime, current crash-vs-navigation semantics, and the same live session when Settings/Diagnostics/Update detach the view. Document the keep-alive invariant and add focused state-transition tests. Coordinate with #23 and any MainActivity/GeckoSession work.
+
+### Issue 147 — P1 — Consolidate launcher navigation and back-stack state
+**GitHub:** https://github.com/iNeonyne/LastHavenPlus/issues/147  
+Introduce one pure navigation policy or lightweight sealed back stack for Game, Settings, Diagnostics and Update. Preserve direct launch, Back overlay and return behavior; avoid adding Compose Navigation without need. Depends on #146.
+
+### Issue 148 — P2 — Centralize gameplay orientation and immersive window state
+**GitHub:** https://github.com/iNeonyne/LastHavenPlus/issues/148  
+Create a single GameplayUiState/window boundary for existing orientation and system-bar/immersive behavior. Keep persisted orientation and keep-awake preferences in #16; this issue adds no new user controls.
+
+### Issue 149 — P2 — Move launcher-owned user-facing strings into Android resources
+**GitHub:** https://github.com/iNeonyne/LastHavenPlus/issues/149  
+Move launcher-owned UI strings to Android resources without changing wording, game-hosted content, diagnostics payloads or protocol values. No translation work is included.
+
+### Issue 150 — P2 — Document GeckoView content and Android permission policy
+**GitHub:** https://github.com/iNeonyne/LastHavenPlus/issues/150  
+Verify the current manifest and GeckoView delegates, then document the strict allowlist and deny-by-default behavior. Documentation only; no permissions or runtime behavior may change.
+
+### Existing updater/release follow-ups
+- #15 remains the single coordinated updater recovery/UX scope. Its new review note covers pending installer URI dismissal/abandonment semantics, actionable user-facing error mapping with detailed redacted diagnostics, and safe explicit cancellation/partial-file cleanup. Coordinate with #111; do not create a second updater or parallel owner.
+- #4 now also calls out an optimized-release/R8 smoke checklist covering FileProvider configuration, package identity, signing, ARM64 packaging, release installation and GeckoView game-load verification after GeckoView bumps.
+- Theme-token centralization is already represented by integrated #107 and persisted theme preference belongs to #6; do not duplicate either.
+- Download progress remains in #111; do not duplicate its in-progress implementation.
