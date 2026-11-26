@@ -181,7 +181,7 @@ The repository owner will install releases and report what works and what does n
 
 ## Issue #67 — Apache-2.0/community hygiene candidate (2026-11-26)
 
-- **PR:**  #144, currently draft, targeting beta; branch chaty/community-hygiene-refresh-refresh; latest candidate head at this status update: 18d8912c6d934270746395b4057750c30166d731.
+- **PR:**  #144, currently draft, targeting beta; branch chaty/community-hygiene-refresh; latest candidate head at this status update: 18d8912c6d934270746395b4057750c30166d731.
 - **Owner decision:** Apache-2.0 selected. Canonical root LICENSE and packaged app resource app/src/main/res/raw/apache_2_0.txt added; Settings now exposes an Open-source licenses dialog.
 - **Other changes:** SECURITY.md, weekly Gradle Dependabot, README license boundary and changelog link, reconciled v2.2.0/v2.3.0 release notes, contributor branch-retention policy, and PR CI runtime dependency report artifact.
 - **CI:** Markdown run #45837172690 passed. The prior Android run was cancelled on a superseded head; exact-head validation for PR #144 is pending.
