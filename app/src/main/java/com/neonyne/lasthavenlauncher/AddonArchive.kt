@@ -57,10 +57,15 @@ object AddonArchive {
       "Could not prepare temporary addon storage."
     }
 
+    var archiveFile: File? = null
     try {
-      val archiveFile = File(extractionDirectory, ".source.zip")
+      val archiveParent =
+        extractionDirectory.parentFile
+          ?: throw IllegalArgumentException("Temporary addon storage has no parent directory.")
+      val sourceArchive = File.createTempFile("addon-source-", ".zip", archiveParent)
+      archiveFile = sourceArchive
       var copiedBytes = 0L
-      FileOutputStream(archiveFile).use { output ->
+      FileOutputStream(sourceArchive).use { output ->
         input.use { source ->
           val buffer = ByteArray(DEFAULT_BUFFER_SIZE)
           while (true) {
@@ -86,7 +91,7 @@ object AddonArchive {
       var entryCount = 0
       val canonicalRoot = extractionDirectory.canonicalFile
 
-      ZipFile(archiveFile).use { zip ->
+      ZipFile(sourceArchive).use { zip ->
         val archiveEntries = zip.entries
         while (archiveEntries.hasMoreElements()) {
           val entry = archiveEntries.nextElement()
@@ -151,9 +156,11 @@ object AddonArchive {
         }
       }
 
-      archiveFile.delete()
+      check(sourceArchive.delete()) { "Could not remove temporary addon archive." }
+      archiveFile = null
       return parseAddons(entries)
     } catch (error: Exception) {
+      archiveFile?.delete()
       extractionDirectory.deleteRecursively()
       throw error
     }
