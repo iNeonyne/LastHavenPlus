@@ -68,7 +68,7 @@
 
 - **Issue #20 / PR #122:** GeckoView artifact/dependency audit. Owner explicitly deferred it; issue remains agent:blocked, PR draft/open for traceability. No further commits or workflow-dispatch requests.
 - **Issue #62 / PR #123:** branch lifecycle audit. Owner explicitly deferred it; issue remains agent:blocked, PR draft/open for traceability. No further commits.
-- **Issue #23:** Addon Manager remains on hold. No investigation, implementation or assignment without explicit owner approval.
+- **Issue #23:** Reauthorized by the owner on 2026-11-26. Chaty owns the port of uploaded ZIP v0.5.1 on `chaty/addon-manager-native-phase-a` / draft PR #140. Phase A covers bounded native ZIP import, app-private library storage and a Compose manager screen. No edits to `MainActivity.kt` or `GameMenuScreen.kt` until Vibe's #9 work is integrated. Runtime XHR/Worker/blocks.idx/WASM injection remains disabled pending security and exact GeckoView 160 verification.
 - **Issue #65:** waiting for owner decision; do not claim emulator/device coverage.
 - **Issue #15, #31, #111, #86 and #19:** blocked/deferred per current issue labels and owner priorities.
 
