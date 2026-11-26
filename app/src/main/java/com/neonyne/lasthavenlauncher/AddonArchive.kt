@@ -18,6 +18,7 @@ data class ImportedAddon(
   val files: Map<String, File>,
   val sizeBytes: Long,
   val warnings: List<String>,
+  val optionalDependencies: List<String> = emptyList(),
 )
 
 object AddonArchive {
@@ -35,6 +36,7 @@ object AddonArchive {
     val interfaceVersion: String,
     val notes: String,
     val dependencies: List<String>,
+    val optionalDependencies: List<String>,
   )
 
   private data class AddonRoot(val path: String, val folder: String)
@@ -50,6 +52,7 @@ object AddonArchive {
     input: InputStream,
     compressedSize: Long?,
     extractionDirectory: File,
+    beforeExtraction: (Long) -> Unit = {},
   ): List<ImportedAddon> {
     require(compressedSize == null || compressedSize in 1..MAX_ARCHIVE_BYTES) {
       "Archive must be between 1 byte and 128 MiB."
@@ -89,7 +92,8 @@ object AddonArchive {
 
       val entries = linkedMapOf<String, File>()
       val seen = mutableSetOf<String>()
-      var expandedBytes = 0L
+      val acceptedEntries = mutableListOf<org.apache.commons.compress.archivers.zip.ZipArchiveEntry>()
+      var declaredExpandedBytes = 0L
       var entryCount = 0
       val canonicalRoot = extractionDirectory.canonicalFile
 
@@ -118,7 +122,19 @@ object AddonArchive {
           require(entry.compressedSize >= 0 && entry.crc >= 0) {
             "ZIP entry metadata is incomplete: $path"
           }
+          declaredExpandedBytes += entry.size
+          require(declaredExpandedBytes <= MAX_EXPANDED_BYTES) {
+            "Expanded archive exceeds the 256 MiB limit."
+          }
+          acceptedEntries += entry
+        }
 
+        // Check free space before writing any expanded archive payload to disk.
+        beforeExtraction(declaredExpandedBytes)
+
+        var expandedBytes = 0L
+        for (entry in acceptedEntries) {
+          val path = validateEntryPath(entry.name)
           val destination = File(extractionDirectory, path)
           require(destination.canonicalFile.path.startsWith(canonicalRoot.path + File.separator)) {
             "Unsafe archive path: $path"
@@ -265,6 +281,7 @@ object AddonArchive {
         files = ownFiles,
         sizeBytes = total,
         warnings = warnings,
+        optionalDependencies = metadata.optionalDependencies,
       )
     }
   }
@@ -282,6 +299,10 @@ object AddonArchive {
       (values["dependencies"] ?: values["requireddeps"] ?: values["deps"].orEmpty())
         .split(Regex("[,\\s]+"))
         .filter(String::isNotBlank)
+    val optionalDependencies =
+      (values["optionaldeps"] ?: values["optional-dependencies"].orEmpty())
+        .split(Regex("[,\\s]+"))
+        .filter(String::isNotBlank)
 
     return TocMetadata(
       title = clean(values["title"]),
@@ -289,6 +310,7 @@ object AddonArchive {
       interfaceVersion = values["interface"].orEmpty(),
       notes = clean(values["notes"]),
       dependencies = dependencies,
+      optionalDependencies = optionalDependencies,
     )
   }
 }
