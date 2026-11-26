@@ -868,4 +868,4 @@ Entry format:
 - Documented the source-backed allowlist: persistent storage and audible/inaudible autoplay only for `lasthavens.com` and its subdomains; all other content permissions/origins denied; Android runtime and media capture requests rejected.
 - Clarified that `REQUEST_INSTALL_PACKAGES` supports user-confirmed APK installation and that no camera, microphone, geolocation or notification permissions are declared.
 - Updated README, AGENTS, STATUS, ISSUES, AGENT_WORK and this changelog. No runtime code, manifest, GeckoView settings or game behavior changed.
-- Exact-head Markdown validation remains pending; no physical-device permission-flow claim is made.
+- Exact-head Markdown validation passed on PR #158 head `e2ce22c44508a87f53fc4a57a03f82e0597550bc` (run #45889911748); internal links/anchors checked across all 15 Markdown files with zero missing local targets. No physical-device permission-flow claim is made.
