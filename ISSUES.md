@@ -10,10 +10,10 @@
 - **Housekeeping:** #128 is Chaty-owned; it reconciles repository status and work records. #70 remains open until this reconciliation is integrated.
 - **Updater:** #4 remains open for remaining regression coverage. #15, #31 and #111 are blocked/deferred; no release-ID/differential fallback runtime verification is claimed.
 - **Reproducibility:** #66 / PR #119 has a prior byte-identical unsigned APK result, but its branch is behind current beta and needs refresh plus exact-head reruns before merge.
-- **Owner-paused:** #20 / PR #122 and #62 / PR #123 are explicitly deferred; keep their drafts open for traceability and do not resume. #23 Addon Manager remains on hold.
+- **Owner-paused:** #20 / PR #122 and #62 / PR #123 are explicitly deferred; keep their drafts open for traceability and do not resume. #23 Addon Manager is active under Chaty after owner reauthorization (2026-11-26).
 - **UI/UX:** #133 implementation is merged via PR #135, but issue remains open as `agent:owner` for Android mask/physical launcher visual verification. #107 visual-system implementation is assigned to Vibe (`agent:vibe`) in PR #136, whose original CI passed but whose branch needs a beta refresh and new exact-head validation before review/merge. PR #113 remains draft/open for traceability only. #9 accessibility remains queued until #107 integrates.
 - **Roadmap:** issue #18 now covers v2.4.0 UI/UX, v2.5.0 updater experience and v2.6.0 settings/diagnostics. Targets are planning only, not release authorization.
-- **Other deferred work:** #86 and #19 remain deferred outside the scoped roadmap; #23 remains on hold.
+- **Other deferred work:** #86 and #19 remain deferred outside the scoped roadmap; #23 is active under Chaty.
 
 ## Current ownership
 
@@ -45,7 +45,7 @@
 | [#20](#issue-20) | Deferred | GeckoView 160 artifact/dependency audit | Owner-deferred; PR #122 remains draft/open for traceability; do not resume |
 | [#21](#issue-21) | Feedback | Owner feedback — GeckoView runtime/profile behavior after release | Open; optional owner feedback and reported follow-up defects; not a release blocker |
 | [#22](#issue-22) | Superseded | Home screen and Play/Settings navigation | Replaced by direct-launch/overlay scope #56; owner feedback tracked in #5/#21 |
-| [#23](#issue-23) | Deferred | Integrate and harden supplied GeckoView addon manager | On hold by owner instruction; do not resume without explicit approval |
+| [#23](#issue-23) | P1 | Port supplied Addon Manager ZIP v0.5.1 | Active — Chaty; draft PR #140 |
 | [#28](https://github.com/iNeonyne/LastHavenPlus/issues/28) | P2 | Storage usage accuracy and iterative directory sizing | Open; queued after #10 |
 | [#42](https://github.com/iNeonyne/LastHavenPlus/issues/42) | Superseded | v2.1.0 Home-screen UI verification | Superseded by direct-launch redesign #56; new UX verification belongs to #5/#56 |
 | [#29](https://github.com/iNeonyne/LastHavenPlus/issues/29) | Done | Reconcile beta documentation and CI evidence | Closed as completed after PR #46 merged to beta |
@@ -711,35 +711,37 @@ Fresh launch shows a simple branded home screen with Play and Settings. Do not l
 
 <a id="issue-23"></a>
 
-## Issue 23 — P1 — Integrate and harden the supplied GeckoView addon manager
+## Issue 23 — P1 — Port and harden supplied Addon Manager ZIP v0.5.1
 
 **GitHub:** https://github.com/iNeonyne/LastHavenPlus/issues/23  
-**State:** ON HOLD by owner instruction (2026-11-25); do not resume without explicit owner approval.  
-**Release target:** proposed v2.1.0 roadmap (#18).
+**State:** Active — owner reauthorized on 2026-11-26; Chaty owns implementation (`agent:chaty`).  
+**Source:** uploaded `lasthavens-addon-manager-0.5.1(1).zip`, SHA-256 `734a8af29b9e108f05666e5f1140cd58f77de87f888386fd1777b7948908b7fc`.  
+**Branch / draft PR:** `chaty/addon-manager-native-phase-a` / [#140](https://github.com/iNeonyne/LastHavenPlus/pull/140), based on beta `e0967121b51ac1c232c92edd80157fc02b714766`.
 
-The owner later placed all addon-manager work on hold. The previous XPI specification and audit are retained as historical context only; do not investigate, assign or implement the manager until the owner explicitly approves resuming it.
+The active source is a Chrome Manifest V3 ZIP addon manager, not the earlier XPI v0.11.0. The old XPI audit and GeckoView built-in-extension probe remain historical and must not be treated as evidence that this ZIP is compatible.
 
-### Required fixes from the XPI audit
-- [ ] Reject oversized import/restore files using `File.size` before `arrayBuffer()` allocation.
-- [ ] Stream network responses with hard byte caps even when Content-Length is missing or false; add timeouts and cancellation.
-- [ ] Bound repository/catalog/TOC response sizes and concurrency.
-- [ ] Replace recursive dependency traversal with iterative cycle-safe ordering.
-- [ ] Correct closed/open-ended/suffix HTTP Range parsing and HEAD content length.
-- [ ] Preserve last-known-good catalog data when a refresh is partial or fails; remove fail-open permission reporting.
-- [ ] Reduce full-library/worker payload copies and repeated repository tree scans; measure memory.
-- [ ] Verify exact GeckoView 160 WebExtension APIs; bundle the reviewed unsigned extension through the supported built-in extension API.
-- [ ] Implement app-owned tab/session delegation; do not leave manager options, source, screenshot or Play flows creating unmanaged sessions.
-- [ ] Add security, archive, network, dependency, range, cache and GeckoView integration tests.
+### Current native port checkpoint
+- [x] Bounded ZIP extraction to app-private staging files; no full addon payload retained in RAM.
+- [x] Compressed-size, expanded-size, per-file, TOC-size and entry-count limits.
+- [x] Reject unsafe paths, duplicate paths, Unix symlinks and unsupported entries; verify entry CRC when supplied.
+- [x] Parse addon folder / matching .toc metadata, dependency names and Interface 30300 warning.
+- [x] App-private file-backed library, revisioned metadata, disabled-by-default imports, enable/disable, replacement, remove and ZIP export.
+- [x] Frost-themed Compose manager screen with addon list, dependency/compatibility warnings and storage summary.
+- [x] Initial JVM tests for folder/flat ZIPs, metadata, path traversal, reserved names, archive-size precheck, persistence, disabled-by-default, replacement and export.
+- [x] Preserve supplied Addon Manager MIT notice at `docs/licenses/ADDON_MANAGER_0.5.1_MIT.txt`; fflate is not used by the native importer.
 
-- **Constraints:** Preserve archive path/CRC/duplicate/count/expanded-size checks. Keep Android 10/API 29+, ARM64-only, app ID and signing identity. Do not modify the game client or claim Lua initialization from injection-layer requests alone. See the GitHub issue for full scope and acceptance criteria.
+### Remaining acceptance gates
+- [ ] Wire Android document picker and ZIP export destination; handle missing/untrusted document-size metadata safely.
+- [ ] Add localized strings for the supplied supported locales.
+- [ ] Add duplicate-entry, CRC-mismatch, malformed archive, nested addon/library, low-storage and rollback tests; inspect actual extracted file trees.
+- [ ] Integrate manager navigation from the in-game overlay only after #9 merges; preserve the live GeckoSession and return to it without creating a second game session. Do not overlap Vibe's current `MainActivity.kt` / `GameMenuScreen.kt` work.
+- [ ] Review the source loader's XMLHttpRequest/Worker interception and `blocks.idx`/WASM-memory masking against the exact pinned GeckoView 160 runtime. Keep it disabled until isolated to the exact game origin/path, resource-bounded, regression-tested and shown not to mutate game-hosted files or persistent game/profile data.
+- [ ] Verify addon file overlays and game behavior on physical ARM64 hardware before claiming that addons load or initialize.
 
----
+**Constraints:** Android 10/API 29+, ARM64-only, Kotlin/Compose + GeckoView 160; preserve application ID and release signing identity. No game-client edits, profile/index writes, automatic network downloads, automatic app updates, telemetry or unrelated toolchain changes. Import remains local and user initiated. A package being imported/enabled is not proof that Lua has initialized.
 
-**Integration checkpoint (2026-11-25):** PR #26 merged to beta at `e924c580699ad34f1083d1a9a0fe96901037c0ae`. PR run #329 passed unsigned release build and unit tests for the exact PR head. Signed post-merge ARM64 CI and owner feedback remains optional. `main` and `beta` are diverged (beta ahead 166, main ahead 9); review the nine main-only commits before any promotion.
-
-
-**Post-merge CI (2026-11-25):** Run [#330](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45518704468) passed signed optimized release build, unit tests, established certificate verification and ARM64-only packaging for `e924c580699ad34f1083d1a9a0fe96901037c0ae`. Artifact upload succeeded. Optional owner feedback on gameplay and update behavior is collected after releases.
-
+### Historical XPI v0.11.0 audit (not the active source)
+The earlier XPI-based design, unsigned package findings, extension tab/native-messaging probe and its original acceptance checklist are retained in issue #23 comments for traceability only. They do not authorize bundling or installing that XPI and do not establish compatibility of ZIP v0.5.1.
 
 ---
 
