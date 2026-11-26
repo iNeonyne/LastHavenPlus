@@ -15,7 +15,6 @@
 - Replace the launcher artwork with an icy-blue pixel-art castle icon.
 - Make typography, buttons, cards, spacing and touch targets more consistent.
 - Add restrained menu transitions and haptic feedback for primary actions.
-- Preserve direct-to-game startup and the existing GeckoSession while navigating launcher screens.
 
 ### Compatibility and known limitations
 - Android 10/API 29+, ARM64-only (arm64-v8a) and Mozilla GeckoView 160.
