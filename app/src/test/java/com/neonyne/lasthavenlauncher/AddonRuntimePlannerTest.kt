@@ -88,7 +88,7 @@ class AddonRuntimePlannerTest {
         """
         ## Interface: 30300
         # Comment
-        Core\\Init.lua
+        Core\Init.lua
         Core/Init.lua
         ../escape.lua
         /absolute.lua
