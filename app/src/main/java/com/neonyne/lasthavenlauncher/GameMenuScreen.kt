@@ -58,7 +58,7 @@ fun GameMenuScreen(
           shape = RoundedCornerShape(DesignTokens.cornerButton),
           colors =
             ButtonDefaults.buttonColors(
-              containerColor = Color(0xFFE5B85C),
+              containerColor = DesignTokens.gold,
               contentColor = DesignTokens.goldOnColor,
             ),
         ) {
@@ -67,13 +67,13 @@ fun GameMenuScreen(
         OutlinedButton(
           onClick = onSettings,
           modifier = Modifier.fillMaxWidth().heightIn(min = DesignTokens.minTouchTarget),
-          shape = RoundedCornerShape(14.dp),
+          shape = RoundedCornerShape(DesignTokens.cornerButton),
         ) {
           Text("Settings")
         }
         OutlinedButton(
           onClick = onReturnToGame,
-          modifier = Modifier.fillMaxWidth().height(48.dp),
+          modifier = Modifier.fillMaxWidth().heightIn(min = DesignTokens.minTouchTarget),
           shape = RoundedCornerShape(14.dp),
         ) {
           Text("Return to game")
