@@ -19,11 +19,10 @@
 - **Scope:** reconcile STATUS, ISSUES, CHANGELOG-AGENTS, AGENT_WORK and WORK_LOG; audit open PRs/issues/branches; preserve historical records and owner-paused work.
 - **Exclusions:** no branch deletion, issue/PR closure, release changes, main changes or v2.4.0 roadmap.
 
-### Issue #129 — CI consolidation
-- **PR:** [#132](https://github.com/iNeonyne/LastHavenPlus/pull/132), merged at 7cd898f4c1f9b7f70787a7000e1ed9343a83540d.
-- **Exact PR validation:** [#45737717923](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45737717923) passed unsigned lint, Spotless, release build, JVM and Python helper tests.
-- **Post-merge:** [#45738073790](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45738073790) passed beta lint/Spotless, signed ARM64 build, JVM/Python tests, established signer and ABI checks.
-- **Measured observation:** 94-second combined beta build job versus previous 258-second build + 123-second quality jobs. One-run measurement only; see STATUS.md.
+### Completed — issue #129 CI consolidation
+- PR [#132](https://github.com/iNeonyne/LastHavenPlus/pull/132) merged at 7cd898f4c1f9b7f70787a7000e1ed9343a83540d.
+- Exact PR validation [#45737717923](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45737717923), Markdown validation [#45737717837](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45737717837), and exact-merge beta run [#45738073790](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45738073790) passed.
+- Beta lint/Spotless, signed ARM64 build, JVM/Python tests, established signer and ABI checks all passed. Observed runner time 94s versus 381s combined baseline; one-run comparison only.
 
 ### Issue #4 — updater regression coverage
 - **Owner:** Chaty (agent:chaty).
