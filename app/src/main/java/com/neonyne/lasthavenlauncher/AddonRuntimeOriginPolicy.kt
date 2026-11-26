@@ -1,7 +1,6 @@
 package com.neonyne.lasthavenlauncher
 
 import java.net.URI
-import java.util.Locale
 
 /** Strict URL gate for the addon runtime. It is narrower than the launcher's general site policy. */
 object AddonRuntimeOriginPolicy {
@@ -13,8 +12,8 @@ object AddonRuntimeOriginPolicy {
     val uri = runCatching { URI(url) }.getOrNull() ?: return false
     if (!uri.isAbsolute || uri.isOpaque) return false
     if (!uri.scheme.equals("https", ignoreCase = true)) return false
-    if (!uri.host.equals("lasthavens.com", ignoreCase = true)) return false
-    if (uri.rawUserInfo != null || uri.port !in listOf(-1, 443)) return false
+    if (uri.host?.equals("lasthavens.com", ignoreCase = true) != true) return false
+    if (uri.rawUserInfo != null || (uri.port != -1 && uri.port != 443)) return false
     val path = uri.rawPath ?: return false
     return path == "/play" || path == "/play/"
   }
