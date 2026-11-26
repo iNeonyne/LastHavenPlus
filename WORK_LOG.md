@@ -603,3 +603,10 @@ No branch was deleted. The available GitHub connector exposes no branch-delete o
 - **Updater PR #160:** closed without merge. Markdown passed (#45891807077); reproducibility build A failed Kotlin Compose plugin 2.4.21 resolution, while build B and Android validation were still incomplete at closure. No updater candidate code is integrated.
 - **Docs scope:** README, AGENTS, STATUS, ISSUES, AGENT_WORK, CHANGELOG-AGENTS and this work log. No app/game behavior, dependency/toolchain, signing, ABI, release or main changes.
 - **Next:** exact-head Markdown/link/anchor validation; submit a docs-only PR to beta. No physical ARM64 testing claimed.
+
+
+### 2026-11-26 — #128 documentation integration verification
+
+- PR #161 squash-merged to beta at a0e5271793c9bb7754b7ac41429065e5602df569.
+- Exact-head Markdown run #45892727113 passed on 6a61d9197b21b2d89aeee39d1a8633b9c8012f6f; post-merge Markdown run #45892884986 passed on a0e5271793c9bb7754b7ac41429065e5602df569.
+- Issue #128 closed. No Android/device tests were applicable to this documentation-only change. No physical-device test claimed.

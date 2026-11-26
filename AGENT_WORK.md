@@ -1,7 +1,7 @@
 # Agent work assignments — LastHavenPlus
 
 **Last verified:** 2026-11-26  
-**Current beta HEAD:** 7451b940dc0adfa1ea14234fe6d489bba688b12c  
+**Verified beta base before PR #162:** a0e5271793c9bb7754b7ac41429065e5602df569  
 **Stable release:** v2.3.0 (tag commit ebc5b424e83ae66c2b0accc2bec6f050b8dc0d88).
 
 ## Roles and integration
@@ -23,12 +23,12 @@
 - **#15:** recovery UX/error mapping/cancellation cleanup is sequenced behind #4. No second updater implementation.
 - **#31:** agent:blocked; release-tag packaging/runtime verification requires explicit owner authorization. Do not trigger release workflows for testing.
 
-### Chaty — #128 repository housekeeping
-- **Owner:** Chaty (agent:chaty).
+### Completed — #128 repository housekeeping
+- **PR:** #161, squash-merged to beta at a0e5271793c9bb7754b7ac41429065e5602df569.
 - **Branch:** chaty/issue-128-housekeeping-beta, based on beta 7451b940dc0adfa1ea14234fe6d489bba688b12c.
-- **Scope:** reconcile README, AGENTS, STATUS, ISSUES, CHANGELOG-AGENTS, AGENT_WORK and WORK_LOG with v2.3.0, current beta, integrated Addon Manager Phase A, current issue ownership, closed PR inventory and exact CI evidence.
-- **Exclusions:** no application behavior, game, dependencies/toolchain, signing, ABI, release, tag, main promotion or branch deletion.
-- **Validation:** exact-head Markdown quality, internal links/anchors and consistency review required. Docs PR targets beta; Chaty reviews/merges.
+- **Scope:** reconciled README, AGENTS, STATUS, ISSUES, CHANGELOG-AGENTS, AGENT_WORK and WORK_LOG with v2.3.0, current beta, integrated Addon Manager Phase A, current issue ownership and closed PR inventory.
+- **Validation:** exact-head Markdown #45892727113 and post-merge Markdown #45892884986 passed. Local link/file/anchor scan of seven changed Markdown files found zero broken local targets. Issue #128 closed.
+- **Exclusions preserved:** no application behavior, game, dependencies/toolchain, signing, ABI, release, tag, main promotion or branch deletion.
 
 ### Chaty — #81 dependency evidence (queued)
 - Five approved library-only pins are already integrated by PR #104 at cff8dd2078cb240a69c11fd8c59db648bd0a9d58.
@@ -79,7 +79,7 @@ These issues are assigned, not unassigned. Neither agent starts until the stated
 
 ## Current ownership inventory
 
-Every open issue has exactly one agent:* label. No open issue is agent:unassigned.
+Every open issue has exactly one agent:* label. No open issue is agent:unassigned. There are 25 open issues; #128 is closed.
 
 | Issue | Owner | State |
 |---|---|---|
@@ -93,7 +93,6 @@ Every open issue has exactly one agent:* label. No open issue is agent:unassigne
 | #14 | agent:blocked | Waits for #12 |
 | #12 | agent:blocked | Waits for #11 |
 | #111 | agent:blocked | v2.5.0 release/owner hold |
-| #128 | agent:chaty | Active |
 | #31 | agent:blocked | Owner authorization |
 | #20 | agent:blocked | Owner-deferred |
 | #16 | agent:blocked | Waits for #56 and #14 |
