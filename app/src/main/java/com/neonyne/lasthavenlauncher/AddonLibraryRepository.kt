@@ -9,6 +9,7 @@ import java.io.OutputStream
 import java.nio.file.Files
 import java.nio.file.StandardCopyOption
 import java.util.Base64
+import java.util.Locale
 import java.util.Properties
 import java.util.UUID
 import java.util.zip.ZipEntry
@@ -78,7 +79,7 @@ class AddonLibraryRepository(private val root: File) {
           warnings = decodeList(properties.getProperty("addon.$index.warnings").orEmpty()),
         )
       }
-    require(addons.map { it.folder.lowercase() }.distinct().size == addons.size) {
+    require(addons.map { it.folder.lowercase(Locale.ROOT) }.distinct().size == addons.size) {
       "Addon library contains duplicate folder names."
     }
     require(addons.sumOf { it.sizeBytes } <= AddonArchive.MAX_LIBRARY_BYTES) {
@@ -107,17 +108,17 @@ class AddonLibraryRepository(private val root: File) {
         extraction.deleteRecursively()
         throw error
       }
-    val replacing = imported.map { it.folder.lowercase() }.toSet()
+    val replacing = imported.map { it.folder.lowercase(Locale.ROOT) }.toSet()
     val total =
-      current.addons.filterNot { it.folder.lowercase() in replacing }.sumOf { it.sizeBytes } +
+      current.addons.filterNot { it.folder.lowercase(Locale.ROOT) in replacing }.sumOf { it.sizeBytes } +
         imported.sumOf { it.sizeBytes }
     if (total > AddonArchive.MAX_LIBRARY_BYTES) {
       extraction.deleteRecursively()
       throw IllegalArgumentException("Addon library exceeds 384 MiB.")
     }
 
-    val existing = current.addons.associateBy { it.folder.lowercase() }
-    val nextItems = current.addons.filterNot { it.folder.lowercase() in replacing }.toMutableList()
+    val existing = current.addons.associateBy { it.folder.lowercase(Locale.ROOT) }
+    val nextItems = current.addons.filterNot { it.folder.lowercase(Locale.ROOT) in replacing }.toMutableList()
     val staged = mutableListOf<Pair<File, File>>()
     val backups = mutableListOf<Pair<File, File>>()
     val newTargets = mutableListOf<File>()
@@ -143,7 +144,7 @@ class AddonLibraryRepository(private val root: File) {
             FileOutputStream(destination).use { target -> source.copyTo(target) }
           }
         }
-        val previous = existing[addon.folder.lowercase()]
+        val previous = existing[addon.folder.lowercase(Locale.ROOT)]
         nextItems +=
           AddonLibraryItem(
             title = addon.title,
