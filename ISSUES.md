@@ -895,3 +895,11 @@ Verify the current manifest and GeckoView delegates, then document the strict al
 - #4 now also calls out an optimized-release/R8 smoke checklist covering FileProvider configuration, package identity, signing, ARM64 packaging, release installation and GeckoView game-load verification after GeckoView bumps.
 - Theme-token centralization is already represented by integrated #107 and persisted theme preference belongs to #6; do not duplicate either.
 - Download progress remains in #111; do not duplicate its in-progress implementation.
+
+
+## 2026-11-26 — Issue #150 permission policy documentation
+
+- #150 is assigned to Chaty (`agent:chaty`) for documentation only.
+- Verified current beta source: `MainActivity.setupGeckoDelegates` allows only persistent storage and audible/inaudible autoplay for `lasthavens.com` and subdomains; all other content permissions/origins are denied; Android runtime and media permission requests are rejected.
+- Manifest declares `INTERNET` and `REQUEST_INSTALL_PACKAGES`; no camera, microphone, geolocation or notification permissions are declared.
+- No runtime policy change is authorized. Exact-head Markdown validation and source-backed wording review are required before closing.
