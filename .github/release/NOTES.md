@@ -13,15 +13,13 @@ This update gives the launcher a fresh icy-blue look, improves accessibility and
 ## Bug fixes and reliability
 
 - Update checks no longer run automatically when the launcher starts. You choose when to check.
-- Addon-library changes are staged and protected by recovery handling, helping preserve the library if an operation is interrupted.
-- Improved handling of interrupted addon-library updates and recovery from incomplete transactions.
+- Addon-library changes are staged and can be rolled back safely if an operation is interrupted.
 
 ## Small changes
 
 - New icy-blue pixel-art castle launcher icon.
 - More consistent buttons, cards, spacing and touch targets.
 - Subtle menu transitions and haptic feedback for primary actions.
-- The launcher continues to open directly into the game and keeps the existing game session while moving between launcher screens.
 
 ## Compatibility
 
