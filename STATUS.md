@@ -21,7 +21,7 @@
 - The app launches directly into the game. The Back menu is a responsive overlay; Settings, diagnostics and update details are launcher-owned full-screen pages.
 - Updater downloads and installation remain user-initiated. Preserve application ID, established signing identity and ARM64-only packaging.
 - Addon Manager issue #23 remains on hold by owner instruction.
-- v2.3.0 is published. No new release, tag, promotion or v2.4.0 roadmap was created during this work.
+- v2.3.0 is published. The owner requested the next three-version roadmap; issue #18 now records v2.4.0 UI/UX, v2.5.0 updater experience and v2.6.0 settings/diagnostics. This is planning only; no new release, tag or promotion is authorized.
 
 ## Open work and limitations
 
@@ -29,9 +29,18 @@
 - **Updater:** #4 remains open for remaining automated regression coverage. #15, #31 and #111 remain blocked/deferred; no release-ID/differential fallback verification or updater UX work is claimed complete.
 - **Reproducibility:** PR [#119](https://github.com/iNeonyne/LastHavenPlus/pull/119) / issue #66 remains open. An earlier exact commit produced byte-identical unsigned APKs; the PR branch is behind current beta and must be refreshed and revalidated before merge.
 - **Owner-paused drafts:** PR #122 / issue #20 (GeckoView dependency audit) and PR #123 / issue #62 (branch lifecycle audit) remain draft/open and blocked by explicit owner scope resets. Do not add commits or resume without reprioritization.
-- **UI draft:** PR #113 remains draft/open for traceability; issue #107 is closed after subsequent integration, and the owner instructed Chaty to take over any future UI/UX implementation. Do not resume the old branch.
+- **UI/UX:** issue #107 is reopened and Chaty-owned. PR #113 remains draft/open for traceability only; do not merge or continue the old Vibe branch. Chaty will implement from current beta after the icon task.
+- **Icon:** issue #133 is Chaty-owned for a v2.4.0 adaptive icon refresh. A visual concept has been generated; repository integration, adaptive-mask review, exact-head CI and physical launcher appearance remain outstanding.
+- **Accessibility:** issue #9 remains unassigned until the visual-system pass is settled, to avoid overlapping Compose screen work.
 - **Documentation quality:** PR #120 added repository-wide markdownlint; current beta Markdown quality run [#45736853811](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45736853811) passed. Issue #70 remains open until this central reconciliation is reviewed and merged.
 - **Device status:** CI and packaging checks do not prove physical ARM64 gameplay, profile persistence, haptics, updater installation or device-specific behavior. No new physical-device testing was performed.
+
+## Next-version roadmap
+
+- **v2.4.0 — UI/UX:** new adaptive icon (#133), shared visual system and interaction polish (#107), then accessibility/navigation coverage (#9). No game/client changes or new home screen.
+- **v2.5.0 — updater:** truthful download progress and retry feedback (#111), plus coordinated regression/recovery coverage (#4/#15/#31) after prioritization.
+- **v2.6.0 — settings/diagnostics:** essential settings (#6), connection and GeckoView error diagnostics (#12/#14), orientation/keep-awake (#16), storage/network accuracy and safe backup/restore (#10/#17/#28) in dependency order.
+- Roadmap source: issue #18. Version targets are not release commitments. #23 remains on hold; #19 and #7 remain deferred.
 
 ## Historical integration records
 
