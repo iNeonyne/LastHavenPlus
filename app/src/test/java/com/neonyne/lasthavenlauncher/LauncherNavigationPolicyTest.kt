@@ -64,6 +64,30 @@ class LauncherNavigationPolicyTest {
   }
 
   @Test
+  fun addonManagerOpensFromOverlayAndBackReturnsToSameGameScreen() {
+    assertEquals(
+      LauncherNavigationTarget(Screen.AddonManager, false),
+      LauncherNavigationPolicy.openAddonManager(),
+    )
+    val target =
+      LauncherNavigationPolicy.onBack(
+        currentScreen = Screen.AddonManager,
+        menuVisible = false,
+        settingsReturnScreen = Screen.Game,
+        diagnosticsReturnScreen = Screen.Settings,
+        updateReturnScreen = Screen.Game,
+      )
+    assertEquals(Screen.Game, target.screen)
+    assertFalse(target.menuVisible)
+  }
+
+  @Test
+  fun addonManagerKeepsGameplayOrientationWithoutImmersiveBars() {
+    assertTrue(LauncherNavigationPolicy.isGameplay(Screen.AddonManager))
+    assertFalse(LauncherNavigationPolicy.isImmersiveGameplay(Screen.AddonManager, false))
+  }
+
+  @Test
   fun settingsOpensOutsideImmersiveGameplay() {
     assertEquals(
       LauncherNavigationTarget(Screen.Settings, false),

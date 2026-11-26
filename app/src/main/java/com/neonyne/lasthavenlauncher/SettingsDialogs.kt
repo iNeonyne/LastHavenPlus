@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
@@ -52,11 +53,19 @@ fun SettingsScreen(
   var snapshot by remember { mutableStateOf<UsageSnapshot?>(null) }
   var refreshKey by remember { mutableStateOf(0) }
   var refreshing by remember { mutableStateOf(false) }
+  var showNotices by remember { mutableStateOf(false) }
+  var noticeText by remember { mutableStateOf<String?>(null) }
 
   LaunchedEffect(refreshKey) {
     refreshing = true
     snapshot = withContext(Dispatchers.IO) { usageMeter.snapshot() }
     refreshing = false
+  }
+
+  LaunchedEffect(showNotices) {
+    if (showNotices && noticeText == null) {
+      noticeText = withContext(Dispatchers.IO) { ThirdPartyNotices.readAddonManagerNotice(context) }
+    }
   }
 
   SettingsPageFrame(title = "Settings & usage", onBack = onBack) {
@@ -118,6 +127,23 @@ fun SettingsScreen(
       }
       TextButton(onClick = onOpenUpdates) { Text("Update details") }
       TextButton(onClick = onOpenDiagnostics) { Text("App diagnostics") }
+      TextButton(onClick = { showNotices = !showNotices }) {
+        Text(if (showNotices) "Hide third-party notices" else "Third-party notices")
+      }
+      if (showNotices) {
+        Surface(
+          modifier = Modifier.fillMaxWidth().heightIn(max = 320.dp),
+          color = DesignTokens.logSurface,
+          shape = MaterialTheme.shapes.medium,
+        ) {
+          Text(
+            noticeText ?: "Third-party notice could not be loaded.",
+            color = DesignTokens.textSecondary,
+            style = MaterialTheme.typography.bodySmall,
+            modifier = Modifier.padding(12.dp).verticalScroll(rememberScrollState()),
+          )
+        }
+      }
     }
   }
 }

@@ -43,6 +43,7 @@ import androidx.compose.ui.unit.dp
 fun GameMenuScreen(
   onReload: () -> Unit,
   onSettings: () -> Unit,
+  onAddonManager: () -> Unit,
   onReturnToGame: () -> Unit,
 ) {
   val menuFocus = remember { FocusRequester() }
@@ -95,6 +96,13 @@ fun GameMenuScreen(
           shape = RoundedCornerShape(DesignTokens.cornerButton),
         ) {
           Text("Settings")
+        }
+        OutlinedButton(
+          onClick = onAddonManager,
+          modifier = Modifier.fillMaxWidth().heightIn(min = DesignTokens.minTouchTarget),
+          shape = RoundedCornerShape(DesignTokens.cornerButton),
+        ) {
+          Text("Addon Manager")
         }
         OutlinedButton(
           onClick = onReturnToGame,
