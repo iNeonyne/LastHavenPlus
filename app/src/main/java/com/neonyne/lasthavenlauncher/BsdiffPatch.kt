@@ -1,5 +1,6 @@
 package com.neonyne.lasthavenlauncher
 
+import java.io.Closeable
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
@@ -50,17 +51,24 @@ internal object BsdiffPatch {
           MAX_CONTROL_SECTION_BYTES,
           Math.addExact(outputControlLimit, SEEK_ONLY_CONTROL_ALLOWANCE_BYTES),
         )
-      val control = openBzipSection(patchFile, HEADER_SIZE.toLong(), controlLength, maxControlBytes)
-      val diff = openBzipSection(patchFile, HEADER_SIZE + controlLength, diffLength, newSize)
-      val extra =
-        openBzipSection(
-          patchFile,
-          HEADER_SIZE + controlLength + diffLength,
-          extraLength,
-          newSize,
-        )
-
+      val openedSections = mutableListOf<BzipSection>()
       try {
+        val control =
+          openBzipSection(patchFile, HEADER_SIZE.toLong(), controlLength, maxControlBytes).also {
+            openedSections.add(it)
+          }
+        val diff =
+          openBzipSection(patchFile, HEADER_SIZE + controlLength, diffLength, newSize).also {
+            openedSections.add(it)
+          }
+        val extra =
+          openBzipSection(
+              patchFile,
+              HEADER_SIZE + controlLength + diffLength,
+              extraLength,
+              newSize,
+            )
+            .also { openedSections.add(it) }
         RandomAccessFile(oldFile, "r").use { oldApk ->
           FileOutputStream(outputFile).use { output ->
             val oldSize = oldApk.length()
@@ -137,9 +145,7 @@ internal object BsdiffPatch {
           }
         }
       } finally {
-        control.stream.close()
-        diff.stream.close()
-        extra.stream.close()
+        openedSections.asReversed().forEach { section -> runCatching { section.close() } }
       }
 
       require(outputFile.length() == newSize) { "Reconstructed APK has an invalid size" }
@@ -211,7 +217,9 @@ internal object BsdiffPatch {
   private data class BzipSection(
     val stream: InputStream,
     val bounded: BoundedInputStream,
-  )
+  ) : Closeable {
+    override fun close() = stream.close()
+  }
 
   private class DecompressedLimitInputStream(
     private val source: InputStream,
