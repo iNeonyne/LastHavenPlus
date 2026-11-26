@@ -135,6 +135,25 @@ class AddonArchiveTest {
   }
 
   @Test
+  fun rejectsMultipleFlatAddonsWithoutFolderBoundaries() {
+    val archive =
+      zipOf(
+        "Alpha.toc" to "## Interface: 30300\\n",
+        "Alpha.lua" to "print('alpha')",
+        "Beta.toc" to "## Interface: 30300\\n",
+        "Beta.lua" to "print('beta')",
+      )
+
+    assertThrows(IllegalArgumentException::class.java) {
+      AddonArchive.importZip(
+        ByteArrayInputStream(archive),
+        archive.size.toLong(),
+        temporaryFolder.newFolder("ambiguous-flat-addons"),
+      )
+    }
+  }
+
+  @Test
   fun rejectsCaseInsensitiveDuplicatePaths() {
     val archive =
       zipOf(
