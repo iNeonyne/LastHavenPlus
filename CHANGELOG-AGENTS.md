@@ -895,3 +895,12 @@ Entry format:
 - **Scope:** `Diagnostics.kt` testability seam (internal directory-scoped `writeEntry`/`readEntries`/`clearEntries`; public `Context` API unchanged) plus 9 focused JVM tests in `DiagnosticsTest.kt` covering redaction variants (key spellings, Bearer, sensitive query params preserving `view=game`, quoted/unquoted JSON), rotation/retention bounds (512 KiB, single `.log.1`, 4,000-char cap, 80 KiB read bound), rename-failure fallback, unwritable-directory failure path, read order and clear.
 - **Exclusions upheld:** no GeckoView runtime-version startup logging (explicitly deferred), no updater (#4/#15), Addon Manager (#23), game/client or unrelated `MainActivity` changes.
 - **Validation:** local Spotless (ratchet `origin/beta`), `lintDebug` and `testDebugUnitTest` passed at the implementation commit; fresh exact-head Android/Markdown/reproducibility run IDs are recorded in the fresh PR description and the issue #11 handoff comment.
+
+
+## 2026-11-26 — Integrate diagnostics test coverage (#11)
+
+- PR #163 squash-merged to beta at 0cc21b471fce646d03dad449b91acbe67a90df7d.
+- Exact-head Android run #45893571423, Markdown run #45893571482 and independent unsigned APK reproducibility run #45893571443 passed on PR head 42ad38bf08652f45a53c7c3467aa85230b355298.
+- Added directory-scoped testability helpers without changing the public Context API or callers; 9 focused JVM tests cover redaction variants, rotation/size bounds and failure paths.
+- Issue #11 remains open as agent:blocked for the separately deferred GeckoView runtime-version startup-reporting item. No physical ARM64 device testing claimed.
+- Vibe's next active assignment is #149; #146 remains queued. No updater, Addon Manager, game/client, signing, ABI, dependency or release changes.
