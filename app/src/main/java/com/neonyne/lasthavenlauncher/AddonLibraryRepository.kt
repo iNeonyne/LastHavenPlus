@@ -631,7 +631,7 @@ class AddonLibraryRepository(
     require(stages.map { it.name }.distinct().size == stages.size) {
       "Addon transaction contains duplicate staging folders."
     }
-    TransactionPlan(oldRevision, oldIndexMissing, newRevision, backups, freshTargets, stages)
+    return TransactionPlan(oldRevision, oldIndexMissing, newRevision, backups, freshTargets, stages)
   }
 
   private fun writeIndex(snapshot: AddonLibrarySnapshot) {
