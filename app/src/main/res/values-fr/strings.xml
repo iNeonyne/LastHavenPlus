@@ -21,4 +21,5 @@
     <string name="addon_manager_operation_failed">Échec de l’opération sur l’addon.</string>
     <string name="addon_manager_export_failed">Échec de l’exportation de l’addon.</string>
     <string name="addon_manager_read_failed">Impossible de lire la bibliothèque d’addons.</string>
+    <string name="addon_manager_dependency_cycle">Un cycle de dépendances a été détecté entre les modules complémentaires.</string>
 </resources>
