@@ -23,4 +23,7 @@
     <string name="addon_manager_export_failed">Addon export failed.</string>
     <string name="addon_manager_read_failed">Could not read addon library.</string>
     <string name="addon_manager_dependency_cycle">Dependency cycle detected between addons.</string>
+    <string name="addon_manager_remove_confirm_title">Remove addon?</string>
+    <string name="addon_manager_remove_confirm_message">Remove %1$s from this device? This cannot be undone.</string>
+    <string name="addon_manager_cancel">Cancel</string>
 </resources>
