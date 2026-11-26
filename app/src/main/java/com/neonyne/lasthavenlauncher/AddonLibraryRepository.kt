@@ -136,8 +136,8 @@ class AddonLibraryRepository(
       val extraction = File(root, EXTRACT_PREFIX + UUID.randomUUID())
       try {
         val imported =
-          AddonArchive.importZip(source, compressedSize, extraction) { expandedBytes ->
-            val requiredBytes = expandedBytes * 2 + MIN_FREE_SPACE_RESERVE_BYTES
+          AddonArchive.importZip(source, compressedSize, extraction) { _ ->
+            val requiredBytes = AddonArchive.MAX_EXPANDED_BYTES + MIN_FREE_SPACE_RESERVE_BYTES
             require(availableStorageBytes() >= requiredBytes) {
               "Not enough free storage to safely extract and stage imported addons."
             }
@@ -172,9 +172,11 @@ class AddonLibraryRepository(
           require(isSafeFolder(addon.folder)) { "Invalid addon folder: ${addon.folder}" }
           val stage = File(root, STAGE_PREFIX + UUID.randomUUID())
           require(stage.mkdirs()) { "Could not prepare addon storage." }
-          val target = File(root, addon.folder)
+          val previous = existing[addon.folder.lowercase(Locale.ROOT)]
+          val targetFolderName = previous?.folder ?: addon.folder
+          val target = File(root, targetFolderName)
           val backup =
-            if (existing.containsKey(addon.folder.lowercase(Locale.ROOT))) {
+            if (previous != null) {
               File(root, BACKUP_PREFIX + UUID.randomUUID())
             } else {
               null
@@ -196,11 +198,10 @@ class AddonLibraryRepository(
               FileOutputStream(destination).use { target -> source.copyTo(target) }
             }
           }
-          val previous = existing[addon.folder.lowercase(Locale.ROOT)]
           nextItems +=
             AddonLibraryItem(
               title = addon.title,
-              folder = addon.folder,
+              folder = targetFolderName,
               version = addon.version,
               interfaceVersion = addon.interfaceVersion,
               notes = addon.notes,

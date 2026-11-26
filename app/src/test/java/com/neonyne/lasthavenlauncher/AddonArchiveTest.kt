@@ -411,6 +411,30 @@ class AddonArchiveTest {
   }
 
   @Test
+  fun copiesStreamsThatReturnZeroByteReadsWithoutSpinning() {
+    val data = ByteArray(70_000) { (it % 251).toByte() }
+    val input = ZeroThenDelegateInputStream(ByteArrayInputStream(data), zeroReadsBeforeData = 3)
+    val output = ByteArrayOutputStream()
+
+    AddonArchive.copyWithProgressGuarantee(input, output, ByteArray(DEFAULT_BUFFER_SIZE)) { _, _ ->
+    }
+
+    assertTrue(data.contentEquals(output.toByteArray()))
+  }
+
+  @Test
+  fun importsArchivesFromStreamsThatReturnZeroByteReads() {
+    val archive =
+      zipOf("Sample/Sample.toc" to "## Interface: 30300\n", "Sample/main.lua" to "print('sample')")
+    val input = ZeroThenDelegateInputStream(ByteArrayInputStream(archive), zeroReadsBeforeData = 2)
+
+    val imported =
+      AddonArchive.importZip(input, null, temporaryFolder.newFolder("zero-read-archive"))
+
+    assertEquals(listOf("Sample"), imported.map { it.folder })
+  }
+
+  @Test
   fun rejectsArchiveAboveCompressedSizeLimitBeforeReading() {
     val input =
       object : InputStream() {
@@ -422,6 +446,20 @@ class AddonArchiveTest {
 
     assertThrows(IllegalArgumentException::class.java) {
       AddonArchive.importZip(input, AddonArchive.MAX_ARCHIVE_BYTES + 1, temporaryFolder.newFolder())
+    }
+  }
+
+  private class ZeroThenDelegateInputStream(
+    private val delegate: ByteArrayInputStream,
+    private val zeroReadsBeforeData: Int,
+  ) : InputStream() {
+    var zeroReads = 0
+
+    override fun read(): Int = delegate.read()
+
+    override fun read(buffer: ByteArray, offset: Int, length: Int): Int {
+      if (zeroReads++ < zeroReadsBeforeData) return 0
+      return delegate.read(buffer, offset, length)
     }
   }
 

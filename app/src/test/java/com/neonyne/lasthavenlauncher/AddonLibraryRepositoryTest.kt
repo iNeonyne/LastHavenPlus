@@ -147,6 +147,57 @@ class AddonLibraryRepositoryTest {
   }
 
   @Test
+  fun caseOnlyReplacementReusesTheExistingFolderWithoutOrphans() {
+    val root = temporaryFolder.newFolder("case-replace")
+    val repository = AddonLibraryRepository(root)
+    val original =
+      zipOf(
+        "Sample/Sample.toc" to "## Version: 1\n",
+        "Sample/main.lua" to "print('original')",
+      )
+    repository.importZip(ByteArrayInputStream(original), original.size.toLong())
+
+    val replacement =
+      zipOf(
+        "sample/sample.toc" to "## Version: 2\n",
+        "sample/main.lua" to "print('replacement')",
+      )
+    val result = repository.importZip(ByteArrayInputStream(replacement), replacement.size.toLong())
+
+    assertEquals(listOf("Sample"), result.addons.map { it.folder })
+    assertEquals("2", result.addons.single().version)
+    assertFalse(File(root, "sample").exists())
+    assertEquals("print('replacement')", File(root, "Sample/main.lua").readText())
+    assertEquals(1, repository.readLibrary().addons.size)
+  }
+
+  @Test
+  fun abortsForgedDeclaredSizeArchiveBeforeExtractingWhenStorageCannotCoverWorstCase() {
+    val root = temporaryFolder.newFolder("forged-declared-size")
+    val repository = AddonLibraryRepository(root, availableStorageBytes = { 200L * 1024 * 1024 })
+    val archive =
+      forgeDeclaredEntrySizes(
+        zipOf(
+          "Sample/Sample.toc" to "## Interface: 30300\n",
+          "Sample/main.lua" to "x".repeat(5 * 1024 * 1024),
+        ),
+        declaredSizeBytes = 4L,
+      )
+
+    val error =
+      assertThrows(IllegalArgumentException::class.java) {
+        repository.importZip(ByteArrayInputStream(archive), archive.size.toLong())
+      }
+
+    assertEquals(
+      "Not enough free storage to safely extract and stage imported addons.",
+      error.message,
+    )
+    assertTrue(root.listFiles().orEmpty().isEmpty())
+    assertTrue(repository.readLibrary().addons.isEmpty())
+  }
+
+  @Test
   fun recoveryRestoresPreviousStateWhenReplacementCrashedAfterBackupRename() {
     val root = temporaryFolder.newFolder("crash-replace")
     val repository = AddonLibraryRepository(root)
@@ -322,6 +373,23 @@ class AddonLibraryRepositoryTest {
     assertEquals("1", originalRepository.readLibrary().addons.single().version)
     assertEquals("print('original')", File(root, "Sample/main.lua").readText())
     assertTrue(root.listFiles().orEmpty().none { it.name.startsWith(".backup-") })
+  }
+
+  private fun forgeDeclaredEntrySizes(archive: ByteArray, declaredSizeBytes: Long): ByteArray {
+    val centralSignature = byteArrayOf(0x50, 0x4b, 0x01, 0x02)
+    val result = archive.copyOf()
+    var offset = 0
+    while (offset + 4 <= result.size) {
+      if (centralSignature.indices.all { result[offset + it] == centralSignature[it] }) {
+        for (byteIndex in 0 until 4) {
+          result[offset + 24 + byteIndex] = (declaredSizeBytes ushr (8 * byteIndex)).toByte()
+        }
+        offset += 46
+      } else {
+        offset += 1
+      }
+    }
+    return result
   }
 
   private fun writeTransaction(

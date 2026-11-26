@@ -3,6 +3,7 @@ package com.neonyne.lasthavenlauncher
 import java.io.File
 import java.io.FileOutputStream
 import java.io.InputStream
+import java.io.OutputStream
 import java.nio.charset.StandardCharsets
 import java.util.Locale
 import java.util.zip.CRC32
@@ -48,6 +49,34 @@ object AddonArchive {
   private data class AddonRoot(val path: String, val folder: String)
 
   /**
+   * Copies [input] to [output] while guaranteeing forward progress even when the underlying stream
+   * returns zero-byte reads. [sink] receives each accepted chunk before it is written so callers
+   * can enforce byte caps and update digests; throwing from [sink] aborts the copy without writing.
+   */
+  internal fun copyWithProgressGuarantee(
+    input: InputStream,
+    output: OutputStream,
+    buffer: ByteArray,
+    sink: (ByteArray, Int) -> Unit,
+  ) {
+    val singleByte = ByteArray(1)
+    while (true) {
+      val count = input.read(buffer)
+      if (count < 0) break
+      if (count == 0) {
+        val single = input.read()
+        if (single < 0) break
+        singleByte[0] = single.toByte()
+        sink(singleByte, 1)
+        output.write(single)
+        continue
+      }
+      sink(buffer, count)
+      output.write(buffer, 0, count)
+    }
+  }
+
+  /**
    * Copies the selected archive to private staging storage, validates its central directory, then
    * streams each accepted file to disk. Expanded addon payloads are never retained in RAM.
    *
@@ -76,16 +105,13 @@ object AddonArchive {
       archiveFile = sourceArchive
       var copiedBytes = 0L
       FileOutputStream(sourceArchive).use { output ->
-        val buffer = ByteArray(DEFAULT_BUFFER_SIZE)
-        while (true) {
-          val count = archiveInput.read(buffer)
-          if (count < 0) break
-          if (count == 0) continue
-          copiedBytes += count
+        copyWithProgressGuarantee(archiveInput, output, ByteArray(DEFAULT_BUFFER_SIZE)) {
+          chunk,
+          length ->
+          copiedBytes += length
           require(copiedBytes <= MAX_ARCHIVE_BYTES) {
             "Archive exceeds the 128 MiB compressed-size limit."
           }
-          output.write(buffer, 0, count)
         }
         output.fd.sync()
       }
@@ -154,21 +180,18 @@ object AddonArchive {
           var fileBytes = 0L
           zip.getInputStream(entry).use { source ->
             FileOutputStream(destination).use { output ->
-              val buffer = ByteArray(DEFAULT_BUFFER_SIZE)
-              while (true) {
-                val count = source.read(buffer)
-                if (count < 0) break
-                if (count == 0) continue
-                fileBytes += count
-                expandedBytes += count
+              copyWithProgressGuarantee(source, output, ByteArray(DEFAULT_BUFFER_SIZE)) {
+                chunk,
+                length ->
+                fileBytes += length
+                expandedBytes += length
                 require(fileBytes <= MAX_FILE_BYTES) {
                   "File exceeds the 64 MiB limit: $path"
                 }
                 require(expandedBytes <= MAX_EXPANDED_BYTES) {
                   "Expanded archive exceeds the 256 MiB limit."
                 }
-                crc.update(buffer, 0, count)
-                output.write(buffer, 0, count)
+                crc.update(chunk, 0, length)
               }
             }
           }
