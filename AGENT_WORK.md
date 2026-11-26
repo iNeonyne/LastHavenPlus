@@ -142,4 +142,4 @@ Updater review findings were added to existing #15 and #4, not split into parall
 - **Files:** README.md, AGENTS.md, STATUS.md, ISSUES.md, AGENT_WORK.md, CHANGELOG-AGENTS.md and WORK_LOG.md.
 - **Source evidence:** AndroidManifest.xml declares INTERNET and REQUEST_INSTALL_PACKAGES. MainActivity grants persistent storage and audible/inaudible autoplay only to `lasthavens.com` and subdomains; all other content permissions/origins are denied; Android and media permission requests are rejected.
 - **Non-goals:** no manifest, GeckoView, delegate, permission, app or game behavior changes; no physical-device claim.
-- **Next:** exact-head Markdown workflow, link/anchor check and docs diff review; close #150 only after all pass.
+- **Validation:** Markdown run #45889911748 passed on head `e2ce22c44508a87f53fc4a57a03f82e0597550bc`; internal links/anchors checked across 15 Markdown files with zero missing targets. **Next:** final review and merge.
