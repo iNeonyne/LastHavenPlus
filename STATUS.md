@@ -2,8 +2,14 @@
 
 **Last updated:** 2026-11-26  
 **Active branch:** beta  
-**Beta HEAD at this verification checkpoint:** 97570eaaca86c9e27d92d04f90da9d930f6bdb33 (after PR #119).  
+**Beta HEAD at this verification checkpoint:** 1279f214b3fdd3ba420e090a6a90914a8a3399e7 (current beta ref observed 2026-11-26; fresh signed CI evidence is not yet attached to this updater audit).  
 **Stable branch / v2.3.0 tag:** ebc5b424e83ae66c2b0accc2bec6f050b8dc0d88; GitHub confirms published, non-draft, non-prerelease [v2.3.0](https://github.com/iNeonyne/LastHavenPlus/releases/tag/v2.3.0) with canonical ARM64 APK, update manifest and v2.2.0-to-v2.3.0 differential package. Main remains unchanged by this housekeeping work.
+
+## Current correction — 2026-11-26
+
+- PR #152 integrated Addon Manager Phase A into beta at 103bb979c98589a8704459d28d13861eccca39d6. Phase A is implemented; runtime injection/Phase B remains unimplemented and requires a separate owner decision. Earlier draft/unmerged wording below is historical.
+- Issue #15 was reopened per the owner's updater-priority update and is agent:chaty, coordinated with #4. Issue #31 remains agent:blocked; release-workflow failure-path verification still requires owner-authorized release testing.
+- PR #154 is awaiting branch sync/revalidation; PR #143 is awaiting correction and remains held from integration; PR #122 and #113 remain traceability-only owner-paused drafts; PR #144 remains draft with third-party notice/distribution gates.
 
 ## 2026-11-26 — Addon Manager Phase A implementation checkpoint (#23)
 
@@ -209,3 +215,12 @@ The beta code review identified structural follow-ups rather than a broad defect
 Updater findings were appended to existing #15 (installer URI dismissal lifecycle, actionable error mapping, safe cancellation cleanup) and #4 (R8/release smoke verification); no parallel updater issue was created. Existing #111 progress implementation remains separately owned by Vibe.
 
 No code, CI, release, signing, dependency, ABI or device behavior changed in this documentation/triage checkpoint. No physical ARM64 device test is claimed.
+
+## 2026-11-26 — Updater priority audit (#4 / #15)
+
+- **Priority/owner:** updater reliability and differential APK updates are the top project priority. Chaty owns #4 and coordinated #15 recovery work; no parallel updater implementation is permitted.
+- **Current beta inspected:** 1279f214b3fdd3ba420e090a6a90914a8a3399e7. Existing implementation retains manual update checks/downloads, signed full-APK fallback, BSDIFF40 reconstruction, base/patch/target SHA-256 checks, package/version/signer checks and Android installer handoff. No physical-device install claim is made.
+- **Focused finding:** BsdiffPatch.apply previously opened all three compressed sections before entering its close scope. Failure while opening a later section could leak earlier file streams. A narrow fix and malformed-section tests are in draft branch chaty/updater-patch-stream-cleanup-4.
+- **Commits:** work-log checkpoint eb40357e358ef8c958a197a2bd2aafacc05544b1; production fix dd33fc1af4e33b4c1d4fd89c5b37e64159115714; test 0e6896afc6f6f17d7e038b612b01875e0ebbbc2f.
+- **Validation:** no exact-head CI has run yet. No test/build is claimed passed. Real signed ARM64 APK-pair round-trip, package/version/ABI/signature verification, differential benchmark and current beta signed packaging remain outstanding.
+- **Constraints:** no patch-format switch, release/tag/main/publish action, automatic check/download/install, signing/toolchain/ABI/app-ID change or physical-device claim.
