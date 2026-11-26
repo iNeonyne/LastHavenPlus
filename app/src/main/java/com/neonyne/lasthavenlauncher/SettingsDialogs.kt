@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -53,6 +54,11 @@ fun SettingsScreen(
   var snapshot by remember { mutableStateOf<UsageSnapshot?>(null) }
   var refreshKey by remember { mutableStateOf(0) }
   var refreshing by remember { mutableStateOf(false) }
+  var showLicenses by remember { mutableStateOf(false) }
+  val licenseText =
+    remember {
+      context.resources.openRawResource(R.raw.gpl_3_0).bufferedReader().use { it.readText() }
+    }
 
   LaunchedEffect(refreshKey) {
     refreshing = true
@@ -119,6 +125,7 @@ fun SettingsScreen(
       }
       TextButton(onClick = onOpenUpdates) { Text("Update details") }
       TextButton(onClick = onOpenDiagnostics) { Text("App diagnostics") }
+      TextButton(onClick = { showLicenses = true }) { Text("Open-source licenses") }
       TextButton(onClick = onOpenLicenses) { Text("Open-source licenses") }
     }
   }
@@ -165,6 +172,37 @@ fun OpenSourceLicenseScreen(
         color = DesignTokens.textSecondary,
       )
     }
+  }
+
+  if (showLicenses) {
+    AlertDialog(
+      onDismissRequest = { showLicenses = false },
+      title = { Text("Open-source licenses") },
+      text = {
+        Column(
+          modifier = Modifier.height(520.dp).verticalScroll(rememberScrollState()),
+          verticalArrangement = Arrangement.spacedBy(12.dp),
+        ) {
+          Text(
+            "LastHavenPlus original project code and documentation are licensed under the GNU " +
+              "General Public License, version 3 or (at your option) any later version. " +
+              "You may redistribute and modify this program under those terms. " +
+              "This program is provided without warranty. The complete license follows.",
+            color = DesignTokens.textSecondary,
+          )
+          Text(licenseText, color = DesignTokens.textBody, style = MaterialTheme.typography.bodySmall)
+          Text(
+            "Third-party components retain their own license terms and notices. The LastHavenPlus " +
+              "project license does not relicense Mozilla GeckoView, AndroidX/Jetpack libraries, " +
+              "or other third-party software.",
+            color = DesignTokens.textSecondary,
+          )
+        }
+      },
+      confirmButton = {
+        TextButton(onClick = { showLicenses = false }) { Text("Close") }
+      },
+    )
   }
 }
 
