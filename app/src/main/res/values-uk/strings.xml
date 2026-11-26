@@ -21,4 +21,5 @@
     <string name="addon_manager_operation_failed">Не вдалося виконати операцію з додатком.</string>
     <string name="addon_manager_export_failed">Не вдалося експортувати додаток.</string>
     <string name="addon_manager_read_failed">Не вдалося прочитати бібліотеку додатків.</string>
+    <string name="addon_manager_dependency_cycle">Виявлено цикл залежностей між додатками.</string>
 </resources>
