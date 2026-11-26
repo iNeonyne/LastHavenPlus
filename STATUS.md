@@ -177,3 +177,14 @@ The repository owner will install releases and report what works and what does n
 - **Implemented on candidate branch:** cold startup now initializes the game directly; Android Back toggles a translucent in-game menu overlay while keeping the Game destination/session mounted; Settings opens as a separate destination and returns to gameplay; gameplay orientation remains landscape while the menu restores system bars; Settings restores normal orientation/system UI; persistent page-load progress strip removed.
 - **Still required:** focused navigation/state tests, Spotless, lint, unsigned release build, JVM/Python tests and exact-head CI. Inspect GeckoView rendering order to confirm Compose overlay appears above the game on device. The owner may report portrait/landscape rendering feedback after installing a release; this is not a release gate.
 - **Integration:** no PR opened or merge performed yet; beta and main remain unchanged. No release/tag/publication.
+
+
+## Issue #67 — GPL/community hygiene candidate (2026-11-26)
+
+- **PR:** #141, currently draft, targeting beta; branch chaty/community-hygiene; latest candidate head at this status update: 3f98b236830ba194a5e18648e3acc9f09d9073c3.
+- **Owner decision:** GPL-3.0-or-later selected. Canonical root LICENSE and packaged app resource app/src/main/res/raw/gpl_3_0.txt added; Settings now exposes an Open-source licenses dialog.
+- **Other changes:** SECURITY.md, weekly Gradle Dependabot, README license boundary and changelog link, reconciled v2.2.0/v2.3.0 release notes, contributor branch-retention policy, and PR CI runtime dependency report artifact.
+- **CI:** Markdown run #45837172690 passed. Android run #45837172797 was still running at the time of this update; do not claim exact-head Android success until it completes.
+- **License blocker:** runtime dependency report from run #45836638591 identifies Google Play Services FIDO 21.3.1, Base 18.7.2, Basement 18.9.0 and Tasks 18.3.2 in releaseRuntimeClasspath. Their published metadata declares the Android Software Development Kit License. GPLv3 compatibility for distribution of the combined APK is unresolved; issue #67 is now agent:owner and PR #141 has been returned to draft. No merge or publication until owner resolves the blocker and a complete artifact/notice audit is done.
+- **Attribution:** no copyright-holder identity/year has been invented; owner confirmation remains outstanding.
+- **Scope safety:** no game/client, app ID, signing, ABI, toolchain, GeckoView version, release/tag/main changes. No branch deletions. Physical-device testing is not applicable to these repository changes.
