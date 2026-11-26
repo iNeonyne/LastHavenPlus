@@ -9,25 +9,25 @@ AndroidX and Jetpack Compose
 - Components: AndroidX UI, activity, appcompat, browser, core, lifecycle, media, collection, and related transitive AndroidX modules in the resolved runtime graph.
 - License: Apache License 2.0.
 - Copyright: The Android Open Source Project and contributors.
-- License text: LICENSE (Apache-2.0).
+- License text: the applicable Apache-2.0 text is included in this app as apache_2_0.txt.
 
 Kotlin and Kotlin coroutines
 - Components: Kotlin standard library and kotlinx.coroutines runtime modules.
 - License: Apache License 2.0.
 - Copyright: JetBrains s.r.o. and contributors.
-- License text: LICENSE (Apache-2.0).
+- License text: the applicable Apache-2.0 text is included in this app as apache_2_0.txt.
 
 Apache Commons
 - Components include Commons Compress 1.28.0 and its resolved Commons Codec, Commons IO, and Commons Lang dependencies.
 - License: Apache License 2.0.
 - Copyright: The Apache Software Foundation and contributors.
-- License text: LICENSE (Apache-2.0).
+- License text: the applicable Apache-2.0 text is included in this app as apache_2_0.txt.
 
 Other runtime libraries
 - Guava / failureaccess: Apache License 2.0; Google and contributors.
 - SnakeYAML 2.2: Apache License 2.0; SnakeYAML contributors.
 - JetBrains annotations and JSpecify: Apache License 2.0; respective contributors.
-- License text: LICENSE (Apache-2.0).
+- License text: the applicable Apache-2.0 text is included in this app as apache_2_0.txt.
 
 Mozilla GeckoView
 - Component: org.mozilla.geckoview:geckoview-arm64-v8a:160.0.20261116130455.
@@ -43,14 +43,15 @@ The resolved runtime graph includes:
 - com.google.android.gms:play-services-basement:18.9.0
 - com.google.android.gms:play-services-tasks:18.3.2
 
-These Google Play services artifacts are declared under Google's Android Software Development Kit License terms in their published Maven metadata. Those terms are not an OSI-approved open-source license. The project Apache-2.0 license does not apply to them. Review the current agreement and confirm distribution rights for these exact embedded artifacts before publishing or distributing an APK:
+These Google Play services artifacts are declared under Google's Android Software Development Kit License terms in their published Maven metadata. Those terms are not an OSI-approved open-source license. The project's All Rights Reserved notice does not apply to or change their terms. Review the current agreement and confirm distribution rights for these exact embedded artifacts before publishing or distributing an APK:
 https://developer.android.com/studio/terms
 
 The presence of these artifacts is recorded as a licensing and redistribution review gate, not as a legal conclusion. Do not remove, modify, or replace them without checking GeckoView's requirements and compatibility.
 
 SCOPE AND VERIFICATION
 
-- The project LICENSE covers original LastHavenPlus code and documentation only.
+- Original LastHavenPlus code and documentation are All Rights Reserved; see the repository LICENSE and NOTICE.
+- Third-party license texts are provided only for the corresponding third-party components.
 - The hosted LastHaven game and all third-party components/assets retain their own terms.
 - The resolved dependency graph is not proof that every listed module is packaged in the APK. CI uploads the unsigned PR APK for direct inspection; update this notice only from verified package contents.
 - No physical-device test or signed release verification is claimed.
