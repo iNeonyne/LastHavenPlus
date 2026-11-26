@@ -514,3 +514,13 @@ GitHub returned 22 remote branches. Heads and current disposition at audit time:
 | vibe/visual-tokens-568e1f | 6b9a3c8c07d0d4f3de9892a1a36e7c9686552969 | PR #113 owner-paused/draft; do not update |
 
 No branch was deleted. The available GitHub connector exposes no branch-delete operation, and the repository rules require preserving unreviewed or owner-paused work. The two merged branches (#85 and #120) and superseded CI branches are candidates for a later owner-approved pruning pass only after ancestry and unique-commit checks.
+
+
+## 2026-11-26 — Owner-requested next-version roadmap and UI/UX assignments
+
+- **Owner request:** prepare the next three-version roadmap and start assigning work, with the next update UI/UX-focused.
+- **Roadmap:** updated GitHub issue #18 to v2.4.0 UI/UX, v2.5.0 updater experience and v2.6.0 settings/diagnostics. These are planning targets only; no release/tag/promotion was authorized.
+- **Icon concept:** generated a LastHavenPlus fantasy-frost crest concept (navy, icy-blue crystalline portal/rune, restrained gold). Created issue #133 and assigned it to Chaty (`agent:chaty`) with adaptive icon scope, safe-zone requirements, non-goals and verification criteria.
+- **Visual system:** reopened issue #107 under Chaty ownership per the owner's earlier UI/UX takeover instruction. PR #113 remains draft/open for traceability only; no merge or further Vibe commits on its stale branch. Chaty will implement from current beta after #133, then handle #9 accessibility in a non-overlapping sequence.
+- **Vibe queue:** no new Vibe assignment was made because the remaining available product tasks depend on UI/UX work or overlap active/stale drafts; owner-paused #122/#123 remain untouched. Assign only when a non-overlapping issue is ready.
+- **Device status:** generated icon is a concept only; repository integration and physical ARM64 launcher appearance are not yet verified.
