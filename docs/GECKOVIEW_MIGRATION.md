@@ -2,7 +2,7 @@
 
 **Current branch:** `beta`  
 **Current engine:** Mozilla GeckoView 160, ARM64 artifact  
-**Last reviewed:** 2026-11-25
+**Last reviewed:** 2026-11-26 (artifact evidence re-verified against beta `eec16ff` and the published Mozilla Maven POM/module metadata)
 
 This document records the GeckoView integration as it exists in beta. It supplements, but does not replace, Mozilla's documentation.
 
@@ -51,15 +51,17 @@ Preserve:
 - Upstream revision: `mozilla-release` `b1145b0710192f716be5f59f5b2dfeed650d5294` (recorded in the artifact POM's SCM block).
 - License declared in the POM: [Mozilla Public License 2.0](http://mozilla.org/MPL/2.0/).
 
-### Gradle module metadata dependency inventory (reviewed 2026-11-25)
+### Gradle module metadata dependency inventory (reviewed 2026-11-25; re-verified 2026-11-26)
+
+Verification refresh (2026-11-26, against beta `eec16ff`): the POM and Gradle module metadata for `160.0.20261116130455` were re-fetched from [Mozilla Maven](https://maven.mozilla.org/maven2/org/mozilla/geckoview/geckoview-arm64-v8a/160.0.20261116130455/) and re-checked against this table. The module metadata lists exactly the dependencies below (`kotlin-stdlib` alone is API-scope; every other entry plus `kotlin-stdlib` is runtime-scope). The metadata additionally records the AAR itself at 91,504,240 bytes (SHA-256 `c05916660c0b0125dada536f01570606227202137ff73feeea8ce7b8595dd443`) and was published by Gradle 9.8.1. The catalog now pins Kotlin 2.4.21 (post-PR #98), matching this requirement.
 
 | Group:artifact | Version | Project-side note |
 |---|---|---|
-| `org.jetbrains.kotlin:kotlin-stdlib` | 2.4.21 | Catalog (#99) pins Kotlin 2.4.10; Gradle resolves the higher runtime version |
+| `org.jetbrains.kotlin:kotlin-stdlib` | 2.4.21 | Catalog (#99) pins Kotlin 2.4.21 after PR #98, matching the artifact requirement |
 | `androidx.annotation:annotation` | 1.11.0 | |
 | `androidx.annotation:annotation-experimental` | 1.6.0 | |
 | `androidx.collection:collection` | 1.7.0 | |
-| `androidx.core:core` | 1.19.1 | Catalog (#99) pins `androidxCore` 1.16.0; Gradle resolves 1.19.1 |
+| `androidx.core:core` | 1.19.1 | Catalog (#99) pins `androidxCore` 1.16.0; Gradle conflict resolution is expected to select ≥1.19.1 — verify with the dependency report below |
 | `androidx.lifecycle:lifecycle-common` | 2.11.0 | |
 | `androidx.lifecycle:lifecycle-process` | 2.11.0 | |
 | `com.google.android.gms:play-services-fido` | 21.3.1 | Google Play Services SDK terms apply |
@@ -70,7 +72,7 @@ Preserve:
 | `androidx.media3:media3-exoplayer` | 1.11.1 | |
 | `androidx.media3:media3-exoplayer-hls` | 1.11.1 | |
 
-Resolution caveat: this inventory is based on the artifact's Gradle module metadata; the POM itself defers dependency declarations to that metadata. It is not a resolved-by-Gradle dump (the audit environment has no JDK/Android SDK). Issue #20 remains incomplete until `./gradlew app:dependencies --configuration releaseRuntimeClasspath` is captured as the authoritative resolved set and reconciled against the #99 version catalog, so consumer pins are never lowered below GeckoView's runtime requirements.
+Resolution caveat (updated 2026-11-26): this inventory is based on the artifact's POM and module metadata, both re-fetched from the authoritative Mozilla Maven repository. It is still not a resolved-by-Gradle dump (the audit environment has no JDK/Android SDK, and downloads outside GitHub are blocked). The catalog-vs-requirement cross-check against beta `eec16ff` is complete: Kotlin 2.4.21 (aligned, PR #98) and `androidxCore` 1.16.0 (catalog pin below the artifact's 1.19.1 requirement, so the resolved version depends on Gradle conflict resolution and must not be lowered further). Issue #20 remains incomplete until `./gradlew app:dependencies --configuration releaseRuntimeClasspath` is captured as the authoritative resolved set and reconciled against this table; any Gradle-capable environment (including CI) can produce it.
 
 ### License and notice obligations
 
