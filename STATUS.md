@@ -2,7 +2,7 @@
 
 **Last updated:** 2026-11-26  
 **Active work branch:** `chaty/addon-manager-native-phase-a` (draft PR #140)  
-**Beta HEAD at this verification checkpoint:** `e0967121b51ac1c232c92edd80157fc02b714766` (after PR #136).  
+**Beta base for active PR #140:** `e0967121b51ac1c232c92edd80157fc02b714766` (after PR #136). **Addon Manager branch head:** `94f87ed35ed28f441252cf5b7397d143a23d29d4`.  
 **Stable branch / v2.3.0 tag:** ebc5b424e83ae66c2b0accc2bec6f050b8dc0d88; GitHub confirms published, non-draft, non-prerelease [v2.3.0](https://github.com/iNeonyne/LastHavenPlus/releases/tag/v2.3.0) with canonical ARM64 APK, update manifest and v2.2.0-to-v2.3.0 differential package. Main remains unchanged by this housekeeping work.
 
 ## Active unmerged work — Addon Manager ZIP v0.5.1
@@ -10,9 +10,9 @@
 - **Issue / owner:** [#23](https://github.com/iNeonyne/LastHavenPlus/issues/23), Chaty (`agent:chaty`); owner reauthorized work on 2026-11-26.
 - **PR:** draft [#140](https://github.com/iNeonyne/LastHavenPlus/pull/140), branch `chaty/addon-manager-native-phase-a`, based on beta HEAD `e0967121b51ac1c232c92edd80157fc02b714766`.
 - **Source:** uploaded ZIP v0.5.1, SHA-256 `734a8af29b9e108f05666e5f1140cd58f77de87f888386fd1777b7948908b7fc`; it is distinct from the historical XPI v0.11.0.
-- **Implemented on the draft branch:** bounded streaming ZIP extraction, TOC parsing, app-private library persistence, disabled-by-default imports, enable/disable/replace/remove/export, Compose manager UI, Android OpenDocument/CreateDocument pickers and background-thread ContentResolver I/O. Unknown provider sizes are accepted only with a hard streaming cap. Added multiple-addon and case-insensitive path-collision tests.
-- **Not yet usable in beta:** overlay navigation and same-session return, localization and runtime loader integration remain incomplete. The original XHR/Worker/blocks.idx/WASM-memory loader remains disabled pending exact GeckoView 160 security/compatibility review. Physical ARM64 testing is outstanding.
-- **CI:** Markdown passed on current head `7c6efc7ea1f8df26c2a6721115299a78a1d15671` ([#45830740836](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45830740836)). Android validation [#45830740786](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45830740786) is running. Earlier Android attempts failed only at Spotless formatting; the next head contains formatting corrections. No current-head Android pass is claimed.
+- **Implemented on the draft branch:** bounded streaming ZIP extraction, TOC parsing, app-private library persistence, disabled-by-default imports, enable/disable/replace/remove/export, Compose manager UI, Android OpenDocument/CreateDocument pickers, background-thread ContentResolver I/O, localized UI strings (en/es/fr/pt-BR/ru/uk), persisted-index validation and staged removal. Added archive and repository corruption/regression tests.
+- **Not yet usable in beta:** overlay navigation and same-session return, runtime addon loading, adversarial archive/low-storage/rollback coverage and physical ARM64 testing remain incomplete. The original XHR/Worker/blocks.idx/WASM-memory loader remains disabled pending exact GeckoView 160 security/compatibility review.
+- **CI:** Markdown gate [#45833551135](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45833551135) passed on `94f87ed35ed28f441252cf5b7397d143a23d29d4`. Android validation [#45833551137](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45833551137) is pending; no current-head Android pass is claimed.
 - **Coordination:** Vibe's #9 overlay accessibility PR is still open; #23 intentionally avoids `MainActivity.kt` and `GameMenuScreen.kt` until #9 is integrated.
 - **Release/device:** no beta merge, release, tag, promotion or physical ARM64 runtime test.
 ## Latest integration — v2.4.0 launcher icon
@@ -48,7 +48,7 @@
 - Mozilla GeckoView 160 is the embedded browser engine; Cefrium is removed from production.
 - The app launches directly into the game. The Back menu is a responsive overlay; Settings, diagnostics and update details are launcher-owned full-screen pages.
 - Updater downloads and installation remain user-initiated. Preserve application ID, established signing identity and ARM64-only packaging.
-- Addon Manager issue #23 remains on hold by owner instruction.
+- Addon Manager issue #23 is active under Chaty after owner reauthorization; PR #140 remains draft and unmerged.
 - v2.3.0 is published. The owner requested the next three-version roadmap; issue #18 now records v2.4.0 UI/UX, v2.5.0 updater experience and v2.6.0 settings/diagnostics. This is planning only; no new release, tag or promotion is authorized.
 
 ## Open work and limitations
@@ -68,7 +68,7 @@
 - **v2.4.0 — UI/UX:** icon resources (#133, Chaty) and shared Compose visual system (#107, Vibe) proceed in parallel; accessibility/navigation coverage (#9) follows #107 integration. No game/client changes or new home screen.
 - **v2.5.0 — updater:** truthful download progress and retry feedback (#111), plus coordinated regression/recovery coverage (#4/#15/#31) after prioritization.
 - **v2.6.0 — settings/diagnostics:** essential settings (#6), connection and GeckoView error diagnostics (#12/#14), orientation/keep-awake (#16), storage/network accuracy and safe backup/restore (#10/#17/#28) in dependency order.
-- Roadmap source: issue #18. Version targets are not release commitments. #23 remains on hold; #19 and #7 remain deferred.
+- Roadmap source: issue #18. Version targets are not release commitments. #23 is active on draft PR #140; #19 and #7 remain deferred.
 
 ## Historical integration records
 
