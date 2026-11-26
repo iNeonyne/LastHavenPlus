@@ -4,13 +4,13 @@
 
 - Workflow-level permissions default to `contents: read`.
 - In `.github/workflows/android.yml`, only `create_tag` and `publish_release` receive `contents: write`; build and PR-validation jobs are read-only.
-- `.github/workflows/quality.yml` is read-only.
+- `.github/workflows/quality.yml` and `.github/workflows/markdown-quality.yml` are read-only.
 - `.github/workflows/agent-ownership.yml` grants only `issues: write` to the issue-labeling job.
 - Pull-request validation does not reference Android signing secrets. It builds an unsigned release APK and uploads test reports only to GitHub Actions artifact storage. It does not publish GitHub releases or signed APKs.
 
 ## Immutable action pins
 
-All third-party `uses:` references in the three workflows are pinned to full commit SHAs. The values below were checked against the corresponding upstream tag refs on 2026-11-26. The Gradle v4 tag is annotated; its peeled commit is listed.
+All third-party `uses:` references in the four workflows are pinned to full commit SHAs. The values below were checked against the corresponding upstream tag refs on 2026-11-26. The Gradle v4 tag is annotated; its peeled commit is listed.
 
 | Action | Release tag | Verified commit SHA |
 | --- | --- | --- |
@@ -21,8 +21,9 @@ All third-party `uses:` references in the three workflows are pinned to full com
 | `actions/upload-artifact` | v7.0.2 | `cf430e030ddbb5b0abf93d22962f4752f3646cd9` |
 | `actions/download-artifact` | v4 | `d3f86a106a0bac45b974a628896c90dbdf5c8093` |
 | `softprops/action-gh-release` | v3.0.4 | `8a0cd651e5b2365bd640854a3fa5dfc70e4875f3` |
+| `DavidAnson/markdownlint-cli2-action` | v25.1.0 | `3ce8f712b5d8f31acd8e201be6d97e3d2bb23eb7` |
 
-The ownership workflow currently uses no third-party actions. A matching tag ref establishes that the pin points at the named upstream release; it is not by itself a claim that every upstream tag is cryptographically signed.
+The ownership workflow currently uses no third-party actions. The Markdown quality workflow runs the pinned markdownlint-cli2 action across all repository Markdown files; its lint configuration documents narrowly scoped legacy-style exclusions. A matching tag ref establishes that the pin points at the named upstream release; it is not by itself a claim that every upstream tag is cryptographically signed.
 
 ## Automated updates
 
