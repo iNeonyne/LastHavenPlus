@@ -17,8 +17,5 @@
     // One legacy code span in CHANGELOG-AGENTS.md is deferred to central docs reconciliation.
     "MD038": false
   },
-  "globs": [
-    "**/*.md"
-  ],
   "ignores": []
 }
