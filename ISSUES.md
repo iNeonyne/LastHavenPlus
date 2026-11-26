@@ -2,30 +2,23 @@
 
 **Source of truth:** GitHub Issues and this version-controlled backlog. Keep issue scope, status and acceptance criteria aligned. Do not close an issue because documentation changed.
 
-## Current priorities — v2.2.0
+## Current state after v2.3.0
 
-1. **Deferred to v2.3.0 (#4, #15, #31):** complete automated updater regression coverage, accurate download progress/stage visibility (including navigation-persistent status and evaluation of Android progress notifications), and future owner-authorized release-ID/differential fallback verification. No remaining updater work is a v2.2.0 implementation task.
-2. **P1 — v2.2.0 launcher experience (#56, #84):** direct launch, responsive in-game overlay, session-preserving navigation and the approved recreated icon are integrated in beta and selectively promoted to main. No further v2.2.0 feature work is active.
-3. **Deferred to v2.3.0 (#86):** accessibility, diagnostics, settings, storage/network accuracy, updater recovery and release engineering follow-ups. Owner feedback is tracked separately after releases.
-4. **P1/P2 — Engineering reliability (#60 complete; #61–#66):** keep CI hardening and dependency review separate from product work; no unverified toolchain upgrades.
-5. **Deferred to v2.3.0 (#6, #9–#17, #28):** settings, diagnostics, accessibility and storage/network accuracy; preserve data and privacy boundaries.
-6. **P3 — Performance/APK size (#7):** measure before optimizing.
-7. **Deferred — Addon Manager (#23) and beta channel (#19):** no Addon Manager work without explicit owner approval; beta channel is not a v2.2.0 prerequisite.
+- **Latest stable:** v2.3.0 is published on main at tag commit ebc5b424e83ae66c2b0accc2bec6f050b8dc0d88.
+- **Development:** beta is at 7cd898f4c1f9b7f70787a7000e1ed9343a83540d; no new release or promotion is in progress.
+- **CI:** PR #132 consolidated beta lint/format checks into the existing signed ARM64 build job and is merged. Exact-head PR validation and post-merge signed CI passed. Issue #129 remains under Chaty until the measured result is recorded and final docs are merged.
+- **Housekeeping:** #128 is Chaty-owned; it reconciles repository status and work records. #70 remains open until this reconciliation is integrated.
+- **Updater:** #4 remains open for remaining regression coverage. #15, #31 and #111 are blocked/deferred; no release-ID/differential fallback runtime verification is claimed.
+- **Reproducibility:** #66 / PR #119 has a prior byte-identical unsigned APK result, but its branch is behind current beta and needs refresh plus exact-head reruns before merge.
+- **Owner-paused:** #20 / PR #122 and #62 / PR #123 are explicitly deferred; keep their drafts open for traceability and do not resume. #23 Addon Manager remains on hold.
+- **UI/UX:** PR #113 remains draft/open for traceability only; #107 is closed after later integration. The owner instructed Chaty to own any future UI/UX follow-up.
+- **Other deferred work:** #86 and #19 are not active roadmap commitments. Do not create the next roadmap until the owner asks after housekeeping.
 
-**Release roadmap:** [#18 — v2.2.0 roadmap](https://github.com/iNeonyne/LastHavenPlus/issues/18). v2.1.0 is published. v2.2.0 is a planning target, not a release commitment. No tag or publication is authorized by this roadmap. The selective main promotion was separately approved by the owner.
+## Current ownership
 
-## Agent work queue
-
-**Chaty:** owns intake, triage, assignments, roadmap and central documentation, CI coordination, PR review and beta integration. Chaty also owns high-risk updater coordination (#4/#15/#31) and documentation validation (#70).
-
-**Vibe:** implementation contributor. Vibe works only on existing issues explicitly assigned by Chaty with the `agent:vibe` label and a scoped GitHub assignment comment. Vibe submits PRs targeting beta and does not merge or change the backlog.
-
-**Current Vibe handoffs:** #106 and #107 have implementation PRs #112 and #113 respectively; both are awaiting Chaty's review. Do not assign overlapping implementation while these PRs remain open.
-
-**Owner-only / blocked:** #5 and #21 await optional owner feedback; #23 is ON HOLD; #19 and #86 are deferred coordination/backlog items; #7 remains deferred until measured work is prioritized. These are not start permissions.
-
-Every actionable issue carries exactly one agent ownership label. New issues are labeled `agent:unassigned`; Chaty selects an owner and changes the label. `agent:unassigned` does not authorize Vibe to begin. See `AGENTS.md` for label transitions and communication requirements.
-
+- **Chaty:** #128 housekeeping, #129 CI closeout, #4 updater test coverage, #81 approved library-only dependency refresh, and final #70 documentation reconciliation.
+- **Vibe:** no active implementation assignment at this snapshot. Owner-paused drafts #122/#123 must remain paused.
+- **Owner decision:** #65 and any release/promotion/roadmap authorization remain with the repository owner.
 
 ## Backlog index
 
