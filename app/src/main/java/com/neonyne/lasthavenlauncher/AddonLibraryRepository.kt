@@ -84,13 +84,25 @@ class AddonLibraryRepository(private val root: File) {
     }
     val extraction = File(root, ".extract-${UUID.randomUUID()}")
     val imported = AddonArchive.importZip(input, compressedSize, extraction)
-    require(imported.isNotEmpty()) { "The archive contains no addons." }
-    val current = readLibrary()
+    if (imported.isEmpty()) {
+      extraction.deleteRecursively()
+      throw IllegalArgumentException("The archive contains no addons.")
+    }
+    val current =
+      try {
+        readLibrary()
+      } catch (error: Exception) {
+        extraction.deleteRecursively()
+        throw error
+      }
     val replacing = imported.map { it.folder.lowercase() }.toSet()
     val total =
       current.addons.filterNot { it.folder.lowercase() in replacing }.sumOf { it.sizeBytes } +
         imported.sumOf { it.sizeBytes }
-    require(total <= AddonArchive.MAX_LIBRARY_BYTES) { "Addon library exceeds 384 MiB." }
+    if (total > AddonArchive.MAX_LIBRARY_BYTES) {
+      extraction.deleteRecursively()
+      throw IllegalArgumentException("Addon library exceeds 384 MiB.")
+    }
 
     val existing = current.addons.associateBy { it.folder.lowercase() }
     val nextItems = current.addons.filterNot { it.folder.lowercase() in replacing }.toMutableList()
