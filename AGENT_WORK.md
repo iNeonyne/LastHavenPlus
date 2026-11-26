@@ -45,7 +45,7 @@ Vibe has one active implementation task at a time. Queued tasks must not start u
 - Preserve local-only diagnostics and avoid credentials, cookies, tokens, authorization headers, session IDs and sensitive URL parameters.
 - Exact-head Android #45893571423, Markdown #45893571482 and independent unsigned APK reproducibility #45893571443 all passed. The separate GeckoView runtime-version startup-reporting item remains deferred and issue #11 is agent:blocked.
 - No updater, Addon Manager or unrelated MainActivity work.
-- **Status:** recreated from current beta on branch `vibe/diagnostics-tests-11-refresh`; `Diagnostics.kt` limited to the internal directory-scoped testability seam (public `Context` API unchanged), 9 focused tests added to `DiagnosticsTest.kt`. Local validation passed (Spotless, lint, JVM suite); fresh exact-head CI run IDs are recorded in the PR description and the issue #11 handoff comment. GeckoView startup-version logging remains excluded.
+- **Integrated:** PR #163 merged at 0cc21b471fce646d03dad449b91acbe67a90df7d; exact-head Android #45893571423, Markdown #45893571482 and reproducibility #45893571443 passed. Nine focused JVM tests were added; the public Context API and callers remain unchanged. Issue #11 remains open/blocked only for deferred GeckoView runtime-version reporting.
 
 ### 1. #149 — launcher-owned string resources (active, agent:vibe)
 - Move launcher-owned user-visible text to Android resources without changing wording/punctuation.
