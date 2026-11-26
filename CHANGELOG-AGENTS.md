@@ -846,3 +846,11 @@ Entry format:
 - The runtime graph contains Google Play Services FIDO/Base/Basement/Tasks under Google's Android Software Development Kit License terms. These are not OSI open-source licenses and remain separately disclosed; no legal conclusion is made about distribution rights.
 - First Android validation exposed Spotless formatting issues in SettingsDialogs.kt; the correction is committed and exact-head validation is pending.
 - Owner attribution: LastHavenPlus, Copyright 2026. No game, app identity, signing, ABI, dependency/toolchain version, GeckoView, release, main or branch deletion changes.
+
+
+## 2026-11-26 — Owner changed project rights decision (#67)
+
+- The owner superseded the earlier Apache-2.0 selection: original LastHavenPlus code and documentation are All Rights Reserved and intended for personal use.
+- PR #144 replaces the project LICENSE and in-app project-license presentation with a reserved-rights notice. Apache-2.0 and MPL-2.0 texts remain as third-party license texts only; they do not license original LastHavenPlus material.
+- Public repository visibility is not a general reuse grant. No app-store or F-Droid readiness work is in scope.
+- Implementation is in progress on `chaty/community-hygiene-refresh`; branch sync, exact-head CI, APK inspection and final review remain pending. No merge or release is authorized.
