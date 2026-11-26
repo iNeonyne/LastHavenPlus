@@ -592,3 +592,13 @@ No branch was deleted. The available GitHub connector exposes no branch-delete o
 - **Exclusions:** no updater redesign, patch-format switch, network/retry policy change, automatic check/download/install, signing/toolchain/ABI/app-ID changes, release/tag/main action, or physical-device claim.
 - **Checks:** pending exact-head Android PR validation, Markdown/reproducibility if relevant, and post-merge signed ARM64 beta verification. Physical updater installation remains unverified.
 - **Next safe action:** apply the narrow resource-lifecycle fix and focused tests, then inspect the complete diff and exact-head CI before review/merge.
+
+### 2026-11-26 — #4 updater BSDIFF resource-lifecycle correction
+
+- **Branch/base:** chaty/updater-patch-stream-cleanup-4 from beta 1279f214b3fdd3ba420e090a6a90914a8a3399e7.
+- **Files changed:** app/src/main/java/com/neonyne/lasthavenlauncher/BsdiffPatch.kt, app/src/test/java/com/neonyne/lasthavenlauncher/BsdiffPatchTest.kt; project records updated in this branch.
+- **Change:** wrapped each opened compressed BSDIFF section in a structured Closeable.use scope so previously opened sections close if a later section fails to open. Added tests for malformed diff and extra compressed sections, asserting stale output is removed.
+- **Commits:** production fix dd33fc1af4e33b4c1d4fd89c5b37e64159115714; test 0e6896afc6f6f17d7e038b612b01875e0ebbbc2f.
+- **Checks:** not yet run in CI; no local Gradle environment or passing test is claimed. Spotless, lint, unsigned release assembly and JVM tests are pending exact-head PR validation.
+- **Unverified / remaining:** malformed-section stream cleanup is source-corrected but needs CI; no real signed ARM64 APK-pair round-trip, package/version/ABI/signer fixture, differential benchmark, signed beta artifact or physical device test has been completed.
+- **Next safe action:** open a draft PR, inspect exact diff and exact-head validation, then continue remaining #4 acceptance gaps without changing release policy.
