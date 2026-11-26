@@ -5,20 +5,20 @@
 ## Current state after v2.3.0
 
 - **Latest stable:** v2.3.0 is published on main at tag commit ebc5b424e83ae66c2b0accc2bec6f050b8dc0d88.
-- **Development:** beta is at f800deebf6c8bdaa91df4ac7c3693dcf86f3e6b6; v2.4.0 icon code is integrated at c24b24e, with owner visual signoff pending. No release or promotion is in progress.
+- **Development:** beta is at 0350acaee3f277e01ac51a3722346ab228e23af3; v2.4.0 icon and overlay accessibility work are integrated. Owner visual/device verification remains open. Draft Addon Manager Phase A PR #145 is active; no release or promotion is in progress.
 - **CI:** PR #132 consolidated beta lint/format checks into the existing signed ARM64 build job and is merged. Exact-head PR validation and post-merge signed CI passed. Issue #129 is closed as completed after the measured result was recorded.
 - **Housekeeping:** #128 is Chaty-owned; it reconciles repository status and work records. #70 remains open until this reconciliation is integrated.
 - **Updater:** #4 remains open for remaining regression coverage. #15, #31 and #111 are blocked/deferred; no release-ID/differential fallback runtime verification is claimed.
 - **Reproducibility:** #66 / PR #119 has a prior byte-identical unsigned APK result, but its branch is behind current beta and needs refresh plus exact-head reruns before merge.
-- **Owner-paused:** #20 / PR #122 and #62 / PR #123 are explicitly deferred; keep their drafts open for traceability and do not resume. #23 Addon Manager remains on hold.
-- **UI/UX:** #133 implementation is merged via PR #135, but issue remains open as `agent:owner` for Android mask/physical launcher visual verification. #107 visual-system implementation is assigned to Vibe (`agent:vibe`) in PR #136, whose original CI passed but whose branch needs a beta refresh and new exact-head validation before review/merge. PR #113 remains draft/open for traceability only. #9 accessibility remains queued until #107 integrates.
+- **Owner-paused:** #20 / PR #122 and #62 / PR #123 are explicitly deferred; keep their drafts open for traceability and do not resume. #23 was explicitly reauthorized and is active under Chaty in draft PR #145.
+- **UI/UX:** #133 icon and #107 visual system are integrated; #9 overlay accessibility/navigation is integrated by PR #139. #133 and #9 remain open as `agent:owner` for physical-device verification. PR #113 remains draft/open for traceability only.
 - **Roadmap:** issue #18 now covers v2.4.0 UI/UX, v2.5.0 updater experience and v2.6.0 settings/diagnostics. Targets are planning only, not release authorization.
-- **Other deferred work:** #86 and #19 remain deferred outside the scoped roadmap; #23 remains on hold.
+- **Other deferred work:** #86 and #19 remain deferred outside the scoped roadmap.
 
 ## Current ownership
 
-- **Chaty:** #128 housekeeping, #4 updater test coverage, #81 approved library-only dependency refresh, and final #70 documentation reconciliation. #129 CI consolidation is closed as completed.
-- **Vibe:** #107 shared visual-system implementation (agent:vibe). Owner-paused drafts #122/#123 must remain paused.
+- **Chaty:** #128 housekeeping, #23 Addon Manager Phase A (draft PR #145), #4 updater test coverage, #81 approved library-only dependency refresh, and final #70 documentation reconciliation. #129 CI consolidation is closed as completed.
+- **Vibe:** no active implementation assignment at this checkpoint. Owner-paused drafts #122/#123 must remain paused.
 - **Chaty:** completed #133 adaptive launcher icon integration via PR #135.
 - **Owner decision:** #65 and any release/promotion/roadmap authorization remain with the repository owner.
 
@@ -45,7 +45,7 @@
 | [#20](#issue-20) | Deferred | GeckoView 160 artifact/dependency audit | Owner-deferred; PR #122 remains draft/open for traceability; do not resume |
 | [#21](#issue-21) | Feedback | Owner feedback — GeckoView runtime/profile behavior after release | Open; optional owner feedback and reported follow-up defects; not a release blocker |
 | [#22](#issue-22) | Superseded | Home screen and Play/Settings navigation | Replaced by direct-launch/overlay scope #56; owner feedback tracked in #5/#21 |
-| [#23](#issue-23) | Deferred | Integrate and harden supplied GeckoView addon manager | On hold by owner instruction; do not resume without explicit approval |
+| [#23](#issue-23) | Deferred | Integrate and harden supplied GeckoView addon manager | Owner reauthorized; native Phase A in draft PR #145, exact-head CI/review pending; GeckoView runtime not implemented |
 | [#28](https://github.com/iNeonyne/LastHavenPlus/issues/28) | P2 | Storage usage accuracy and iterative directory sizing | Open; queued after #10 |
 | [#42](https://github.com/iNeonyne/LastHavenPlus/issues/42) | Superseded | v2.1.0 Home-screen UI verification | Superseded by direct-launch redesign #56; new UX verification belongs to #5/#56 |
 | [#29](https://github.com/iNeonyne/LastHavenPlus/issues/29) | Done | Reconcile beta documentation and CI evidence | Closed as completed after PR #46 merged to beta |
@@ -844,3 +844,11 @@ The additional UX proposal was reviewed and consolidated into existing issues ra
 - PR [#139](https://github.com/iNeonyne/LastHavenPlus/pull/139) merged to beta at `0d5ab712ce5195a3e71023c68da54f054645a8e2` after owner authorization.
 - Exact PR-head Android and Markdown CI passed. Physical ARM64 TalkBack/focus/traversal, reduced-motion and large-font verification remain outstanding; `FocusRequester` is Compose input focus, not TalkBack accessibility focus.
 - Issue remains open with `agent:owner` pending the outstanding device verification. Do not represent those checks as complete.
+
+
+## 2026-11-26 — Issue #23 implementation checkpoint
+
+- Owner reauthorized Addon Manager work; issue #23 is open and owned by Chaty (agent:chaty).
+- Native Phase A candidate is in draft [PR #145](https://github.com/iNeonyne/LastHavenPlus/pull/145): bounded ZIP import/export, app-private library persistence, storage preflight and transaction rollback, TOC required/optional dependency metadata, iterative dependency analysis, localized removal confirmation, and overlay navigation.
+- Exact-head CI is pending after the latest review-driven changes. Do not mark complete or merge yet.
+- The supplied Chrome MV3 runtime, XHR/Worker interception, game-resource masking and in-game Lua initialization are not implemented or enabled. GeckoView 160 runtime verification remains separate work.
