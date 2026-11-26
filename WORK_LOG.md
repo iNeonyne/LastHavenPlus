@@ -591,3 +591,12 @@ No branch was deleted. The available GitHub connector exposes no branch-delete o
 - **Non-goals preserved:** no runtime permission, manifest, delegate, GeckoView setting, app, network or game behavior changes.
 - **Checks:** Markdown quality workflow passed on initial PR head `e2ce22c44508a87f53fc4a57a03f82e0597550bc` (run #45889911748). Internal link/anchor scan covered all 15 Markdown files with zero missing local targets. No Android or physical-device tests run/claimed.
 - **Next:** final PR review and merge; permission prompt behavior remains unverified on hardware.
+
+
+### 2026-11-26 — #4 BSDIFF partial-open cleanup
+
+- **Branch:** `chaty/updater-patch-stream-cleanup-4-beta` from beta `7451b940dc0adfa1ea14234fe6d489bba688b12c`.
+- **Changes:** `BsdiffPatch.kt` now records each opened compressed section and closes them in reverse order in a `finally` block. `BsdiffPatchTest.kt` adds malformed diff/extra section cases and verifies stale output is removed.
+- **Commits:** source `a5e680e0a9fe628b41cde130f5ffa699a9dfe784`; tests/current head `35f1b69448ab4e91a5acaff9950ff492c5fcf811`.
+- **CI:** pending exact-head rerun. Previous #157 reproducibility run had a clean build failure because `org.jetbrains.kotlin.plugin.compose:2.4.21` could not be resolved; the other clean build succeeded. No pass claimed.
+- **Remaining:** full updater test matrix, real signed APK-pair byte-for-byte reconstruction and signature/identity verification, benchmark and current beta signed packaging verification. No physical device test claimed.
