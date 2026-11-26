@@ -88,9 +88,9 @@ See [Mozilla's GeckoView consumer documentation](https://firefox-source-docs.moz
 
 ## Addon boundary
 
-The previous ZIP addon package manager has been removed. Issue #23 and all addon-manager work are on hold by owner instruction (2026-11-25). Do not resume investigation, implementation, assignment or review until the owner explicitly approves resuming it. Do not restore the legacy ZIP manager.
+The previous ZIP addon package manager was removed. On 2026-11-26 the repository owner explicitly reauthorized issue #23 to port the uploaded `lasthavens-addon-manager-0.5.1(1).zip` (Chrome Manifest V3 ZIP manager; SHA-256 `734a8af29b9e108f05666e5f1140cd58f77de87f888386fd1777b7948908b7fc`). Chaty owns the active port on branch `chaty/addon-manager-native-phase-a`; see issue #23 and draft PR #140. The earlier XPI v0.11.0 is historical and is not the active source.
 
-Before any XPI install path is integrated, verify the pinned GeckoView 160 extension APIs, unsigned XPI behavior, install confirmation, session/tab lifecycle and archive/network security constraints. A WoW 3.3.5a addon ZIP/`.toc` package is not a Firefox WebExtension. Local package storage is not game injection. Never claim that the launcher loads game addons unless a separately approved implementation is actually verified.
+The phase-A native importer/library and Compose screen do not yet provide game addon loading. Keep the source ZIP's XHR/Worker/blocks.idx/WASM-memory interception disabled until its behavior is reviewed against the exact GeckoView 160 runtime and the app's game/session boundary. Treat archives and addon Lua files as untrusted. Preserve strict archive/resource bounds and the source MIT notice. Do not modify game-hosted files, persistent game profile/index data, app identity, signing, or updater behavior. Never claim addons are active merely because they are imported, enabled or staged; only report runtime behavior that is separately verified on physical ARM64 hardware.
 
 ## Tests and documentation
 
