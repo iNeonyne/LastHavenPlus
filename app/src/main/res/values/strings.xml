@@ -22,4 +22,5 @@
     <string name="addon_manager_operation_failed">Addon operation failed.</string>
     <string name="addon_manager_export_failed">Addon export failed.</string>
     <string name="addon_manager_read_failed">Could not read addon library.</string>
+    <string name="addon_manager_dependency_cycle">Dependency cycle detected between addons.</string>
 </resources>
