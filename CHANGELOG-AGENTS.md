@@ -876,4 +876,4 @@ Entry format:
 - Track each successfully opened BSDIFF40 compressed section immediately and close opened sections in reverse order if later section setup or reconstruction fails.
 - Cleanup is best-effort to avoid replacing the primary parse/reconstruction exception with a close exception.
 - Add regression tests for malformed diff and extra sections and stale output removal.
-- Prepared a fresh branch from beta `7451b940dc0adfa1ea14234fe6d489bba688b12c` after the original PR #157 branch became stale. Exact-head CI pending; previous reproducibility attempt had an external Kotlin Compose plugin resolution failure on one clean build.
+- Prepared a fresh branch from beta `7451b940dc0adfa1ea14234fe6d489bba688b12c` after the original PR #157 branch became stale. Exact-head Android run #45890826303, Markdown run #45890826405 and independent unsigned APK reproducibility run #45890826652 all passed on `9dd377e3cd48882ef90e3e2da44c63b5d2fba98c`. PR #159 was closed without merge; changes remain on the task branch pending Chaty's merge decision.
