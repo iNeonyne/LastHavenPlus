@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">LastHavenPlus</string>
+    <string name="app_name" translatable="false">LastHavenPlus</string>
     <string name="addon_manager_title">ADDON MANAGER</string>
     <string name="addon_manager_local_addons">Local addons</string>
     <string name="addon_manager_back">Back</string>
