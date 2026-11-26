@@ -67,7 +67,7 @@ internal object BsdiffPatch {
               HEADER_SIZE + controlLength + diffLength,
               extraLength,
               newSize,
-          )
+            )
             .also { openedSections.add(it) }
         RandomAccessFile(oldFile, "r").use { oldApk ->
           FileOutputStream(outputFile).use { output ->
