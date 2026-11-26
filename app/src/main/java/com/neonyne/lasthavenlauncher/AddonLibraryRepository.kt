@@ -27,6 +27,7 @@ data class AddonLibraryItem(
   val enabled: Boolean,
   val importedAt: Long,
   val warnings: List<String>,
+  val optionalDependencies: List<String> = emptyList(),
 )
 
 data class AddonLibrarySnapshot(
@@ -69,6 +70,8 @@ class AddonLibraryRepository(
           interfaceVersion = value("interface"),
           notes = value("notes"),
           dependencies = decodeList(properties.getProperty("addon.$index.dependencies").orEmpty()),
+          optionalDependencies =
+            decodeList(properties.getProperty("addon.$index.optionalDependencies").orEmpty()),
           sizeBytes =
             properties.getProperty("addon.$index.size")?.toLongOrNull()?.also {
               require(it in 0..AddonArchive.MAX_LIBRARY_BYTES) {
@@ -103,9 +106,19 @@ class AddonLibraryRepository(
     if (!root.exists() && !root.mkdirs()) {
       throw IllegalStateException("Could not create addon storage.")
     }
+    val compressedBytes = compressedSize ?: 0L
+    require(availableStorageBytes() >= compressedBytes + MIN_FREE_SPACE_RESERVE_BYTES) {
+      "Not enough free storage to stage the selected archive."
+    }
     val extraction = File(root, ".extract-${UUID.randomUUID()}")
     try {
-      val imported = AddonArchive.importZip(input, compressedSize, extraction)
+      val imported =
+        AddonArchive.importZip(input, compressedSize, extraction) { expandedBytes ->
+          val requiredBytes = expandedBytes * 2 + MIN_FREE_SPACE_RESERVE_BYTES
+          require(availableStorageBytes() >= requiredBytes) {
+            "Not enough free storage to safely extract and stage imported addons."
+          }
+        }
       require(imported.isNotEmpty()) { "The archive contains no addons." }
 
       val current = readLibrary()
@@ -159,6 +172,7 @@ class AddonLibraryRepository(
               interfaceVersion = addon.interfaceVersion,
               notes = addon.notes,
               dependencies = addon.dependencies,
+              optionalDependencies = addon.optionalDependencies,
               sizeBytes = addon.sizeBytes,
               filesCount = addon.files.size,
               enabled = previous?.enabled ?: false,
@@ -282,6 +296,7 @@ class AddonLibraryRepository(
       put("interface", addon.interfaceVersion)
       put("notes", addon.notes)
       properties["addon.$index.dependencies"] = encodeList(addon.dependencies)
+      properties["addon.$index.optionalDependencies"] = encodeList(addon.optionalDependencies)
       properties["addon.$index.size"] = addon.sizeBytes.toString()
       properties["addon.$index.files"] = addon.filesCount.toString()
       properties["addon.$index.enabled"] = addon.enabled.toString()
