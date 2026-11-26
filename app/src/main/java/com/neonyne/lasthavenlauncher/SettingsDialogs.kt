@@ -58,7 +58,9 @@ fun SettingsScreen(
     context.resources.openRawResource(R.raw.apache_2_0).bufferedReader().use { it.readText() }
   }
   val thirdPartyNotices = remember {
-    context.resources.openRawResource(R.raw.third_party_notices).bufferedReader().use { it.readText() }
+    context.resources.openRawResource(R.raw.third_party_notices).bufferedReader().use {
+      it.readText()
+    }
   }
   val mplLicenseText = remember {
     context.resources.openRawResource(R.raw.mpl_2_0).bufferedReader().use { it.readText() }
@@ -153,13 +155,21 @@ fun SettingsScreen(
             color = DesignTokens.textBody,
             style = MaterialTheme.typography.bodySmall,
           )
-          Text("Third-party components", color = DesignTokens.frost, fontWeight = FontWeight.SemiBold)
+          Text(
+            "Third-party components",
+            color = DesignTokens.frost,
+            fontWeight = FontWeight.SemiBold,
+          )
           Text(
             thirdPartyNotices,
             color = DesignTokens.textBody,
             style = MaterialTheme.typography.bodySmall,
           )
-          Text("Mozilla Public License, Version 2.0", color = DesignTokens.frost, fontWeight = FontWeight.SemiBold)
+          Text(
+            "Mozilla Public License, Version 2.0",
+            color = DesignTokens.frost,
+            fontWeight = FontWeight.SemiBold,
+          )
           Text(
             mplLicenseText,
             color = DesignTokens.textBody,
