@@ -52,7 +52,7 @@
 | [#56](https://github.com/iNeonyne/LastHavenPlus/issues/56) | Done | Direct launch and responsive in-game overlay | PR #83 merged to beta; PR #87 selectively promoted implementation to main; exact beta validation and signed CI passed |
 | [#60](https://github.com/iNeonyne/LastHavenPlus/issues/60) | Done | Android lint and Kotlin formatting quality gate | PR #72 merged; exact-head PR and post-merge beta quality/build workflows passed |
 | [#84](https://github.com/iNeonyne/LastHavenPlus/issues/84) | Done | Approved recreated LastHavens-inspired launcher icon | PR #85 merged to beta; PR #87 promoted icon to main; beta CI passed |
-| [#86](https://github.com/iNeonyne/LastHavenPlus/issues/86) | Deferred | v2.4.0 deferred settings, diagnostics and supporting-feature backlog | Blocked; not an approved roadmap or release commitment |
+| [#86](https://github.com/iNeonyne/LastHavenPlus/issues/86) | Deferred | Supporting settings, diagnostics and feature backlog | Deferred coordination index; detailed work is sequenced in #18 and remains dependency-gated |
 | [#106](https://github.com/iNeonyne/LastHavenPlus/issues/106) | Done | Gameplay loading, reconnect and load-failure UX | Closed after implementation integration; no open task remains under this issue |
 | [#107](https://github.com/iNeonyne/LastHavenPlus/issues/107) | Done | Consistent visual design and interaction polish | Closed after later UI integration; old draft PR #113 is traceability-only and must not be resumed |
 | [#62](https://github.com/iNeonyne/LastHavenPlus/issues/62) | Deferred | Branch lifecycle audit | Owner-deferred; PR #123 remains draft/open; do not resume |
