@@ -21,6 +21,7 @@ The repository owner makes final product and release decisions. `beta` is the de
 5. Include the exact head SHA, changed files, test commands/results, CI links, limitations and physical-device status in the PR handoff.
 6. Never force-push shared history. Reuse an existing task branch when practical; avoid creating unnecessary branches.
 7. Do not claim physical-device verification unless a real ARM64 device was tested and the device, Android version, build SHA and results are recorded.
+8. Task branches are retained after merge or abandonment; do not delete or rename them as routine cleanup. Stop pushing to merged branches and create a new branch for unrelated work. No branch-deletion automation is used.
 
 ## Build, test and quality checks
 
