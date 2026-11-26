@@ -820,3 +820,20 @@ Entry format:
 - **Review/CI:** exact-head Android validation [#45829421214](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45829421214) and Markdown gate [#45829421210](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45829421210) passed. Owner authorized merge with physical device checks outstanding.
 - **Changes:** pane title, heading and traversal semantics, Compose input-focus request, scrollable overlay and live reduced-motion observer. `FocusRequester` does not move TalkBack accessibility focus.
 - **Limitations:** no physical ARM64/TalkBack, GeckoView traversal, reduced-motion or large-font test was performed. Issue #9 remains open as `agent:owner` for those checks; no device compatibility claim.
+
+
+## 2026-11-26 — Apache-2.0 and community hygiene preparation
+
+- Owner approved Apache-2.0 for original LastHavenPlus project code/documentation in issue #67.
+- Created chaty/community-hygiene-refresh from beta.
+- Added canonical Apache-2.0 text from SPDX license-list data, private vulnerability reporting policy, weekly Gradle Dependabot updates, README license/third-party boundary, and contributor branch-retention rules.
+- Reconciled the existing CHANGELOG.md with an Unreleased policy entry; did not duplicate the already-existing CONTRIBUTING.md.
+- Preliminary direct-dependency license review only; transitive dependency and packaged-notice audit remains open. No copyright-holder name/date was invented.
+- PR and CI verification pending. No Android code/build-tool/signing/ABI/release/main changes; no branch deletion or device testing.
+
+
+## 2026-11-26 — Apache-2.0/community hygiene and dependency-license gate
+
+- Prepared Apache-2.0 project licensing, SECURITY.md, Gradle Dependabot, user-facing changelog reconciliation, contributor branch-retention policy, and an in-app Apache-2.0 text viewer.
+- Added a releaseRuntimeClasspath report to PR validation so transitive runtime dependencies can be audited from CI artifacts.
+- The dependency report surfaced Google Play Services runtime artifacts under the Android Software Development Kit License. The owner subsequently selected Apache-2.0 for original project material; third-party license/notice inventory and project copyright attribution remain open. the refreshed community-hygiene PR stays draft.
