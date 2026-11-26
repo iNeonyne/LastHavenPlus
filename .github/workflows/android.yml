@@ -180,6 +180,27 @@ jobs:
         with:
           gradle-version: wrapper
           validate-wrappers: true
+      - name: Determine beta quality scope and fetch formatting baseline
+        id: beta_quality
+        if: github.event_name == 'push' && github.ref == 'refs/heads/beta'
+        env:
+          SPOTLESS_RATCHET_REF: ${{ github.event.before }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ ! "$SPOTLESS_RATCHET_REF" =~ ^[0-9a-f]{40}$ ]] || [[ "$SPOTLESS_RATCHET_REF" =~ ^0{40}$ ]]; then
+            echo "::error::Could not determine a valid previous beta commit for formatting baseline."
+            exit 1
+          fi
+          git fetch --no-tags --depth=1 origin "$SPOTLESS_RATCHET_REF"
+          git cat-file -e "$SPOTLESS_RATCHET_REF^{commit}"
+          if git diff --name-only "$SPOTLESS_RATCHET_REF" "$GITHUB_SHA" | grep -Eq '^(.github/scripts/|app/src/|app/build.gradle.kts$|app/proguard-rules.pro$|build.gradle.kts$|settings.gradle.kts$|gradle/|gradlew$|gradle.properties$|.github/workflows/quality.yml$)'; then
+            echo "run=true" >> "$GITHUB_OUTPUT"
+            echo "Relevant source/build files changed; quality checks will run in this job."
+          else
+            echo "run=false" >> "$GITHUB_OUTPUT"
+            echo "No source/build files require the separate quality checks."
+          fi
 
       - name: Test release workflow helpers
         run: |
@@ -287,9 +308,17 @@ jobs:
           ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
           APP_VERSION_NAME: ${{ steps.version.outputs.name }}
           APP_VERSION_CODE: ${{ steps.version.outputs.code }}
+          RUN_BETA_QUALITY: ${{ steps.beta_quality.outputs.run }}
+          SPOTLESS_RATCHET_REF: ${{ github.event.before }}
         run: |
-          ./gradlew assembleRelease testDebugUnitTest --stacktrace \
-            -PappVersionName="$APP_VERSION_NAME" -PappVersionCode="$APP_VERSION_CODE"
+          set -euo pipefail
+          GRADLE_TASKS=(assembleRelease testDebugUnitTest)
+          GRADLE_ARGS=(--stacktrace "-PappVersionName=$APP_VERSION_NAME" "-PappVersionCode=$APP_VERSION_CODE")
+          if [[ "$RUN_BETA_QUALITY" == "true" ]]; then
+            GRADLE_TASKS=(lintDebug spotlessCheck "${GRADLE_TASKS[@]}")
+            GRADLE_ARGS+=("-PspotlessRatchetFrom=$SPOTLESS_RATCHET_REF")
+          fi
+          ./gradlew "${GRADLE_TASKS[@]}" "${GRADLE_ARGS[@]}"
 
       - name: Upload unit-test reports
         if: always()
@@ -299,6 +328,9 @@ jobs:
           path: |
             app/build/test-results/testDebugUnitTest/*.xml
             app/build/reports/tests/testDebugUnitTest/
+            app/build/reports/lint-results-debug.html
+            app/build/reports/lint-results-debug.sarif
+            app/build/reports/lint-results-debug.txt
           if-no-files-found: ignore
           retention-days: 14
 
