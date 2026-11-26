@@ -128,3 +128,11 @@ This entry supersedes the earlier Issue #67 status above.
 - PR CI now uploads the unsigned release APK with the runtime dependency report. SettingsDialogs.kt Spotless formatting was corrected after the first exact-head Android run failed.
 - Remaining: exact-head Android pass, inspect the unsigned APK and packaged runtime components, finish artifact-level notice verification, then final review. PR remains draft; no merge or release authorization is implied.
 - No game, updater, app ID, signing identity, ABI, dependency/toolchain version, GeckoView version, release/tag/main or branch-deletion changes. No physical-device test claimed.
+
+
+## Issue #67 — owner rights decision update (2026-11-26)
+
+- The owner superseded the earlier Apache-2.0 selection: original LastHavenPlus code and documentation are **All Rights Reserved** and intended for personal use. No general reuse license is granted.
+- PR #144 now replaces the project LICENSE/README/NOTICE and in-app project-license presentation with a reserved-rights notice. Apache-2.0 and MPL-2.0 texts remain only as required third-party licenses; do not remove them or imply they license LastHavenPlus.
+- GitHub-only/personal-use scope: no app-store or F-Droid readiness work. Public repository visibility does not itself grant reuse permission.
+- PR #144 remains draft. Branch synchronization, complete project-record reconciliation, exact-head CI, APK inspection and final review remain pending. No merge or release is authorized.
