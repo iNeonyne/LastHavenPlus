@@ -577,3 +577,6 @@ No branch was deleted. The available GitHub connector exposes no branch-delete o
 
 
 2026-11-26 — Integration checkpoint: merged PR #119 to beta at 97570eaaca86c9e27d92d04f90da9d930f6bdb33 after exact-head Android, Markdown and two-runner reproducibility checks passed. Post-merge signed ARM64 and Markdown checks passed; post-merge reproducibility retry pending after one clean runner failed to resolve the Kotlin Compose plugin marker. Synced diagnostics PR #154 with beta at 16e8abbf25626ffc8fcb7eadafa6ee05cfa79d4b; Android and Markdown passed, reproducibility retry pending. Synced Addon Manager Phase A PR #152 with beta at 444985b6cf78cdc89e494988c65364b7bf80b767; exact-head Android/reproducibility CI running, Markdown passed. No physical-device tests, release, tag or main promotion.
+
+
+2026-11-26 — Corrected current project records on PR #152 branch: #23's prior hold/XPI specification is marked superseded by owner-approved ZIP 0.5.1 Phase A; #11 is recorded as agent:review for PR #154; #66/PR #119 is recorded as merged at 97570eaaca86c9e27d92d04f90da9d930f6bdb33. Updated the PR #152 documentation head to cc15080282b24df986dee2a10788e34e1cbbe511; fresh exact-head CI required.

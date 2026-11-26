@@ -853,3 +853,10 @@ Entry format:
 - **PR #154:** diagnostics tests synced with beta using merge commit `16e8abbf25626ffc8fcb7eadafa6ee05cfa79d4b`; issue #11 moved to `agent:review`. Exact-head Android [#45874522453](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45874522453) and Markdown [#45874522448](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45874522448) passed. Reproducibility run [#45874522426](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45874522426) is being retried after the same clean-runner plugin-resolution failure.
 - **PR #152:** Chaty-owned Addon Manager Phase A branch synced with beta via merge commit `444985b6cf78cdc89e494988c65364b7bf80b767`; exact-head Android and independent reproducibility workflows are running, Markdown [#45875013185](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45875013185) passed. Phase A remains local ZIP/library management only; runtime injection and Phase B are not implemented or authorized.
 - **Limitations:** no physical ARM64 device testing; no beta-to-main promotion, release tag or publication.
+
+
+## 2026-11-26 — Correct current ownership and historical hold records
+
+- Reconciled active records after PR #119 merged: issue #66 is complete; issue #11 is awaiting Chaty's review of PR #154; issue #23 is owner-authorized for native Phase A under Chaty/PR #152.
+- Clarified that the former #23 hold and XPI 0.11.0 checklist are historical/superseded by the owner-approved ZIP 0.5.1 Phase A scope. Phase B/runtime injection remains unauthorized.
+- Updated beta baseline to `97570eaaca86c9e27d92d04f90da9d930f6bdb33`; PR #152 docs reconciliation is at `cc15080282b24df986dee2a10788e34e1cbbe511` and needs fresh exact-head CI.

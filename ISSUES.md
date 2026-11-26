@@ -661,7 +661,7 @@ See the GitHub issue #18 for the full phase checklist and release gates. `AGENT_
 - Do not restart or re-implement the Cefrium migration.
 - Do not change GeckoView, Gradle, AGP, JDK, Android SDK, Build Tools, signing or ABI configuration.
 - Do not infer runtime behavior from dependency research or CI; that remains under #5/#21.
-- No game/client changes, Addon Manager work (#23 remains on hold), release, tag or main promotion.
+- No game/client changes, no Addon Manager Phase B/runtime work (#23 Phase A is separately owner-approved), release, tag or main promotion.
 
 **Completion evidence:** update `docs/GECKOVIEW_MIGRATION.md` with official references, artifact-specific findings and unresolved limitations; keep this issue open until each remaining item is evidenced.
 
@@ -689,7 +689,7 @@ See the GitHub issue #18 for the full phase checklist and release gates. `AGENT_
 - No Cefrium removal or GeckoView migration implementation work.
 - No claim of runtime compatibility based on CI, emulator tests or an undetailed owner smoke-test report.
 - Do not copy/delete Cefrium profile data or assume cross-engine profile portability.
-- No changes to application identity, signing, ABI, updater policy or game/client; #23 Addon Manager remains on hold.
+- No changes to application identity, signing, ABI, updater policy or game/client; #23 Phase A is separately owner-approved and owned by Chaty, while Phase B remains unauthorized.
 
 **Completion:** keep open for owner feedback and follow-up defects. Pending feedback does not block release publication.
 
