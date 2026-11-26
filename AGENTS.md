@@ -107,12 +107,12 @@ See [Mozilla's GeckoView consumer documentation](https://firefox-source-docs.moz
 
 ## Addon boundary
 
-Issue #23 Phase A is integrated in beta by PR #152 at 103bb979c98589a8704459d28d13861eccca39d6. The issue is now agent:owner while the repository owner decides whether to authorize Phase B. Vibe must not modify the Addon Manager implementation. The integrated Phase A target is the owner-supplied ZIP 0.5.1; it provides native local library management only. Runtime injection, XHR/Worker interception and game-addon activation are not implemented or authorized.
+Issue #23 Phase A is integrated in beta by PR #152 at 103bb979c98589a8704459d28d13861eccca39d6. The repository owner has authorized Phase B investigation/implementation under Chaty's coordination. Chaty owns parent issue #23 and assigns each implementation child issue explicitly. Vibe must not modify Addon Manager code unless a child issue is explicitly assigned with `agent:vibe` and a scope comment.
 
 Keep the work phased and accurately described:
 
 - **Phase A — native management:** bounded, user-initiated ZIP import/export, strict archive validation, app-private library storage, metadata/dependency analysis and a launcher-owned manager UI. Imported addons remain disabled by default. Local enablement is only library metadata; it does not enable runtime loading.
-- **Phase B — runtime port:** separately investigate and adapt the supplied XHR/Worker loader for the exact pinned GeckoView 160 APIs. Do not enable injection until origin/path restrictions, request/resource bounds, worker behavior, session isolation and failure handling are understood and regression-tested.
+- **Phase B — runtime port:** adapt the supplied XHR/Worker loader for the exact pinned GeckoView 160 APIs. Do not enable injection until origin/path restrictions, request/resource bounds, worker behavior, session isolation and failure handling are understood and regression-tested. Phase B authorization is not permission to skip issue-level assignment or review.
 - **Session integration:** the manager must retain and return to the existing game session; it must not start a second game instance or modify the game client or persistent game/profile data.
 
 Do not bundle the Chrome MV3 service worker unchanged. Do not assume external unsigned XPI installation is supported or treat a WoW addon ZIP/`.toc` package as a Firefox WebExtension. Never claim addon initialization or game-resource masking from local import, indexing, an enabled flag or an observed injection request.
