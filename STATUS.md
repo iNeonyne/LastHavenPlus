@@ -2,10 +2,19 @@
 
 **Last updated:** 2026-11-26  
 **Active branch:** beta  
-**Latest beta HEAD:** e69656303d7e1c1e7d50f7211c8cfaeb748f07e9 (PR [#134](https://github.com/iNeonyne/LastHavenPlus/pull/134), documentation reconciliation).  
+**Latest beta HEAD:** c24b24e7125f49e86f465b1786ccfecb537e9694 (PR [#135](https://github.com/iNeonyne/LastHavenPlus/pull/135), v2.4.0 icy pixel-castle icon).  
 **Stable branch / v2.3.0 tag:** ebc5b424e83ae66c2b0accc2bec6f050b8dc0d88; GitHub confirms published, non-draft, non-prerelease [v2.3.0](https://github.com/iNeonyne/LastHavenPlus/releases/tag/v2.3.0) with canonical ARM64 APK, update manifest and v2.2.0-to-v2.3.0 differential package. Main remains unchanged by this housekeeping work.
 
-## Latest integration — documentation reconciliation
+## Latest integration — v2.4.0 launcher icon
+
+- **PR:** [#135](https://github.com/iNeonyne/LastHavenPlus/pull/135), squash-merged to beta at `c24b24e7125f49e86f465b1786ccfecb537e9694`.
+- **Exact-head Android validation:** [run #45742710788](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45742710788) passed lint, Spotless, unsigned release assembly and JVM tests. PR validation remained unsigned; signing/tag/publication jobs were skipped.
+- **Exact-head Markdown validation:** [run #45742710826](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45742710826) passed.
+- **Post-merge beta validation:** Markdown push run [#45743277532](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45743277532) passed. Signed ARM64 beta build [#45743277446](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45743277446) was still running at this checkpoint; do not claim signed packaging verification until it completes.
+- **Artwork:** native icy-blue pixel-art castle/moon vector, deep-navy adaptive background and 8% foreground inset; standard and round adaptive icon resources remain wired. Local mask simulations were inspected, but Android-generated launcher screenshots and physical ARM64 appearance remain unverified.
+- **Issue #133:** closed completed after merge and exact-head PR CI.
+
+## Previous integration — documentation reconciliation
 
 - **PR:** [#134](https://github.com/iNeonyne/LastHavenPlus/pull/134), merged to beta at e69656303d7e1c1e7d50f7211c8cfaeb748f07e9.
 - **Verification:** exact-head Markdown quality gate [run #45739130533](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45739130533) passed. This was documentation-only; no Android build or device test was applicable.
