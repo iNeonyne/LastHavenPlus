@@ -1,6 +1,6 @@
 # Agent work assignments — LastHavenPlus
 
-**Current beta baseline:** e69656303d7e1c1e7d50f7211c8cfaeb748f07e9 (verified after PR #134 documentation reconciliation).  
+**Current beta baseline:** e69656303d7e1c1e7d50f7211c8cfaeb748f07e9 (verified after PR #134 documentation reconciliation); advanced to 4c508cf5eff07d8a64dc3ec772dcc1a37a1320a8 after the #133 icon integration and its documentation follow-ups.  
 **Stable baseline:** main / v2.3.0 tag ebc5b424e83ae66c2b0accc2bec6f050b8dc0d88.
 
 ## Roles and integration
@@ -20,18 +20,16 @@
 - **Exclusions:** no branch deletion, issue/PR closure, release changes or main changes. The owner subsequently requested a three-version roadmap, now recorded in issue #18.
 
 ### Issue #133 — v2.4.0 adaptive launcher icon
-- **Owner:** Chaty (agent:chaty), per the repository owner's direction on 2026-11-26.
-- **Branch:** chaty/issue-133-icy-pixel-castle, based on beta e69656303d7e1c1e7d50f7211c8cfaeb748f07e9.
-- **Scope:** replace only launcher artwork with the selected icy-blue pixel-art gothic castle/moon concept; update adaptive foreground/background while preserving standard and round icon references.
-- **PR:** [#135](https://github.com/iNeonyne/LastHavenPlus/pull/135), open against beta; current PR head ce4e9e2c82024ed8dd3c1117f2e7989c56d6e864.
-- **Current implementation checkpoint:** vector artwork and deep-navy adaptive background committed on the task branch; unsigned exact-head CI is running. Android-generated mask output and physical launcher appearance remain unverified.
-- **Exclusions:** no Compose screens, design tokens, app behavior, manifest identity, signing, build/toolchain, GeckoView, updater or game changes.
+- **Owner:** merged; issue #133 is open with `agent:owner` solely for Android adaptive-mask/physical launcher visual signoff. No agent is implementing here.
+- **Integration:** PR [#135](https://github.com/iNeonyne/LastHavenPlus/pull/135) squash-merged to `beta` at `c24b24e7125f49e86f465b1786ccfecb537e9694`; exact-head unsigned validation passed before merge.
+- **Remaining verification:** Android-generated mask output and physical launcher appearance remain unverified; the owner signoff on issue #133 is the record for it.
 
 ### Issue #107 — v2.4.0 visual system
 - **Owner:** Vibe (agent:vibe), explicitly assigned by Chaty on 2026-11-26.
 - **Scope:** shared icy-blue/dark-fantasy Compose visual system and existing launcher-owned screens; gameplay remains fullscreen. See GitHub issue #107 for detailed acceptance criteria.
 - **Coordination:** Vibe uses a fresh branch from current beta. PR #113 remains draft/open for traceability only; do not merge or extend its stale branch. #133 is limited to icon resources, so the two tasks can proceed in parallel without overlapping files.
 - **Next dependency:** keep accessibility issue #9 queued until #107 is integrated.
+- **State:** PR [#136](https://github.com/iNeonyne/LastHavenPlus/pull/136) submitted on branch `vibe/visual-system-v240` — frost accent token family replacing the gold accent, shared primary-button and typography tokens, unified card shapes, updated contrast tests, and `docs/DESIGN_SYSTEM.md`.
 - **Device status:** physical ARM64 rendering/haptics remain unverified.
 
 ### Completed — issue #129 CI consolidation

@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -57,7 +56,7 @@ fun GameScreen(
       GameLoadPresentation.LoadingGame ->
         // Restrained branded state for the initial page load only; no fabricated progress.
         GameStatusSurface(contentDescription = "LastHaven is loading") {
-          LinearProgressIndicator(color = DesignTokens.gold)
+          LinearProgressIndicator(color = DesignTokens.frost)
           Spacer(modifier = Modifier.height(16.dp))
           Text("Loading LastHaven…", color = DesignTokens.textSecondary)
         }
@@ -80,11 +79,7 @@ fun GameScreen(
             onClick = onRetry,
             modifier = Modifier.heightIn(min = DesignTokens.minTouchTarget),
             shape = RoundedCornerShape(DesignTokens.cornerButton),
-            colors =
-              ButtonDefaults.buttonColors(
-                containerColor = DesignTokens.gold,
-                contentColor = DesignTokens.goldOnColor,
-              ),
+            colors = DesignTokens.primaryButtonColors(),
           ) {
             Text("Retry", fontWeight = FontWeight.Bold)
           }
@@ -108,11 +103,7 @@ fun GameScreen(
             onClick = onRestore,
             modifier = Modifier.heightIn(min = DesignTokens.minTouchTarget),
             shape = RoundedCornerShape(DesignTokens.cornerButton),
-            colors =
-              ButtonDefaults.buttonColors(
-                containerColor = DesignTokens.gold,
-                contentColor = DesignTokens.goldOnColor,
-              ),
+            colors = DesignTokens.primaryButtonColors(),
           ) {
             Text("Restore game", fontWeight = FontWeight.Bold)
           }

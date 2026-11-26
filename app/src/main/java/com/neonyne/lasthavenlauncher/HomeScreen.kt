@@ -20,7 +20,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
@@ -166,7 +165,7 @@ private fun HomeBranding(modifier: Modifier = Modifier, compact: Boolean) {
     )
     Text(
       "PLUS",
-      color = DesignTokens.gold,
+      color = DesignTokens.frost,
       fontSize = if (compact) 18.sp else 22.sp,
       fontWeight = FontWeight.Bold,
       letterSpacing = 8.sp,
@@ -196,7 +195,7 @@ private fun HomeActions(
   ) {
     Card(
       colors = CardDefaults.cardColors(containerColor = DesignTokens.panel),
-      shape = RoundedCornerShape(28.dp),
+      shape = MaterialTheme.shapes.medium,
     ) {
       Column(
         modifier = Modifier.fillMaxWidth().padding(22.dp),
@@ -204,7 +203,7 @@ private fun HomeActions(
       ) {
         Text(
           "READY TO PLAY",
-          color = DesignTokens.gold,
+          color = DesignTokens.frost,
           fontSize = 12.sp,
           fontWeight = FontWeight.Bold,
           letterSpacing = 2.sp,
@@ -229,11 +228,7 @@ private fun HomeActions(
           },
           modifier = Modifier.fillMaxWidth().height(58.dp),
           shape = RoundedCornerShape(DesignTokens.cornerCard),
-          colors =
-            ButtonDefaults.buttonColors(
-              containerColor = DesignTokens.gold,
-              contentColor = DesignTokens.goldOnColor,
-            ),
+          colors = DesignTokens.primaryButtonColors(),
         ) {
           Text("PLAY", fontSize = 17.sp, fontWeight = FontWeight.Black, letterSpacing = 2.sp)
         }
@@ -250,17 +245,17 @@ private fun HomeActions(
       Card(
         onClick = onOpenUpdate,
         colors = CardDefaults.cardColors(containerColor = DesignTokens.panelBright),
-        shape = RoundedCornerShape(18.dp),
+        shape = MaterialTheme.shapes.medium,
       ) {
         Row(
           modifier = Modifier.fillMaxWidth().padding(16.dp),
           verticalAlignment = Alignment.CenterVertically,
         ) {
           Column(Modifier.weight(1f)) {
-            Text("Update available", color = DesignTokens.gold, fontWeight = FontWeight.Bold)
+            Text("Update available", color = DesignTokens.frost, fontWeight = FontWeight.Bold)
             Text("LastHavenPlus $updateVersion", color = DesignTokens.textPrimary)
           }
-          Text("View", color = DesignTokens.gold, fontWeight = FontWeight.Bold)
+          Text("View", color = DesignTokens.frost, fontWeight = FontWeight.Bold)
         }
       }
     }

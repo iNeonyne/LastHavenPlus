@@ -289,7 +289,7 @@ private fun SettingsPageFrame(
           )
           Text(
             "LASTHAVENPLUS",
-            color = DesignTokens.gold,
+            color = DesignTokens.frost,
             style = MaterialTheme.typography.labelSmall,
           )
         }
@@ -314,7 +314,7 @@ private fun PageSection(
       modifier = Modifier.fillMaxWidth().padding(DesignTokens.spaceSection),
       verticalArrangement = Arrangement.spacedBy(10.dp),
     ) {
-      Text(title, color = DesignTokens.gold, fontWeight = FontWeight.Bold)
+      Text(title, color = DesignTokens.frost, style = MaterialTheme.typography.titleSmall)
       content()
     }
   }
