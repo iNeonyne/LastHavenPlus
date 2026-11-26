@@ -10,6 +10,7 @@
     <string name="addon_manager_no_addons">Локальних додатків ще немає. Імпортуйте ZIP із папкою додатка та відповідним файлом .toc.</string>
     <string name="addon_manager_files_summary">%1$d файлів · %2$s</string>
     <string name="addon_manager_missing_dependencies">Перевірте потрібні залежності: %1$s</string>
+    <string name="addon_manager_optional_dependencies">Необов’язкові залежності: %1$s</string>
     <string name="addon_manager_no_version">Немає версії</string>
     <string name="addon_manager_export_zip">Експортувати ZIP</string>
     <string name="addon_manager_remove">Видалити</string>
