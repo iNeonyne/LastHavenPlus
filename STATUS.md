@@ -209,3 +209,12 @@ The beta code review identified structural follow-ups rather than a broad defect
 Updater findings were appended to existing #15 (installer URI dismissal lifecycle, actionable error mapping, safe cancellation cleanup) and #4 (R8/release smoke verification); no parallel updater issue was created. Existing #111 progress implementation remains separately owned by Vibe.
 
 No code, CI, release, signing, dependency, ABI or device behavior changed in this documentation/triage checkpoint. No physical ARM64 device test is claimed.
+
+
+## 2026-11-26 — GeckoView/Android permission policy documentation (#150)
+
+- **Source inspected on beta `1279f214b3fdd3ba420e090a6a90914a8a3399e7`:** `app/src/main/AndroidManifest.xml`, `MainActivity.setupGeckoDelegates` and `GeckoRuntimeProvider`.
+- **Documented source policy:** only persistent storage and audible/inaudible autoplay are allowed, and only for the exact `lasthavens.com` host and its subdomains. All other content permission types/origins are denied. Android runtime permission callbacks and media capture callbacks reject requests.
+- **Manifest:** declares `INTERNET` and `REQUEST_INSTALL_PACKAGES` only. No camera, microphone, geolocation or notification permission is declared. Package-install permission supports the explicit Android installer flow.
+- **Limitations:** this is a source audit, not physical-device verification of permission prompts or game features. No manifest, delegate, GeckoView setting or runtime behavior was changed.
+- **Validation:** exact-head Markdown quality workflow pending; Android/device tests are not applicable to documentation-only changes.
