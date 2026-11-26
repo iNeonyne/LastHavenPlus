@@ -589,5 +589,5 @@ No branch was deleted. The available GitHub connector exposes no branch-delete o
 - **Findings:** manifest declares INTERNET and REQUEST_INSTALL_PACKAGES only. GeckoView allows persistent storage and audible/inaudible autoplay only for exact `lasthavens.com` and subdomains. Other content permissions/origins are denied; Android runtime and media permission callbacks reject requests.
 - **Docs changed:** README.md, AGENTS.md, STATUS.md, ISSUES.md, AGENT_WORK.md, CHANGELOG-AGENTS.md and WORK_LOG.md.
 - **Non-goals preserved:** no runtime permission, manifest, delegate, GeckoView setting, app, network or game behavior changes.
-- **Checks:** exact-head Markdown quality workflow pending. No Android or physical-device tests run/claimed.
-- **Next:** inspect full docs diff, run link/anchor/fence checks, obtain exact-head Markdown workflow success, then close #150 if no discrepancy remains.
+- **Checks:** Markdown quality workflow passed on initial PR head `e2ce22c44508a87f53fc4a57a03f82e0597550bc` (run #45889911748). Internal link/anchor scan covered all 15 Markdown files with zero missing local targets. No Android or physical-device tests run/claimed.
+- **Next:** final PR review and merge; permission prompt behavior remains unverified on hardware.
