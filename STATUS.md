@@ -182,10 +182,10 @@ The repository owner will install releases and report what works and what does n
 ## Issue #67 — Apache-2.0/community hygiene candidate (2026-11-26)
 
 - **PR:** #141, currently draft, targeting beta; branch chaty/community-hygiene; latest candidate head at this status update: 3f98b236830ba194a5e18648e3acc9f09d9073c3.
-- **Owner decision:** Apache-2.0 selected. Canonical root LICENSE and packaged app resource app/src/main/res/raw/gpl_3_0.txt added; Settings now exposes an Open-source licenses dialog.
+- **Owner decision:** Apache-2.0 selected. Canonical root LICENSE and packaged app resource app/src/main/res/raw/apache_2_0.txt added; Settings now exposes an Open-source licenses dialog.
 - **Other changes:** SECURITY.md, weekly Gradle Dependabot, README license boundary and changelog link, reconciled v2.2.0/v2.3.0 release notes, contributor branch-retention policy, and PR CI runtime dependency report artifact.
 - **CI:** Markdown run #45837172690 passed. Android run #45837172797 was still running at the time of this update; do not claim exact-head Android success until it completes.
-- **License blocker:** runtime dependency report from run #45836638591 identifies Google Play Services FIDO 21.3.1, Base 18.7.2, Basement 18.9.0 and Tasks 18.3.2 in releaseRuntimeClasspath. Their published metadata declares the Android Software Development Kit License. GPLv3 (superseded by the owner's later Apache-2.0 selection) compatibility for distribution of the combined APK is unresolved; issue #67 is now agent:owner and PR #141 has been returned to draft. No merge or publication until owner resolves the blocker and a complete artifact/notice audit is done.
+- **Third-party audit:** the runtime graph includes Google Play Services FIDO/Base/Basement/Tasks artifacts declared under the Android Software Development Kit License. The earlier GPL compatibility concern is no longer the selected project-license question after the owner chose Apache-2.0. Complete artifact-level licensing and packaged notices remain pending; no dependency is relicensed by the project.
 - **Attribution:** no copyright-holder identity/year has been invented; owner confirmation remains outstanding.
 - **Scope safety:** no game/client, app ID, signing, ABI, toolchain, GeckoView version, release/tag/main changes. No branch deletions. Physical-device testing is not applicable to these repository changes.
 
