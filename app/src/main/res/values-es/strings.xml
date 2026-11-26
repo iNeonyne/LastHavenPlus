@@ -4,7 +4,7 @@
     <string name="addon_manager_local_addons">Complementos locales</string>
     <string name="addon_manager_back">Atrás</string>
     <string name="addon_manager_import_description">Importa archivos ZIP de complementos locales de WoW 3.3.5a. Las nuevas importaciones comienzan desactivadas y permanecen en este dispositivo.</string>
-    <string name="addon_manager_runtime_unavailable">La carga en tiempo de ejecución y la integración con la sesión del juego aún no están disponibles.</string>
+    <string name="addon_manager_runtime_unavailable">La carga de complementos durante el juego aún no está disponible. Los archivos importados solo se almacenan localmente.</string>
     <string name="addon_manager_import_zip">Importar ZIP</string>
     <string name="addon_manager_count">%1$d complementos\n%2$s</string>
     <string name="addon_manager_no_addons">Aún no hay complementos locales. Importa un ZIP con una carpeta de complemento y su archivo .toc correspondiente.</string>
