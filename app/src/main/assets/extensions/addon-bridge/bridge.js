@@ -30,15 +30,16 @@
 
   function publishToPage() {
     try {
-      const pageWindow = window.wrappedJSObject || window;
-      const pageBridge = cloneInto({}, pageWindow);
+      const targetWindow = window;
+      const pageGlobal = window.wrappedJSObject || window;
+      const pageBridge = cloneInto({}, targetWindow);
       const getBundle = exportFunction(
-        () => currentBundle === null ? null : cloneInto(currentBundle, pageWindow),
-        pageWindow,
+        () => currentBundle === null ? null : cloneInto(currentBundle, targetWindow),
+        targetWindow,
       );
       const getState = exportFunction(
-        () => cloneInto({ ready: ready, error: errorCode }, pageWindow),
-        pageWindow,
+        () => cloneInto({ ready: ready, error: errorCode }, targetWindow),
+        targetWindow,
       );
       Object.defineProperty(pageBridge, "getBundle", {
         value: getBundle,
@@ -52,7 +53,7 @@
         enumerable: true,
         writable: false
       });
-      Object.defineProperty(pageWindow, BRIDGE_KEY, {
+      Object.defineProperty(pageGlobal, BRIDGE_KEY, {
         value: pageBridge,
         configurable: false,
         enumerable: false,
