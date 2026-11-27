@@ -101,7 +101,7 @@ jobs:
 
           checks = {
               "project_rights_notice": (b"All rights reserved.", b"personal use"),
-              "third_party_notices": (b"GeckoView 161", b"Android Software Development Kit License"),
+              "third_party_notices": (b"geckoview-arm64-v8a:161.0.20261118180411", b"Android Software Development Kit License"),
               "apache_2_0": (b"Apache License", b"Version 2.0"),
               "mpl_2_0": (b"Mozilla Public License", b"Version 2.0"),
               "geckoview_about_license_inventory": (
