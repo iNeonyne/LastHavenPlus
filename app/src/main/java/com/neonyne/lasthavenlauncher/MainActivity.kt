@@ -121,7 +121,7 @@ class MainActivity : ComponentActivity() {
         Intent(
           Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES,
           Uri.parse("package:$packageName"),
-        )
+        ),
       )
       return
     }
@@ -138,7 +138,7 @@ class MainActivity : ComponentActivity() {
         .edit()
         .putString(KEY_INSTALLER_HANDOFF_CANDIDATE_APK_NAME, handoffApkName)
         .remove(KEY_PENDING_UPDATE_URI)
-        .commit()
+        .commit(),
     ) {
       "Could not protect the APK before installer handoff"
     }
@@ -148,7 +148,7 @@ class MainActivity : ComponentActivity() {
         Intent(Intent.ACTION_VIEW).apply {
           setDataAndType(uri, "application/vnd.android.package-archive")
           addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-        }
+        },
       )
     } catch (error: Exception) {
       val rollback =
@@ -376,12 +376,12 @@ private fun LastHavenApp(
             enter =
               fadeIn(
                 animationSpec =
-                  tween(durationMillis = OverlayMotionPolicy.fadeInMillis(animatorDurationScale))
+                  tween(durationMillis = OverlayMotionPolicy.fadeInMillis(animatorDurationScale)),
               ),
             exit =
               fadeOut(
                 animationSpec =
-                  tween(durationMillis = OverlayMotionPolicy.fadeOutMillis(animatorDurationScale))
+                  tween(durationMillis = OverlayMotionPolicy.fadeOutMillis(animatorDurationScale)),
               ),
           ) {
             GameMenuScreen(
