@@ -114,4 +114,66 @@ class AddonRuntimePlannerTest {
     val changed = AddonRuntimePlanner.plan(AddonLibrarySnapshot("r2", listOf(item("Addon"))))
     assertNotEquals(enabled.bundleRevision, changed.bundleRevision)
   }
+
+  @Test
+  fun requiredDependenciesMatchFolderNamesCaseInsensitively() {
+    val plan =
+      AddonRuntimePlanner.plan(
+        AddonLibrarySnapshot(
+          "case-fold",
+          listOf(item("BagSort", dependencies = listOf("aceCORE")), item("AceCore")),
+        )
+      )
+    assertEquals(listOf("AceCore", "BagSort"), plan.orderedAddons.map { it.folder })
+    assertTrue(plan.blockedAddons.isEmpty())
+  }
+
+  @Test
+  fun optionalDependenciesPreferProviderBeforeConsumerWithoutBlocking() {
+    val plan =
+      AddonRuntimePlanner.plan(
+        AddonLibrarySnapshot(
+          "optional-order",
+          listOf(
+            item("OptionalConsumer", optionalDependencies = listOf("OptionalProvider")),
+            item("OptionalProvider"),
+            item("Independent"),
+          ),
+        )
+      )
+    val ordered = plan.orderedAddons.map { it.folder }
+    assertTrue(ordered.indexOf("OptionalProvider") < ordered.indexOf("OptionalConsumer"))
+    assertTrue(plan.blockedAddons.isEmpty())
+  }
+
+  @Test
+  fun deepDependencyChainIsPlannedWithoutRecursiveTraversal() {
+    val addons =
+      (0 until AddonArchive.MAX_ADDONS_PER_ARCHIVE).map { index ->
+        item(
+          "Addon$index",
+          dependencies = if (index == 0) emptyList() else listOf("Addon${index - 1}"),
+        )
+      }
+    val plan = AddonRuntimePlanner.plan(AddonLibrarySnapshot("deep-chain", addons))
+    assertEquals(AddonArchive.MAX_ADDONS_PER_ARCHIVE, plan.orderedAddons.size)
+    assertEquals("Addon0", plan.orderedAddons.first().folder)
+    assertEquals("Addon${AddonArchive.MAX_ADDONS_PER_ARCHIVE - 1}", plan.orderedAddons.last().folder)
+  }
+
+  @Test
+  fun plannerRejectsSnapshotsBeyondValidatedLibraryBounds() {
+    val oversized = (0..AddonArchive.MAX_ADDONS_PER_ARCHIVE).map { item("Addon$it") }
+    org.junit.Assert.assertThrows(IllegalArgumentException::class.java) {
+      AddonRuntimePlanner.plan(AddonLibrarySnapshot("oversized", oversized))
+    }
+  }
+
+  @Test
+  fun tocLoadOrderRejectsOversizedInput() {
+    org.junit.Assert.assertThrows(IllegalArgumentException::class.java) {
+      AddonRuntimePlanner.parseTocLoadFiles("x".repeat(AddonArchive.MAX_TOC_BYTES.toInt() + 1))
+    }
+  }
+
 }
