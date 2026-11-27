@@ -136,18 +136,15 @@ class AddonBridgeController(
 
   private fun toFlatFields(message: Any?): Map<String, Any?>? {
     val json = message as? JSONObject ?: return null
-    if (json.length() > AddonBridgeProtocol.MAX_MESSAGE_FIELDS) return null
+    if (json.length() != 2) return null
     val fields = LinkedHashMap<String, Any?>()
     for (key in json.keys()) {
-      when (val value = json.opt(key)) {
-        null -> return null
-        is String,
-        is Boolean,
-        is Int,
-        is Long,
-        is Double -> fields[key] = value
-        else -> return null
+      if (key != AddonBridgeProtocol.KEY_TYPE && key != AddonBridgeProtocol.KEY_REQUEST_ID) {
+        return null
       }
+      val value = json.opt(key) as? String ?: return null
+      if (value.length > AddonBridgeProtocol.MAX_REQUEST_ID_CHARS) return null
+      fields[key] = value
     }
     return fields
   }
