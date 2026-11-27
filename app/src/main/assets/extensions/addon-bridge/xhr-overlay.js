@@ -416,13 +416,29 @@
     if (cached !== undefined) {
       return cached;
     }
+    const encoded = entry.encoded;
+    if (
+      encoded.length % 4 !== 0 ||
+      !/^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$/.test(encoded)
+    ) {
+      return null;
+    }
+    const padding = encoded.endsWith("==") ? 2 : encoded.endsWith("=") ? 1 : 0;
+    const expectedBytes = (encoded.length / 4) * 3 - padding;
+    if (
+      expectedBytes < 0 ||
+      expectedBytes > MAX_FILE_BYTES ||
+      index.decodedTotal + expectedBytes > MAX_PAYLOAD_BYTES
+    ) {
+      return null;
+    }
     let binary;
     try {
-      binary = atob(entry.encoded);
+      binary = atob(encoded);
     } catch (_error) {
       return null;
     }
-    if (index.decodedTotal + binary.length > MAX_PAYLOAD_BYTES) {
+    if (binary.length !== expectedBytes) {
       return null;
     }
     const bytes = new Uint8Array(binary.length);
@@ -830,6 +846,28 @@
     dispatchEventOn(target, state.listeners, state.handlers, "loadend");
   }
 
+  function scheduleLocalResponse(target, state, requestId, complete) {
+    if (state.uploadFlag) {
+      dispatchEventOn(target, state.uploadListeners, state.uploadHandlers, "loadstart");
+    }
+    dispatchEventOn(target, state.listeners, state.handlers, "loadstart");
+    if (state.timeout > 0) {
+      state.timeoutTimer = setTimeout(() => {
+        if (state.requestId !== requestId || state.aborted || state.done) {
+          return;
+        }
+        runErrorSteps(target, state, "timeout");
+      }, state.timeout);
+    }
+    setTimeout(() => {
+      if (state.requestId !== requestId || state.aborted || state.done) {
+        return;
+      }
+      clearTimers(state);
+      complete();
+    }, 0);
+  }
+
   function resolveBundleNow() {
     const bridge = global[BRIDGE_KEY];
     if (!bridge || typeof bridge.getBundle !== "function") {
@@ -946,8 +984,15 @@
     }
     state.intercepted = true;
     if (route.kind === "methodNotAllowed") {
-      const outcome = serveRoute(null, route, state.requestHeaders, state.mimeType);
-      applyResponse(this, state, outcome.response, state.async);
+      if (!state.async) {
+        const outcome = serveRoute(null, route, state.requestHeaders, state.mimeType);
+        applyResponse(this, state, outcome.response, false);
+        return;
+      }
+      scheduleLocalResponse(this, state, requestId, () => {
+        const outcome = serveRoute(null, route, state.requestHeaders, state.mimeType);
+        applyResponse(this, state, outcome.response, true);
+      });
       return;
     }
     if (!state.async) {
@@ -965,7 +1010,9 @@
       return;
     }
     if (outstandingRequests >= MAX_CONCURRENT_REQUESTS) {
-      applyNotFound(this, state, true, route);
+      scheduleLocalResponse(this, state, requestId, () => {
+        applyNotFound(this, state, true, route);
+      });
       return;
     }
     outstandingRequests += 1;

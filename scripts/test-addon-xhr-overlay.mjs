@@ -189,8 +189,11 @@ class MockNativeXHR {
   }
 }
 
-function loadWrapper({ payload, bridgeState, dateNow, nativeXhr } = {}) {
-  const overrides = { XMLHttpRequest: nativeXhr || MockNativeXHR };
+function loadWrapper({ payload, bridgeState, dateNow, nativeXhr, atobImpl } = {}) {
+  const overrides = {
+    XMLHttpRequest: nativeXhr || MockNativeXHR,
+    atob: atobImpl || atob,
+  };
   if (dateNow) {
     overrides.Date = { now: dateNow, parse: Date.parse, UTC: Date.UTC };
   }
@@ -1133,12 +1136,14 @@ test("unsupported methods fail closed for addon URLs without native networking",
   const events = collectEvents(xhr, context);
   xhr.open("POST", "https://lasthavens.com/game/Interface/AddOns/Foo/bar.lua");
   xhr.send();
+  assert.equal(xhr.readyState, 1, "async rejection must not complete inside send()");
+  assert.equal(xhr.status, 0);
+  assert.deepEqual(opened, []);
+  await sleep(25);
   assert.equal(xhr.status, 405);
   assert.equal(xhr.statusText, "Method Not Allowed");
   assert.equal(xhr.responseText, "");
   assert.equal(xhr.getResponseHeader("allow"), "GET, HEAD");
-  assert.deepEqual(opened, []);
-  await sleep(25);
   assert.ok(events.includes("load:4"));
   assert.ok(!events.includes("error:4"));
 });
@@ -1182,16 +1187,24 @@ test("a revision change invalidates the shared bundle index cache", async () => 
 test("decode aggregate bound rejects files before large allocations", async () => {
   const big1 = Buffer.alloc(8 * 1024 * 1024, 1).toString("base64");
   const big2 = Buffer.alloc(8 * 1024 * 1024, 2).toString("base64");
+  const big3 = Buffer.alloc(8 * 1024 * 1024, 3).toString("base64");
+  let decodeCalls = 0;
   const addon = {
     folder: "Huge",
     files: Object.assign(Object.create(null), {
       "Huge.toc": "",
       "a.bin": big1,
       "b.bin": big2,
-      "c.bin": Buffer.from("x").toString("base64"),
+      "c.bin": big3,
     }),
   };
-  const { context } = loadWrapper({ payload: makePayload([addon]) });
+  const { context } = loadWrapper({
+    payload: makePayload([addon]),
+    atobImpl: (value) => {
+      decodeCalls += 1;
+      return atob(value);
+    },
+  });
   const a = new context.XMLHttpRequest();
   a.open("GET", "https://lasthavens.com/game/Interface/AddOns/Huge/a.bin");
   a.send();
@@ -1210,6 +1223,7 @@ test("decode aggregate bound rejects files before large allocations", async () =
   c.send();
   await sleep(25);
   assert.equal(c.status, 404);
+  assert.equal(decodeCalls, 2, "over-limit file must be rejected before atob allocates it");
 });
 
 test("concurrent intercepted requests are capped and slots are cleaned up", async () => {
@@ -1227,6 +1241,9 @@ test("concurrent intercepted requests are capped and slots are cleaned up", asyn
   const ninth = new context.XMLHttpRequest();
   ninth.open("GET", "https://lasthavens.com/game/Interface/AddOns/Foo/bar.lua");
   ninth.send();
+  assert.equal(ninth.status, 0);
+  assert.equal(ninth.readyState, 1, "concurrency rejection must be asynchronous");
+  await sleep(25);
   assert.equal(ninth.status, 404);
   assert.equal(ninth.readyState, 4);
 
