@@ -194,12 +194,13 @@ private fun LastHavenApp(
   // It never creates or opens a second GeckoSession. Library changes are picked up when returning
   // from the manager, after its file operations have completed.
   LaunchedEffect(gameSessionController.session) {
-    val gameSession = gameSessionController.session
-    addonBridgeController.setGameSession(gameSession)
-    if (gameSession != null) addonBridgeController.ensureInstalled(context)
+    addonBridgeController.setGameSession(gameSessionController.session)
   }
-  LaunchedEffect(currentScreen) {
-    if (currentScreen == Screen.Game) addonBridgeController.refreshSnapshot()
+  LaunchedEffect(currentScreen, gameSessionController.session) {
+    if (currentScreen == Screen.Game && gameSessionController.session != null) {
+      addonBridgeController.ensureInstalled(context)
+      addonBridgeController.refreshSnapshot()
+    }
   }
   DisposableEffect(addonBridgeController, addonBridgeExecutor) {
     onDispose {
