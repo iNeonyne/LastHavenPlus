@@ -76,7 +76,9 @@ class LauncherStringsResourceTest {
   fun `default locale fallback strings are not duplicated in translated resources`() {
     val resourcesRoot = moduleRoot()
     val defaultDocument =
-      DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(File(resourcesRoot, "values/strings.xml"))
+      DocumentBuilderFactory.newInstance()
+        .newDocumentBuilder()
+        .parse(File(resourcesRoot, "values/strings.xml"))
     val defaultNodes = defaultDocument.getElementsByTagName("string")
     val fallbackNames = mutableSetOf<String>()
     for (index in 0 until defaultNodes.length) {
