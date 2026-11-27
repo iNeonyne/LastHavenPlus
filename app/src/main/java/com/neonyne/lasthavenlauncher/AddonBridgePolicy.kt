@@ -61,8 +61,11 @@ object AddonBridgePolicy {
 object AddonBridgeTimeoutPolicy {
   const val REQUEST_TIMEOUT_MS = 15_000L
   const val MAX_PENDING_REQUESTS = 8
+  const val MAX_CONNECTED_PORTS = 1
 
   fun isExpired(createdAtMs: Long, nowMs: Long): Boolean = nowMs - createdAtMs > REQUEST_TIMEOUT_MS
 
   fun canAcceptPendingRequest(pendingCount: Int): Boolean = pendingCount < MAX_PENDING_REQUESTS
+
+  fun canAcceptConnection(connectedCount: Int): Boolean = connectedCount < MAX_CONNECTED_PORTS
 }
