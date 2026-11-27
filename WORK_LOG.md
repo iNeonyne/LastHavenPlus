@@ -680,3 +680,11 @@ No branch was deleted. The available GitHub connector exposes no branch-delete o
 - **Ownership:** #167 changed to `agent:chaty`; #168 assigned `agent:vibe`; #169/#170 set to `agent:blocked`. Assignment comment #7210226239 records #168 scope, exclusions, constraints, tests and docs requirements.
 - **Limitations:** no post-merge beta CI result was available at this checkpoint; no physical ARM64 testing; no claim of XHR/Worker interception, same-session navigation or actual in-game addon initialization.
 - **Next safe action:** Vibe implements only #168 from the recorded beta SHA and submits a draft PR to beta. Chaty reviews/merges; #169 remains blocked until #168 integration.
+
+
+## 2026-11-27 — PR #190 GeckoView bridge session integration (source candidate)
+
+- PR [#190](https://github.com/iNeonyne/LastHavenPlus/pull/190) wires the launcher-owned GeckoView 160 extension bridge to the exact live game GeckoSession before initial navigation and crash restoration. It reuses the process-scoped GeckoRuntime and app-private addon library; refreshes the bounded payload snapshot before explicit reload/restore; and tears down the bridge delegate, ports, pending requests and worker executor with the owning composition.
+- This is source-level integration only. It does not implement XHR interception (#168), Worker/OPFS `blocks.idx` masking (#169), same-session Addon Manager navigation/page-world refresh (#170), or addon activation. No physical ARM64 test or in-game addon initialization is claimed.
+- Exact PR-head Android validation [#45947192586](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45947192586) and independent unsigned APK reproducibility [#45947192520](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45947192520) passed on head `0a291ca0edd7ac7db03ffe126a02349cbd1b758a`. Documentation updates require fresh exact-head Markdown and Android/reproducibility checks before merge.
+- Issue #167 remains open until physical ARM64 runtime acceptance and the remaining Addon Manager workstream gates are satisfied; merging this source integration does not imply runtime compatibility.
