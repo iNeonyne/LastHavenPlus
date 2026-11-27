@@ -135,7 +135,6 @@ class MainActivity : ComponentActivity() {
       preferences
         .edit()
         .putString(KEY_INSTALLER_HANDOFF_CANDIDATE_APK_NAME, handoffApkName)
-        .remove(KEY_PENDING_UPDATE_URI)
         .commit()
     ) {
       "Could not protect the APK before installer handoff"
