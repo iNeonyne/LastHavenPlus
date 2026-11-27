@@ -193,9 +193,6 @@ private fun LastHavenApp(
   // Install the built-in extension before loading the game URL, then bind the exact session
   // before its first navigation so document_start scripts and native sender checks are ready.
   // The bridge reuses the process-scoped runtime and never creates a second GeckoSession.
-  LaunchedEffect(currentScreen) {
-    if (currentScreen == Screen.Game) addonBridgeController.refreshSnapshot()
-  }
   DisposableEffect(addonBridgeController, addonBridgeExecutor) {
     onDispose {
       addonBridgeController.teardown()
@@ -214,7 +211,9 @@ private fun LastHavenApp(
 
   val reloadGame: () -> Unit = {
     addonBridgeController.ensureInstalled(context) {
-      gameSessionController.reloadGame(context, gameUrl)
+      addonBridgeController.refreshSnapshot {
+        gameSessionController.reloadGame(context, gameUrl)
+      }
     }
   }
 
@@ -230,8 +229,10 @@ private fun LastHavenApp(
 
   val restoreGame: () -> Unit = {
     addonBridgeController.ensureInstalled(context) {
-      gameSessionController.restoreGame(context, gameUrl) { session ->
-        addonBridgeController.setGameSession(session)
+      addonBridgeController.refreshSnapshot {
+        gameSessionController.restoreGame(context, gameUrl) { session ->
+          addonBridgeController.setGameSession(session)
+        }
       }
     }
   }
