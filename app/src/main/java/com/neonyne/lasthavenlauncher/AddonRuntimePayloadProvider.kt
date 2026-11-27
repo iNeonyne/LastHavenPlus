@@ -4,9 +4,9 @@ import java.io.File
 import java.io.RandomAccessFile
 import java.nio.file.Files
 import java.nio.file.LinkOption
+import java.security.MessageDigest
 import java.util.ArrayDeque
 import java.util.Locale
-import java.security.MessageDigest
 
 /**
  * Bounded, read-only view of enabled addon resources for the ZIP 0.5.1 runtime payload.
