@@ -14,7 +14,7 @@
 - **Housekeeping:** #128 closed after PR #161 merged at a0e5271793c9bb7754b7ac41429065e5602df569; exact-head and post-merge Markdown passed. #70 is closed; Markdown lint is integrated.
 - **GeckoView audit:** #20 remains owner-deferred/blocked; PR #122 closed without merge. Preserve unresolved notice/license/distribution and device-testing gaps.
 - **Rights/notices:** #67 remains agent:owner; PR #144 closed without merge. The owner's All Rights Reserved decision governs original project material; third-party distribution review remains unresolved.
-- **Ownership:** each open issue has exactly one `agent:*` label. `agent:queued` means ready but waiting its turn, not permission to start; `agent:blocked` means a genuine dependency/hold. Vibe has no active issue while Chaty integrates PR #165/#149; #146 remains next queued, then separately assigned #167–#169; #170 is blocked. Chaty owns #4/#15/#18/#23/#142; #81 is queued. #67 is owner-controlled.
+- **Ownership:** each open issue has exactly one `agent:*` label. `agent:queued` means ready but waiting its turn, not permission to start; `agent:blocked` means a genuine dependency/hold. Vibe active: #146 while Chaty integrates PR #165/#149; next queued are separately assigned Phase B children #167–#169; #170 is blocked. Chaty owns #4/#15/#18/#23/#142; #81 is queued. #67 is owner-controlled.
 - **Device/release:** no new physical ARM64 testing, release, tag, publication or beta-to-main promotion is claimed or authorized.
 
 ## Current ownership
@@ -22,7 +22,7 @@
 - **Chaty active:** #4/#15 coordinated updater reliability/recovery and #23 Addon Manager Phase B coordination. #18/#142 are coordination records; #128 is complete.
 - **Chaty queued:** #81 dependency-evidence documentation only; not yet started. #20 and #31 remain blocked pending owner decisions.
 - **Chaty active integration:** #149 launcher-owned strings (PR #165; scope corrections committed, exact-head CI running). Vibe has no active implementation issue.
-- **Vibe queued:** #146 GameSessionController, then separately assigned Addon Manager Phase B child work #167–#169. #170 is dependency-blocked. One active implementation issue at a time; queued does not authorize work.
+- **Vibe queued:** Addon Manager Phase B child work #167–#169, each requiring a separate explicit assignment. #170 is dependency-blocked. One active implementation issue at a time; queued does not authorize work.
 - **Diagnostics:** #11's test work merged via PR #163; remaining runtime-version startup reporting is deferred and blocked pending reprioritization.
 - **Diagnostics:** #11's test work merged via PR #163; the remaining runtime-version startup reporting is deferred and blocked pending reprioritization.
 - **Owner decision:** #23 Phase B and #67 third-party rights/distribution questions.
