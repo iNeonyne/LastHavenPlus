@@ -117,7 +117,7 @@ internal class AddonBridgeController(
   /** Installs the bundled extension before game navigation and reports completion on main. */
   fun ensureInstalled(context: Context, onComplete: (Boolean) -> Unit = {}) {
     if (bridgeExtension != null) {
-      refreshSnapshot { onComplete(true) }
+      onComplete(true)
       return
     }
     installationCallbacks += onComplete
