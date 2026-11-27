@@ -195,8 +195,8 @@ internal class AddonRuntimePayloadProvider(
   }
 
   fun readChunk(manifest: Manifest, folder: String, path: String, offset: Long): ByteArray {
-    val descriptor = manifest.filesByKey[key(folder, path)]
-      ?: throw AddonRuntimePayloadException("notFound")
+    val descriptor =
+      manifest.filesByKey[key(folder, path)] ?: throw AddonRuntimePayloadException("notFound")
     if (offset < 0 || offset >= descriptor.sizeBytes) {
       throw AddonRuntimePayloadException("invalidOffset")
     }
