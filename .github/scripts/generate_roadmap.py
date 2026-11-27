@@ -6,8 +6,6 @@ import os
 import urllib.parse
 import urllib.request
 
-REPOSITORY = os.environ["GITHUB_REPOSITORY"]
-TOKEN = os.environ["GH_TOKEN"]
 API = "https://api.github.com"
 LIVE_START = "<!-- ROADMAP-LIVE-START -->"
 LIVE_END = "<!-- ROADMAP-LIVE-END -->"
@@ -17,13 +15,15 @@ def get_pages(path):
     results = []
     page = 1
     while True:
-        url = f"{API}/repos/{REPOSITORY}/{path}"
+        repository = os.environ["GITHUB_REPOSITORY"]
+        token = os.environ["GH_TOKEN"]
+        url = f"{API}/repos/{repository}/{path}"
         separator = "&" if "?" in url else "?"
         request = urllib.request.Request(
             f"{url}{separator}per_page=100&page={page}",
             headers={
                 "Accept": "application/vnd.github+json",
-                "Authorization": f"Bearer {TOKEN}",
+                "Authorization": f"Bearer {token}",
                 "X-GitHub-Api-Version": "2022-11-28",
                 "User-Agent": "LastHavenPlus-roadmap-sync",
             },
