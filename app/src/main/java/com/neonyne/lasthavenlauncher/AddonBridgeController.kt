@@ -260,7 +260,9 @@ class AddonBridgeController(
     return when (request.type) {
       "ping" -> AddonBridgeProtocol.ack(request.requestId)
       "listAddons" -> {
-        val snapshot = cachedSnapshot ?: return AddonBridgeProtocol.error(request.requestId, "unavailable")
+        val snapshot =
+          cachedSnapshot
+            ?: return AddonBridgeProtocol.error(request.requestId, "unavailable")
         val summaries =
           snapshot.addons.map {
             AddonBridgeProtocol.AddonSummary(it.folder, it.version, it.enabled)
@@ -269,7 +271,9 @@ class AddonBridgeController(
           ?: AddonBridgeProtocol.error(request.requestId, "tooManyAddons")
       }
       "getLoadOrder" -> {
-        val snapshot = cachedSnapshot ?: return AddonBridgeProtocol.error(request.requestId, "unavailable")
+        val snapshot =
+          cachedSnapshot
+            ?: return AddonBridgeProtocol.error(request.requestId, "unavailable")
         val plan = AddonRuntimePlanner.plan(snapshot)
         AddonBridgeProtocol.loadOrder(
           request.requestId,
@@ -376,23 +380,22 @@ class AddonBridgeController(
 
     try {
       worker.execute {
-        val response =
-          runCatching {
-              val bytes = payloadProvider.readChunk(manifest, folder, path, offset)
-              AddonBridgeProtocol.fileChunk(
-                request.requestId,
-                manifest,
-                folder,
-                path,
-                offset,
-                bytes,
-              ) ?: throw AddonRuntimePayloadException("invalidRequest")
-            }.getOrElse { error ->
-              AddonBridgeProtocol.error(
-                request.requestId,
-                (error as? AddonRuntimePayloadException)?.code ?: "readFailed",
-              )
-            }
+        val response = runCatching {
+          val bytes = payloadProvider.readChunk(manifest, folder, path, offset)
+          AddonBridgeProtocol.fileChunk(
+            request.requestId,
+            manifest,
+            folder,
+            path,
+            offset,
+            bytes,
+          ) ?: throw AddonRuntimePayloadException("invalidRequest")
+        }.getOrElse { error ->
+          AddonBridgeProtocol.error(
+            request.requestId,
+            (error as? AddonRuntimePayloadException)?.code ?: "readFailed",
+          )
+        }
         mainHandler.post {
           if (pendingRequests[request.requestId] !== pending) return@post
           completePendingRequest(request.requestId, pending)
