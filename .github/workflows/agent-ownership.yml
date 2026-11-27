@@ -40,7 +40,6 @@ jobs:
             "agent:vibe"
             "agent:ib"
             "agent:review"
-            "agent:owner"
           )
 
           ensure_label() {
@@ -64,7 +63,6 @@ jobs:
           ensure_label "agent:vibe" "5319e7" "Explicitly assigned to Vibe; implementation may start within scope."
           ensure_label "agent:ib" "1d76db" "Explicitly assigned to IB; implementation may start within scope."
           ensure_label "agent:review" "fbca04" "Submitted for Chaty's review and integration."
-          ensure_label "agent:owner" "0e8a16" "Waiting for a repository-owner decision."
           ensure_label "agent:blocked" "d93f0b" "Historical closure marker for issues closed without successful merging."
 
           # Retire the obsolete queue state. Waiting issues now retain their actual owner label.
@@ -72,6 +70,36 @@ jobs:
             gh api --method DELETE "repos/$GITHUB_REPOSITORY/labels/agent%3Aqueued" >/dev/null
             echo "Retired the legacy agent:queued label."
           fi
+
+          # Retire the obsolete owner label from open issues and the repository.
+          while IFS= read -r number; do
+            [[ -n "$number" ]] || continue
+            gh api --method DELETE "repos/$GITHUB_REPOSITORY/issues/$number/labels/agent%3Aowner" >/dev/null 2>&1 || true
+          done < <(gh api --paginate "repos/$GITHUB_REPOSITORY/issues?state=open&per_page=100" --jq '.[] | select(.pull_request == null) | .number')
+          gh api --method DELETE "repos/$GITHUB_REPOSITORY/labels/agent%3Aowner" >/dev/null 2>&1 || true
+
+          # Apply consistent colors to all repository labels.
+          while IFS= read -r label; do
+            [[ -n "$label" ]] || continue
+            color="ededed"
+            case "$label" in
+              bug) color="d73a4a" ;;
+              enhancement) color="a2eeef" ;;
+              documentation) color="0075ca" ;;
+              P0|P0.1) color="b60205" ;;
+              P1) color="d93f0b" ;;
+              P2) color="fbca04" ;;
+              P3) color="0e8a16" ;;
+              agent:unassigned) color="cfd3d7" ;;
+              agent:chaty) color="0052cc" ;;
+              agent:vibe) color="5319e7" ;;
+              agent:ib) color="1d76db" ;;
+              agent:review) color="fbca04" ;;
+              agent:blocked) color="d93f0b" ;;
+            esac
+            encoded="$(printf '%s' "$label" | sed 's/:/%3A/g')"
+            gh api --method PATCH "repos/$GITHUB_REPOSITORY/labels/$encoded" -f "color=$color" >/dev/null
+          done < <(gh api --paginate "repos/$GITHUB_REPOSITORY/labels?per_page=100" --jq '.[].name')
 
           validate_issue() {
             local number="$1"
@@ -101,7 +129,7 @@ jobs:
           add_unassigned_if_missing() {
             local number="$1"
             local count
-            count="$(gh api "repos/$GITHUB_REPOSITORY/issues/$number" --jq '[.labels[].name | select(. as $name | ["agent:unassigned","agent:chaty","agent:vibe","agent:ib","agent:review","agent:owner"] | index($name))] | length')"
+            count="$(gh api "repos/$GITHUB_REPOSITORY/issues/$number" --jq '[.labels[].name | select(. as $name | ["agent:unassigned","agent:chaty","agent:vibe","agent:ib","agent:review"] | index($name))] | length')"
             if [[ "$count" -eq 0 ]]; then
               gh api --method POST "repos/$GITHUB_REPOSITORY/issues/$number/labels" \
                 --raw-field "labels[]=agent:unassigned" >/dev/null
