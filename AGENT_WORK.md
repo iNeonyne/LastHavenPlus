@@ -38,9 +38,10 @@
 
 Vibe has exactly one active implementation issue. A queued issue is not an assignment; it becomes startable only when Chaty changes its label to `agent:vibe` and posts a scope/acceptance comment.
 
-### Active — #149 launcher-owned string resources
-- **Label:** `agent:vibe`; this is Vibe's only active implementation assignment until PR handoff.
-- **Integration rule:** when Vibe submits the PR, Chaty changes issue ownership to `agent:chaty` and takes over the PR branch. Chaty makes required corrections directly, runs exact-head CI and merges when verified; no routine formal review or return-to-Vibe correction cycle.
+### Chaty integration — #149 launcher-owned string resources
+- **Label:** `agent:chaty`; Vibe's PR #165 has been handed off and Chaty owns the integration phase.
+- Chaty inspects the latest exact head, fixes remaining scope/documentation discrepancies directly on the PR branch, runs exact-head lint/format/unsigned release build/JVM tests and verifies CI. No formal review or routine return-to-Vibe correction cycle.
+- Vibe has no active implementation assignment while #149 is being integrated. #146 remains queued and must be explicitly assigned only after #149 is integrated and file overlap is rechecked.
 - Complete the launcher-owned string inventory, preserving exact wording/punctuation. Include remaining launcher dialogs and UpdateScreen labels/actions.
 - Keep source strings in the default `values/strings.xml` resources; do not copy untranslated English strings into locale-specific resource directories. Do not add translations or redesign copy.
 - Exclude game content, diagnostics payloads, developer logs and protocol values. No updater behavior, GeckoView/session lifecycle, Addon Manager or game/client changes.
