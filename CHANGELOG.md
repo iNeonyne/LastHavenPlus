@@ -5,6 +5,7 @@
 ### Browser engine and dependency baseline
 - Upgrade the embedded ARM64 browser engine from GeckoView 160 to GeckoView 161 Stable.
 - Align AndroidX Core with GeckoView 161's 1.19.1 runtime requirement.
+- Exclude all `com.google.android.gms` artifacts from GeckoView and enforce a Google Play services-free release APK. GeckoView WebAuthn/passkey sign-in is consequently unavailable; other browser/game behavior remains subject to runtime verification.
 - Update ktfmt to 0.65; retain the existing Gradle, AGP, Kotlin, JDK and Android SDK pins after compatibility review and CI validation.
 
 ### Repository rights and third-party notices
