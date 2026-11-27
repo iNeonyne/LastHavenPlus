@@ -42,6 +42,8 @@ internal class AddonBridgeController(
   private val installationCallbacks = mutableListOf<(Boolean) -> Unit>()
   private var installationGeneration = 0L
   private var snapshotGeneration = 0L
+  private var snapshotInFlight = false
+  private val snapshotCallbacks = mutableListOf<(Boolean) -> Unit>()
   private var requestGeneration = 0L
   private var gameSession: GeckoSession? = null
   private val pendingRequests = LinkedHashMap<String, PendingPortRequest>()
@@ -51,8 +53,12 @@ internal class AddonBridgeController(
   @Volatile private var cachedPayloadManifest: AddonRuntimePayloadProvider.Manifest? = null
   @Volatile private var payloadErrorCode: String? = null
 
-  /** Refreshes the library snapshot and validated payload manifest off the main thread. */
-  fun refreshSnapshot() {
+  /** Refreshes the validated payload before a new game navigation can request it. */
+  fun refreshSnapshot(onComplete: (Boolean) -> Unit = {}) {
+    snapshotCallbacks += onComplete
+    if (snapshotInFlight) return
+
+    snapshotInFlight = true
     val generation = ++snapshotGeneration
     try {
       worker.execute {
@@ -78,6 +84,7 @@ internal class AddonBridgeController(
                 (manifestResult?.exceptionOrNull() as? AddonRuntimePayloadException)?.code
                   ?: "unavailable"
             }
+          completeSnapshot(manifest != null)
         }
       }
     } catch (_: Exception) {
@@ -88,8 +95,16 @@ internal class AddonBridgeController(
         cachedSnapshot = null
         cachedPayloadManifest = null
         payloadErrorCode = "unavailable"
+        completeSnapshot(false)
       }
     }
+  }
+
+  private fun completeSnapshot(available: Boolean) {
+    snapshotInFlight = false
+    val callbacks = snapshotCallbacks.toList()
+    snapshotCallbacks.clear()
+    callbacks.forEach { callback -> callback(available) }
   }
 
   /** Records the live game session for sender identity checks; drops pending chunk reads. */
@@ -102,7 +117,7 @@ internal class AddonBridgeController(
   /** Installs the bundled extension before game navigation and reports completion on main. */
   fun ensureInstalled(context: Context, onComplete: (Boolean) -> Unit = {}) {
     if (bridgeExtension != null) {
-      onComplete(true)
+      refreshSnapshot { onComplete(true) }
       return
     }
     installationCallbacks += onComplete
@@ -133,7 +148,6 @@ internal class AddonBridgeController(
         completeInstallation(false)
         return
       }
-    refreshSnapshot()
     installation.accept(
       { extension ->
         mainHandler.post {
@@ -158,7 +172,11 @@ internal class AddonBridgeController(
               "Addon bridge extension install returned no extension",
             )
           }
-          completeInstallation(installed)
+          if (installed) {
+            refreshSnapshot { completeInstallation(true) }
+          } else {
+            completeInstallation(false)
+          }
         }
       },
       { error ->
@@ -186,6 +204,8 @@ internal class AddonBridgeController(
   fun teardown() {
     installationGeneration += 1
     snapshotGeneration += 1
+    snapshotInFlight = false
+    snapshotCallbacks.clear()
     requestGeneration += 1
     installInFlight = false
     installationCallbacks.clear()
