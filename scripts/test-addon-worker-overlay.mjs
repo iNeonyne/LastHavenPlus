@@ -1058,6 +1058,25 @@ test("OPFS blocks.idx is read bounded and its spans are sent in the worker boot 
   assert.deepEqual(Array.from(bytes), snapshot);
 });
 
+test("mask-record receiver rejects invalid spans, values and ineligible addon paths", () => {
+  const { core } = createPageContext();
+  const valid = { path: "Interface/AddOns/Foo/a", start: 2, end: 4, value: 48 };
+  assert.equal(core.validateMaskRecords([valid], 8, ["Foo"]).ok, true);
+  for (const invalid of [
+    { ...valid, start: -1 },
+    { ...valid, end: 9 },
+    { ...valid, start: 1.5 },
+    { ...valid, value: 0 },
+    { ...valid, path: "Interface/AddOns/Other/a" },
+    { ...valid, path: "Interface/AddOns/Foo/../a" },
+    { ...valid, extra: true },
+  ]) {
+    assert.equal(core.validateMaskRecords([valid, invalid], 8, ["Foo"]).ok, false);
+  }
+  assert.equal(core.validateMaskRecords([valid, { ...valid, start: 3, end: 5 }], 8, ["Foo"]).ok, false);
+  assert.equal(core.validateMaskRecords([valid], 1, ["Foo"]).ok, false);
+});
+
 test("worker rejects malformed mask records as a whole", () => {
   const { core } = createPageContext();
   const { scope, context, dispatchBoot } = bootWorkerScope(core, {
