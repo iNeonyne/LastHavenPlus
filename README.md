@@ -67,7 +67,7 @@ A signed release build requires the established project keystore and credentials
 
 - `beta` is the development, integration and testing branch; `main` is the stable release branch.
 - Task PRs target `beta`. When Vibe opens a PR, Chaty makes required fixes directly on that PR branch, verifies exact-head checks, and merges it into `beta`; routine formal review comments and correction handoffs are not used.
-- Chaty owns integration and verification; Vibe implements only existing issues explicitly assigned by Chaty.
+- Chaty owns integration and verification; Vibe implements only existing issues explicitly assigned by Chaty. After handing off a PR, Vibe immediately continues with the next independent assigned issue while Chaty integrates the earlier PR in parallel.
 - GitHub Issues, PRs, reviews, commits and Actions are the only agent-to-agent communication channel.
 - Every actionable issue has exactly one `agent:*` state/ownership label: `agent:unassigned` (intake), `agent:queued` (ready, waiting its turn), `agent:chaty`, `agent:vibe`, `agent:blocked` (dependency/hold), `agent:review` or `agent:owner`.
 - `ISSUES.md` and GitHub Issues are the task sources of truth.
