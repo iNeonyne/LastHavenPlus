@@ -140,13 +140,18 @@
     } else {
       return { kind: "passthrough" };
     }
+    const decoded = decodePath(raw);
     if (!raw.startsWith(ADDON_PREFIX)) {
+      // Encoded spellings of the addon prefix are non-canonical. Do not let them bypass
+      // interception and reach the server as an equivalent decoded addon resource.
+      if (decoded !== null && decoded.startsWith(ADDON_PREFIX)) {
+        return { kind: "notFound" };
+      }
       return { kind: "passthrough" };
     }
     if (upper !== "GET" && upper !== "HEAD") {
       return { kind: "methodNotAllowed", isHead: false };
     }
-    const decoded = decodePath(raw);
     if (decoded === null || !decoded.startsWith(ADDON_PREFIX)) {
       return { kind: "notFound" };
     }
