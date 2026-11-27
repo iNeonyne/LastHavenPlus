@@ -2,12 +2,12 @@
 
 - Captured: 2026-11-27
 - Repository: `iNeonyne/LastHavenPlus`
-- Beta baseline: `6ce947fca0527f272fbdf22ae1b7fbd9030570b6`
-- Capture PR head: `0663710818e41c4e4077b3973cfe31707dfc4ae7` (PR #201; Android build and unit-test job passed)
-- Workflow run: https://github.com/iNeonyne/LastHavenPlus/actions/runs/46060543522
-- Artifact: `pr-unit-test-reports-201`, artifact ID `15228427800` (contains the original 62,593-byte Gradle report)
+- Beta baseline: `3092762f6aded8d7294a01d80f296c53a2d17e75`
+- Capture PR head: `ce9620a9abddacaa2e4f791e53f7e41980627d52` (PR #201; Android build and unit-test job passed)
+- Workflow run: https://github.com/iNeonyne/LastHavenPlus/actions/runs/46062233814
+- Artifact: `pr-unit-test-reports-201`, artifact ID `15228564006` (contains the original 62,592-byte Gradle report)
 - Gradle task: `:app:dependencies --configuration releaseRuntimeClasspath` using wrapper 9.7.1 and JDK 25
-- SHA-256 of original captured report: `7248ff273a33ed72b38cd6c20550f5bc6d5eb22c29be9ab59bf3e10519bb093f`
+- SHA-256 of original captured report: `cd18809e360f7f1e29bfaf8cc03cdb9cd5cb83e5f46f6320103247583c260f9f`
 - Unique resolved module coordinates extracted: 145
 
 The table lists selected versions from Gradle resolution. Constraint-only `(c)` and unresolved `(n)` entries are excluded. This is a resolved runtime graph snapshot, not proof that every module is packaged in the APK.
