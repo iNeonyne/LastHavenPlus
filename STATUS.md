@@ -1,5 +1,13 @@
 # Project status — LastHavenPlus
 
+## 2026-11-27 — Addon Manager Phase B promoted to P0
+
+- **Owner priority:** The repository owner has made Addon Manager Phase B the top project priority, superseding the previous updater-first scheduling note. Parent #23 remains Chaty-owned; Vibe's sole active implementation task is #167 (GeckoView 160 extension bridge).
+- **Current sequence:** Complete and integrate #167 first; then Chaty reviews/unblocks and assigns the XHR overlay (#168), Worker/index masking (#169), and same-session navigation (#170) only when their security and session dependencies are satisfied. Do not overlap implementation scopes.
+- **Paused work:** Updater issues #4 and #15 are agent:queued, not cancelled. Do not resume until Chaty explicitly reassigns them after the Addon Manager milestone reaches a safe handoff point.
+- **Limitations:** Phase A and planner groundwork are integrated. No runtime extension installation, XHR/Worker interception, or verified in-game addon activation is currently claimed. No physical ARM64 runtime test has been performed.
+- **Release safety:** Existing exact-head CI, security, signing, ARM64-only, physical-device and owner-approval gates remain unchanged. No release, tag or main promotion is authorized.
+
 **Last updated:** 2026-11-27  
 **Active branch:** beta  
 **Verified beta HEAD after PR #175:** `022b4e2c4880d13b23e4e8c22cbd3dd5be679623` (documentation-only follow-up; latest app-code integration PR #173 is `5ed6af635954c8f4e2673dab3c60334eff4a8ae0`).
@@ -18,13 +26,13 @@
 ## Historical operational checkpoint — 2026-11-26
 
 - **Latest integrations:** PR #158 permission-policy documentation merged at 7451b940dc0adfa1ea14234fe6d489bba688b12c; post-merge Markdown run #45890132670 passed. PR #161 repository housekeeping merged at a0e5271793c9bb7754b7ac41429065e5602df569; exact-head Markdown #45892727113 and post-merge Markdown #45892884986 passed. Both changes are documentation-only; no Android/device test was applicable.
-- **Addon Manager:** Phase A native local ZIP/library management is integrated by PR #152 at 103bb979c98589a8704459d28d13861eccca39d6. Local enablement is metadata only. The owner has authorized Phase B investigation/implementation under Chaty coordination; runtime injection remains unimplemented/unverified. #23 is Chaty-owned; #167–#169 are queued and #170 is dependency-blocked.
+- **Addon Manager (P0):** Phase A and planner groundwork are integrated; Phase B is the top project priority. #23 is Chaty-owned; #167 is Vibe's active bridge assignment; #168/#169 remain dependency-blocked and #170 remains blocked on runtime/navigation prerequisites.
 - **UI integrations:** adaptive icon PR #135 merged at c24b24e7125f49e86f465b1786ccfecb537e9694; visual-system PR #136 at e0967121b51ac1c232c92edd80157fc02b714766; accessibility PR #139 at 0d5ab712ce5195a3e71023c68da54f054645a8e2. These are integrated source changes; CI is not physical-device evidence.
 - **Updater:** #4 and #15 are coordinated under Chaty. The BSDIFF partial-open cleanup candidate was not merged: PRs #157, #159 and #160 are closed unmerged. On PR #160 head d0cb2f5144257a2270ae0ed42f649833ad688207, Markdown run #45891807077 passed, but reproducibility build A failed resolving org.jetbrains.kotlin.plugin.compose:2.4.21; build B and Android validation were still running when the PR was closed. No updater code from those PRs is integrated. Full #4 acceptance remains incomplete.
 - **Diagnostics:** PR #163 merged the bounded diagnostics test work into beta. Issue #11 remains open/blocked only for the explicitly deferred runtime-version startup reporting; do not describe it as Vibe's active task.
 - **Housekeeping:** #128 completed through PR #161 at a0e5271793c9bb7754b7ac41429065e5602df569. Exact-head Markdown #45892727113 and post-merge Markdown #45892884986 passed.
 - **Open PR inventory:** GitHub returned no open PRs at this checkpoint. Closed unmerged work remains documented in its issues and is not treated as integrated.
-- **Assignment model:** every open issue must have exactly one agent label. `agent:queued` means ready/waiting its turn and is not permission to start; `agent:blocked` is reserved for real prerequisites/holds. Vibe active: #146; next after integration: #147. Addon Manager #167 waits for PR #166 merge and a separate explicit assignment; #168/#169 wait for #167. #170 is blocked. Chaty owns #4/#15/#18/#23/#142; #81 is queued. #67 remains owner-controlled. See AGENT_WORK.md for the live issue inventory.
+- **Assignment model:** every open issue must have exactly one agent label. agent:queued is ready/waiting and does not authorize work; agent:blocked is reserved for real prerequisites/holds. Vibe active: #167 (Addon Manager P0). #168/#169 wait for bridge/security contracts; #170 waits for runtime/navigation prerequisites. Chaty owns #23 coordination; #4/#15 are queued pending the Addon Manager milestone. See AGENT_WORK.md for the live issue inventory.
 - **Device status:** no new physical ARM64 device testing was performed or claimed.
 
 ## Historical Addon Manager Phase A implementation checkpoint (#23)
