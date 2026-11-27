@@ -43,18 +43,13 @@ GeckoView bundled license inventory (161 Stable)
 - Source HTML SHA-256: `036e7acd61cc5b7a4f88b6637d26269ffe20bb573a36b715bb98f31e7b70ccdf`. The inventory notes Mozilla's warning that some listed licenses may not apply to a particular product build/version; it does not claim every listed component is present in the launcher APK.
 - The full upstream license HTML remains embedded in GeckoView's `omni.ja`; the in-app viewer also displays the complete MPL-2.0 and Apache-2.0 texts separately.
 
-VENDOR SDK TERMS — NOT AN OPEN-SOURCE LICENSE
+GOOGLE PLAY SERVICES EXCLUSION
 
-The resolved runtime graph includes:
-- com.google.android.gms:play-services-fido:21.3.1
-- com.google.android.gms:play-services-base:18.7.2
-- com.google.android.gms:play-services-basement:18.9.0
-- com.google.android.gms:play-services-tasks:18.3.2
+The GeckoView 161 Maven metadata declares a transitive dependency on Google's proprietary FIDO2 client libraries. LastHavenPlus explicitly excludes the entire `com.google.android.gms` group from the GeckoView dependency at Gradle resolution time. These Google Play services libraries are not part of the intended runtime dependency graph or APK.
 
-These Google Play services artifacts are declared under Google's Android Software Development Kit License terms in their published Maven metadata. Those terms are not an OSI-approved open-source license. The project's All Rights Reserved notice does not apply to or change their terms. Review the current agreement and confirm distribution rights for these exact embedded artifacts before publishing or distributing an APK:
-https://developer.android.com/studio/terms
+The trade-off is explicit: GeckoView's WebAuthn/passkey integration relies on the excluded FIDO2 client, so passkey sign-in is unavailable in this build. Users must use another sign-in method. Ordinary GeckoView browsing and game functionality must be validated independently; excluding the optional FIDO integration must not be assumed safe without exact-build and runtime checks.
 
-The presence of these artifacts is recorded as a licensing and redistribution review gate, not as a legal conclusion. Do not remove, modify, or replace them without checking GeckoView's requirements and compatibility.
+CI enforces that no `com.google.android.gms` module resolves in `releaseRuntimeClasspath` and that no Google Play services classes are packaged in the release APK.
 
 SCOPE AND VERIFICATION
 
