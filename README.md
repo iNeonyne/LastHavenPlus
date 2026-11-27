@@ -31,7 +31,7 @@ These are features integrated into beta and covered by the repository's automate
 - **Network usage:** Android per-UID counters report app traffic, including both game and updater traffic; they are not game-only totals.
 - **Diagnostics:** Bounded local diagnostic logs support viewing, clearing and explicit user-initiated sharing. Review logs before sharing.
 - **Updater:** Stable release checks and downloads remain user-initiated. Manifest, version, URL, payload and digest validation are applied; differential patch failures retain a verified full-APK fallback. Android's package installer controls installation.
-- **Addon manager:** Native Phase A local ZIP/library management is integrated by [PR #152](https://github.com/iNeonyne/LastHavenPlus/pull/152) in beta. Imported addons remain library data; local enablement is metadata only and does not activate addons in the game. The supplied Chrome MV3 runtime port (Phase B) is not implemented. The repository owner has authorized Phase B investigation/implementation under Chaty's coordination; GeckoView 160 compatibility and security review remain mandatory.
+- **Addon manager:** Native Phase A local ZIP/library management is integrated by [PR #152](https://github.com/iNeonyne/LastHavenPlus/pull/152) in beta. Imported addons remain library data; local enablement is metadata only and does not activate addons in the game. The supplied Chrome MV3 runtime port (Phase B) is not implemented. Planner/origin-policy groundwork merged in PR #166; the GeckoView extension bridge, XHR/Worker interception and actual in-game addon activation remain unimplemented and require separate security review.
 
 ## Site permissions
 
@@ -67,7 +67,7 @@ A signed release build requires the established project keystore and credentials
 
 - `beta` is the development, integration and testing branch; `main` is the stable release branch.
 - Task PRs target `beta`. When Vibe opens a PR, Chaty makes required fixes directly on that PR branch, verifies exact-head checks, and merges it into `beta`; routine formal review comments and correction handoffs are not used.
-- Chaty owns integration and verification; Vibe implements only existing issues explicitly assigned by Chaty.
+- Chaty owns integration and verification; Vibe implements only existing issues explicitly assigned by Chaty. After handing off a PR, Vibe immediately continues with the next independent assigned issue while Chaty integrates the earlier PR in parallel.
 - GitHub Issues, PRs, reviews, commits and Actions are the only agent-to-agent communication channel.
 - Every actionable issue has exactly one `agent:*` state/ownership label: `agent:unassigned` (intake), `agent:queued` (ready, waiting its turn), `agent:chaty`, `agent:vibe`, `agent:blocked` (dependency/hold), `agent:review` or `agent:owner`.
 - `ISSUES.md` and GitHub Issues are the task sources of truth.

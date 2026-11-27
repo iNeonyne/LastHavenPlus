@@ -35,6 +35,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.Dispatchers
@@ -68,67 +69,90 @@ fun SettingsScreen(
     }
   }
 
-  SettingsPageFrame(title = "Settings & usage", onBack = onBack) {
-    PageSection(title = "Storage") {
-      InfoLine("Installed APK", snapshot?.installedApkBytes?.let(::formatBytes) ?: "Measuring…")
+  SettingsPageFrame(title = stringResource(R.string.settings_title), onBack = onBack) {
+    PageSection(title = stringResource(R.string.settings_storage_section)) {
       InfoLine(
-        "Persistent app data",
-        snapshot?.persistentDataBytes?.let(::formatBytes) ?: "Measuring…",
+        stringResource(R.string.settings_installed_apk),
+        snapshot?.installedApkBytes?.let(::formatBytes)
+          ?: stringResource(R.string.settings_value_measuring),
+      )
+      InfoLine(
+        stringResource(R.string.settings_persistent_data),
+        snapshot?.persistentDataBytes?.let(::formatBytes)
+          ?: stringResource(R.string.settings_value_measuring),
       )
       Text(
-        "Includes app-private files and GeckoView data; it is not a profile-only measurement.",
+        stringResource(R.string.settings_storage_hint),
         color = DesignTokens.textSecondary,
         style = MaterialTheme.typography.bodySmall,
       )
-      InfoLine("App cache", snapshot?.cacheBytes?.let(::formatBytes) ?: "Measuring…")
+      InfoLine(
+        stringResource(R.string.settings_app_cache),
+        snapshot?.cacheBytes?.let(::formatBytes)
+          ?: stringResource(R.string.settings_value_measuring),
+      )
       TextButton(onClick = { refreshKey++ }, enabled = !refreshing) {
-        Text(if (refreshing) "Refreshing…" else "Refresh storage")
+        Text(
+          if (refreshing) stringResource(R.string.settings_refreshing)
+          else stringResource(R.string.settings_refresh_storage)
+        )
       }
     }
 
-    PageSection(title = "Network usage") {
+    PageSection(title = stringResource(R.string.settings_network_section)) {
       InfoLine(
-        "Received since device boot",
-        snapshot?.receivedSinceBootBytes?.let(::formatBytes) ?: "Not supported",
+        stringResource(R.string.settings_received_since_boot),
+        snapshot?.receivedSinceBootBytes?.let(::formatBytes)
+          ?: stringResource(R.string.settings_value_not_supported),
       )
       InfoLine(
-        "Sent since device boot",
-        snapshot?.sentSinceBootBytes?.let(::formatBytes) ?: "Not supported",
+        stringResource(R.string.settings_sent_since_boot),
+        snapshot?.sentSinceBootBytes?.let(::formatBytes)
+          ?: stringResource(R.string.settings_value_not_supported),
       )
       InfoLine(
-        "Received this app session",
-        snapshot?.receivedThisSessionBytes?.let(::formatBytes) ?: "Not available",
+        stringResource(R.string.settings_received_this_session),
+        snapshot?.receivedThisSessionBytes?.let(::formatBytes)
+          ?: stringResource(R.string.settings_value_not_available),
       )
       InfoLine(
-        "Sent this app session",
-        snapshot?.sentThisSessionBytes?.let(::formatBytes) ?: "Not available",
+        stringResource(R.string.settings_sent_this_session),
+        snapshot?.sentThisSessionBytes?.let(::formatBytes)
+          ?: stringResource(R.string.settings_value_not_available),
       )
       Text(
-        "Per-app totals include game and updater traffic. " +
-          "They are stored locally and reset on device reboot.",
+        stringResource(R.string.settings_network_hint),
         color = DesignTokens.textSecondary,
         style = MaterialTheme.typography.bodySmall,
       )
     }
 
-    PageSection(title = "Application") {
+    PageSection(title = stringResource(R.string.settings_application_section)) {
       Text(
-        "LastHavenPlus",
+        stringResource(R.string.app_name),
         color = DesignTokens.textPrimary,
         fontWeight = FontWeight.SemiBold,
       )
-      Text("Game engine: Mozilla GeckoView 160", color = DesignTokens.textSecondary)
+      Text(stringResource(R.string.settings_game_engine), color = DesignTokens.textSecondary)
       OutlinedButton(
         onClick = onCheckUpdates,
         enabled = !isCheckingUpdate,
         modifier = Modifier.fillMaxWidth(),
       ) {
-        Text(if (isCheckingUpdate) "Checking for updates…" else "Check for updates")
+        Text(
+          if (isCheckingUpdate) stringResource(R.string.settings_checking_updates)
+          else stringResource(R.string.settings_check_updates)
+        )
       }
-      TextButton(onClick = onOpenUpdates) { Text("Update details") }
-      TextButton(onClick = onOpenDiagnostics) { Text("App diagnostics") }
+      TextButton(onClick = onOpenUpdates) { Text(stringResource(R.string.settings_update_details)) }
+      TextButton(onClick = onOpenDiagnostics) {
+        Text(stringResource(R.string.settings_open_diagnostics))
+      }
       TextButton(onClick = { showNotices = !showNotices }) {
-        Text(if (showNotices) "Hide third-party notices" else "Third-party notices")
+        Text(
+          if (showNotices) stringResource(R.string.settings_hide_notices)
+          else stringResource(R.string.settings_show_notices)
+        )
       }
       if (showNotices) {
         Surface(
@@ -137,7 +161,7 @@ fun SettingsScreen(
           shape = MaterialTheme.shapes.medium,
         ) {
           Text(
-            noticeText ?: "Third-party notice could not be loaded.",
+            noticeText ?: stringResource(R.string.settings_notices_load_failed),
             color = DesignTokens.textSecondary,
             style = MaterialTheme.typography.bodySmall,
             modifier = Modifier.padding(12.dp).verticalScroll(rememberScrollState()),
@@ -154,10 +178,10 @@ fun DiagnosticsScreen(
   onBack: () -> Unit,
 ) {
   var content by remember { mutableStateOf(Diagnostics.read(context)) }
-  SettingsPageFrame(title = "App diagnostics", onBack = onBack) {
-    PageSection(title = "Local diagnostic log") {
+  SettingsPageFrame(title = stringResource(R.string.diagnostics_title), onBack = onBack) {
+    PageSection(title = stringResource(R.string.diagnostics_log_section)) {
       Text(
-        "Logs are stored on this device. Review them before sharing.",
+        stringResource(R.string.diagnostics_privacy_hint),
         color = DesignTokens.textSecondary,
         style = MaterialTheme.typography.bodySmall,
       )
@@ -173,15 +197,18 @@ fun DiagnosticsScreen(
           style = MaterialTheme.typography.bodySmall,
         )
       }
+      val clearedMessage = stringResource(R.string.diagnostics_cleared)
       Row(horizontalArrangement = Arrangement.spacedBy(DesignTokens.spaceSmall)) {
-        OutlinedButton(onClick = { content = Diagnostics.read(context) }) { Text("Refresh") }
+        OutlinedButton(onClick = { content = Diagnostics.read(context) }) {
+          Text(stringResource(R.string.action_refresh))
+        }
         OutlinedButton(
           onClick = {
             Diagnostics.clear(context)
-            content = "Logs cleared."
+            content = clearedMessage
           }
         ) {
-          Text("Clear logs")
+          Text(stringResource(R.string.diagnostics_clear))
         }
       }
       Button(
@@ -189,20 +216,23 @@ fun DiagnosticsScreen(
           val share =
             Intent(Intent.ACTION_SEND).apply {
               type = "text/plain"
-              putExtra(Intent.EXTRA_SUBJECT, "LastHavenPlus diagnostics")
+              putExtra(Intent.EXTRA_SUBJECT, context.getString(R.string.diagnostics_share_subject))
               putExtra(Intent.EXTRA_TEXT, content)
             }
-          context.startActivity(Intent.createChooser(share, "Share diagnostic logs"))
+          context.startActivity(
+            Intent.createChooser(share, context.getString(R.string.diagnostics_share_chooser))
+          )
         },
         modifier = Modifier.fillMaxWidth(),
       ) {
-        Text("Share logs")
+        Text(stringResource(R.string.diagnostics_share))
       }
     }
   }
 }
 
 @Composable
+// All launcher-owned update-page copy is sourced from default Android string resources.
 fun UpdateScreen(
   update: AppUpdateInfo?,
   message: String?,
@@ -212,23 +242,23 @@ fun UpdateScreen(
   onBack: () -> Unit,
   onDownload: (preferDelta: Boolean) -> Unit,
 ) {
-  SettingsPageFrame(title = "App updates", onBack = onBack) {
-    PageSection(title = "Update status") {
+  SettingsPageFrame(title = stringResource(R.string.updates_title), onBack = onBack) {
+    PageSection(title = stringResource(R.string.updates_status_section)) {
       when {
         isChecking -> {
           LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
-          Text("Checking the stable release channel…", color = DesignTokens.textSecondary)
+          Text(stringResource(R.string.updates_checking), color = DesignTokens.textSecondary)
         }
         update != null -> {
           Text(
-            "LastHavenPlus ${update.version} is available.",
+            stringResource(R.string.updates_available, update.version),
             color = DesignTokens.textPrimary,
           )
           if (update.patch != null) {
             val patchMib =
               String.format(java.util.Locale.US, "%.1f", update.patch.size / 1024.0 / 1024.0)
             Text(
-              "A smaller differential package is available ($patchMib MiB).",
+              stringResource(R.string.updates_delta_available, patchMib),
               color = DesignTokens.textSecondary,
             )
           }
@@ -238,9 +268,9 @@ fun UpdateScreen(
           if (isDownloading) {
             val downloadLabel =
               if (downloadingDelta) {
-                "Downloading differential update…"
+                stringResource(R.string.updates_downloading_delta)
               } else {
-                "Downloading full APK…"
+                stringResource(R.string.updates_downloading_full)
               }
             LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
             Text(downloadLabel, color = DesignTokens.textSecondary)
@@ -254,7 +284,10 @@ fun UpdateScreen(
               },
               modifier = Modifier.fillMaxWidth(),
             ) {
-              Text(if (update.patch != null) "Download smaller update" else "Download update")
+              Text(
+                if (update.patch != null) stringResource(R.string.updates_download_smaller)
+                else stringResource(R.string.updates_download_full)
+              )
             }
             if (update.patch != null) {
               OutlinedButton(
@@ -264,20 +297,22 @@ fun UpdateScreen(
                 },
                 modifier = Modifier.fillMaxWidth(),
               ) {
-                Text("Download full APK instead")
+                Text(stringResource(R.string.updates_download_full_instead))
               }
             }
           }
         }
         else ->
           Text(
-            message ?: "No update information yet. Check for updates from Settings.",
+            message ?: stringResource(R.string.updates_no_info),
             color = DesignTokens.textSecondary,
           )
       }
     }
     if (message != null && update != null) {
-      PageSection(title = "Download status") { Text(message, color = DesignTokens.textSecondary) }
+      PageSection(title = stringResource(R.string.updates_download_status)) {
+        Text(message, color = DesignTokens.textSecondary)
+      }
     }
   }
 }
@@ -314,12 +349,12 @@ private fun SettingsPageFrame(
             style = MaterialTheme.typography.headlineSmall,
           )
           Text(
-            "LASTHAVENPLUS",
+            stringResource(R.string.settings_brand_mark),
             color = DesignTokens.frost,
             style = MaterialTheme.typography.labelSmall,
           )
         }
-        TextButton(onClick = onBack) { Text("Back") }
+        TextButton(onClick = onBack) { Text(stringResource(R.string.action_back)) }
       }
       content()
       Spacer(Modifier.height(12.dp))
