@@ -1065,3 +1065,8 @@ Entry format:
 ### Markdown pointer newline correction — 2026-11-28
 
 - Added the required final newline to the retired `ISSUES.md` and `STATUS.md` pointer files after the first PR Markdown lint identified MD047. Exact-head validation must be checked on the current PR head.
+
+
+### Latest beta unsigned APK reproducibility refreshed — 2026-11-28
+
+- Updated docs/REPRODUCIBLE_BUILDS.md to use post-PR #203 beta commit `cfcc19d863aff828ad3db42a628cd5f95569a962` and successful run [#46071208839](https://github.com/iNeonyne/LastHavenPlus/actions/runs/46071208839): byte-identical APKs, 97,637,264 bytes, SHA-256 `38de17fead60507567b1641643b97edbfbd96064bce3e6880a3de2822dd5c719`, 818 entries.
