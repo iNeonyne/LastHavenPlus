@@ -53,6 +53,7 @@ jobs:
           ensure_label "agent:unassigned" "f9d0c4" "No agent owns this issue; Chaty may triage and assign it."
           ensure_label "agent:chaty" "0052cc" "Implementation or coordination owned by Chaty."
           ensure_label "agent:vibe" "5319e7" "Explicitly assigned to Vibe; implementation may start."
+          ensure_label "agent:ib" "1d76db" "Explicitly assigned to IB; implementation may start."
           ensure_label "agent:queued" "c5def5" "Ready and waiting its turn; not an active assignment and must not be started."
           ensure_label "agent:blocked" "d93f0b" "Cannot proceed until a documented dependency, prerequisite, or owner decision is cleared."
           ensure_label "agent:review" "fbca04" "Implementation PR submitted; awaiting Chaty review."
