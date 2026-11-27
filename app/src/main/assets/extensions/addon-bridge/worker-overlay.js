@@ -1122,11 +1122,25 @@
       catch (error) { teardownEntry(entry, "worker-error"); }
     };
     try {
-      const maskData = readMaskBootstrapData(global, core);
+      let maskData = maskBootstrapCache;
+      if (maskData === null) {
+        maskData = readMaskBootstrapData(global, core);
+        if (maskData && typeof maskData.then === "function") {
+          maskBootstrapCache = maskData.then((result) => {
+            if (result.error === "bundle-unavailable") {
+              maskBootstrapCache = null;
+            }
+            return result;
+          });
+          maskData = maskBootstrapCache;
+        } else if (maskData.error !== "bundle-unavailable") {
+          maskBootstrapCache = maskData;
+        }
+      }
       if (maskData && typeof maskData.then === "function") {
         maskData.then(sendBoot).catch(() => sendBoot({ records: [], indexSize: 0, enabledFolders: [], error: "opfs-read" }));
       } else {
-        sendBoot(maskData);
+        sendBoot(maskData || { records: [], indexSize: 0, enabledFolders: [], error: "mask-unavailable" });
       }
     } catch (error) {
       sendBoot({ records: [], indexSize: 0, enabledFolders: [], error: "mask-unavailable" });
