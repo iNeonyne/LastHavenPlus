@@ -17,8 +17,9 @@ import org.mozilla.geckoview.WebExtension
  *
  * The controller installs only the launcher-owned built-in extension, validates every native sender
  * through [AddonBridgePolicy], and serves read-only metadata/file chunks from the Phase A
- * app-private library. It never enables addons, writes library files or activates runtime
- * interception. Issue #170 owns production session/navigation wiring.
+ * app-private library. The composition root binds it to the live game session before navigation.
+ * It never enables addons, writes library files or activates runtime interception. Issue #170 owns
+ * same-session Addon Manager navigation and page-world refresh.
  *
  * Snapshot and file reads run on [worker]. Native responses are bounded; large payloads are exposed
  * only through revision-bound manifest pages and one bounded file chunk at a time.
