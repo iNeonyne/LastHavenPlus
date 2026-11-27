@@ -968,7 +968,7 @@ test("blocks.idx parser masks column two digits and first byte of enabled addon 
   assert.equal(result.records.length, 2);
   const digitStart = new TextEncoder().encode("fïle\t").length;
   const pathStart = new TextEncoder().encode("fïle\t12345\tkind\tmeta\t").length;
-  assert.deepEqual(result.records.map(({ start, end, value }) => ({ start, end, value })), [
+  assert.deepEqual(Array.from(result.records, ({ start, end, value }) => ({ start, end, value })), [
     { start: digitStart, end: digitStart + 5, value: 48 },
     { start: pathStart, end: pathStart + 1, value: 35 },
   ]);
@@ -994,7 +994,7 @@ test("blocks.idx parser ignores non-enabled addon folders and non-addon rows", (
   );
   const result = core.parseBlocksIndex(bytes, ["Foo"]);
   assert.equal(result.ok, true);
-  assert.deepEqual(result.records, []);
+  assert.equal(result.records.length, 0);
 });
 
 test("blocks.idx parser rejects malformed rows and invalid numeric mask fields", () => {
@@ -1051,7 +1051,8 @@ test("OPFS blocks.idx is read bounded and its spans are sent in the worker boot 
   await new Promise((resolve) => setTimeout(resolve, 0));
   const boot = page.constructed[0].posted[0].data;
   assert.equal(boot.__lhBoot, true);
-  assert.deepEqual(boot.enabledFolders, ["Foo"]);
+  assert.equal(boot.enabledFolders.length, 1);
+  assert.equal(boot.enabledFolders[0], "Foo");
   assert.equal(boot.indexSize, bytes.length);
   assert.equal(boot.maskError, null);
   assert.equal(boot.maskRecords.length, 2);
