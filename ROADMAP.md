@@ -1,17 +1,66 @@
 # LastHavenPlus roadmap
 
+**Last updated:** 2026-11-28  
+**Latest stable release:** [v2.4.0](https://github.com/iNeonyne/LastHavenPlus/releases/tag/v2.4.0)
+
+This is the single strategic roadmap for the project. It records the current priorities and intended sequence, not individual agent assignments. GitHub Issues, their current labels/comments, pull requests and Actions remain authoritative for implementation scope and live task state. The repository owner controls priority changes and release decisions.
+
+## Current priorities
+
+### 1. Complete the Addon Manager software integration
+
+Finish the remaining code-level integration while preserving the existing game session and app-private addon library.
+
+- [#147 — Consolidate launcher navigation and back-stack state](https://github.com/iNeonyne/LastHavenPlus/issues/147). Navigation implementation is submitted in [PR #204](https://github.com/iNeonyne/LastHavenPlus/pull/204); Chaty owns integration and merge.
+- [#183 — Disconnect stale addon bridge ports when GeckoSession changes](https://github.com/iNeonyne/LastHavenPlus/issues/183). Fix stale-session port cleanup and cover session replacement/teardown with automated regression tests.
+- [#170 — Integrate Addon Manager navigation and same-session behavior](https://github.com/iNeonyne/LastHavenPlus/issues/170). Complete the overlay entry/return flow and automated lifecycle/navigation tests after the preceding work is integrated.
+
+The former physical-device runtime acceptance task [#167](https://github.com/iNeonyne/LastHavenPlus/issues/167) is out of scope and closed. This project does not perform physical-device testing. Acceptance is based on source review, coding/debugging, automated tests and CI; do not make unsupported claims about actual in-game addon execution.
+
+### 2. Resume updater reliability work
+
+After the Addon Manager software integration is safely handed off, resume the coordinated updater reliability work:
+
+- [#4 — Build reproducibility and updater test coverage](https://github.com/iNeonyne/LastHavenPlus/issues/4).
+- [#15 — Updater recovery](https://github.com/iNeonyne/LastHavenPlus/issues/15).
+- [#111 — Update progress and retry feedback](https://github.com/iNeonyne/LastHavenPlus/issues/111), sequenced after the recovery work.
+
+Keep overlapping updater implementation under one owner. Preserve verified full-APK fallback, bounded downloads, digest/signature validation and explicit user-controlled installation. The live issue assignments determine when this work resumes.
+
+### 3. Improve settings and diagnostics
+
+Once higher-priority reliability work is complete, revisit the scoped settings and diagnostics backlog. Relevant work includes [storage accounting (#28)](https://github.com/iNeonyne/LastHavenPlus/issues/28), [settings (#6)](https://github.com/iNeonyne/LastHavenPlus/issues/6), [orientation and keep-awake (#16)](https://github.com/iNeonyne/LastHavenPlus/issues/16), [load-error details (#12)](https://github.com/iNeonyne/LastHavenPlus/issues/12), [connection diagnostics (#14)](https://github.com/iNeonyne/LastHavenPlus/issues/14), [network totals (#10)](https://github.com/iNeonyne/LastHavenPlus/issues/10) and [settings backup (#17)](https://github.com/iNeonyne/LastHavenPlus/issues/17).
+
+These are strategic areas, not simultaneous assignments. Chaty should sequence them from the live dependencies and owner priorities before work starts.
+
+## Ongoing engineering constraints
+
+- ARM64 only (`arm64-v8a`); preserve the application ID and established signing identity.
+- Use the GeckoView ARM64 Stable artifact pinned in the Gradle version catalog.
+- Keep the existing game and browser profile data safe; do not modify game-hosted files.
+- Keep update checks, downloads and installation user-initiated.
+- Prefer coding, debugging and automated regression tests. Physical-device testing is not part of project acceptance.
+- Require exact-head CI for changes and avoid speculative dependency/toolchain changes.
+
+## Roadmap maintenance
+
+Update this file when strategic priorities, sequence or release direction changes. Keep detailed acceptance criteria, ownership, blockers and progress in the linked GitHub Issues and pull requests; do not duplicate them here. Release versions and publication require explicit repository-owner approval.
+
+<!-- ROADMAP-LIVE-START -->
+## Live issue and PR inventory
+
 Generated: 2026-11-27T22:57:46+00:00
-Source of truth: live GitHub Issues, pull requests and labels. This file is generated automatically; do not edit it manually.
+Source of truth: live GitHub Issues, pull requests and labels. This section is generated automatically; do not edit it manually.
 
 Every open issue is listed below, grouped by its current priority. Opening a newer issue or PR does not supersede an older one. Duplicates and supersession must be explicitly reviewed and linked in GitHub.
 
-## Active work
+### Active issues
 
-### P0.1
+#### P0.1
 
 - [#4 — P0.1 — Improve build reproducibility and updater test coverage](https://github.com/iNeonyne/LastHavenPlus/issues/4) — bug, P0.1
 
-### P2
+#### P2
 
 - [#14 — P2 — User-triggered connection diagnostics](https://github.com/iNeonyne/LastHavenPlus/issues/14) — enhancement, P2
 - [#15 — P2 — Make updater recovery safer](https://github.com/iNeonyne/LastHavenPlus/issues/15) — bug, P2
@@ -25,11 +74,11 @@ Every open issue is listed below, grouped by its current priority. Opening a new
 - [#184 — P2 — Move diagnostics log I/O off the Compose main thread](https://github.com/iNeonyne/LastHavenPlus/issues/184) — P2, performance
 - [#186 — P2 — Confirm GeckoView top-level navigation policy for the launcher](https://github.com/iNeonyne/LastHavenPlus/issues/186) — P2, security
 
-### P3
+#### P3
 
 - [#187 — P3 — Verify direct AndroidX dependencies are necessary](https://github.com/iNeonyne/LastHavenPlus/issues/187) — dependencies, P3
 
-### Unprioritized
+#### Unprioritized
 
 - [#6 — P2 — Essential launcher settings and safe storage controls](https://github.com/iNeonyne/LastHavenPlus/issues/6) — enhancement
 - [#7 — P3 — Measure runtime performance and evaluate APK size improvements](https://github.com/iNeonyne/LastHavenPlus/issues/7) — enhancement
@@ -43,13 +92,13 @@ Every open issue is listed below, grouped by its current priority. Opening a new
 - [#147 — P1 — Consolidate launcher navigation and back-stack state](https://github.com/iNeonyne/LastHavenPlus/issues/147) — enhancement
 - [#170 — P1 — Integrate addon manager navigation and verify same-session runtime behavior](https://github.com/iNeonyne/LastHavenPlus/issues/170) — enhancement
 
-## Open pull requests
+### Open pull requests
 
 - [#204 — Consolidate launcher navigation and back-stack state (#147)](https://github.com/iNeonyne/LastHavenPlus/pull/204) (beta <- vibe/navigation-consolidation-147)
 - [#213 — Add alternate game server setting and harden updater retries](https://github.com/iNeonyne/LastHavenPlus/pull/213) (beta <- chaty/game-url-setting-updater-hardening)
 - [#214 — Enable roadmap sync from the default beta branch](https://github.com/iNeonyne/LastHavenPlus/pull/214) (beta <- chaty/roadmap-sync-beta-default)
 
-## Recently completed (last 30 days)
+### Recently completed (last 30 days)
 
 - [#208 — Make GitHub the only live task queue and retire stale status snapshots](https://github.com/iNeonyne/LastHavenPlus/issues/208)
 - [#205 — Consolidate agent documentation and remove workflow duplication](https://github.com/iNeonyne/LastHavenPlus/issues/205)
@@ -91,11 +140,4 @@ Every open issue is listed below, grouped by its current priority. Opening a new
 - [#9 — Verify accessibility and navigation for the direct-launch overlay](https://github.com/iNeonyne/LastHavenPlus/issues/9)
 - [#8 — Superseded — Legacy addon manager removed; future scope waits for owner spec (#23)](https://github.com/iNeonyne/LastHavenPlus/issues/8)
 - [#5 — Owner feedback — LastHaven gameplay and update behavior after release](https://github.com/iNeonyne/LastHavenPlus/issues/5)
-
-## Operating principles
-
-- Chaty triages new issues and records a clear next step within 1–2 days.
-- Resolve work through coding, debugging and automated tests; physical-device testing is not a project requirement.
-- New issues and PRs never automatically make older ones obsolete.
-- GitHub Issues hold scope and acceptance criteria; PRs and Actions hold implementation and verification evidence.
-- Release and promotion decisions remain controlled by the agent orchestration workflow.
+<!-- ROADMAP-LIVE-END -->
