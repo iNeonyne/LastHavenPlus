@@ -59,7 +59,10 @@ class AddonBridgeAssetsTest {
       .forEach {
         assertFalse("manifest must not request $it", manifest.contains("\"$it\""))
       }
-    assertTrue("manifest must declare the exact-route content script", manifest.contains("content_scripts"))
+    assertTrue(
+      "manifest must declare the exact-route content script",
+      manifest.contains("content_scripts"),
+    )
   }
 
   @Test
