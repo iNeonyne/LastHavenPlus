@@ -87,3 +87,50 @@ dependencies {
   implementation(libs.androidx.compose.foundation)
   implementation(libs.androidx.compose.material3)
 }
+
+
+val verifyNoGooglePlayServices by tasks.registering {
+  doLast {
+    val googleArtifacts =
+      configurations
+        .getByName("releaseRuntimeClasspath")
+        .resolvedConfiguration
+        .resolvedArtifacts
+        .filter { it.moduleVersion.id.group == "com.google.android.gms" }
+    check(googleArtifacts.isEmpty()) {
+      "Google Play services must not be present in releaseRuntimeClasspath: " +
+        googleArtifacts.joinToString { it.moduleVersion.id.toString() }
+    }
+  }
+}
+
+val verifyNoGooglePlayServicesInApk by tasks.registering {
+  doLast {
+    val apk =
+      listOf(
+          layout.buildDirectory.file("outputs/apk/release/app-release-unsigned.apk").get().asFile,
+          layout.buildDirectory.file("outputs/apk/release/app-release.apk").get().asFile,
+        )
+        .firstOrNull { it.isFile }
+    check(apk != null) { "Release APK was not found for Google Play services verification." }
+
+    java.util.zip.ZipFile(apk).use { archive ->
+      val dexEntries =
+        archive.entries().asSequence().filter { it.name.matches(Regex("classes(\\d*)?\\.dex")) }
+      val containsGooglePlayServices =
+        dexEntries.any { entry ->
+          archive.getInputStream(entry).use { input ->
+            input.readBytes().toString(Charsets.ISO_8859_1).contains("com/google/android/gms")
+          }
+        }
+      check(!containsGooglePlayServices) {
+        "Google Play services classes were found in the release APK."
+      }
+    }
+  }
+}
+
+tasks.named("assembleRelease") {
+  dependsOn(verifyNoGooglePlayServices)
+  finalizedBy(verifyNoGooglePlayServicesInApk)
+}
