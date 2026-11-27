@@ -6,8 +6,8 @@
 
 ## Roles and integration
 
-- **Chaty:** main orchestrator, issue triage/assignment, reviewer, documentation and CI coordinator, sole integrator into beta.
-- **Vibe:** implementation contributor; works only on the current active issue explicitly assigned by Chaty through GitHub.
+- **Chaty:** main orchestrator, issue triage/assignment, integration fixer, verification and CI coordinator, sole integrator into beta.
+- **Vibe:** implementation contributor; works only on the current active issue explicitly assigned by Chaty through GitHub. After PR handoff, Chaty owns branch fixes and integration.
 - **Repository owner:** final product, priority, Phase B and release authority.
 - GitHub Issues, comments, PRs, commits and Actions are the only agent-to-agent communication channel.
 - All implementation PRs target beta. No direct contributor push to beta/main. Chaty alone merges. No release/tag/publication or beta-to-main promotion without explicit owner approval.
@@ -39,11 +39,12 @@
 Vibe has exactly one active implementation issue. A queued issue is not an assignment; it becomes startable only when Chaty changes its label to `agent:vibe` and posts a scope/acceptance comment.
 
 ### Active — #149 launcher-owned string resources
-- **Label:** `agent:vibe`; this is Vibe's only active implementation assignment.
+- **Label:** `agent:vibe`; this is Vibe's only active implementation assignment until PR handoff.
+- **Integration rule:** when Vibe submits the PR, Chaty changes issue ownership to `agent:chaty` and takes over the PR branch. Chaty makes required corrections directly, runs exact-head CI and merges when verified; no routine formal review or return-to-Vibe correction cycle.
 - Complete the launcher-owned string inventory, preserving exact wording/punctuation. Include remaining launcher dialogs and UpdateScreen labels/actions.
 - Keep source strings in the default `values/strings.xml` resources; do not copy untranslated English strings into locale-specific resource directories. Do not add translations or redesign copy.
 - Exclude game content, diagnostics payloads, developer logs and protocol values. No updater behavior, GeckoView/session lifecycle, Addon Manager or game/client changes.
-- PR #165 has review feedback; inspect the latest PR comments and current exact head before editing. Address all review findings, add required project documentation, run exact-head lint/format/unsigned release build/JVM tests and report CI links. Do not assume prior green checks cover a new head.
+- PR #165 is the current integration handoff. Chaty owns the branch now: inspect the latest exact head and PR discussion, fix remaining scope/documentation discrepancies directly on the PR branch, run exact-head lint/format/unsigned release build/JVM tests and verify CI. Do not submit a formal review or send routine fixes back to Vibe. Do not assume prior green checks cover a new head.
 
 ### Next — #146 GameSessionController (queued)
 - **Label:** `agent:queued`; do not start until #149 is handed off and Chaty explicitly assigns #146 after checking file overlap.
