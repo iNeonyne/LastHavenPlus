@@ -95,6 +95,20 @@ class AddonBridgeProtocolTest {
       AddonBridgeProtocol.addonList(
         "r-1",
         "rev1",
+        listOf(AddonBridgeProtocol.AddonSummary("unit.frame", "0.5.1", true)),
+      )
+    )
+    assertNull(
+      AddonBridgeProtocol.addonList(
+        "r-1",
+        "rev1",
+        listOf(AddonBridgeProtocol.AddonSummary("blizzard_ui", "0.5.1", true)),
+      )
+    )
+    assertNull(
+      AddonBridgeProtocol.addonList(
+        "r-1",
+        "rev1",
         listOf(
           AddonBridgeProtocol.AddonSummary("ok", "0.5.1", true),
           AddonBridgeProtocol.AddonSummary("a".repeat(129), "0.5.1", false),
@@ -118,6 +132,8 @@ class AddonBridgeProtocolTest {
     assertNull(AddonBridgeProtocol.loadOrder("r-1", "rev1", listOf(".."), emptyList()))
     assertNull(AddonBridgeProtocol.loadOrder("r-1", "rev1", listOf("."), emptyList()))
     assertNull(AddonBridgeProtocol.loadOrder("r-1", "rev1", listOf("../escape"), emptyList()))
+    assertNull(AddonBridgeProtocol.loadOrder("r-1", "rev1", listOf("unit.frame"), emptyList()))
+    assertNull(AddonBridgeProtocol.loadOrder("r-1", "rev1", listOf("blizzard_ui"), emptyList()))
     assertNull(
       AddonBridgeProtocol.loadOrder(
         "r-1",
