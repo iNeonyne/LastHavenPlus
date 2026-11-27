@@ -970,3 +970,12 @@ Verify the current manifest and GeckoView delegates, then document the strict al
 - This is source-level integration only. It does not implement XHR interception (#168), Worker/OPFS `blocks.idx` masking (#169), same-session Addon Manager navigation/page-world refresh (#170), or addon activation. No physical ARM64 test or in-game addon initialization is claimed.
 - Exact PR-head Android validation [#45947192586](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45947192586) and independent unsigned APK reproducibility [#45947192520](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45947192520) passed on head `0a291ca0edd7ac7db03ffe126a02349cbd1b758a`. Documentation updates require fresh exact-head Markdown and Android/reproducibility checks before merge.
 - Issue #167 remains open until physical ARM64 runtime acceptance and the remaining Addon Manager workstream gates are satisfied; merging this source integration does not imply runtime compatibility.
+
+
+## 2026-11-27 — Chaty corrected #169 index masking contract
+
+- PR #195 now reads the root OPFS `blocks.idx` through `navigator.storage.getDirectory()` and `getFileHandle("blocks.idx")`, checks the 2 MiB ceiling before reading, and sends validated spans in the Worker boot message before the original worker script is imported.
+- The authoritative five-column loader format is respected: column 5 (`cols[4]`) is the addon path; digits in column 2 (`cols[1]`) are filled with byte 48 (`0`), and the first byte of column 5 is filled with byte 35 (`#`). Byte offsets are calculated from UTF-8 encoded bytes and only enabled addon folders are eligible.
+- The Worker validates the complete span set atomically (path/folder eligibility, exact record shape, safe integer spans, index bounds and allowed fill bytes). Any malformed entry rejects the whole set; OPFS/index failures apply no mask and emit only a bounded stage diagnostic. Persistent OPFS bytes are never written.
+- The generated bootstrap now includes parser/path-validator dependencies, and the WASM hook checks the actual `scope.wasmImports` object after `assignWasmImports()` runs.
+- The exact Worker URL allowlist remains empty pending physical ARM64 observation. No physical device test or in-game addon/Lua initialization is claimed. PR #195 remains unmerged pending exact-head CI and Chaty's integration acceptance.
