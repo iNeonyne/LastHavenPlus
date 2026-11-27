@@ -260,7 +260,9 @@ class AddonBridgeController(
     return when (request.type) {
       "ping" -> AddonBridgeProtocol.ack(request.requestId)
       "listAddons" -> {
-        val snapshot = cachedSnapshot ?: return AddonBridgeProtocol.error(request.requestId, "unavailable")
+        val snapshot =
+          cachedSnapshot
+            ?: return AddonBridgeProtocol.error(request.requestId, "unavailable")
         val summaries =
           snapshot.addons.map {
             AddonBridgeProtocol.AddonSummary(it.folder, it.version, it.enabled)
@@ -269,7 +271,9 @@ class AddonBridgeController(
           ?: AddonBridgeProtocol.error(request.requestId, "tooManyAddons")
       }
       "getLoadOrder" -> {
-        val snapshot = cachedSnapshot ?: return AddonBridgeProtocol.error(request.requestId, "unavailable")
+        val snapshot =
+          cachedSnapshot
+            ?: return AddonBridgeProtocol.error(request.requestId, "unavailable")
         val plan = AddonRuntimePlanner.plan(snapshot)
         AddonBridgeProtocol.loadOrder(
           request.requestId,
@@ -298,12 +302,11 @@ class AddonBridgeController(
         if (request.revision != manifest.revision) {
           return AddonBridgeProtocol.error(request.requestId, "staleRevision")
         }
-        val files = runCatching {
-          payloadProvider.page(manifest, request.page ?: -1)
-        }.getOrElse {
-          val code = (it as? AddonRuntimePayloadException)?.code ?: "invalidRequest"
-          return AddonBridgeProtocol.error(request.requestId, code)
-        }
+        val files =
+          runCatching { payloadProvider.page(manifest, request.page ?: -1) }.getOrElse {
+            val code = (it as? AddonRuntimePayloadException)?.code ?: "invalidRequest"
+            return AddonBridgeProtocol.error(request.requestId, code)
+          }
         AddonBridgeProtocol.manifestPage(
           request.requestId,
           manifest,
@@ -354,10 +357,11 @@ class AddonBridgeController(
     request: AddonBridgeProtocol.AddonBridgeRequest,
     port: WebExtension.Port,
   ) {
-    val manifest = cachedPayloadManifest ?: run {
-      sendPortError(port, request.requestId, payloadErrorCode ?: "unavailable")
-      return
-    }
+    val manifest =
+      cachedPayloadManifest ?: run {
+        sendPortError(port, request.requestId, payloadErrorCode ?: "unavailable")
+        return
+      }
     if (request.revision != manifest.revision) {
       sendPortError(port, request.requestId, "staleRevision")
       return
