@@ -12,20 +12,20 @@
 ## Current state — 2026-11-27
 
 - **Latest stable:** v2.3.0; no new release is authorized.
-- **Development:** beta HEAD `7e39d2553a11332d44326c1704e0d7647cc6aa40`.
+- **Development:** beta HEAD `606e7c2a2df06de798df4cc3d8057483617e4a4e`.
 - **Integrated:** PR #166 Addon Manager planner groundwork at `d83e2dfc89087f67f4dbbe71e85668d80303e3ef`; PR #165 launcher strings at `7e39d2553a11332d44326c1704e0d7647cc6aa40`. PR #165 exact-head Android/unit tests, unsigned APK reproducibility and Markdown passed; #149 is closed.
-- **Open PR:** #173 GameSessionController (#146), draft at `eb9f64b672eced9143bc5689106223c3e7af3d16`. Markdown passed; Android and reproducibility are pending. Chaty is resolving documentation conflicts caused by the #165 merge and will rerun exact-head checks before merging.
-- **Vibe active:** #167 GeckoView 160 extension bridge (`agent:vibe`), explicitly assigned with strict file exclusions to avoid overlap with #173 integration. #146 is now `agent:chaty` for PR integration.
+- **Open PRs:** #177 Vibe's draft GeckoView bridge handoff (#167), awaiting Chaty's code/security review; #179 documentation-only priority update, Markdown run #45927607793 passed (merge pending).
+- **Vibe handoff:** #167 GeckoView 160 extension bridge is submitted as draft PR #177; issue is `agent:review` while Chaty reviews.
 - **Addon Manager:** Phase A and planner groundwork are integrated; extension installation, XHR/Worker interception and actual in-game activation are not implemented. #168/#169 remain blocked behind #167/runtime prerequisites.
 - **Updater:** #4/#15 remain coordinated under Chaty; earlier BSDIFF candidate PRs were not merged and signed APK-pair acceptance remains incomplete.
 - **Device/release:** no physical ARM64 test, release, tag, publication or beta-to-main promotion is claimed or authorized.
 
 ## Current ownership
 
-- **Chaty active:** #4/#15 updater reliability/recovery, #23 Phase B coordination, and integration of #146/PR #173. #18/#142 are coordination records.
-- **Vibe active:** #167 GeckoView 160 extension bridge; one active implementation issue at a time.
-- **Vibe integration handed off:** #146 GameSessionController, PR #173; Chaty owns direct fixes and merge.
-- **Vibe next:** #147 after #146 integration. #168/#169 remain blocked until #167 and runtime prerequisites are complete; #170 remains blocked.
+- **Chaty active:** #23 Phase B coordination and review/integration of #167/PR #177. Updater #4/#15 are queued/paused.
+- **Vibe handoff under review:** #167 GeckoView 160 extension bridge, PR #177 (`agent:review`).
+- **Completed integration:** #146 GameSessionController, PR #173, merged and post-merge CI verified.
+- **Vibe next:** no new implementation issue until Chaty reviews #167 and checks dependency/file ownership. #168/#169 remain blocked pending bridge/security integration; #170 remains blocked.
 - **Chaty queued:** #81 dependency-evidence documentation; not started. #20/#31 remain owner/authorization blocked.
 - **Owner-controlled:** #67 third-party rights/distribution decision.
 - **Diagnostics:** #11 test work merged; remaining runtime-version startup reporting remains deferred.
