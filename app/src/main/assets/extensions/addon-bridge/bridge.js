@@ -3,18 +3,26 @@
 /**
  * Isolated-world relay for the ZIP 0.5.1 addon payload.
  *
- * This script never calls native messaging directly and never uses page-forgeable window messages.
- * It asks the built-in background script for a validated payload, then exposes only immutable
- * getter functions into the page world.
+ * The content script requests one bounded native chunk at a time through the extension background,
+ * validates the complete payload, then exposes read-only getters into the exact game page realm.
+ * No page-forgeable window message is accepted and page code cannot mutate the isolated source.
  */
 (function installIsolatedAddonBridge() {
   const GAME_ORIGIN = "https://lasthavens.com";
   const BRIDGE_KEY = "__LASTHAVEN_ADDON_BRIDGE__";
   const core = globalThis.__LHAddonRuntimeCore;
+  const MAX_STARTUP_WAIT_MS = 20000;
+  const MAX_RUNTIME_BUNDLE_BYTES = 16 * 1024 * 1024;
+  const MAX_RUNTIME_FILE_BYTES = 8 * 1024 * 1024;
+  const MAX_RUNTIME_FILES = 1024;
+  const MAX_RUNTIME_ADDONS = 128;
+  const MAX_RUNTIME_PATH_CHARS = 512;
+  const MAX_MANIFEST_PAGE_ITEMS = 32;
+  const MAX_FILE_CHUNK_BYTES = 32 * 1024;
+
   if (!core || typeof core.validatePayload !== "function") {
     return;
   }
-
   if (location.origin !== GAME_ORIGIN ||
       (location.pathname !== "/play" && location.pathname !== "/play/")) {
     return;
@@ -24,8 +32,177 @@
   let ready = false;
   let errorCode = null;
 
-  function validatePayload(payload) {
-    return core.validatePayload(payload);
+  function isSafeFolder(folder) {
+    return typeof folder === "string" &&
+      /^[A-Za-z0-9_-]{1,128}$/.test(folder) &&
+      !folder.toLowerCase().startsWith("blizzard_");
+  }
+
+  function isSafeRelativePath(path) {
+    if (typeof path !== "string" || path.length === 0 || path.length > MAX_RUNTIME_PATH_CHARS) {
+      return false;
+    }
+    if (path.startsWith("/") || path.includes("\\") || /[\u0000-\u001f\u007f-\u009f:]/.test(path)) {
+      return false;
+    }
+    return path.split("/").every((part) => part.length > 0 && part !== "." && part !== "..");
+  }
+
+  function requireResponse(response, expectedType) {
+    if (response && response.type === "error" && typeof response.error === "string") {
+      throw new Error(response.error);
+    }
+    if (!response || response.type !== expectedType) {
+      throw new Error("invalidResponse");
+    }
+    return response;
+  }
+
+  function decodeBase64Chunk(encoded, expectedLength) {
+    if (typeof encoded !== "string" ||
+        encoded.length > 4 * Math.ceil(MAX_FILE_CHUNK_BYTES / 3) + 4 ||
+        !/^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$/.test(encoded)) {
+      throw new Error("invalidResponse");
+    }
+    let binary;
+    try {
+      binary = atob(encoded);
+    } catch (_error) {
+      throw new Error("invalidResponse");
+    }
+    if (binary.length !== expectedLength) {
+      throw new Error("invalidResponse");
+    }
+    const bytes = new Uint8Array(binary.length);
+    for (let index = 0; index < binary.length; index += 1) {
+      bytes[index] = binary.charCodeAt(index);
+    }
+    return bytes;
+  }
+
+  function encodeBase64(bytes) {
+    let encoded = "";
+    const base64SegmentBytes = 0x3fff;
+    for (let offset = 0; offset < bytes.length; offset += base64SegmentBytes) {
+      const segment = bytes.subarray(offset, Math.min(offset + base64SegmentBytes, bytes.length));
+      let binary = "";
+      for (let index = 0; index < segment.length; index += 1) {
+        binary += String.fromCharCode(segment[index]);
+      }
+      encoded += btoa(binary);
+    }
+    return encoded;
+  }
+
+  async function requestNative(type, fields, expectedType) {
+    const response = await browser.runtime.sendMessage(Object.assign({}, fields, { type: type }));
+    return requireResponse(response, expectedType);
+  }
+
+  async function readAddonFile(revision, descriptor) {
+    const bytes = new Uint8Array(descriptor.sizeBytes);
+    let offset = 0;
+    while (offset < descriptor.sizeBytes) {
+      const response = await requestNative(
+        "getFileChunk",
+        {
+          revision: revision,
+          folder: descriptor.folder,
+          path: descriptor.path,
+          offset: String(offset)
+        },
+        "fileChunk"
+      );
+      if (response.revision !== revision ||
+          response.folder !== descriptor.folder ||
+          response.path !== descriptor.path ||
+          response.offset !== offset ||
+          response.totalBytes !== descriptor.sizeBytes) {
+        throw new Error("invalidResponse");
+      }
+      const expectedLength = Math.min(MAX_FILE_CHUNK_BYTES, descriptor.sizeBytes - offset);
+      const chunk = decodeBase64Chunk(response.data, expectedLength);
+      if (response.done !== (offset + chunk.length === descriptor.sizeBytes)) {
+        throw new Error("invalidResponse");
+      }
+      bytes.set(chunk, offset);
+      offset += chunk.length;
+    }
+    return encodeBase64(bytes);
+  }
+
+  async function getAddonBundle() {
+    const info = await requestNative("getBundleInfo", {}, "bundleInfo");
+    if (typeof info.revision !== "string" || !/^[a-f0-9]{64}$/.test(info.revision) ||
+        typeof info.sourceRevision !== "string" || !/^[A-Za-z0-9._-]{1,128}$/.test(info.sourceRevision) ||
+        !Array.isArray(info.addons) || info.addons.length > MAX_RUNTIME_ADDONS ||
+        !Number.isSafeInteger(info.fileCount) || info.fileCount < 0 || info.fileCount > MAX_RUNTIME_FILES ||
+        !Number.isSafeInteger(info.totalBytes) || info.totalBytes < 0 || info.totalBytes > MAX_RUNTIME_BUNDLE_BYTES ||
+        !Number.isSafeInteger(info.pageCount) ||
+        info.pageCount !== Math.ceil(info.fileCount / MAX_MANIFEST_PAGE_ITEMS) ||
+        info.pageSize !== MAX_MANIFEST_PAGE_ITEMS ||
+        info.chunkBytes !== MAX_FILE_CHUNK_BYTES) {
+      throw new Error("invalidResponse");
+    }
+
+    const addonMap = new Map();
+    const seenFolders = new Set();
+    for (const folder of info.addons) {
+      const normalized = typeof folder === "string" ? folder.toLowerCase() : "";
+      if (!isSafeFolder(folder) || seenFolders.has(normalized)) {
+        throw new Error("invalidResponse");
+      }
+      seenFolders.add(normalized);
+      addonMap.set(folder, { folder: folder, files: Object.create(null) });
+    }
+
+    const seenFiles = new Set();
+    let listedFiles = 0;
+    let listedBytes = 0;
+    for (let page = 0; page < info.pageCount; page += 1) {
+      const response = await requestNative(
+        "getBundleManifestPage",
+        { revision: info.revision, page: String(page) },
+        "bundleManifestPage"
+      );
+      if (response.revision !== info.revision ||
+          response.page !== page ||
+          !Array.isArray(response.files) ||
+          response.files.length > MAX_MANIFEST_PAGE_ITEMS) {
+        throw new Error("invalidResponse");
+      }
+      for (const descriptor of response.files) {
+        if (!descriptor || !isSafeFolder(descriptor.folder) ||
+            !isSafeRelativePath(descriptor.path) ||
+            !Number.isSafeInteger(descriptor.sizeBytes) ||
+            descriptor.sizeBytes < 0 || descriptor.sizeBytes > MAX_RUNTIME_FILE_BYTES ||
+            !addonMap.has(descriptor.folder)) {
+          throw new Error("invalidResponse");
+        }
+        const key = descriptor.folder.toLowerCase() + "/" + descriptor.path.toLowerCase();
+        if (seenFiles.has(key)) {
+          throw new Error("invalidResponse");
+        }
+        seenFiles.add(key);
+        listedFiles += 1;
+        listedBytes += descriptor.sizeBytes;
+        if (listedFiles > MAX_RUNTIME_FILES || listedBytes > MAX_RUNTIME_BUNDLE_BYTES) {
+          throw new Error("payloadTooLarge");
+        }
+        const encoded = descriptor.sizeBytes === 0
+          ? ""
+          : await readAddonFile(info.revision, descriptor);
+        addonMap.get(descriptor.folder).files[descriptor.path] = encoded;
+      }
+    }
+
+    if (listedFiles !== info.fileCount || listedBytes !== info.totalBytes) {
+      throw new Error("invalidResponse");
+    }
+    return {
+      revision: info.revision,
+      addons: Array.from(addonMap.values())
+    };
   }
 
   function publishToPage() {
@@ -65,41 +242,32 @@
     }
   }
 
-  function delay(milliseconds) {
-    return new Promise((resolve) => setTimeout(resolve, milliseconds));
-  }
-
   async function fetchBundle() {
-    for (let attempt = 0; attempt < 3; attempt += 1) {
+    const startedAt = Date.now();
+    let attempt = 0;
+    while (Date.now() - startedAt <= MAX_STARTUP_WAIT_MS) {
       try {
-        const response = await browser.runtime.sendMessage({ type: "getAddonBundle" });
-        if (response && response.type === "error") {
-          const code = typeof response.code === "string" ? response.code : "unavailable";
-          if (code === "unavailable" && attempt < 2) {
-            await delay(250 * (attempt + 1));
-            continue;
-          }
+        const payload = await getAddonBundle();
+        if (!core.validatePayload(payload)) {
+          throw new Error("invalidPayload");
+        }
+        currentBundle = core.deepFreeze(payload);
+        ready = true;
+        return;
+      } catch (error) {
+        const code = typeof error?.message === "string" ? error.message : "unavailable";
+        if (code !== "unavailable" && code !== "native_unavailable" && code !== "native_disconnected") {
           errorCode = code.slice(0, 32);
           ready = true;
           return;
         }
-        if (!validatePayload(response)) {
-          errorCode = "invalid_payload";
-          ready = true;
-          return;
-        }
-        currentBundle = core.deepFreeze(response);
-        ready = true;
-        return;
-      } catch (_error) {
-        if (attempt < 2) {
-          await delay(250 * (attempt + 1));
-          continue;
-        }
-        errorCode = "bridge_unavailable";
-        ready = true;
+        const delay = Math.min(250 * (attempt + 1), 2000);
+        attempt += 1;
+        await new Promise((resolve) => setTimeout(resolve, delay));
       }
     }
+    errorCode = "unavailable";
+    ready = true;
   }
 
   if (!publishToPage()) {
