@@ -91,8 +91,8 @@ Every open issue has exactly one `agent:*` label. The label distinguishes active
 | #67 | `agent:owner` | Rights and third-party notice decision |
 | #81 | `agent:queued` | Chaty documentation/evidence task; not started |
 | #12 | `agent:queued` | #11 prerequisite merged; after #146/#147 and Phase B bridge work, explicit assignment required |
-| #146 | `agent:vibe` | Active Vibe assignment; proceed independently while Chaty integrates prior PRs |
-| #167 | `agent:queued` | PR #166 merged; wait for #146 integration and explicit Chaty assignment |
+| #146 | `agent:chaty` | Closed completed; PR #173 merged at `5ed6af6` |
+| #167 | `agent:vibe` | Active Vibe bridge assignment; branch creation and API-audit progress requested |
 | #168 | `agent:blocked` | Waits for #167 bridge integration and contract verification |
 | #169 | `agent:blocked` | Waits for #167 and #168 contracts to be integrated |
 | #6 | `agent:blocked` | Waits for #28 |
@@ -108,7 +108,7 @@ Every open issue has exactly one `agent:*` label. The label distinguishes active
 | #31 | `agent:blocked` | Release-tag/runtime verification requires explicit owner authorization |
 | #86 | `agent:blocked` | Deferred coordination scope requires owner confirmation |
 | #111 | `agent:blocked` | v2.5.0 hold: v2.4.0 release and explicit owner authorization |
-| #147 | `agent:blocked` | Waits for #146 |
+| #147 | `agent:queued` | #146 integrated; waiting for Vibe's #167 handoff and explicit assignment |
 | #148 | `agent:blocked` | Waits for #146 and coordination with #16 |
 | #170 | `agent:blocked` | Waits for #146/navigation and Phase B runtime prerequisites |
 
