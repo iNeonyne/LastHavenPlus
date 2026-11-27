@@ -3,7 +3,6 @@ package com.neonyne.lasthavenlauncher
 import java.io.File
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
-import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
@@ -18,6 +17,8 @@ class AddonBridgeAssetsTest {
     assertTrue(dir.isDirectory)
     assertTrue(File(dir, "manifest.json").isFile)
     assertTrue(File(dir, "background.js").isFile)
+    assertTrue(File(dir, "payload-validation.js").isFile)
+    assertTrue(File(dir, "bridge.js").isFile)
   }
 
   @Test
@@ -26,6 +27,18 @@ class AddonBridgeAssetsTest {
     assertTrue(manifest.contains("\"id\": \"${AddonBridgePolicy.BRIDGE_EXTENSION_ID}\""))
     assertTrue(manifest.contains("\"manifest_version\": 2"))
     assertTrue(manifest.contains("\"version\": \"0.5.1\""))
+    assertTrue(manifest.contains("\"run_at\": \"document_start\""))
+    assertTrue(manifest.contains("\"https://lasthavens.com/play\""))
+    assertTrue(manifest.contains("\"https://lasthavens.com/play/\""))
+    assertTrue(manifest.contains("\"payload-validation.js\""))
+    assertTrue(manifest.contains("\"bridge.js\""))
+    assertFalse(manifest.contains("\"<all_urls>\""))
+    assertFalse(manifest.contains("\"all_frames\": true"))
+    assertEquals(1, Regex("\"content_scripts\"").findAll(manifest).count())
+    assertEquals(1, Regex("\"matches\"").findAll(manifest).count())
+    assertEquals(1, Regex("\"run_at\"").findAll(manifest).count())
+    assertEquals(1, Regex("\"all_frames\"").findAll(manifest).count())
+    assertTrue(manifest.contains("\"all_frames\": false"))
   }
 
   @Test
@@ -41,7 +54,34 @@ class AddonBridgeAssetsTest {
       .forEach {
         assertFalse("manifest must not request $it", manifest.contains("\"$it\""))
       }
-    assertFalse("manifest must not declare content scripts", manifest.contains("content_scripts"))
+    assertTrue(
+      "manifest must declare the exact-route content script",
+      manifest.contains("content_scripts"),
+    )
+  }
+
+  @Test
+  fun `content bridge uses bounded messages and no page-forgeable channel`() {
+    val bridge = File(assetsDir, "extensions/addon-bridge/bridge.js").readText()
+    assertTrue(bridge.contains("browser.runtime.sendMessage"))
+    assertTrue(bridge.contains("MAX_FILE_CHUNK_BYTES = 32 * 1024"))
+    assertTrue(bridge.contains("MAX_STARTUP_WAIT_MS = 20000"))
+    assertTrue(bridge.contains("window.wrappedJSObject"))
+    assertTrue(bridge.contains("exportFunction"))
+    assertTrue(bridge.contains("cloneInto"))
+    assertTrue(bridge.contains("core.validatePayload(payload)"))
+    assertFalse(bridge.contains("window.postMessage"))
+    assertFalse(bridge.contains("eval("))
+  }
+
+  @Test
+  fun `payload validator checks the ZIP payload without page-controlled inputs`() {
+    val core = File(assetsDir, "extensions/addon-bridge/payload-validation.js").readText()
+    assertTrue(core.contains("function validatePayload(payload)"))
+    assertTrue(core.contains("MAX_RUNTIME_BUNDLE_BYTES = 16 * 1024 * 1024"))
+    assertTrue(core.contains("MAX_RUNTIME_FILES = 1024"))
+    assertTrue(core.contains("MAX_RUNTIME_FILE_BYTES = 8 * 1024 * 1024"))
+    assertTrue(core.contains("function deepFreeze(value)"))
   }
 
   @Test
@@ -50,7 +90,7 @@ class AddonBridgeAssetsTest {
     val files = dir.walkTopDown().filter { it.isFile }.toList()
     assertTrue(files.size in 2..8)
     files.forEach { assertTrue("${it.name} too large", it.length() <= 64 * 1024) }
-    assertEquals(2, files.size)
+    assertEquals(4, files.size)
   }
 
   @Test
@@ -60,11 +100,15 @@ class AddonBridgeAssetsTest {
     assertTrue(background.contains("function scheduleReconnect()"))
     assertTrue(background.contains("MAX_RECONNECT_DELAY_MS = 30000"))
     assertTrue(background.contains("nextPort.onDisconnect"))
-    assertTrue(background.contains("if (expired && port)"))
     assertTrue(background.contains("stalePort.disconnect()"))
-    assertTrue(background.contains("send(\"startup-\" + startupSequence, \"ping\")"))
+    assertTrue(background.contains("requestNative(\"ping\")"))
+    assertTrue(background.contains("MAX_PENDING_REQUESTS = 8"))
+    assertTrue(background.contains("MAX_RUNTIME_BUNDLE_BYTES = 16 * 1024 * 1024"))
+    assertTrue(background.contains("getFileChunk"))
+    assertFalse(background.contains("browser.storage.local"))
+    assertFalse(background.contains("window.postMessage"))
+    assertFalse(background.contains("getAddonBundle()"))
     assertFalse(background.contains("eval("))
     assertFalse(background.contains("XMLHttpRequest"))
-    assertNotNull(background)
   }
 }

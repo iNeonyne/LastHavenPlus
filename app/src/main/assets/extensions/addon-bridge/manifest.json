@@ -10,8 +10,28 @@
     }
   },
   "background": {
-    "scripts": ["background.js"],
+    "scripts": [
+      "background.js"
+    ],
     "persistent": true
   },
-  "permissions": ["geckoViewAddons", "nativeMessaging"]
+  "permissions": [
+    "geckoViewAddons",
+    "nativeMessaging"
+  ],
+  "content_scripts": [
+    {
+      "matches": [
+        "https://lasthavens.com/play",
+        "https://lasthavens.com/play/"
+      ],
+      "js": [
+        "payload-validation.js",
+        "bridge.js"
+      ],
+      "run_at": "document_start",
+      "all_frames": false,
+      "match_about_blank": false
+    }
+  ]
 }

@@ -72,6 +72,13 @@ jobs:
           python3 -m unittest discover -s .github/scripts/tests -v
           bash -n .github/scripts/prepare_release_payload.sh
 
+      - name: Validate bundled GeckoView extension JavaScript
+        run: |
+          node --check app/src/main/assets/extensions/addon-bridge/background.js
+          node --check app/src/main/assets/extensions/addon-bridge/payload-validation.js
+          node --check app/src/main/assets/extensions/addon-bridge/bridge.js
+          node --test scripts/test-addon-bridge.mjs
+
       - name: Run lint, formatting, unsigned release build and unit tests
         run: ./gradlew lintDebug spotlessCheck assembleRelease testDebugUnitTest --stacktrace -PspotlessRatchetFrom=origin/beta
 
