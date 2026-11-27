@@ -1008,6 +1008,14 @@
     if (state.nativeActive) {
       state.native.abort();
       state.readyState = state.native.readyState;
+      if (state.readyState === UNSENT) {
+        state.status = 0;
+        state.statusText = "";
+        state.responseHeaders = [];
+        state.responseBytes = null;
+        state.responseURL = "";
+        state.nativeActive = false;
+      }
       return;
     }
     if (!state.intercepted || !state.sent) {
