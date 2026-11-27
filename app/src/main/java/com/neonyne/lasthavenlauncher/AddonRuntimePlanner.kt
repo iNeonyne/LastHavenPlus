@@ -24,7 +24,30 @@ data class AddonLoadPlan(
  * load order for the currently enabled snapshot and reports addons that cannot safely load.
  */
 object AddonRuntimePlanner {
+  /**
+   * Input contract: snapshots must come from the validated local library. Enforce the same
+   * archive limits here as a defensive boundary before a future runtime consumes the plan.
+   */
   fun plan(snapshot: AddonLibrarySnapshot): AddonLoadPlan {
+    require(snapshot.addons.size <= AddonArchive.MAX_ADDONS_PER_ARCHIVE) {
+      "Addon snapshot exceeds the validated library item limit."
+    }
+    snapshot.addons.forEach { addon ->
+      require(addon.dependencies.size <= AddonArchive.MAX_DEPENDENCIES) {
+        "Addon dependency list exceeds the validated limit."
+      }
+      require(addon.optionalDependencies.size <= AddonArchive.MAX_DEPENDENCIES) {
+        "Addon optional dependency list exceeds the validated limit."
+      }
+      require(
+        (addon.dependencies + addon.optionalDependencies).all {
+          it.length <= AddonArchive.MAX_DEPENDENCY_NAME_CHARS &&
+            it.matches(Regex("[A-Za-z0-9_-]+"))
+        }
+      ) {
+        "Addon contains an invalid dependency name."
+      }
+    }
     val enabled = snapshot.addons.filter { it.enabled }
     if (enabled.isEmpty()) {
       return AddonLoadPlan(
@@ -118,13 +141,19 @@ object AddonRuntimePlanner {
 
   /** Returns safe, unique relative paths from TOC load-order lines; comments are ignored. */
   fun parseTocLoadFiles(tocContent: String): List<String> {
+    require(tocContent.toByteArray(Charsets.UTF_8).size <= AddonArchive.MAX_TOC_BYTES) {
+      "Addon TOC exceeds the 1 MiB limit."
+    }
     val files = mutableListOf<String>()
     val seen = mutableSetOf<String>()
     for (rawLine in tocContent.lineSequence()) {
       val line = rawLine.trim().trimStart('\uFEFF')
       if (line.isEmpty() || line.startsWith("#")) continue
       val path = runCatching { AddonArchive.validateEntryPath(line) }.getOrNull() ?: continue
-      if (seen.add(path.lowercase(Locale.ROOT))) files += path
+      if (seen.add(path.lowercase(Locale.ROOT))) {
+        require(files.size < AddonArchive.MAX_ENTRIES) { "Addon TOC contains too many load entries." }
+        files += path
+      }
     }
     return files
   }
