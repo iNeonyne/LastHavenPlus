@@ -45,6 +45,162 @@ class AddonBridgeProtocolTest {
   }
 
   @Test
+  fun `parses chunked payload requests with exact fields`() {
+    val revision = "a".repeat(64)
+    assertEquals(
+      AddonBridgeProtocol.AddonBridgeRequest(
+        "getBundleInfo",
+        "bundle-1",
+      ),
+      AddonBridgeProtocol.parse(
+        mapOf("type" to "getBundleInfo", "requestId" to "bundle-1")
+      ),
+    )
+    assertEquals(
+      AddonBridgeProtocol.AddonBridgeRequest(
+        "getBundleManifestPage",
+        "page-1",
+        revision = revision,
+        page = 31,
+      ),
+      AddonBridgeProtocol.parse(
+        mapOf(
+          "type" to "getBundleManifestPage",
+          "requestId" to "page-1",
+          "revision" to revision,
+          "page" to "31",
+        )
+      ),
+    )
+    assertEquals(
+      AddonBridgeProtocol.AddonBridgeRequest(
+        "getFileChunk",
+        "chunk-1",
+        revision = revision,
+        folder = "unit-frame",
+        path = "Textures/portrait.png",
+        offset = 32768L,
+      ),
+      AddonBridgeProtocol.parse(
+        mapOf(
+          "type" to "getFileChunk",
+          "requestId" to "chunk-1",
+          "revision" to revision,
+          "folder" to "unit-frame",
+          "path" to "Textures/portrait.png",
+          "offset" to "32768",
+        )
+      ),
+    )
+    assertNull(
+      AddonBridgeProtocol.parse(
+        mapOf(
+          "type" to "getBundleManifestPage",
+          "requestId" to "page-1",
+          "revision" to revision,
+          "page" to "32",
+        )
+      )
+    )
+    assertNull(
+      AddonBridgeProtocol.parse(
+        mapOf(
+          "type" to "getBundleManifestPage",
+          "requestId" to "page-1",
+          "revision" to revision,
+          "page" to "00",
+        )
+      )
+    )
+    assertNull(
+      AddonBridgeProtocol.parse(
+        mapOf(
+          "type" to "getFileChunk",
+          "requestId" to "chunk-1",
+          "revision" to revision,
+          "folder" to "unit-frame",
+          "path" to "../escape.lua",
+          "offset" to "0",
+        )
+      )
+    )
+    assertNull(
+      AddonBridgeProtocol.parse(
+        mapOf(
+          "type" to "getFileChunk",
+          "requestId" to "chunk-1",
+          "revision" to revision,
+          "folder" to "unit.frame",
+          "path" to "init.lua",
+          "offset" to "0",
+        )
+      )
+    )
+    assertNull(
+      AddonBridgeProtocol.parse(
+        mapOf(
+          "type" to "getFileChunk",
+          "requestId" to "chunk-1",
+          "revision" to revision,
+          "folder" to "unit-frame",
+          "path" to "init.lua",
+          "offset" to "-1",
+        )
+      )
+    )
+  }
+
+  @Test
+  fun `builds bounded payload metadata page and file chunk responses`() {
+    val file = java.io.File.createTempFile("addon-bridge", ".lua")
+    try {
+      file.writeBytes(byteArrayOf(1, 2, 3))
+      val descriptor =
+        AddonRuntimePayloadProvider.FileDescriptor(
+          folder = "unit-frame",
+          path = "init.lua",
+          sizeBytes = 3,
+          file = file,
+          canonicalPath = file.canonicalPath,
+          lastModified = file.lastModified(),
+        )
+      val manifest =
+        AddonRuntimePayloadProvider.Manifest(
+          revision = "a".repeat(64),
+          sourceRevision = "rev1",
+          addonFolders = listOf("unit-frame"),
+          files = listOf(descriptor),
+          filesByKey = mapOf("unit-frame/init.lua" to descriptor),
+          totalBytes = 3,
+        )
+      val info = AddonBridgeProtocol.bundleInfo("info-1", manifest)!!
+      assertEquals(1, info.toFields()["fileCount"])
+      assertEquals(1, info.toFields()["pageCount"])
+      assertEquals(3L, info.toFields()["totalBytes"])
+
+      val page = AddonBridgeProtocol.manifestPage("page-1", manifest, 0, listOf(descriptor))!!
+      assertEquals("bundleManifestPage", page.toFields()["type"])
+      assertEquals(1, (page.toFields()["files"] as List<*>).size)
+
+      val chunk =
+        AddonBridgeProtocol.fileChunk(
+          "chunk-1",
+          manifest,
+          "unit-frame",
+          "init.lua",
+          0,
+          byteArrayOf(1, 2, 3),
+        )!!
+      assertEquals("fileChunk", chunk.toFields()["type"])
+      assertEquals(true, chunk.toFields()["done"])
+      assertEquals(3L, chunk.toFields()["totalBytes"])
+      assertEquals("AQID", chunk.toFields()["data"])
+    } finally {
+      file.delete()
+    }
+  }
+
+  @Test
   fun `ack and error builders validate input`() {
     assertEquals("ack", AddonBridgeProtocol.ack("r-1")!!.toFields()["type"])
     assertNull(AddonBridgeProtocol.ack("bad id!"))
