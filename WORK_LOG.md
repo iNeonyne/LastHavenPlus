@@ -642,3 +642,30 @@ No branch was deleted. The available GitHub connector exposes no branch-delete o
 - **Post-merge:** Android run #45919654642 and unsigned reproducibility #45919654675 were in progress. No runtime extension installation or physical ARM64 testing is claimed.
 - **Assignments:** #167 moved to agent:queued after its PR #166 dependency cleared; #168/#169 remain agent:blocked. Vibe remains actively assigned #146; #147 is next only after #146 integration.
 - **Next safe action:** finish PR #165 exact-head CI, integrate it if all gates pass, then verify post-merge beta CI and update the repository records. No release/tag/main promotion.
+
+
+### 2026-11-27 — Integrate #165 and start #167 while reviewing #173
+- **Issue/task:** #149 integration; #146 integration; #167 Vibe assignment.
+- **Beta before integration:** `d83e2dfc89087f67f4dbbe71e85668d80303e3ef`.
+- **Action:** PR #165 squash-merged at `7e39d2553a11332d44326c1704e0d7647cc6aa40`; exact-head Android/unit, reproducibility and Markdown checks passed on `a62c7cd3154586d35d85a99ed1964d33ba007733`. Issue #149 closed.
+- **Ownership:** #146 changed to `agent:chaty` after Vibe submitted PR #173. #167 changed to `agent:vibe`; assignment comment #7207049285 defines behavior, scope, exclusions, tests and docs requirements.
+- **PR #173:** head `eb9f64b672eced9143bc5689106223c3e7af3d16`; Markdown passed, Android and unsigned reproducibility were in progress. Mergeability became dirty after #165 updated overlapping docs. Chaty is reconciling docs and will rerun exact-head checks.
+- **Physical device:** no ARM64 hardware testing performed.
+- **Next safe action:** finish PR #173 code/doc review, resolve documentation merge conflicts, verify exact-head CI, then merge only if all gates pass.
+
+### 2026-11-27 — Complete PR #173 post-merge verification
+
+- **Issue/PR:** #146 / #173, GameSessionController extraction.
+- **Merge:** `5ed6af635954c8f4e2673dab3c60334eff4a8ae0` on `beta`; post-merge docs reconciliation PR #174 merged at `3856a4f1163ffe464e46d0c51a9acfcd36dae2e5`.
+- **Exact PR-head checks:** Android validation #45921162358, independent unsigned APK reproducibility #45921162325 and Markdown #45921162310 all passed on PR head `6160ede68fb7073680feef2e35f4176bd08a433d`.
+- **Post-merge beta checks:** Android #45923143717 passed signed optimized APK build, unit tests, signing-certificate verification and ARM64-only ABI checks; signed APK artifact upload succeeded. Release tag/publication and differential-package generation were skipped because this was a beta push. Independent unsigned APK reproducibility #45923143712 passed both clean builds and archive/hash comparison. Markdown #45923143716 passed on `5ed6af6`; documentation follow-up Markdown #45923558131 passed on `3856a4f`.
+- **Review:** no blocking code defect identified. Session ownership remains in `GameSessionController`; the composition-root `DisposableEffect` enforces session close on replacement/composition exit. #146 closed completed; #147 moved to `agent:queued`; #167 remains Vibe's active assignment.
+- **Limitations:** no physical ARM64 device test. CI does not establish real game loading, crash recovery or navigation/session behavior on hardware. No release/tag/publication/main promotion.
+
+
+### 2026-11-27 — Reconcile live status after PR #173 integration
+
+- PR #174 merged documentation reconciliation at `3856a4f1163ffe464e46d0c51a9acfcd36dae2e5`; exact-head Markdown #45923518495 and post-merge Markdown #45923558131 passed.
+- PR #175 merged final CI evidence and append-only work-log update at `022b4e2c4880d13b23e4e8c22cbd3dd5be679623`; exact-head Markdown #45923667868 and post-merge Markdown #45923701603 passed.
+- Latest beta HEAD is `022b4e2c4880d13b23e4e8c22cbd3dd5be679623`; the two follow-up commits are documentation-only. Latest app-code integration remains PR #173 at `5ed6af635954c8f4e2673dab3c60334eff4a8ae0`.
+- No open PRs at the latest repository search. Vibe remains assigned #167; its named branch was not yet present in the branch inventory at the latest check. #147 is queued, not assigned.

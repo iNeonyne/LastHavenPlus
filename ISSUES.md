@@ -4,29 +4,24 @@
 
 ## Current state — 2026-11-27
 
-- **Latest stable:** v2.3.0 is published; release metadata confirms the ARM64 APK, update manifest and v2.2.0-to-v2.3.0 BSDIFF asset.
-- **Development:** beta HEAD at the PR #171 base is `0cc21b471fce646d03dad449b91acbe67a90df7d`; v2.4.0 icon, visual-system and overlay-accessibility source integrations are merged.
-- **Addon Manager:** Phase A is integrated by PR #152 at `103bb979c98589a8704459d28d13861eccca39d6`; local enablement is metadata only. The owner authorized Phase B investigation/implementation; #23 is Chaty-owned and child issues #167–#170 are separately queued/blocked. No runtime injection is claimed.
-- **Latest docs integration:** PR #158 merged at 7451b940dc0adfa1ea14234fe6d489bba688b12c; Markdown push run #45890132670 passed.
-- **Open PRs at the 2026-11-27 live check:** #165 (launcher string resources; Chaty integration) and #166 (Addon Manager Phase B planner groundwork; Chaty integration). PR #172 has merged into beta. Recheck exact heads and CI before merge. PR #154, #157, #159, #160, #122, #143 and #144 were closed without merge; do not treat their branch-only changes as integrated.
-- **Updater:** #4/#15 are coordinated under Chaty. BSDIFF cleanup candidates were not merged; PR #160 Markdown passed but one reproducibility build failed resolving Kotlin Compose plugin 2.4.21, while Android and second reproducibility job were incomplete at closure. #4 acceptance remains open. #31 and #111 remain blocked for their stated authorization/release holds.
-- **Diagnostics:** #11's test work merged via PR #163; remaining GeckoView runtime-version startup reporting is deferred and marked `agent:blocked`.
-- **Housekeeping:** #128 closed after PR #161 merged at a0e5271793c9bb7754b7ac41429065e5602df569; exact-head and post-merge Markdown passed. #70 is closed; Markdown lint is integrated.
-- **GeckoView audit:** #20 remains owner-deferred/blocked; PR #122 closed without merge. Preserve unresolved notice/license/distribution and device-testing gaps.
-- **Rights/notices:** #67 remains agent:owner; PR #144 closed without merge. The owner's All Rights Reserved decision governs original project material; third-party distribution review remains unresolved.
-- **Ownership:** each open issue has exactly one `agent:*` label. `agent:queued` means ready but waiting its turn, not permission to start; `agent:blocked` means a genuine dependency/hold. Vibe active: #146 while Chaty integrates PR #165/#149; next after #146 integration: #147; Phase B #167 is queued after PR #166 merged; #168/#169 remain dependency-blocked until #167 and the required runtime contracts are integrated. Chaty owns #4/#15/#18/#23/#142; #81 is queued. #67 is owner-controlled.
-- **Device/release:** no new physical ARM64 testing, release, tag, publication or beta-to-main promotion is claimed or authorized.
+- **Latest stable:** v2.3.0; no new release is authorized.
+- **Development:** beta HEAD `7e39d2553a11332d44326c1704e0d7647cc6aa40`.
+- **Integrated:** PR #166 Addon Manager planner groundwork at `d83e2dfc89087f67f4dbbe71e85668d80303e3ef`; PR #165 launcher strings at `7e39d2553a11332d44326c1704e0d7647cc6aa40`. PR #165 exact-head Android/unit tests, unsigned APK reproducibility and Markdown passed; #149 is closed.
+- **Open PR:** #173 GameSessionController (#146), draft at `eb9f64b672eced9143bc5689106223c3e7af3d16`. Markdown passed; Android and reproducibility are pending. Chaty is resolving documentation conflicts caused by the #165 merge and will rerun exact-head checks before merging.
+- **Vibe active:** #167 GeckoView 160 extension bridge (`agent:vibe`), explicitly assigned with strict file exclusions to avoid overlap with #173 integration. #146 is now `agent:chaty` for PR integration.
+- **Addon Manager:** Phase A and planner groundwork are integrated; extension installation, XHR/Worker interception and actual in-game activation are not implemented. #168/#169 remain blocked behind #167/runtime prerequisites.
+- **Updater:** #4/#15 remain coordinated under Chaty; earlier BSDIFF candidate PRs were not merged and signed APK-pair acceptance remains incomplete.
+- **Device/release:** no physical ARM64 test, release, tag, publication or beta-to-main promotion is claimed or authorized.
 
 ## Current ownership
 
-- **Chaty active:** #4/#15 coordinated updater reliability/recovery and #23 Addon Manager Phase B coordination. #18/#142 are coordination records; #128 is complete.
-- **Chaty queued:** #81 dependency-evidence documentation only; not yet started. #20 and #31 remain blocked pending owner decisions.
-- **Chaty active integration:** #149 launcher-owned strings (PR #165; exact-head Android and reproducibility CI running). **Vibe active implementation:** #146 GameSessionController.
-- **Vibe next:** #147 navigation/back-stack consolidation after #146 is handed off and integrated, because it depends on the new session ownership boundary. Addon Manager Phase B #167 is agent:queued now that PR #166 merged; #168/#169 remain agent:blocked behind #167 and their respective security/runtime prerequisites. #170 remains dependency-blocked. One active implementation issue at a time; queued does not authorize work.
-- **Diagnostics:** #11's test work merged via PR #163; remaining runtime-version startup reporting is deferred and blocked pending reprioritization.
-- **Diagnostics:** #11's test work merged via PR #163; the remaining runtime-version startup reporting is deferred and blocked pending reprioritization.
-- **Owner decision:** #23 Phase B and #67 third-party rights/distribution questions.
-- **Blocked:** #7, #86, #111, #19, #16, #147, #148, #12, #14, #10, #28, #6 and #17 remain gated by dependencies/decisions recorded on their GitHub issues.
+- **Chaty active:** #4/#15 updater reliability/recovery, #23 Phase B coordination, and integration of #146/PR #173. #18/#142 are coordination records.
+- **Vibe active:** #167 GeckoView 160 extension bridge; one active implementation issue at a time.
+- **Vibe integration handed off:** #146 GameSessionController, PR #173; Chaty owns direct fixes and merge.
+- **Vibe next:** #147 after #146 integration. #168/#169 remain blocked until #167 and runtime prerequisites are complete; #170 remains blocked.
+- **Chaty queued:** #81 dependency-evidence documentation; not started. #20/#31 remain owner/authorization blocked.
+- **Owner-controlled:** #67 third-party rights/distribution decision.
+- **Diagnostics:** #11 test work merged; remaining runtime-version startup reporting remains deferred.
 
 ## Backlog index
 
@@ -909,3 +904,18 @@ Verify the current manifest and GeckoView delegates, then document the strict al
 - Verified current beta source: `MainActivity.setupGeckoDelegates` allows only persistent storage and audible/inaudible autoplay for `lasthavens.com` and subdomains; all other content permissions/origins are denied; Android runtime and media permission requests are rejected.
 - Manifest declares `INTERNET` and `REQUEST_INSTALL_PACKAGES`; no camera, microphone, geolocation or notification permissions are declared.
 - No runtime policy change is authorized. Exact-head Markdown validation passed on PR #158 head `e2ce22c44508a87f53fc4a57a03f82e0597550bc` (run #45889911748); internal links/anchors passed across all 15 Markdown files. Final review/merge remains pending.
+
+## 2026-11-27 — GameSessionController integration (#146)
+
+- PR [#173](https://github.com/iNeonyne/LastHavenPlus/pull/173) squash-merged to `beta` at `5ed6af635954c8f4e2673dab3c60334eff4a8ae0`; issue #146 closed as completed.
+- Exact-head Android validation #45921162358, unsigned APK reproducibility #45921162325 and Markdown #45921162310 passed. Post-merge Markdown #45923143716 passed; post-merge Android #45923143717 and reproducibility #45923143712 were still running at this checkpoint.
+- No physical ARM64 device testing is claimed.
+- #147's #146 dependency is satisfied. Chaty moved #147 from `agent:blocked` to `agent:queued`; it is not an active assignment and must not start until Chaty explicitly assigns it after checking Vibe's current #167 work.
+- #167 remains Vibe's active Phase B bridge assignment. #168/#169 remain blocked pending bridge implementation and contract review.
+
+## 2026-11-27 — Final post-merge verification for #146
+
+- Post-merge Android run #45923143717 passed signed optimized APK build, JVM tests, signing-certificate verification and ARM64-only ABI checks; signed APK artifact upload succeeded. Release-tag/publication and differential-package steps were skipped because this was a beta push, not an authorized versioned release.
+- Independent unsigned APK reproducibility #45923143712 passed both clean builds and final archive/hash comparison.
+- Post-merge Markdown #45923143716 passed on merge commit `5ed6af6`; documentation-only follow-up Markdown #45923558131 passed on `3856a4f`.
+- No physical ARM64 device testing is claimed.

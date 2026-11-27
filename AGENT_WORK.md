@@ -1,7 +1,7 @@
 # Agent work assignments — LastHavenPlus
 
 **Last verified:** 2026-11-27  
-**Verified beta HEAD after PR #172:** `a1a6eebedc205f059eac98db474c503643d35588`  
+**Verified beta HEAD after PR #175:** `022b4e2c4880d13b23e4e8c22cbd3dd5be679623` (documentation-only follow-up; latest app-code merge remains PR #173 at `5ed6af635954c8f4e2673dab3c60334eff4a8ae0`).  
 **Stable release:** v2.3.0 (tag commit ebc5b424e83ae66c2b0accc2bec6f050b8dc0d88).
 
 ## Roles and integration
@@ -36,32 +36,24 @@
 
 ## Vibe work queue
 
-Vibe has exactly one active implementation issue at a time. After handing off a PR, Vibe immediately proceeds to the next explicitly assigned, independent issue while Chaty integrates prior PRs in parallel. A queued issue is not an assignment; it becomes startable only when Chaty changes its label to `agent:vibe` and posts a scope/acceptance comment.
+Vibe has exactly one active implementation issue at a time. After handing off a PR, Vibe immediately starts the next explicitly assigned independent issue while Chaty integrates earlier PRs. A queued issue is not an assignment; Chaty must change its label to `agent:vibe` and post a complete scope/acceptance comment.
 
-### Chaty integration — #149 launcher-owned string resources
-- **GitHub ownership:** `agent:chaty`; PR #165 has been handed off and Chaty owns integration.
-- **Current PR:** #165, latest Chaty fix head `b7e4ce20804c5489df734d84daf4a26dda412f69`.
-- **Chaty actions:** direct corrections are committed; Fresh exact-head Android #45919517720 and independent unsigned reproducibility #45919517863 are pending; Markdown #45919517707 is in progress. Prior head 22bdc622cdc68f92b5b0e1f0c56a8ad2fbca58a9 passed Android and Markdown; its reproducibility run was not yet complete. Recheck exact-head/base and merge only after reproducibility passes.
-- **Corrections made:** UpdateScreen labels/actions are now resource-backed in default `values/strings.xml`; untranslated English duplicates were removed from locale-specific resource files. `SettingsDialogs.kt` Spotless violations found by exact-head CI were corrected. Required project documentation updates are included in this PR branch.
-- Preserve wording and punctuation. Exclude game content, diagnostics payloads, developer logs and protocol values. No updater behavior changes, GeckoView/session lifecycle, Addon Manager or game/client changes.
-- **Vibe:** #146 is now active. Vibe starts this independent task immediately while Chaty integrates #149/#165; do not wait for PR #165 to merge. Chaty checked current open PR scopes: #165 changes launcher UI/resources/docs and #166 changes Addon Manager planner/repository/tests; neither overlaps MainActivity or GeckoSession ownership. PR #145 is closed unmerged.
+### Chaty integration — #146 GameSessionController (PR #173)
+- **GitHub ownership:** `agent:chaty`; Vibe handed off PR #173 and Chaty owns all integration fixes and merge.
+- **PR:** #173, branch `vibe/game-session-controller-146`, head `eb9f64b672eced9143bc5689106223c3e7af3d16`, based on beta `d83e2df`.
+- **Validation:** Markdown #45920691560 passed; Android #45920691633 and unsigned reproducibility #45920691607 were still running. PR is draft and conflicts with beta documentation changed by PR #165. Chaty must reconcile docs, resolve mergeability, rerun exact-head checks and merge only after code review and all gates pass.
+- **Code scope:** controller/state extraction from MainActivity; no physical ARM64 device test. See PR #173 for full handoff and limitations.
 
-### Active — #146 GameSessionController
-- **Label:** `agent:vibe`; explicitly assigned by Chaty on 2026-11-27. Vibe may implement now while Chaty integrates prior PRs. Dedicated branch from current beta; no MainActivity/GeckoSession overlap with current open PRs #165/#166.
-- Extract GeckoSession lifecycle and load/crash state into a focused controller/ViewModel. Preserve lazy process-scoped GeckoRuntimeProvider and the same live GeckoSession while detaching for Settings/Diagnostics/Update.
-- No navigation refactor (#147), gameplay window state (#148), updater, profile migration or unrelated MainActivity cleanup. Add focused state tests and exact-head Android validation.
+### Active — #167 GeckoView 160 extension bridge
+- **GitHub ownership:** `agent:vibe`; explicitly assigned by Chaty on 2026-11-27 after PR #146 handoff. Vibe may work while Chaty integrates #146 because the initial adapter/asset work is separate.
+- **Scope:** audit pinned GeckoView 160 APIs; deterministic APK-bundled extension assets; isolated bridge/adapter classes; exact-origin/path policy, sender/session validation, bounded payload schema and focused fail-closed tests.
+- **Hard exclusions:** do not edit MainActivity, GameSessionController, GameSessionState, GameScreen, navigation/session ownership or shared project docs while PR #173 is being integrated. If an integration point needs an excluded file, stop and record the blocker. No Chrome MV3 service worker/APIs, external unsigned XPI, toolchain/dependency changes, game/profile changes, auto-updates or runtime-activation claims.
+- **Handoff:** PR targeting beta with exact SHA, tests, CI evidence, limitations and device status. Chaty alone fixes, verifies and merges.
 
-### Next after #146 integration — #147 navigation/back-stack consolidation
-- **Label:** `agent:blocked` until #146 is integrated. After #146 merges, Chaty rechecks file overlap and explicitly assigns #147 to Vibe.
-- Centralize Game, Settings, Diagnostics and Update navigation/back-stack state while preserving the current Back overlay and same-session behavior. Do not take over GeckoSession ownership from #146 or add Compose Navigation without evidence.
-
-### Blocked — Addon Manager Phase B child work (dependency gates)
-- **#167:** `agent:queued`; PR #166 is merged. Wait for #146 handoff/integration and a separate explicit Chaty assignment.
-- **#168:** `agent:blocked`; waits for #167 bridge integration and contract verification, then explicit assignment.
-- **#169:** `agent:blocked`; waits for #167 and #168 contracts to be integrated, then explicit assignment.
-- **#170:** same-session navigation integration; blocked until #146 and the required navigation/runtime prerequisites are complete.
-- **#12 — Actionable GeckoView load-error details:** now ready and queued because #11's test work merged. Schedule after #146/#147 and the higher-priority Phase B bridge work; do not start until Chaty explicitly assigns it.
-- Owner authorization for Phase B does not grant blanket permission to Vibe. Chaty assigns each child issue separately, checks overlapping files, and supplies issue-specific security boundaries/tests. Never start from queue status alone.
+### Later Vibe work
+- **#147:** navigation/back-stack consolidation; remains blocked until #146 is integrated.
+- **#168–#169:** Addon Manager XHR/Worker runtime tasks; remain blocked until #167 and their security/runtime prerequisites are integrated.
+- **#170:** same-session navigation; remains blocked pending #146/navigation and runtime prerequisites.
 
 ## Owner-controlled work
 
@@ -99,8 +91,8 @@ Every open issue has exactly one `agent:*` label. The label distinguishes active
 | #67 | `agent:owner` | Rights and third-party notice decision |
 | #81 | `agent:queued` | Chaty documentation/evidence task; not started |
 | #12 | `agent:queued` | #11 prerequisite merged; after #146/#147 and Phase B bridge work, explicit assignment required |
-| #146 | `agent:vibe` | Active Vibe assignment; proceed independently while Chaty integrates prior PRs |
-| #167 | `agent:queued` | PR #166 merged; wait for #146 integration and explicit Chaty assignment |
+| #146 | `agent:chaty` | Closed completed; PR #173 merged at `5ed6af6` |
+| #167 | `agent:vibe` | Active Vibe bridge assignment; branch creation and API-audit progress requested |
 | #168 | `agent:blocked` | Waits for #167 bridge integration and contract verification |
 | #169 | `agent:blocked` | Waits for #167 and #168 contracts to be integrated |
 | #6 | `agent:blocked` | Waits for #28 |
@@ -116,7 +108,7 @@ Every open issue has exactly one `agent:*` label. The label distinguishes active
 | #31 | `agent:blocked` | Release-tag/runtime verification requires explicit owner authorization |
 | #86 | `agent:blocked` | Deferred coordination scope requires owner confirmation |
 | #111 | `agent:blocked` | v2.5.0 hold: v2.4.0 release and explicit owner authorization |
-| #147 | `agent:blocked` | Waits for #146 |
+| #147 | `agent:queued` | #146 integrated; waiting for Vibe's #167 handoff and explicit assignment |
 | #148 | `agent:blocked` | Waits for #146 and coordination with #16 |
 | #170 | `agent:blocked` | Waits for #146/navigation and Phase B runtime prerequisites |
 
@@ -128,3 +120,19 @@ Every open issue has exactly one `agent:*` label. The label distinguishes active
 - No automatic update checks/downloads/installations; user action and Android installer confirmation remain required.
 - Validate compatibility before Gradle, SDK, Build Tools, GeckoView, signing or dependency/toolchain changes.
 - Never claim physical-device compatibility without real ARM64 hardware evidence.
+
+## 2026-11-27 — Post-merge integration reconciliation (#146)
+
+- **Current verified beta HEAD:** `5ed6af635954c8f4e2673dab3c60334eff4a8ae0`.
+- **#146 / PR #173:** closed completed; squash merge commit `5ed6af635954c8f4e2673dab3c60334eff4a8ae0`; exact PR-head Android, unsigned reproducibility and Markdown checks passed. Post-merge Markdown passed; post-merge Android/signing/ARM64 and reproducibility runs were still in progress at this checkpoint.
+- **#167:** remains Vibe's sole active implementation assignment (`agent:vibe`). A repository branch inventory at 01:34 UTC did not yet show `vibe/extension-bridge-167`; Chaty requested that Vibe create/confirm the dedicated branch from the latest beta and post the GeckoView 160 API audit findings. Do not treat the comment saying work is starting as evidence of an implementation branch or code delivery.
+- **#147:** its #146 dependency is now satisfied; ownership changed from `agent:blocked` to `agent:queued`. Do not start until Chaty explicitly assigns it after #167 handoff and a fresh overlap check.
+- **#148:** remains blocked by #16 and scheduling/dependency coordination. #168/#169 remain blocked pending #167 and security-contract integration. #170 remains blocked pending session/navigation/runtime prerequisites.
+- **No release, tag, publication, `main` promotion or physical ARM64 device test.**
+
+## 2026-11-27 — Final CI verification for PR #173
+
+- Post-merge Android run [#45923143717](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45923143717) passed signed optimized APK build, unit tests, signing-certificate verification and ARM64-only ABI checks; signed APK artifact upload succeeded. Release publication/tag and differential-package generation were skipped as expected on a beta push.
+- Independent unsigned APK reproducibility [#45923143712](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45923143712) passed both clean builds and APK archive/hash comparison.
+- Post-merge Markdown [#45923143716](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45923143716) and documentation follow-up Markdown [#45923558131](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45923558131) passed.
+- PR #173 / issue #146 integration gates are complete. Physical ARM64 gameplay/session behavior remains unverified; no device test is claimed.
