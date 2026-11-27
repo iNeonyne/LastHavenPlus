@@ -7,6 +7,34 @@
 - Align AndroidX Core with GeckoView 161's 1.19.1 runtime requirement.
 - Update ktfmt to 0.65; retain the existing Gradle, AGP, Kotlin, JDK and Android SDK pins after compatibility review and CI validation.
 
+## v2.4.0 — 2026-11-26
+
+### Native Addon Manager and launcher experience
+- Add native Addon Manager Phase A: import/export ZIP files, store addons in a private local library, and inspect metadata and dependencies.
+- Improve accessibility with clearer screen-reader structure, a keyboard/controller focus entry point, and transitions that respect Android reduced-motion settings.
+- Refresh launcher screens with the icy-blue theme, updated typography, spacing, shapes, buttons and touch targets.
+- Add a new icy-blue pixel-art castle launcher icon, subtle menu transitions and haptic feedback for primary actions.
+- Stage addon-library changes so interrupted operations can be rolled back safely.
+
+### Compatibility and limitations
+- Android 10/API 29+, ARM64 only.
+- Published v2.4.0 uses GeckoView 160 Stable; current beta later upgrades to GeckoView 161 (see Unreleased).
+- Addons can be stored, inspected and organized but are not activated in-game by this release.
+- Update checks remain user-initiated. Physical ARM64 gameplay, TalkBack, launcher-icon masking and the Addon Manager document picker were not verified for this release.
+
+Release notes: [v2.4.0](https://github.com/iNeonyne/LastHavenPlus/releases/tag/v2.4.0).
+
+## v2.3.0 — 2026-11-26
+
+- Selectively promote the v2.3.0 candidate to the stable branch.
+- Include the updater retry-policy follow-up.
+- See the [published release](https://github.com/iNeonyne/LastHavenPlus/releases/tag/v2.3.0) and [full comparison](https://github.com/iNeonyne/LastHavenPlus/compare/v2.2.0...v2.3.0) for the exact shipped changes.
+
+## v2.2.0 — 2026-11-25
+
+- Selectively promote the v2.2.0 launcher experience to the stable branch.
+- See the [published release](https://github.com/iNeonyne/LastHavenPlus/releases/tag/v2.2.0) and [promotion PR #87](https://github.com/iNeonyne/LastHavenPlus/pull/87) for the exact scope.
+
 ## v2.1.0 — 2026-11-25
 
 ### Launcher and navigation
