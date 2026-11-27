@@ -32,7 +32,7 @@ Core repository constraints (read `AGENTS.md` for the complete and current rules
 
 - Development and integration branch: `beta`. Stable release branch: `main`.
 - Android ARM64 only: `arm64-v8a`.
-- Browser engine: Mozilla GeckoView 160. Do not add Cefrium, Android System WebView, or a second/fallback engine.
+- Browser engine: Mozilla GeckoView 161 Stable. Do not add Cefrium, Android System WebView, or a second/fallback engine.
 - Preserve application ID `com.neonyne.lasthavenlauncher` and the established release-signing identity.
 - Do not commit credentials, signing keys, tokens, or secrets.
 - Keep update checks, downloads, and installation user-initiated.
