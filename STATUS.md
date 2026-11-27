@@ -8,15 +8,13 @@
 - No physical ARM64 device test of GeckoView 161 has been performed. No release, tag, or `main` promotion is authorized by this snapshot.
 - Dated sections below are historical records; their branch heads and task statuses must not override this current snapshot.
 
-## Owner-directed Vibe assignments — 2026-11-27
+## Current owner-directed assignments — 2026-11-27
 
-The repository owner explicitly assigned Vibe three related Addon Manager Phase B issues; the prior one-active-issue-only instruction is superseded.
-
-- **#169 (P0, primary implementation):** bounded Worker interception and read-only `blocks.idx` masking.
-- **#167 (P0):** audit the already-merged bridge against acceptance, close source-level gaps, and perform/coordinate physical ARM64 runtime verification. Do not duplicate PRs #177, #180 or #190.
-- **#170 (P1):** inspect #147 and prepare/implement same-session Addon Manager navigation, with strict shared-file ownership coordination.
-
-Sequence #169 first. #167 may audit/test merged bridge code in parallel. #170 begins with #147 and an affected-file/state-transition plan; do not overlap #169 or #147 ownership. End-to-end #170 acceptance still depends on #169 and verified runtime behavior.
+- **#147 (P1):** Vibe is the sole active implementation owner for launcher navigation/back-stack consolidation. Dedicated branch and PR to `beta); Chaty owns review, fixes, exact-head CI, merge and closure.
+- **#167 (P0):** Chaty owns physical ARM64 runtime acceptance for the already-integrated GeckoView bridge; do not claim device behavior without direct observation.
+- **#183:** remains `agent:blocked` until Vibe hands off #147 and Chaty confirms the next assignment.
+- **#170 (P1):** remains `agent:blocked` behind #147, #183 and #167's runtime acceptance gates. Do not start overlapping manager-navigation implementation early.
+- **#169:** closed; no active Vibe assignment.
 
 Chaty remains sole reviewer, fixer, exact-head CI verifier and merger into beta. Do not claim physical device testing or actual in-game addon/Lua initialization unless observed. No release, tag, publication or main promotion is authorized.
 
