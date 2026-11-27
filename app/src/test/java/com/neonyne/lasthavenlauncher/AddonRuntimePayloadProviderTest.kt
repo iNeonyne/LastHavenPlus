@@ -50,7 +50,8 @@ class AddonRuntimePayloadProviderTest {
 
   @Test
   fun manifestIncludesEveryResourceAndReadsBoundedChunks() = withRoot { root ->
-    val imageBytes = ByteArray(AddonRuntimePayloadProvider.MAX_FILE_CHUNK_BYTES + 17) { (it % 251).toByte() }
+    val imageBytes =
+      ByteArray(AddonRuntimePayloadProvider.MAX_FILE_CHUNK_BYTES + 17) { (it % 251).toByte() }
     val directory =
       writeAddon(
         root,
@@ -70,7 +71,11 @@ class AddonRuntimePayloadProviderTest {
       listOf("Textures/portrait.png", "UnitFrame.toc", "init.lua"),
       manifest.files.map { it.path },
     )
-    assertEquals(imageBytes.size.toLong(), manifest.totalBytes - "## Interface: 30300\ninit.lua\n".length - "print('ready')".length)
+    val expectedImageBytes =
+      manifest.totalBytes -
+        "## Interface: 30300\ninit.lua\n".length -
+        "print('ready')".length
+    assertEquals(imageBytes.size.toLong(), expectedImageBytes)
     assertEquals(1, manifest.pageCount)
     assertEquals(3, provider.page(manifest, 0).size)
 
