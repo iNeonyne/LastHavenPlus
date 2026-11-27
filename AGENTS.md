@@ -5,7 +5,7 @@ This repository is maintained through agent contributions. The repository owner 
 ## Sources of truth
 
 - **GitHub Issues** are the only live task tracker: scope, acceptance criteria, ownership, priority, dependencies, blockers and progress.
-- **Issue labels and the latest valid assignment comment** define current owner/state and task scope. Older issue text and comments may be historical.
+- **Issue labels and the latest valid assignment comment** define current owner and task scope. Older issue text and comments may be historical.
 - **Pull requests, commits and GitHub Actions** record implementation, review and validation.
 - **This file** defines durable agent permissions and project-wide engineering constraints.
 - **AGENT_PROTOCOL.md** is a short startup checklist. It does not duplicate this policy.
@@ -32,24 +32,26 @@ Other agents have contributor-level permissions only. They may implement an issu
 
 ## Live issue handling
 
-Every actionable open issue has exactly one `agent:*` ownership/state label:
+Every open issue has exactly one **active ownership label**:
 
 | Label | Meaning |
 |---|---|
-| `agent:unassigned` | Intake awaiting Chaty triage |
-| `agent:queued` | Triaged; waiting for its turn or a stated prerequisite |
-| `agent:chaty` | Owned by Chaty |
-| `agent:vibe` | Explicitly assigned to Vibe |
-| `agent:ib` | Explicitly assigned to IB |
-| `agent:blocked` | A real dependency or decision prevents safe progress |
-| `agent:review` | Handoff for Chaty's integration |
+| `agent:unassigned` | No implementation owner yet; awaiting Chaty's triage or an explicit next-step decision |
+| `agent:chaty` | Owned or coordinated by Chaty, including triage, integration and dependency sequencing |
+| `agent:vibe` | Explicitly assigned to Vibe; implementation may start within the issue scope |
+| `agent:ib` | Explicitly assigned to IB; implementation may start within the issue scope |
+| `agent:review` | Submitted for Chaty's review and integration |
 | `agent:owner` | Repository-owner decision required |
 
-A queue label is not permission to start. Chaty must post an assignment comment defining outcome, scope, exclusions, dependencies, acceptance criteria and relevant tests before a contributor begins. Only Chaty changes ownership labels and assignments. Replace the previous `agent:*` label on each transition.
+**There is no `agent:queued` label.** An open issue waiting for a dependency or a turn keeps its actual owner label. Record the dependency, why work cannot start yet, and the next action in the issue body or latest valid comment. Waiting does not create a second status label.
 
-Chaty should triage new issues or post a clear next step within **1–2 days**. Do not leave an issue without an owner, a documented next step or a deliberate closure. Do not use `agent:blocked` merely to indicate that work is waiting its turn.
+`agent:blocked` is reserved for issues closed for a reason other than successful merging; it is a historical closure marker, not an open-issue owner or queue state. On a successful merge, Chaty records the merge commit and closes the issue as completed without `agent:blocked`. For any other closure, use `agent:blocked`.
 
-On a successful merge, Chaty records the merge commit and closes the issue as completed without `agent:blocked`. If an issue is closed for a reason other than successful merging, use `agent:blocked` as the historical closure marker.
+A label, mention or roadmap entry is not an implementation assignment. Before work starts, Chaty must explicitly assign the issue to the contributor's exact identity and post a comment defining outcome, scope, exclusions, dependencies, acceptance criteria and relevant tests. Only Chaty changes ownership labels and assignments.
+
+Chaty should triage new issues or post a clear next step within **1–2 days**. Do not leave an issue without one owner label, a documented next step or a deliberate closure. Do not create a second queue or use `agent:blocked` to indicate ordinary waiting.
+
+The ownership workflow adds `agent:unassigned` to newly opened/reopened issues that have no owner. It validates that open issues have exactly one permitted active owner label; it does not silently remove or rewrite multiple labels. Chaty resolves any validation error.
 
 ## Implementation and integration
 
@@ -69,7 +71,7 @@ Never push directly to `beta` or `main`, bypass checks, or merge your own PR. Do
 
 **This project does not perform physical-device testing.** Do not request, schedule, perform or wait for physical Android-device testing as an acceptance requirement.
 
-Resolve issues through source inspection, coding, debugging, automated unit/integration tests, static checks, and CI. Use emulator or other automated test environments only when already available and relevant; do not make hardware verification a project dependency.
+Resolve issues through source inspection, coding, debugging, automated unit/integration tests, static checks and CI. Use emulator or other automated test environments only when already available and relevant; do not make hardware verification a project dependency.
 
 If an issue can only be closed by a physical-device observation, do not leave it open or blocked for that observation. Convert it into a code/debug task with testable acceptance criteria, or close it as out of scope/not planned. Never claim real-device or in-game behavior that automated evidence does not establish. Describe the exact automated coverage and its limits.
 
