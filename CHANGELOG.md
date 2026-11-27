@@ -7,6 +7,46 @@
 - Align AndroidX Core with GeckoView 161's 1.19.1 runtime requirement.
 - Update ktfmt to 0.65; retain the existing Gradle, AGP, Kotlin, JDK and Android SDK pins after compatibility review and CI validation.
 
+### Repository rights and third-party notices
+- Original LastHavenPlus code and documentation are All Rights Reserved and intended for the copyright holder's personal use; third-party components, assets and the hosted game retain their own terms.
+- Add a private vulnerability reporting policy, weekly Gradle dependency update checks, and an in-app viewer for project rights, third-party notices and the complete 94-entry GeckoView 161 about:license inventory.
+- Retain merged and abandoned task branches as archives; do not delete or rename them as routine cleanup, and do not schedule branch-deletion automation.
+
+## v2.3.0 — 2026-11-26
+
+### Launcher UI and gameplay recovery
+- Unify launcher-owned screens with a shared dark/gold visual system, consistent shapes and spacing, and improved touch-target sizing.
+- Add restrained menu transitions and haptic feedback for explicit primary actions.
+- Add explicit initial game loading, recoverable page-load failure and renderer/process recovery states.
+- Preserve the existing GeckoView session and keep the game itself unchanged.
+
+### Updater reliability
+- Stream downloaded APK and patch data through checksum and size verification before accepting the staged file.
+- Clean up partial downloads on failure and retain the verified full-APK fallback when differential downloads fail.
+- Keep update checks and downloads user-initiated; Android's package installer remains responsible for user confirmation.
+
+### Compatibility and known limitations
+- Android 10/API 29+, ARM64-only (arm64-v8a), application ID com.neonyne.lasthavenlauncher, GeckoView 160 and the established release signing identity are preserved.
+- Updater progress/speed/ETA, persistent progress presentation and install-later UX are deferred to v2.4.0.
+- Physical ARM64 device verification of gameplay, rendering, haptics, profile persistence and real update installation has not been performed. Automated CI is not a substitute for device testing.
+- Addon Manager Phase B remains incomplete and gated by #147/#183/#167; it is not included in v2.3.0.
+
+## v2.2.0 — 2026-11-25
+
+### Launcher and navigation
+- Launch directly into the game instead of showing the launcher Home screen first.
+- Add a responsive in-game overlay with Reload, Settings and Return to game.
+- Preserve the existing GeckoSession while navigating to Settings and back to gameplay.
+- Replace the placeholder adaptive launcher foreground with owner-approved recreated LastHavens-inspired artwork (not the exact official game icon).
+
+### Scope
+- Remaining updater, settings, diagnostics and supporting-feature work is tracked in the v2.3.0 backlog.
+- No game/client changes, automatic update downloads/installations, application identity changes or signing changes.
+
+### Release artifact
+- Signed ARM64 APK and update manifest are published in the [v2.2.0 GitHub Release](https://github.com/iNeonyne/LastHavenPlus/releases/tag/v2.2.0).
+- The release preserves the established application ID, signing identity and ARM64-only package policy.
+
 ## v2.1.0 — 2026-11-25
 
 ### Launcher and navigation
