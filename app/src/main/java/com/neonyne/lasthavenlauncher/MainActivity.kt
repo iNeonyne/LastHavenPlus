@@ -34,6 +34,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
+import java.io.File
+import java.util.concurrent.Executors
 
 private const val DEFAULT_GAME_URL = "https://lasthavens.com/play"
 private const val PREFERENCES_NAME = "launcher_settings"
@@ -176,6 +178,35 @@ private fun LastHavenApp(
   var isCheckingUpdate by remember { mutableStateOf(false) }
 
   val gameSessionController = remember { GameSessionController() }
+  val addonLibraryRepository =
+    remember(context) { AddonLibraryRepository(File(context.filesDir, "addons")) }
+  val addonBridgeExecutor = remember { Executors.newSingleThreadExecutor() }
+  val addonBridgeController =
+    remember(addonLibraryRepository, addonBridgeExecutor) {
+      AddonBridgeController(
+        snapshotProvider = { addonLibraryRepository.readLibrary() },
+        payloadProvider = AddonRuntimePayloadProvider(addonLibraryRepository),
+        worker = addonBridgeExecutor,
+      )
+    }
+
+  // The bridge shares the process-scoped GeckoRuntime and is bound to the exact live game session.
+  // It never creates or opens a second GeckoSession. Library changes are picked up when returning
+  // from the manager, after its file operations have completed.
+  LaunchedEffect(gameSessionController.session) {
+    val gameSession = gameSessionController.session
+    addonBridgeController.setGameSession(gameSession)
+    if (gameSession != null) addonBridgeController.ensureInstalled(context)
+  }
+  LaunchedEffect(currentScreen) {
+    if (currentScreen == Screen.Game) addonBridgeController.refreshSnapshot()
+  }
+  DisposableEffect(addonBridgeController, addonBridgeExecutor) {
+    onDispose {
+      addonBridgeController.teardown()
+      addonBridgeExecutor.shutdown()
+    }
+  }
 
   // Session keep-alive invariant: visiting Settings, Diagnostics, Update or the Addon Manager
   // detaches the GeckoView (GameScreen releases its view binding) but must not close the live
