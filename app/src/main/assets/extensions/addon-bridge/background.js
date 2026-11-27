@@ -196,6 +196,16 @@ function isSafeRelativePath(path) {
   return segments.every((segment) => segment.length > 0 && segment !== "." && segment !== "..");
 }
 
+function requireNativeResponse(response, expectedType) {
+  if (response && response.type === "error" && typeof response.error === "string") {
+    throw new Error(response.error);
+  }
+  if (!response || response.type !== expectedType) {
+    throw new Error("invalid_response");
+  }
+  return response;
+}
+
 function decodeBase64Chunk(encoded, expectedLength) {
   if (typeof encoded !== "string" || encoded.length > 4 * Math.ceil(MAX_FILE_CHUNK_BYTES / 3) + 4) {
     throw new Error("invalid_response");
@@ -234,8 +244,8 @@ async function readAddonFile(revision, descriptor) {
       path: descriptor.path,
       offset: String(offset)
     });
-    if (!response || response.type !== "fileChunk" ||
-        response.revision !== revision ||
+    requireNativeResponse(response, "fileChunk");
+    if (response.revision !== revision ||
         response.folder !== descriptor.folder ||
         response.path !== descriptor.path ||
         response.offset !== offset ||
@@ -255,8 +265,8 @@ async function readAddonFile(revision, descriptor) {
 
 async function getAddonBundle() {
   const info = await requestNative("getBundleInfo");
-  if (!info || info.type !== "bundleInfo" ||
-      typeof info.revision !== "string" || !/^[a-f0-9]{64}$/.test(info.revision) ||
+  requireNativeResponse(info, "bundleInfo");
+  if (typeof info.revision !== "string" || !/^[a-f0-9]{64}$/.test(info.revision) ||
       !Array.isArray(info.addons) || info.addons.length > MAX_RUNTIME_ADDONS ||
       !Number.isSafeInteger(info.fileCount) || info.fileCount < 0 || info.fileCount > MAX_RUNTIME_FILES ||
       !Number.isSafeInteger(info.totalBytes) || info.totalBytes < 0 || info.totalBytes > MAX_RUNTIME_BUNDLE_BYTES ||
@@ -283,8 +293,8 @@ async function getAddonBundle() {
       revision: info.revision,
       page: String(page)
     });
-    if (!response || response.type !== "bundleManifestPage" ||
-        response.revision !== info.revision ||
+    requireNativeResponse(response, "bundleManifestPage");
+    if (response.revision !== info.revision ||
         response.page !== page ||
         !Array.isArray(response.files) ||
         response.files.length > MAX_MANIFEST_PAGE_ITEMS) {
