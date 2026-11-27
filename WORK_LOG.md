@@ -789,3 +789,13 @@ No branch was deleted. The available GitHub connector exposes no branch-delete o
 - Marked all sections in AGENT_WORK.md that contained old “active work”, “Vibe work queue”, “blocked queue”, and owner/ownership snapshots as historical records. The file is not a startup input or task queue.
 - Clarified in AGENTS.md and AGENT_PROTOCOL.md that current labels take precedence for owner/state, latest valid assignment comments govern scope, and old issue body/dated comments may be superseded.
 - The current exact branch head after these edits: `1c14b3441c3e9299330fd410587753fe50ed3f0e`.
+
+
+## 2026-11-28 — Reconcile audit branch with merged PR #203
+
+- PR [#203](https://github.com/iNeonyne/LastHavenPlus/pull/203) merged to beta at `cfcc19d863aff828ad3db42a628cd5f95569a962` while this audit PR was open. Its rights/notice, Google Play services exclusion, Dependabot, Android packaging-validation, branch-retention, and GeckoView dependency-report changes were preserved.
+- Merged the new beta head into `chaty/live-github-queue-docs-208` without rebasing. Merge commit: `3c1dd70f7f234406df3f8caf26db85827e68a22e`; the merge tree is based on beta and has the audit branch as its second parent.
+- Reapplied the GitHub-only queue policy to AGENTS.md, preserving PR #203's prohibition on routine task-branch deletion/rename and its explicit approval/disposal-log requirement.
+- Reconciled README.md and CHANGELOG.md with PR #203's rights/licensing changes and detailed v2.2/v2.3 release notes; inserted the published v2.4.0 release entry without losing the Unreleased GeckoView161/Play-services-exclusion notes.
+- Reapplied the live Addon Manager issue pointer in docs/GECKOVIEW_MIGRATION.md while preserving PR #203's Google Play/FIDO2 exclusion and pre-exclusion dependency-report caveats.
+- Exact-head Markdown and Android validation have not yet been confirmed for the merge-resolved PR head; no passing result is claimed until new Actions runs complete.
