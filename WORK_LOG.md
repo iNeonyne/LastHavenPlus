@@ -819,3 +819,12 @@ No branch was deleted. The available GitHub connector exposes no branch-delete o
 - Removed duplicated JDK/Gradle/Android SDK version numbers from README build instructions. The README now directs agents to the Gradle wrapper properties, version catalog, and Android CI workflow as the sources of truth.
 - Checked upstream release information: Gradle 9.9.3 was released 2026-11-27; open Dependabot PR #210 proposes 9.9.2 and is already one patch behind. Beta remains pinned to Gradle 9.7.1. Kotlin 2.4.21 remains the latest stable 2.4 release; 2.5.0 RC is not stable.
 - Added a dated follow-up to docs/DEPENDENCY_AUDIT_188.md. No wrapper/toolchain change is made: the audited Kotlin/Gradle supported range requires compatibility review and exact CI before adopting 9.9.x.
+
+
+### Final stale-docs corrections — 2026-11-28
+
+- Fixed a duplicate-content error in docs/BRANCH_LIFECYCLE.md introduced by an earlier historical-snapshot relabel. Removed the appended second copy of the complete policy/inventory; there is now one policy section and one clearly dated Nov 26 historical inventory.
+- Corrected issue #167 after the first version-normalization pass accidentally replaced historical “GeckoView 160” wording. Its current scope now distinguishes the old 160 port target from beta's exact 161 artifact; historical design text is restored to GeckoView 160.
+- Updated issue #23's live milestone map: PR #203 is merged at `cfcc19d863aff828ad3db42a628cd5f95569a962`, not an open draft.
+- Added live startup searches for `agent:unassigned` and `agent:queued` to Chaty's intake/scheduling instructions in AGENTS.md and AGENT_PROTOCOL.md.
+- **Branch-retention blocker:** the live GitHub repository setting `delete_branch_on_merge` is still `true` despite PR #203's retention rule. GitHub auto-deletes a PR head branch on merge while this is enabled. Documented that mismatch in AGENTS.md, docs/BRANCH_LIFECYCLE.md, issue #208 and the PR description. Owner must disable “Automatically delete head branches” in Settings → General → Pull Requests if the retention rule is to take effect; no merge/branch-retention claim should be made before that.
