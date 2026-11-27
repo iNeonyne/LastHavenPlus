@@ -263,6 +263,14 @@ private fun LastHavenApp(
     }
   }
 
+  val loadGameUrl: (String) -> Unit = { selectedUrl ->
+    addonBridgeController.ensureInstalled(context) {
+      addonBridgeController.refreshSnapshot {
+        gameSessionController.loadGameUrl(context, selectedUrl)
+      }
+    }
+  }
+
   val startGame: () -> Unit = {
     addonBridgeController.ensureInstalled(context) {
       gameSessionController.startGame(context, gameUrl) { session ->
@@ -411,7 +419,7 @@ private fun LastHavenApp(
             if (selectedUrl == DEFAULT_GAME_URL || selectedUrl == ALTERNATE_GAME_URL) {
               if (preferences.edit().putString(KEY_GAME_URL, selectedUrl).commit()) {
                 gameUrl = selectedUrl
-                reloadGame()
+                loadGameUrl(selectedUrl)
               }
             }
           },
