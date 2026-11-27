@@ -630,3 +630,15 @@ No branch was deleted. The available GitHub connector exposes no branch-delete o
 - **Vibe assignment:** Chaty checked current PR file scopes and assigned issue #146 to Vibe (agent:vibe) while PR #165 and #166 integration proceeds. #146 touches MainActivity/GeckoSession ownership; neither open PR currently edits those files. Assignment comment #7206693458 contains behavior, scope, exclusions, tests and documentation requirements. Vibe is explicitly instructed not to wait for these PRs to merge.
 - **Files changed in this checkpoint:** PR #165 branch documentation/resource files; PR #166 planner and test files. No beta/main branch changes.
 - **Next safe action:** verify the latest exact-head CI for #165 and #166, inspect full diff/CI before merge, and continue Vibe #146 independently. No release, tag, publication, beta promotion, or physical ARM64 testing.
+
+
+### 2026-11-27 — PR #166 integration and dependency queue update
+
+- **PR:** #166 / issue #23 Phase B planner groundwork.
+- **Head:** 2b6055764ee93e0e6d3fcfaec3ad5c90db3e1a22; **base:** a1a6eebedc205f059eac98db474c503643d35588.
+- **Corrections:** corrected optional-dependency tie-breaking to prioritize enabled providers rather than consumers with more optional requirements; strengthened the test with an optional provider that itself has an optional dependency.
+- **Validation:** Android run #45919219905 passed (Spotless, unit tests, lint, unsigned release assembly); independent reproducibility #45919219912 passed (both clean builds and complete APK comparison).
+- **Merge:** squash merge commit d83e2dfc89087f67f4dbbe71e85668d80303e3ef; beta HEAD verified at that commit.
+- **Post-merge:** Android run #45919654642 and unsigned reproducibility #45919654675 were in progress. No runtime extension installation or physical ARM64 testing is claimed.
+- **Assignments:** #167 moved to agent:queued after its PR #166 dependency cleared; #168/#169 remain agent:blocked. Vibe remains actively assigned #146; #147 is next only after #146 integration.
+- **Next safe action:** finish PR #165 exact-head CI, integrate it if all gates pass, then verify post-merge beta CI and update the repository records. No release/tag/main promotion.
