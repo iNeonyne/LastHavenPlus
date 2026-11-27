@@ -5,6 +5,7 @@ import org.junit.Assert.assertNotEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
+/** Covers stable dependency ordering and the bounds expected at the future runtime boundary. */
 class AddonRuntimePlannerTest {
   private fun item(
     folder: String,
