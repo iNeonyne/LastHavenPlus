@@ -4,14 +4,14 @@
 **Active branch:** beta  
 **Verified beta HEAD after PR #165:** `7e39d2553a11332d44326c1704e0d7647cc6aa40` (launcher strings integrated).
 **Stable release:** [v2.3.0](https://github.com/iNeonyne/LastHavenPlus/releases/tag/v2.3.0), tag commit ebc5b424e83ae66c2b0accc2bec6f050b8dc0d88; GitHub release metadata confirms the ARM64 APK, update manifest and v2.2.0-to-v2.3.0 BSDIFF asset. Main HEAD observed as e9c2b53d1ec84e27722da4b54fa4ddcbad65f891.  
-**Open PRs at the 2026-11-27 live check:** #173 (GameSessionController, head `eb9f64b672eced9143bc5689106223c3e7af3d16`; Android/reproducibility checks pending). PR #165 merged at `7e39d2553a11332d44326c1704e0d7647cc6aa40`; PR #166 merged at `d83e2dfc89087f67f7dbbe71e85668d80303e3ef`. No release, tag, publication or beta-to-main promotion is authorized.
+**Open PRs at the 2026-11-27 live check:** #173 (GameSessionController, head `eb9f64b672eced9143bc5689106223c3e7af3d16`; Android/reproducibility checks pending). PR #165 merged at `7e39d2553a11332d44326c1704e0d7647cc6aa40`; PR #166 merged at `d83e2dfc89087f67f4dbbe71e85668d80303e3ef`. No release, tag, publication or beta-to-main promotion is authorized.
 
 ## Current operational checkpoint — 2026-11-27
 
 - **PR #165 / issue #149:** squash-merged to beta at `7e39d2553a11332d44326c1704e0d7647cc6aa40`. Exact-head Android/unit tests #45919879256, independent unsigned APK reproducibility #45919879249 and Markdown #45919879248 passed on head `a62c7cd3154586d35d85a99ed1964d33ba007733`. Issue #149 closed. Launcher-owned strings, including UpdateScreen labels/actions, now use default `values/strings.xml`; untranslated English locale duplicates were removed.
 - **PR #173 / issue #146:** Vibe's GameSessionController PR is open/draft at `eb9f64b672eced9143bc5689106223c3e7af3d16`. Markdown #45920691560 passed; Android #45920691633 and independent unsigned reproducibility #45920691607 are still running. The branch is non-mergeable against beta because shared documentation files conflict with PR #165; Chaty is reconciling those files. No merge until exact-head checks pass and conflicts are resolved.
 - **Vibe assignment:** #146 is handed off and now `agent:chaty` for integration. #167 GeckoView 160 extension bridge is explicitly assigned to Vibe (`agent:vibe`) with a separate bridge/adapter scope; MainActivity, GameSessionController, GameSessionState, GameScreen and shared docs are excluded during PR #173 integration.
-- **Addon Manager:** PR #166 planner groundwork is merged at `d83e2dfc89087f67f7dbbe71e85668d80303e3ef`; post-merge Android #45919654642 and reproducibility #45919654675 passed. Runtime extension installation, XHR/Worker interception and actual addon activation remain unimplemented.
+- **Addon Manager:** PR #166 planner groundwork is merged at `d83e2dfc89087f67f4dbbe71e85668d80303e3ef`; post-merge Android #45919654642 and reproducibility #45919654675 passed. Runtime extension installation, XHR/Worker interception and actual addon activation remain unimplemented.
 - **Beta HEAD:** `7e39d2553a11332d44326c1704e0d7647cc6aa40`. Post-merge Android #45920923646, Markdown #45920923679 and unsigned reproducibility #45920923633 were running at this checkpoint.
 - **Device/release:** no physical ARM64 testing, release, tag, publication or beta-to-main promotion is claimed or authorized.
 
