@@ -21,7 +21,7 @@
 
 Agent roles, permissions, assignment rules, handoffs, integration, and engineering constraints are defined only in [AGENTS.md](AGENTS.md). This historical snapshot intentionally does not repeat those rules.
 
-## Active work
+## Historical work snapshot — active assignments at the time of record
 
 ### Chaty — #4 / #15 updater reliability and recovery (paused)
 - **Owner/state:** agent:queued; paused by the 2026-11-27 owner priority decision. Not cancelled; do not resume until explicitly reassigned after Addon Manager P0 handoff. Keep #4/#15/#31 coordinated and do not parallelize.
@@ -43,7 +43,7 @@ Agent roles, permissions, assignment rules, handoffs, integration, and engineeri
 - Five approved library-only pins are already integrated by PR #104 at cff8dd2078cb240a69c11fd8c59db648bd0a9d58.
 - Remaining work is evidence/documentation reconciliation only. No AGP, Kotlin, Gradle, JDK, SDK/Build Tools, GeckoView, signing or ABI changes.
 
-## Vibe work queue
+## Historical Vibe queue snapshot
 
 Vibe has exactly one active implementation issue at a time. After handing off a PR, Vibe immediately starts the next explicitly assigned independent issue while Chaty integrates earlier PRs. A queued issue is not an assignment; Chaty must change its label to `agent:vibe` and post a complete scope/acceptance comment.
 
@@ -71,12 +71,12 @@ Vibe has exactly one active implementation issue at a time. After handing off a 
 - **#169:** Worker/`blocks.idx` masking; remains `agent:blocked` until #168 is reviewed and integrated.
 - **#170:** same-session navigation; remains `agent:blocked` pending runtime and navigation prerequisites.
 
-## Owner-controlled work
+## Historical owner-controlled work snapshot
 
 - **#23 — Addon Manager (P0):** Phase A/planner and bridge payload transport are integrated. Chaty owns coordination; #167 is Chaty-owned for runtime/device follow-up; #168 is Vibe's active XHR task; #169 and #170 remain blocked by their documented dependencies.
 - **#67 — rights and third-party notices:** original project material follows the owner's All Rights Reserved decision. Third-party notice completeness and distribution-rights review remain unresolved. Issue label: agent:owner.
 
-## Blocked dependency/authorization queue
+## Historical blocked dependency queue snapshot
 
 These are genuinely blocked by prerequisites or owner decisions. They use `agent:blocked`; neither agent starts until the stated gate is cleared. Ready work waiting for an agent turn uses `agent:queued` instead:
 
@@ -92,7 +92,7 @@ These are genuinely blocked by prerequisites or owner decisions. They use `agent
 - #7 performance/size optimization — requires comparable measured baseline and explicit scope.
 - #86 deferred feature coordination index — not an implementation assignment until owner scope is confirmed.
 
-## Current ownership inventory — 2026-11-27 (reconciled after PR #180)
+## Historical ownership inventory — 2026-11-27 (superseded)
 
 Every open issue has exactly one `agent:*` label. The label distinguishes active ownership from queue and blocker state.
 
