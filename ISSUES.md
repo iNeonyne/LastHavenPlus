@@ -926,3 +926,11 @@ Verify the current manifest and GeckoView delegates, then document the strict al
 - Independent unsigned APK reproducibility #45923143712 passed both clean builds and final archive/hash comparison.
 - Post-merge Markdown #45923143716 passed on merge commit `5ed6af6`; documentation-only follow-up Markdown #45923558131 passed on `3856a4f`.
 - No physical ARM64 device testing is claimed.
+
+
+## 2026-11-27 — PR #192 updater APK cleanup integrated
+
+- PR [#192](https://github.com/iNeonyne/LastHavenPlus/pull/192) squash-merged to `beta` at `a2f943bf23e6b607ab3104c86798bec9130391a1` from exact PR head `b526efc59e4e7b06ef9ebc5b1bb368be44c2544c`. Issue #181 is completed and closed.
+- Cleanup now scans a bounded number of direct updater-directory entries, deletes only generated finalized APK names and abandoned partial files, and never follows symlinks or descends into directories. Pending installer APKs, last handoff APKs and crash-recovery candidates remain protected. Installer handoff state is persisted before launch and rolled back if launch fails.
+- Exact-head Android validation [#45948554037](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45948554037) passed lint, Spotless, JVM tests, unsigned release assembly and bundled MIT notice verification. Independent unsigned APK reproducibility [#45948554046](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45948554046) passed both clean builds and APK archive/hash comparison.
+- This does not complete broader updater reliability issues #4/#15. No automatic installation, signing/ABI/toolchain changes, physical ARM64 update test, release, tag or `main` promotion occurred.
