@@ -29,11 +29,25 @@ class AddonBridgeWiringTest {
     )
     assertTrue(mainSource.contains("addonBridgeController.setGameSession(session)"))
 
-    val bindPosition = sessionSource.indexOf("onSessionReady(gameSession)")
-    val loadPosition = sessionSource.indexOf("gameSession.loadUri(gameUrl)")
+    val bindPositions =
+      Regex("onSessionReady\\(gameSession\\)")
+        .findAll(sessionSource)
+        .map { it.range.first }
+        .toList()
+    val loadPositions =
+      Regex("gameSession\\.loadUri\\(gameUrl\\)")
+        .findAll(sessionSource)
+        .map { it.range.first }
+        .toList()
+    assertTrue("both create and reopen paths must bind the session", bindPositions.size >= 2)
+    assertTrue("both create and reopen paths must load the URI", loadPositions.size >= 2)
     assertTrue(
-      "session must be bound before the first loadUri",
-      bindPosition >= 0 && loadPosition > bindPosition,
+      "new-session sender binding must precede its first navigation",
+      bindPositions[0] < loadPositions[0],
+    )
+    assertTrue(
+      "reopened-session sender binding must precede its navigation",
+      bindPositions[1] < loadPositions[1],
     )
   }
 
