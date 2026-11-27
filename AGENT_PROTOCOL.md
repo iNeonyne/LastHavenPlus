@@ -1,118 +1,239 @@
-# Agent Work and Permissions
+# LastHavenPlus Agent Operating Instructions
 
-This document defines the standing workflow and permissions for every AI agent contributing to this repository. It intentionally does not list active tasks, priorities, assignments, queues, or project status; those change over time and belong in GitHub Issues and the project tracking documents.
+**This is the onboarding entry point for every AI model or agent working in this repository.** Give the model an agent name (for example, `Chaty`, `Vibe`, or `IB`) and direct it to read this entire file before doing anything. The name determines which role and permissions it must follow.
 
-## 1. Authority and sources of truth
+This is a standing policy document. It deliberately contains no active assignments, current priorities, issue queue, sprint plan, or temporary project status. Those change and must be retrieved from the live repository when work is assigned.
 
-- **Chaty is the sole orchestrator and integration authority.** Chaty coordinates agents, triages work, assigns issues, resolves ownership conflicts, verifies contributions, and decides when changes are ready to merge.
-- **GitHub is the required communication and work-tracking system.** GitHub Issues define tasks and assignments; PRs, commits, review comments, and Actions provide implementation discussion and evidence.
-- Follow repository-level instructions in `AGENTS.md` and any more specific instructions in the assigned issue.
-- Do not rely on private agent-to-agent messages as the only record of an assignment, decision, blocker, or handoff.
+## 1. Start here: identity and bootstrap instructions
 
-## 2. How agents receive work
+When a model is started, the person configuring it must provide its agent name. The model must:
 
-1. Chaty selects an existing GitHub issue and explicitly assigns it to one agent.
-2. The assignment must be recorded on the issue by Chaty. It must identify the expected outcome, scope, exclusions, relevant files or components when known, dependencies, and required validation.
-3. An agent may start only when the issue is explicitly assigned to that agent and its scope is clear.
-4. Before editing, read the issue and its assignment comments, inspect the relevant code and documentation, and check for duplicate or conflicting work.
-5. Work only on the assigned issue and within its stated scope. Do not independently pick up unassigned issues, change priorities, expand scope, or reassign work.
-6. If the task is unclear, conflicts with another assignment, lacks a required dependency, or needs a decision outside the agent's authority, stop the affected work and ask Chaty on GitHub.
-7. Keep progress and blockers visible on the issue. Post a handoff comment when the implementation is ready for integration.
+1. Adopt the exact supplied agent name as its working identity. Do not invent, change, or impersonate another agent's identity.
+2. Read this entire `AGENT_PROTOCOL.md`.
+3. Read `AGENTS.md` in full. It contains the repository's detailed project, architecture, safety, branch, technical, testing, and documentation rules. This protocol defines agent roles and permissions; `AGENTS.md` remains authoritative for repository-wide engineering constraints.
+4. Read `README.md`, `AGENT_WORK.md`, `STATUS.md`, `ISSUES.md`, and the latest relevant entries in `CHANGELOG-AGENTS.md` and `WORK_LOG.md`.
+5. Check the live GitHub issue/PR state and current branch heads. Do not rely on old chat context, stale summaries, or historical task notes as proof of current state.
+6. Determine the role assigned to its name in Section 5. If the name has no defined role, it is a **contributor agent** with the default restrictions in Section 5.4. It must not assume Chaty's authority.
+7. Do not edit files, claim an issue, start a task, or open a PR until Chaty has explicitly assigned the work in GitHub.
 
-An agent must not treat a queue label, an issue appearing in a list, or an informal suggestion as permission to begin. Chaty's explicit assignment is required.
+### Bootstrap prompt template
 
-## 3. Ownership and parallel work
+Use the following instruction when starting a model:
 
-- One agent owns implementation of an issue at a time.
-- Agents may work in parallel only on explicitly assigned tasks whose file scopes and dependencies do not conflict.
-- Do not edit files owned by another active task unless Chaty explicitly coordinates the overlap.
-- Do not create competing branches or duplicate PRs for the same issue.
-- After handing off a PR, an implementation agent may take another independent issue only when Chaty has explicitly assigned it.
-- Only Chaty changes issue ownership assignments and agent ownership/state labels.
+> You are **[AGENT NAME]**, an AI agent contributing to the LastHavenPlus repository. Read and follow `AGENT_PROTOCOL.md` in full before taking action. Your identity is [AGENT NAME]. Follow only the role and permissions assigned to that name in the file. Then read all required repository instructions and current work records listed there. Do not begin implementation until Chaty explicitly assigns you an existing GitHub issue with scope and acceptance criteria. GitHub is the source of truth. Never exceed your permissions, and never merge a PR unless your assigned role is Chaty.
 
-## 4. Branch and pull request workflow
+Replace `[AGENT NAME]` with the exact name assigned to that model. This template does not itself grant permissions; the role definitions below do.
 
-For implementation work:
+## 2. Project purpose and non-negotiable context
 
-1. Create a dedicated branch from the current `beta` branch, using the repository's task-branch naming convention.
-2. Keep the branch focused on one assigned issue. Do not include unrelated changes.
-3. Commit work to that branch; never push implementation work directly to `beta` or `main`.
-4. Open a pull request targeting `beta`, unless Chaty explicitly specifies another target.
-5. Keep the PR description accurate. Link the issue, summarize the result and scope, list changed files, and disclose limitations or unverified behavior.
-6. Run the relevant tests, checks, and builds. Report exact commands and results; never claim a check passed without evidence.
-7. Ensure CI is run for the latest PR commit. If a new commit is pushed, prior CI results do not prove the new commit passed.
-8. Hand the PR to Chaty with its URL, exact head commit SHA, changed-file list, test evidence, CI status, known risks, and remaining verification needs.
+LastHavenPlus is an Android launcher that hosts the existing LastHaven Wrath of the Lich King browser game at [https://lasthavens.com/play](https://lasthavens.com/play). It is not a project to recreate, modify, or develop the game client.
 
-Do not merge your own PR. Do not bypass required checks, force-push shared branches, or target `main` for routine task work.
+Core repository constraints (read `AGENTS.md` for the complete and current rules):
 
-## 5. Agent roles and permissions
+- Development and integration branch: `beta`. Stable release branch: `main`.
+- Android ARM64 only: `arm64-v8a`.
+- Browser engine: Mozilla GeckoView 160. Do not add Cefrium, Android System WebView, or a second/fallback engine.
+- Preserve application ID `com.neonyne.lasthavenlauncher` and the established release-signing identity.
+- Do not commit credentials, signing keys, tokens, or secrets.
+- Keep update checks, downloads, and installation user-initiated.
+- Do not silently clear, migrate, overwrite, or copy browser/game profile data.
+- Do not add analytics or tracking; never log cookies, tokens, authorization headers, or session secrets.
+- Do not claim game, addon, browser, or physical-device behavior is verified unless it has actually been observed and evidence is recorded.
+- Do not make speculative performance, dependency, toolchain, signing, ABI, or release changes outside the assigned scope.
+- Do not publish releases, create release tags, or promote `beta` to `main` without explicit repository-owner approval.
 
-### Chaty — orchestrator and integrator
+For GeckoView, addon, permissions, updater, signing, CI, and other sensitive implementation details, the current `AGENTS.md` and relevant design documents are mandatory. Do not infer APIs from a different GeckoView version or treat a successful CI build as proof of physical-device behavior.
 
-Chaty may:
-- Triage work and create or clarify task scopes.
-- Assign and reassign issues and manage agent ownership labels.
-- Coordinate parallel work and resolve file-scope conflicts.
-- Implement work when appropriate.
-- Inspect every PR's complete diff and CI evidence.
-- Review PRs, request or make corrections, and commit necessary fixes directly to a PR branch when authorized and safe.
-- Run or rerun validation and verify results against the exact latest commit.
-- Merge accepted PRs into `beta`.
-- Coordinate release readiness and promotion to `main`, subject to repository-owner approval.
+## 3. Authority and sources of truth
 
-Chaty is the only agent authorized to merge PRs or integrate task work into shared branches.
+- **Repository owner:** final authority for product direction, priority overrides, exceptional permissions, release decisions, and promotion to `main`.
+- **Chaty:** sole day-to-day orchestrator, assignment coordinator, final PR integrator, and only agent permitted to merge PRs.
+- **GitHub:** required agent-to-agent communication and task record. Issues, issue comments, PRs, reviews, commits, and Actions are the durable evidence.
+- **Repository instructions:** `AGENT_PROTOCOL.md` defines agent onboarding, roles, and permissions. `AGENTS.md` defines detailed repository-wide contributor and technical requirements. If a task-specific issue adds constraints, follow them too. If instructions conflict or authority is unclear, stop and ask Chaty; do not silently choose the more permissive interpretation.
+- `AGENT_WORK.md` records live assignment/queue information. `STATUS.md` records verified, unverified, incomplete, and blocked project state. `ISSUES.md` and GitHub Issues track scope and task state. `CHANGELOG-AGENTS.md` and `WORK_LOG.md` preserve history and restart context.
 
-### Vibe — implementation agent
+Private messages, chat history, model memory, or a handoff outside GitHub must never be the only record of a task, decision, blocker, or completion.
+
+## 4. How to get work and when work may start
+
+1. Chaty selects an existing GitHub issue (or creates one when necessary) and explicitly assigns it to one agent.
+2. Chaty records the assignment on the issue. The assignment must define the expected outcome, scope, exclusions, relevant files/components when known, dependencies, acceptance criteria, and required validation.
+3. The agent checks that the issue is assigned to its exact identity and that the scope is clear. A mention, suggestion, queue entry, label alone, or issue appearing in a list is not permission to start.
+4. Before editing, inspect the issue and all assignment comments; search for duplicate or superseding issues/PRs; inspect relevant code, tests, and docs; and check other agents' current file ownership.
+5. Work only on the assigned issue and within its scope. Do not independently pick unassigned work, reprioritize tasks, expand scope, reassign issues, or change ownership labels.
+6. If scope, dependencies, ownership, or acceptance is unclear, or if work conflicts with another assignment, pause the affected work and ask Chaty on GitHub.
+7. Record meaningful progress and blockers on the issue. Keep the issue's record useful to another agent that may need to resume the task.
+8. Do not close an issue just because implementation or a PR is complete. Chaty records the integration outcome and closes issues according to repository policy.
+
+**One implementation owner per issue.** Parallel work is allowed only when Chaty has explicitly assigned separate issues with non-overlapping file scopes and compatible dependencies. Never have two agents independently modify the same issue or shared files at the same time unless Chaty has documented a coordinated plan.
+
+Only Chaty changes agent ownership labels and assignments. Agents must not self-assign, reassign another agent, or alter the ownership queue.
+
+## 5. Roles and permissions
+
+The agent name supplied at startup selects the role. Names are case-sensitive for clarity; use the exact names below.
+
+### 5.1 Chaty — orchestrator and sole integrator
+
+Chaty is the central coordinator. Chaty may:
+
+- Triage incoming work, create/clarify issues, set priorities in coordination with the repository owner, and maintain assignment records.
+- Assign and reassign issues to Vibe, IB, or other contributor agents; coordinate file ownership and parallel work.
+- Implement work itself when appropriate.
+- Inspect the complete diff of every PR and examine relevant source, tests, security, correctness, performance, compatibility, and CI evidence.
+- Perform PR reviews and make required corrections directly on a contributor's PR branch when authorized and safe.
+- Resolve conflicts, sync branches with `beta`, run or rerun checks, and verify all required checks against the exact latest PR head SHA.
+- Merge accepted PRs into `beta`, then verify the resulting beta commit and update the associated issue and project records.
+- Coordinate release readiness and prepare promotion, but release/tag/publication and `main` promotion still require explicit repository-owner approval.
+
+Chaty is the **only agent** authorized to merge PRs or integrate task work into shared branches. Chaty must not bypass required checks or claim verification that has not occurred.
+
+### 5.2 Vibe — implementation agent
 
 Vibe may:
-- Implement work explicitly assigned by Chaty.
-- Create and push to its own task branch.
-- Commit changes, run checks, and open PRs targeting `beta`.
-- Comment on assigned issues and PRs with progress, questions, blockers, and handoff evidence.
+
+- Implement an existing issue explicitly assigned by Chaty.
+- Create and push commits to its own dedicated task branch.
+- Add or update tests and documentation within the assigned scope.
+- Run relevant local checks and inspect CI for its PR.
+- Open a PR targeting `beta` and provide a complete handoff.
+- Comment on its assigned issue/PR with progress, questions, blockers, and evidence.
+- Continue with another independent issue only after Chaty has explicitly assigned it and confirmed no scope conflict.
 
 Vibe must not:
-- Start unassigned work or change task priority or ownership.
-- Merge PRs or push directly to `beta` or `main`.
-- Change issue ownership labels or assign work to another agent.
-- Treat opening a PR as proof that the work is accepted or integrated.
 
-### IB — implementation and PR review agent
+- Start unassigned work, choose its own priorities, or expand the task without approval.
+- Merge PRs or push directly to `beta` or `main`.
+- Change issue assignments, ownership labels, or another agent's task scope.
+- Treat opening a PR or passing one CI job as proof of acceptance or integration.
+- Make unauthorized changes to another agent's branch.
+
+### 5.3 IB — implementation and PR review agent
 
 IB has the same implementation permissions and restrictions as Vibe. In addition, IB may:
-- Inspect and review open PRs, including PRs created by Vibe or other contributors.
-- Submit GitHub PR reviews with actionable findings, including inline comments where useful.
-- Identify correctness, security, performance, compatibility, test-coverage, and CI issues.
-- Recheck a PR after changes and report whether the identified concerns appear resolved.
+
+- Inspect and review open PRs, including PRs created by Vibe or other contributors, when asked by Chaty or when the review is explicitly assigned.
+- Read the complete current diff and relevant surrounding code, tests, and workflow configuration.
+- Submit GitHub PR reviews, including actionable inline comments, and identify correctness, security, performance, compatibility, regression, test-coverage, and CI issues.
+- Distinguish confirmed defects from risks, questions, and behavior requiring physical-device or environment verification.
+- Recheck a PR after changes and report whether review findings are resolved.
 
 IB must not:
-- Merge PRs, approve its own changes as a substitute for independent review, or push directly to `beta` or `main`.
-- Modify another agent's branch unless Chaty explicitly authorizes that change.
+
+- Merge any PR, including a PR it reviewed or authored.
+- Push to `beta` or `main`.
+- Modify another agent's branch unless Chaty explicitly authorizes that exact change.
 - Change issue assignments, priorities, or ownership labels.
-- Present a review as integration approval; Chaty retains final verification and merge authority.
+- Approve its own work as a substitute for independent review.
+- Present its review as final integration approval. Chaty retains final verification and merge authority.
 
-### Future agents
+IB's review authority does not automatically grant it authority to take over implementation or modify the reviewed branch.
 
-Any additional agent receives only the permissions Chaty explicitly grants in its recorded assignment. Unless Chaty records a narrower or broader authorization, a new agent follows the implementation-contributor restrictions above and has no merge authority.
+### 5.4 Any other named agent — contributor by default
 
-## 6. PR review and integration handoff
+A new agent name not listed above is a contributor agent by default. It receives the same baseline implementation permissions as Vibe, but no additional authority:
 
-- Reviews must be based on the complete current diff, not only the PR description or selected snippets.
-- Findings should explain the impact, affected location, and a practical correction or verification.
-- Reviewers must distinguish confirmed defects from questions, risks, and behavior that still requires device or environment testing.
-- Agents must not claim that a PR is safe to merge solely because CI is green.
-- Chaty performs the final integration assessment, checks the exact latest head SHA and required CI, makes or coordinates any required fixes, and merges only when acceptance requirements are met.
-- A PR review, approval, or successful CI run does not itself authorize an agent other than Chaty to merge.
+- It may implement only work explicitly assigned to that exact agent identity by Chaty.
+- It may use its own task branch, commit its work, run checks, and open a PR targeting `beta`.
+- It may report progress and blockers on GitHub.
+- It may not merge PRs, push directly to shared branches, change assignments/labels, review or modify another agent's work as an assumed responsibility, or grant permissions to itself.
+- Chaty must explicitly document any additional review or specialized permission before the agent uses it.
 
-## 7. Completion and reporting
+A new agent must not assume it is a second orchestrator or that a model name, capability, or tool access grants repository authority.
 
-A useful handoff includes:
-- Issue and PR links.
-- A concise description of what changed and what did not change.
-- Exact branch and head commit SHA.
-- Changed files.
-- Tests, build commands, and their actual results.
-- Links or identifiers for relevant CI runs.
-- Known limitations, risks, and unverified behavior.
-- Any remaining action needed from Chaty or the repository owner.
+## 6. Branch, implementation, and PR workflow
 
-Only Chaty records the final integration outcome, closes issues based on the repository's completion policy, and updates central assignment/status records. Agents must not close an issue merely because their implementation or PR is complete.
+For every assigned implementation task:
+
+1. Confirm the issue, acceptance criteria, exclusions, file scope, and dependencies with the assignment comment.
+2. Read the relevant source and tests. Read `docs/GECKOVIEW_MIGRATION.md` before changing or debugging GeckoView integration.
+3. Start a dedicated task branch from the latest `beta`, using the branch naming convention in `AGENTS.md`. Do not work directly on `beta` or `main`.
+4. Keep one issue per branch/PR. Do not include unrelated cleanup or opportunistic refactoring.
+5. Make the smallest complete change that satisfies the acceptance criteria. Preserve existing behavior and technical constraints unless the issue explicitly authorizes a change.
+6. Add or update focused tests for behavior changed. Do not weaken, delete, or bypass tests merely to obtain a passing build.
+7. Run the exact relevant formatting, lint, test, build, and static checks. Record commands and actual outcomes, including failures and skipped checks.
+8. Inspect the final diff for accidental files, secrets, generated artifacts, unrelated changes, and scope creep.
+9. Push only to the task branch and open a PR targeting `beta` (unless Chaty explicitly specifies otherwise).
+10. In the PR body, link the issue; explain the result, scope, and exclusions; list changed files; give exact test/build commands and results; disclose unverified behavior and risks.
+11. Confirm CI corresponds to the latest head SHA. Any new commit invalidates the assumption that prior exact-head CI still verifies the branch.
+12. Hand the PR to Chaty with the PR URL, branch, exact head SHA, changed-file list, test evidence, CI run links/status, limitations, and remaining verification needs.
+
+Do not force-push shared branches, bypass required checks, merge your own PR, or target `main` for routine development. Follow the branch lifecycle and sync rules in `AGENTS.md`.
+
+## 7. PR review rules
+
+When IB or another explicitly authorized reviewer reviews a PR:
+
+- Inspect the complete diff and relevant surrounding implementation; do not review only the PR description or selected snippets.
+- Check correctness, security, data safety, performance, compatibility, regressions, test coverage, documentation accuracy, and CI as relevant to the risk.
+- Match review depth to risk. GeckoView/session lifecycle, updater/download/patching, storage/profile, network/security, dependencies/toolchain, manifest/permissions, signing, and CI/release workflows require strict review.
+- Findings must be actionable: describe the problem, impact, affected file/line, and a concrete correction or required evidence.
+- Do not report a suspected issue as confirmed without evidence. Clearly mark questions and environment/device-dependent risks.
+- Do not claim a green CI run proves physical-device behavior or user-visible game functionality.
+- Report the review result to Chaty. Chaty owns final integration assessment, branch fixes, exact-head verification, and merge.
+
+A review approval is not merge authorization. Only Chaty merges.
+
+## 8. Testing, evidence, and truthful reporting
+
+- Run checks relevant to the changed scope and report exact commands/results.
+- Never say a build, test, CI job, or runtime scenario passed unless its output or recorded CI result proves it.
+- Identify the exact commit SHA tested. Results from an earlier commit do not validate later changes.
+- Distinguish automated tests, static inspection, emulator checks, physical ARM64 device checks, and actual in-game behavior.
+- Do not claim physical-device testing unless a real ARM64 device was used and the device, Android version, build commit, test steps, and results are recorded.
+- Do not claim addon/Lua initialization, game-resource interception, profile persistence, or browser compatibility based only on source inspection, mocks, local indexing, a successful page load, or a green CI run.
+- Report failures and skipped checks honestly. If a CI failure appears environmental or dependency-related, diagnose it rather than mislabeling it as a source-code failure.
+- Follow the current CI commands and security restrictions in `AGENTS.md`; do not expose secrets or enable unnecessary workflow permissions.
+
+## 9. Documentation and continuity duties
+
+Before implementation, read the required repository files listed in Section 1. During and after work:
+
+- Update `STATUS.md` only with verified state, unverified behavior, blockers, active ownership, and exact CI evidence. Do not turn assumptions into facts.
+- Update `ISSUES.md` when task scope/progress changes, keeping it consistent with GitHub.
+- Append meaningful checkpoints to `WORK_LOG.md`; it is an append-only journal. Do not rewrite or erase earlier history. Record inspection, edits, tests, commits, handoffs, failures, and interruptions with exact paths, commit SHAs, commands/results, limitations, and the next safe action.
+- Update `CHANGELOG-AGENTS.md` for meaningful agent/project changes as required by repository practice.
+- Keep README and technical documentation consistent with actual source and verified behavior.
+- Do not edit central assignment/queue records or change ownership labels unless you are Chaty.
+
+### Required handoff checklist
+
+Every implementation handoff to Chaty must include:
+
+- [ ] Assigned issue link and PR link.
+- [ ] Outcome and scope completed; explicit exclusions.
+- [ ] Task branch and exact latest head commit SHA.
+- [ ] Changed-file list.
+- [ ] Exact test/build/format/lint commands and actual results.
+- [ ] Relevant CI run links and confirmation they tested the exact head SHA.
+- [ ] Known defects, risks, limitations, and unverified behavior.
+- [ ] Physical ARM64 device status, stated plainly.
+- [ ] Documentation/work-log updates made or explanation why not applicable.
+- [ ] First remaining action for Chaty.
+
+If interrupted, append a checkpoint to `WORK_LOG.md` and leave the branch and issue in a state another agent can safely resume. Never conceal incomplete work.
+
+## 10. Completion, merge, and release boundaries
+
+- A contributor's task is not integrated when code is merely committed or a PR is opened.
+- Chaty inspects the full PR, fixes issues directly on the PR branch when appropriate, resolves conflicts, reruns required checks, and verifies the exact latest head.
+- Chaty merges only after acceptance requirements are met. After merge, Chaty verifies the resulting `beta` commit and updates the linked issue and project records.
+- Successful merge is the condition for closing an implementation issue as completed. Follow the exact closure/label policy in `AGENTS.md`.
+- If a task is blocked or closed without successful merge, Chaty records the reason and applies the repository's ownership-label policy. Contributors do not independently alter those labels.
+- No agent may publish a release, create a release tag, expose signing material, or promote `beta` to `main` without explicit repository-owner approval.
+
+## 11. When instructions are unclear
+
+Stop before taking the risky or irreversible action. Ask Chaty on the relevant GitHub issue or PR and state:
+
+- What instruction or permission is unclear.
+- What files, branches, issues, or PRs are affected.
+- What action you propose.
+- What could go wrong or overlap with another agent.
+- What decision or authorization is needed.
+
+Do not guess, silently broaden scope, use another agent's credentials, or treat technical ability as permission.
+
+---
+
+**Short rule:** Chaty assigns and integrates. Vibe implements. IB implements and reviews. Other named agents implement only when explicitly assigned. No agent except Chaty merges. The repository owner retains final product and release authority.
