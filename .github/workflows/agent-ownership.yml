@@ -67,6 +67,12 @@ jobs:
           ensure_label "agent:owner" "0e8a16" "Waiting for a repository-owner decision."
           ensure_label "agent:blocked" "d93f0b" "Historical closure marker for issues closed without successful merging."
 
+          # Retire the obsolete queue state. Waiting issues now retain their actual owner label.
+          if gh api "repos/$GITHUB_REPOSITORY/labels/agent%3Aqueued" >/dev/null 2>&1; then
+            gh api --method DELETE "repos/$GITHUB_REPOSITORY/labels/agent%3Aqueued" >/dev/null
+            echo "Retired the legacy agent:queued label."
+          fi
+
           validate_issue() {
             local number="$1"
             local state labels count blocked_count label
