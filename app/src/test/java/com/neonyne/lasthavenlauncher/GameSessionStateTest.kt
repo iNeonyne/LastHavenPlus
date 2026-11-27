@@ -75,6 +75,27 @@ class GameSessionStateTest {
   }
 
   @Test
+  fun `decideGameUrlChange navigates an open session in place`() {
+    assertEquals(
+      GameSessionUrlChangeDecision.LoadInPlace,
+      GameSessionActions.decideGameUrlChange(state(hasSession = true, sessionOpen = true)),
+    )
+  }
+
+  @Test
+  fun `decideGameUrlChange reopens a closed session`() {
+    assertEquals(
+      GameSessionUrlChangeDecision.ReopenAndLoad,
+      GameSessionActions.decideGameUrlChange(state(hasSession = true, sessionOpen = false)),
+    )
+  }
+
+  @Test
+  fun `decideGameUrlChange does nothing when no session exists`() {
+    assertEquals(GameSessionUrlChangeDecision.Noop, GameSessionActions.decideGameUrlChange(state()))
+  }
+
+  @Test
   fun `shouldRestore recreates only an existing session`() {
     assertTrue(GameSessionActions.shouldRestore(state(hasSession = true, sessionCrashed = true)))
     assertFalse(GameSessionActions.shouldRestore(state()))
@@ -84,7 +105,7 @@ class GameSessionStateTest {
   fun `onPageStart marks loading and supersedes prior failures`() {
     val next =
       GameSessionActions.onPageStart(
-        state(pageLoadFailed = true, sessionCrashed = false, hasCompletedLoad = true)
+        state(pageLoadFailed = true, sessionCrashed = false, hasCompletedLoad = true),
       )
     assertTrue(next.isLoading)
     assertFalse(next.pageLoadFailed)
@@ -151,7 +172,7 @@ class GameSessionStateTest {
           sessionCrashed = true,
           hasLoadedGame = true,
           hasCompletedLoad = true,
-        )
+        ),
       )
     assertFalse(next.isLoading)
     assertFalse(next.pageLoadFailed)
