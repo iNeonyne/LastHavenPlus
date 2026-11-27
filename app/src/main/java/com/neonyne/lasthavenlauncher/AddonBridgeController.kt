@@ -24,7 +24,7 @@ import org.mozilla.geckoview.WebExtension
  * only through revision-bound manifest pages and one bounded file chunk at a time.
  */
 @MainThread
-class AddonBridgeController(
+internal class AddonBridgeController(
   private val snapshotProvider: () -> AddonLibrarySnapshot,
   private val payloadProvider: AddonRuntimePayloadProvider,
   private val worker: Executor,
