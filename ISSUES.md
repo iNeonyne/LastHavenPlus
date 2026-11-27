@@ -1,3 +1,17 @@
+## 2026-11-27 — Addon Manager Phase B current execution state
+
+- **Verified beta HEAD:** `d160b052370bbcbae6925174ac2cb10ec609ff91`.
+- **Merged:** PR #177 native-messaging foundation; PR #180 bounded ZIP 0.5.1 payload transport; PR #190 live-session bridge wiring; PR #191 bounded same-origin XHR overlay (#168).
+- **PR #190 exact-head checks:** Android #45950285046, unsigned APK reproducibility #45950285094, Markdown #45950285026 — all passed.
+- **PR #191 exact-head checks:** Android #45951682137, unsigned APK reproducibility #45951682107, Markdown #45951682194 — all passed.
+- **#167:** open, `agent:chaty`; source-level bridge/payload/session wiring is integrated. Remaining work is physical ARM64 runtime verification and any defects found there. Do not claim actual addon/Lua initialization.
+- **#168:** closed after PR #191 merged.
+- **#169:** `agent:vibe`; active P0 implementation assignment for bounded Worker interception and read-only `blocks.idx` masking. The bridge and XHR contract dependencies are integrated.
+- **#170:** `agent:blocked`; waits for #169 integration and remaining same-session manager-navigation work.
+- **#23:** Chaty coordinates the milestone and owns integration; Vibe has exactly one active implementation issue (#169).
+- **Paused:** updater #4/#15 remain queued, not cancelled; do not resume before an explicit handoff.
+- ARM64-only packaging, security, exact-head CI, physical-device verification and owner release-approval gates remain unchanged.
+
 # Project backlog — LastHavenPlus
 
 ## 2026-11-27 — Addon Manager Phase B execution checkpoint

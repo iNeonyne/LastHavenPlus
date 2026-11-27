@@ -1,3 +1,14 @@
+## 2026-11-27 — PR #191 merged; Worker masking assigned (#169)
+
+- **Verified beta HEAD:** `d160b052370bbcbae6925174ac2cb10ec609ff91`.
+- **PR #190:** merged at `1d5f55d0dcfdf37d1fa49c7f795adfdc3244cf5d`; exact-head Android #45950285046, independent unsigned APK reproducibility #45950285094 and Markdown #45950285026 passed.
+- **PR #191 / issue #168:** merged at the current beta HEAD `d160b052370bbcbae6925174ac2cb10ec609ff91`; exact-head Android #45951682137, independent unsigned APK reproducibility #45951682107 and Markdown #45951682194 passed.
+- **Vibe active assignment:** #169 — bounded target Worker bootstrap and read-only `blocks.idx` masking. Assignment posted on the issue; branch must start from the verified beta HEAD above.
+- **Chaty:** #23 coordination/integration and #167 bridge runtime/device verification. #167 remains open; source-level bridge/payload/session wiring is integrated, but physical ARM64 runtime behavior and actual addon/Lua initialization are not verified.
+- **#170:** remains blocked until #169 is integrated and its same-session manager-navigation prerequisites are ready.
+- **Paused:** updater #4/#15 remain queued pending a safe Addon Manager milestone handoff.
+- **No release, tag, publication or beta-to-main promotion is authorized. No physical ARM64 test or in-game addon initialization is claimed.**
+
 ## 2026-11-27 — PR #190 merged; PR #191 exact-head checks passed
 
 - PR #190 merged to `beta` at `1d5f55d0dcfdf37d1fa49c7f795adfdc3244cf5d`. Exact-head Android validation #45950285046, independent unsigned APK reproducibility #45950285094 and Markdown #45950285026 passed.

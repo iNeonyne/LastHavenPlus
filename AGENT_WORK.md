@@ -1,3 +1,18 @@
+## Current owner priority — 2026-11-27 (verified after PR #191)
+
+- **P0:** Addon Manager Phase B (#23); Chaty owns coordination, integration and verification.
+- **Vibe's sole active implementation assignment:** #169 — bounded Worker interception and read-only `blocks.idx` masking, assigned from beta HEAD `d160b052370bbcbae6925174ac2cb10ec609ff91`.
+- **#168:** completed and closed after PR #191 merged. Exact-head Android #45951682137, unsigned reproducibility #45951682107 and Markdown #45951682194 passed.
+- **#167:** remains open and `agent:chaty` for physical ARM64 runtime verification and any bridge defects found. Source-level foundation, payload transport and production session wiring are integrated by PRs #177, #180 and #190.
+- **#169:** its bridge/XHR source-contract prerequisites are integrated; Vibe must implement only the worker/index scope defined in the issue.
+- **#170:** remains `agent:blocked` until #169 is integrated and same-session manager-navigation prerequisites are ready.
+- **Paused:** updater #4/#15 remain queued, not cancelled; do not resume until Chaty explicitly hands off after a safe Addon Manager milestone.
+- Keep exactly one active Vibe implementation issue. No overlapping Worker/navigation ownership.
+
+**Last verified:** 2026-11-27  
+**Verified beta HEAD:** `d160b052370bbcbae6925174ac2cb10ec609ff91`  
+**Stable release:** v2.3.0 (tag commit ebc5b424e83ae66c2b0accc2bec6f050b8dc0d88).
+
 # Agent work assignments — LastHavenPlus
 
 ## Current owner priority — 2026-11-27

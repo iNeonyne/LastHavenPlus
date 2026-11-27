@@ -1,3 +1,11 @@
+## 2026-11-27 — PR #191 merged; Vibe assigned Worker/index masking (#169)
+
+- PR #190 merged at `1d5f55d0dcfdf37d1fa49c7f795adfdc3244cf5d`; exact-head Android #45950285046, independent unsigned reproducibility #45950285094 and Markdown #45950285026 passed.
+- PR #191 / issue #168 merged at `d160b052370bbcbae6925174ac2cb10ec609ff91`; exact-head Android #45951682137, independent unsigned reproducibility #45951682107 and Markdown #45951682194 passed.
+- Vibe's next and sole active task is #169, assigned from beta `d160b052370bbcbae6925174ac2cb10ec609ff91`. The bridge and XHR source contracts are integrated.
+- #167 remains Chaty-owned for physical ARM64 runtime verification; #170 remains blocked pending #169 and same-session navigation prerequisites.
+- No physical ARM64 test, in-game addon initialization, release, tag or main promotion is claimed or authorized.
+
 ## 2026-11-27 — PR #190 integrated; exact-head XHR overlay verification (#168)
 
 - PR #190 merged to `beta` at `1d5f55d0dcfdf37d1fa49c7f795adfdc3244cf5d`; exact-head Android #45950285046, independent unsigned APK reproducibility #45950285094 and Markdown #45950285026 passed.
