@@ -4,29 +4,24 @@
 
 ## Current state — 2026-11-27
 
-- **Latest stable:** v2.3.0 is published; release metadata confirms the ARM64 APK, update manifest and v2.2.0-to-v2.3.0 BSDIFF asset.
-- **Development:** beta HEAD at the PR #171 base is `0cc21b471fce646d03dad449b91acbe67a90df7d`; v2.4.0 icon, visual-system and overlay-accessibility source integrations are merged.
-- **Addon Manager:** Phase A is integrated by PR #152 at `103bb979c98589a8704459d28d13861eccca39d6`; local enablement is metadata only. The owner authorized Phase B investigation/implementation; #23 is Chaty-owned and child issues #167–#170 are separately queued/blocked. No runtime injection is claimed.
-- **Latest docs integration:** PR #158 merged at 7451b940dc0adfa1ea14234fe6d489bba688b12c; Markdown push run #45890132670 passed.
-- **Open PRs at the 2026-11-27 live check:** #164 (documentation), #165 (Vibe string resources), #166 (Addon Manager groundwork), and #171 (assignment system). Recheck exact heads and CI before review/merge. PR #154, #157, #159, #160, #122, #143 and #144 were closed without merge; do not treat their branch-only changes as integrated.
-- **Updater:** #4/#15 are coordinated under Chaty. BSDIFF cleanup candidates were not merged; PR #160 Markdown passed but one reproducibility build failed resolving Kotlin Compose plugin 2.4.21, while Android and second reproducibility job were incomplete at closure. #4 acceptance remains open. #31 and #111 remain blocked for their stated authorization/release holds.
-- **Diagnostics:** #11's test work merged via PR #163; remaining GeckoView runtime-version startup reporting is deferred and marked `agent:blocked`.
-- **Housekeeping:** #128 closed after PR #161 merged at a0e5271793c9bb7754b7ac41429065e5602df569; exact-head and post-merge Markdown passed. #70 is closed; Markdown lint is integrated.
-- **GeckoView audit:** #20 remains owner-deferred/blocked; PR #122 closed without merge. Preserve unresolved notice/license/distribution and device-testing gaps.
-- **Rights/notices:** #67 remains agent:owner; PR #144 closed without merge. The owner's All Rights Reserved decision governs original project material; third-party distribution review remains unresolved.
-- **Ownership:** each open issue has exactly one `agent:*` label. `agent:queued` means ready but waiting its turn, not permission to start; `agent:blocked` means a genuine dependency/hold. Vibe active: #146 (implementation handed off; draft PR awaiting Chaty integration); next Vibe work items (#167–#169) start only on Chaty's separate assignment; #170 is blocked. Chaty owns #4/#15/#18/#23/#142 and the #149/PR #165 integration; #81 is queued. #67 is owner-controlled.
-- **Device/release:** no new physical ARM64 testing, release, tag, publication or beta-to-main promotion is claimed or authorized.
+- **Latest stable:** v2.3.0; no new release is authorized.
+- **Development:** beta HEAD `7e39d2553a11332d44326c1704e0d7647cc6aa40`.
+- **Integrated:** PR #166 Addon Manager planner groundwork at `d83e2dfc89087f67f7dbbe71e85668d80303e3ef`; PR #165 launcher strings at `7e39d2553a11332d44326c1704e0d7647cc6aa40`. PR #165 exact-head Android/unit tests, unsigned APK reproducibility and Markdown passed; #149 is closed.
+- **Open PR:** #173 GameSessionController (#146), draft at `eb9f64b672eced9143bc5689106223c3e7af3d16`. Markdown passed; Android and reproducibility are pending. Chaty is resolving documentation conflicts caused by the #165 merge and will rerun exact-head checks before merging.
+- **Vibe active:** #167 GeckoView 160 extension bridge (`agent:vibe`), explicitly assigned with strict file exclusions to avoid overlap with #173 integration. #146 is now `agent:chaty` for PR integration.
+- **Addon Manager:** Phase A and planner groundwork are integrated; extension installation, XHR/Worker interception and actual in-game activation are not implemented. #168/#169 remain blocked behind #167/runtime prerequisites.
+- **Updater:** #4/#15 remain coordinated under Chaty; earlier BSDIFF candidate PRs were not merged and signed APK-pair acceptance remains incomplete.
+- **Device/release:** no physical ARM64 test, release, tag, publication or beta-to-main promotion is claimed or authorized.
 
 ## Current ownership
 
-- **Chaty active:** #4/#15 coordinated updater reliability/recovery and #23 Addon Manager Phase B coordination. #18/#142 are coordination records; #128 is complete.
-- **Chaty queued:** #81 dependency-evidence documentation only; not yet started. #20 and #31 remain blocked pending owner decisions.
-- **Vibe active:** #146 GameSessionController extraction (Chaty-assigned with explicit start confirmation; draft PR opened for Chaty integration).
-- **Vibe queued:** Addon Manager Phase B child work #167–#169, each requiring Chaty's separate assignment. #170 is dependency-blocked.
-- **Diagnostics:** #11's test work merged via PR #163; remaining runtime-version startup reporting is deferred and blocked pending reprioritization.
-- **Diagnostics:** #11's test work merged via PR #163; the remaining runtime-version startup reporting is deferred and blocked pending reprioritization.
-- **Owner decision:** #23 Phase B and #67 third-party rights/distribution questions.
-- **Blocked:** #7, #86, #111, #19, #16, #147, #148, #12, #14, #10, #28, #6 and #17 remain gated by dependencies/decisions recorded on their GitHub issues.
+- **Chaty active:** #4/#15 updater reliability/recovery, #23 Phase B coordination, and integration of #146/PR #173. #18/#142 are coordination records.
+- **Vibe active:** #167 GeckoView 160 extension bridge; one active implementation issue at a time.
+- **Vibe integration handed off:** #146 GameSessionController, PR #173; Chaty owns direct fixes and merge.
+- **Vibe next:** #147 after #146 integration. #168/#169 remain blocked until #167 and runtime prerequisites are complete; #170 remains blocked.
+- **Chaty queued:** #81 dependency-evidence documentation; not started. #20/#31 remain owner/authorization blocked.
+- **Owner-controlled:** #67 third-party rights/distribution decision.
+- **Diagnostics:** #11 test work merged; remaining runtime-version startup reporting remains deferred.
 
 ## Backlog index
 
@@ -878,8 +873,7 @@ The beta code review found the strongest improvement opportunities are structura
 
 ### Issue 146 — P1 — Extract GeckoView game-session ownership from MainActivity
 **GitHub:** https://github.com/iNeonyne/LastHavenPlus/issues/146  
-Extract session open/reload/restore/close and load/crash state into a focused controller while preserving the lazy process-scoped GeckoRuntime, current crash-vs-navigation semantics, and the same live session when Settings/Diagnostics/Update detach the view. Document the keep-alive invariant and add focused state-transition tests. Coordinate with #23 and any MainActivity/GeckoSession work.  
-**Status 2026-11-27:** implemented by Vibe on branch `vibe/game-session-controller-146` from beta `d83e2df`; draft PR targeting `beta` handed off to Chaty. Local Spotless (ratchet `origin/beta`), JVM suite, `lintDebug` and `assembleDebug` passed at the implementation commit; exact-head CI run IDs are recorded in the PR description and the issue #146 handoff comment.
+Extract session open/reload/restore/close and load/crash state into a focused controller while preserving the lazy process-scoped GeckoRuntime, current crash-vs-navigation semantics, and the same live session when Settings/Diagnostics/Update detach the view. Document the keep-alive invariant and add focused state-transition tests. Coordinate with #23 and any MainActivity/GeckoSession work.
 
 ### Issue 147 — P1 — Consolidate launcher navigation and back-stack state
 **GitHub:** https://github.com/iNeonyne/LastHavenPlus/issues/147  
