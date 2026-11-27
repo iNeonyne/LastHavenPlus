@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
@@ -62,7 +61,6 @@ fun SettingsScreen(
     snapshot = withContext(Dispatchers.IO) { usageMeter.snapshot() }
     refreshing = false
   }
-
 
   SettingsPageFrame(title = stringResource(R.string.settings_title), onBack = onBack) {
     PageSection(title = stringResource(R.string.settings_storage_section)) {
