@@ -55,6 +55,13 @@ internal object UpdateNetworkPolicy {
     return requireTrustedConnectionUrl(resolved.toASCIIString())
   }
 
+  fun requireHttpSuccess(statusCode: Int, expectedCode: Int, operation: String) {
+    if (statusCode == 408 || statusCode == 429 || statusCode in 500..599) {
+      throw java.io.IOException("$operation temporarily unavailable (HTTP $statusCode)")
+    }
+    check(statusCode == expectedCode) { "$operation failed (HTTP $statusCode)" }
+  }
+
   fun isRedirect(statusCode: Int): Boolean =
     statusCode == 301 ||
       statusCode == 302 ||
