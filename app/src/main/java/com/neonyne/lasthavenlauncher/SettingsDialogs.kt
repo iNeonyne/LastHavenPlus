@@ -88,6 +88,8 @@ fun SettingsScreen(
                 readRawText(context, R.raw.apache_2_0),
               context.getString(R.string.settings_mpl_license_heading) to
                 readRawText(context, R.raw.mpl_2_0),
+              context.getString(R.string.settings_geckoview_inventory_heading) to
+                readRawText(context, R.raw.geckoview_about_license_inventory),
             )
           }
         }
