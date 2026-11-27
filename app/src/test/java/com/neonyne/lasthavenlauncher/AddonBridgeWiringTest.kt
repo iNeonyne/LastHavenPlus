@@ -24,7 +24,7 @@ class AddonBridgeWiringTest {
   fun `bridge refreshes after returning from addon manager and tears down with composition`() {
     val source = File(sourceRoot, "com/neonyne/lasthavenlauncher/MainActivity.kt").readText()
 
-    assertTrue(source.contains("LaunchedEffect(currentScreen)"))
+    assertTrue(source.contains("LaunchedEffect(currentScreen, gameSessionController.session)"))
     assertTrue(source.contains("currentScreen == Screen.Game"))
     assertTrue(source.contains("addonBridgeController.refreshSnapshot()"))
     assertTrue(source.contains("addonBridgeController.teardown()"))
