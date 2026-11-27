@@ -109,6 +109,7 @@ Every actionable issue must have exactly one mutually exclusive `agent:*` owners
 | `agent:queued` | Triaged and ready, but waiting for its turn or a documented prerequisite to scheduling | No |
 | `agent:chaty` | Chaty owns active implementation, coordination, or integration | Chaty only |
 | `agent:vibe` | Vibe has an explicit active assignment and scope comment | Vibe may start |
+| `agent:ib` | IB has an explicit active assignment and scope comment | IB may start |
 | `agent:blocked` | A real dependency, missing prerequisite/evidence, owner hold, or decision prevents safe progress | No |
 | `agent:review` | Temporary handoff state only, where explicitly used | No; Chaty takes over integration |
 | `agent:owner` | Repository-owner decision is required | No |
