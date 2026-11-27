@@ -422,8 +422,9 @@ test("intercepted worker bootstraps through a Blob with the exact original url",
   assert.ok(!source.includes("eval("));
   const bootMessage = worker.posted[0];
   assert.equal(bootMessage.data.__lhBoot, true);
-  assert.equal(bootMessage.transfer.length, 1);
+  assert.equal(bootMessage.transfer.length, 2);
   assert.ok(bootMessage.transfer[0] instanceof FakePort);
+  assert.ok(bootMessage.transfer[1] instanceof ArrayBuffer);
 });
 
 test("boot timeout terminates the worker, revokes the url and frees the registry slot", () => {
