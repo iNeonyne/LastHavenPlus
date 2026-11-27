@@ -123,7 +123,7 @@ fun SettingsScreen(
       TextButton(onClick = { refreshKey++ }, enabled = !refreshing) {
         Text(
           if (refreshing) stringResource(R.string.settings_refreshing)
-          else stringResource(R.string.settings_refresh_storage)
+          else stringResource(R.string.settings_refresh_storage),
         )
       }
     }
@@ -170,7 +170,7 @@ fun SettingsScreen(
       ) {
         Text(
           if (isCheckingUpdate) stringResource(R.string.settings_checking_updates)
-          else stringResource(R.string.settings_check_updates)
+          else stringResource(R.string.settings_check_updates),
         )
       }
       TextButton(onClick = onOpenUpdates) { Text(stringResource(R.string.settings_update_details)) }
