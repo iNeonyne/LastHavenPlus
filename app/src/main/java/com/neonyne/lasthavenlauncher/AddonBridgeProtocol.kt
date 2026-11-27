@@ -142,5 +142,8 @@ object AddonBridgeProtocol {
     revision.length in 1..MAX_ITEM_CHARS && revision.matches(ITEM_PATTERN)
 
   private fun isItemText(value: String): Boolean =
-    value.length in 1..MAX_ITEM_CHARS && value != "." && value != ".." && value.matches(ITEM_PATTERN)
+    value.length in 1..MAX_ITEM_CHARS &&
+      value != "." &&
+      value != ".." &&
+      value.matches(ITEM_PATTERN)
 }
