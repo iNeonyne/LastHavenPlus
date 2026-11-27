@@ -2,7 +2,7 @@
 
 **Current branch:** `beta`  
 **Current engine:** Mozilla GeckoView 161 Stable, ARM64 artifact  
-**Last reviewed:** 2026-11-27 (GeckoView 161 Stable candidate reviewed against Mozilla Maven metadata/POM; exact-head Android build and 236 JVM tests passed; independent APK reproducibility pending)
+**Last reviewed:** 2026-11-27 (GeckoView 161 Stable reviewed against Mozilla Maven metadata/POM; exact-head Android build, 236 JVM tests and independent APK reproducibility passed)
 
 This document records the GeckoView integration as it exists in beta. It supplements, but does not replace, Mozilla's documentation.
 
@@ -53,9 +53,9 @@ Preserve:
 ### API and compatibility evidence
 
 - The GeckoView 161 API changelog lists additive credit-card-autofill and R8 mapping UUID APIs; the #188 audit found no used API removal in the published changelog.
-- Exact-head Android PR validation passed on `0663710818e41c4e4077b3973cfe31707dfc4ae7`: dependency resolution, lint, Spotless, release assembly and 236 JVM tests passed with zero failures.
-- The resolved 161 runtime graph is recorded in [the 145-coordinate report](reports/releaseRuntimeClasspath-geckoview-161.0.20261118180411.txt); the original 62,593-byte report is in [Actions artifact 15228427800](https://github.com/iNeonyne/LastHavenPlus/actions/runs/46060543522), SHA-256 `7248ff273a33ed72b38cd6c20550f5bc6d5eb22c29be9ab59bf3e10519bb093f`.
-- Independent unsigned APK reproducibility is still running after one transient plugin-resolution failure on one worker; the other clean build passed.
+- Exact-head Android PR validation passed on `ce9620a9abddacaa2e4f791e53f7e41980627d52`: dependency resolution, lint, Spotless, release assembly and 236 JVM tests passed with zero failures.
+- The resolved 161 runtime graph is recorded in [the 145-coordinate report](reports/releaseRuntimeClasspath-geckoview-161.0.20261118180411.txt); the original 62,592-byte report is in [Actions artifact 15228564006](https://github.com/iNeonyne/LastHavenPlus/actions/runs/46062233814), SHA-256 `cd18809e360f7f1e29bfaf8cc03cdb9cd5cb83e5f46f6320103247583c260f9f`.
+- Independent unsigned APK reproducibility passed: both clean builds completed and the binary comparison job passed.
 - Release-specific GeckoView 161 Javadocs are not published at the referenced hosts; moving mozilla-central documentation is corroboration only, not a substitute for compile/reflection checks against the pinned AAR.
 - No physical ARM64 device test has been performed. Build and JVM checks do not establish gameplay, rendering, session, or add-on runtime compatibility.
 
