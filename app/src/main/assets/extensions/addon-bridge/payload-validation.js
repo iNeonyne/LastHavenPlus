@@ -70,13 +70,19 @@
           !addon.files || typeof addon.files !== "object") {
         return false;
       }
-      folders.add(addon.folder.toLowerCase());
+      const normalizedFolder = addon.folder.toLowerCase();
+      folders.add(normalizedFolder);
+      let hasToc = false;
 
       for (const path of Object.keys(addon.files)) {
         if (!isSafeRelativePath(path)) {
           return false;
         }
-        const key = addon.folder + "/" + path;
+        const normalizedPath = path.toLowerCase();
+        if (normalizedPath === normalizedFolder + ".toc") {
+          hasToc = true;
+        }
+        const key = normalizedFolder + "/" + normalizedPath;
         if (files.has(key)) {
           return false;
         }
@@ -90,6 +96,9 @@
         if (fileCount > MAX_RUNTIME_FILES || totalBytes > MAX_RUNTIME_BUNDLE_BYTES) {
           return false;
         }
+      }
+      if (!hasToc) {
+        return false;
       }
     }
     return true;
