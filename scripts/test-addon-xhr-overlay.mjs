@@ -415,6 +415,8 @@ test("encoded spellings of the addon prefix fail closed instead of reaching the 
     "https://lasthavens.com/game/%49nterface/AddOns/Foo/bar.lua",
     "https://lasthavens.com/game/Interface%2FAddOns%2FFoo%2Fbar.lua",
     "https://lasthavens.com/blocks/%49nterface/AddOns/Foo/data.bin",
+    "https://lasthavens.com/game/%49nterface/AddOns/Foo/%2e%2e/escape.lua",
+    "https://lasthavens.com/game/Interface%2FAddOns%2FFoo%2F%2e%2e%2Fescape.lua",
   ]) {
     assert.equal(core.resolveRoute("GET", url, BASE_HREF).kind, "notFound", url);
   }
