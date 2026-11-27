@@ -150,24 +150,32 @@ class AddonRuntimePlannerTest {
   @Test
   fun deepDependencyChainIsPlannedWithoutRecursiveTraversal() {
     val addons =
-      (0 until AddonArchive.MAX_ADDONS_PER_ARCHIVE).map { index ->
+      (0 until 512).map { index ->
         item(
           "Addon$index",
           dependencies = if (index == 0) emptyList() else listOf("Addon${index - 1}"),
         )
       }
     val plan = AddonRuntimePlanner.plan(AddonLibrarySnapshot("deep-chain", addons))
-    assertEquals(AddonArchive.MAX_ADDONS_PER_ARCHIVE, plan.orderedAddons.size)
+    assertEquals(MAX_ADDON_LIBRARY_ITEMS, plan.orderedAddons.size)
     assertEquals("Addon0", plan.orderedAddons.first().folder)
     assertEquals(
-      "Addon${AddonArchive.MAX_ADDONS_PER_ARCHIVE - 1}",
+      "Addon${MAX_ADDON_LIBRARY_ITEMS - 1}",
       plan.orderedAddons.last().folder,
     )
   }
 
+
+  @Test
+  fun plannerAcceptsMoreAddonsThanOneImportArchiveCanContain() {
+    val addons = (0..AddonArchive.MAX_ADDONS_PER_ARCHIVE).map { item("Addon$it") }
+    val plan = AddonRuntimePlanner.plan(AddonLibrarySnapshot("multi-import-library", addons))
+    assertEquals(AddonArchive.MAX_ADDONS_PER_ARCHIVE + 1, plan.orderedAddons.size)
+  }
+
   @Test
   fun plannerRejectsSnapshotsBeyondValidatedLibraryBounds() {
-    val oversized = (0..AddonArchive.MAX_ADDONS_PER_ARCHIVE).map { item("Addon$it") }
+    val oversized = (0..MAX_ADDON_LIBRARY_ITEMS).map { item("Addon$it") }
     org.junit.Assert.assertThrows(IllegalArgumentException::class.java) {
       AddonRuntimePlanner.plan(AddonLibrarySnapshot("oversized", oversized))
     }
