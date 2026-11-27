@@ -28,7 +28,7 @@ class LauncherNavigationPolicyTest {
   fun backFromSettingsReturnsToGame() {
     val next =
       LauncherNavigationPolicy.onBack(
-        defaultState.copy(screen = Screen.Settings, menuVisible = true)
+        defaultState.copy(screen = Screen.Settings, menuVisible = true),
       )
 
     assertEquals(Screen.Game, next.screen)
@@ -39,15 +39,15 @@ class LauncherNavigationPolicyTest {
   fun backReturnsToEachRecordedReturnDestination() {
     val fromSettings =
       LauncherNavigationPolicy.onBack(
-        defaultState.copy(screen = Screen.Settings, settingsReturnScreen = Screen.Home)
+        defaultState.copy(screen = Screen.Settings, settingsReturnScreen = Screen.Home),
       )
     val fromDiagnostics =
       LauncherNavigationPolicy.onBack(
-        defaultState.copy(screen = Screen.Diagnostics, diagnosticsReturnScreen = Screen.Settings)
+        defaultState.copy(screen = Screen.Diagnostics, diagnosticsReturnScreen = Screen.Settings),
       )
     val fromUpdate =
       LauncherNavigationPolicy.onBack(
-        defaultState.copy(screen = Screen.Update, updateReturnScreen = Screen.Home)
+        defaultState.copy(screen = Screen.Update, updateReturnScreen = Screen.Home),
       )
 
     assertEquals(Screen.Home, fromSettings.screen)
@@ -122,7 +122,7 @@ class LauncherNavigationPolicyTest {
   fun startGameResetsToGameWithoutOverlay() {
     val next =
       LauncherNavigationPolicy.startGame(
-        defaultState.copy(screen = Screen.Update, menuVisible = true)
+        defaultState.copy(screen = Screen.Update, menuVisible = true),
       )
 
     assertEquals(Screen.Game, next.screen)
