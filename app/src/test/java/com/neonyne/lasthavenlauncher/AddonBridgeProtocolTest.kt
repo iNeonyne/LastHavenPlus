@@ -56,6 +56,27 @@ class AddonBridgeProtocolTest {
   fun `addon list enforces bounds and item text`() {
     val summary = AddonBridgeProtocol.AddonSummary("unit-frame", "0.5.1", true)
     assertNotNull(AddonBridgeProtocol.addonList("r-1", "rev1", listOf(summary)))
+    assertNotNull(
+      AddonBridgeProtocol.addonList(
+        "r-1",
+        "rev1",
+        listOf(AddonBridgeProtocol.AddonSummary("unit-frame", "", true)),
+      )
+    )
+    assertNotNull(
+      AddonBridgeProtocol.addonList(
+        "r-1",
+        "rev1",
+        listOf(AddonBridgeProtocol.AddonSummary("unit-frame", "Release candidate 1", true)),
+      )
+    )
+    assertNull(
+      AddonBridgeProtocol.addonList(
+        "r-1",
+        "rev1",
+        listOf(AddonBridgeProtocol.AddonSummary("unit-frame", "bad\\nversion", true)),
+      )
+    )
     assertNull(
       AddonBridgeProtocol.addonList(
         "r-1",
