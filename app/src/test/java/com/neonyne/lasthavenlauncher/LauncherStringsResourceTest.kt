@@ -2,6 +2,7 @@ package com.neonyne.lasthavenlauncher
 
 import java.io.File
 import javax.xml.parsers.DocumentBuilderFactory
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
@@ -69,6 +70,39 @@ class LauncherStringsResourceTest {
     assertTrue("No R.string references found in launcher sources", referenced.isNotEmpty())
     val undeclared = referenced - declared.keys
     assertTrue("Undeclared string resources referenced: $undeclared", undeclared.isEmpty())
+  }
+
+  @Test
+  fun `default locale fallback strings are not duplicated in translated resources`() {
+    val resourcesRoot = moduleRoot()
+    val defaultDocument =
+      DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(File(resourcesRoot, "values/strings.xml"))
+    val defaultNodes = defaultDocument.getElementsByTagName("string")
+    val fallbackNames = mutableSetOf<String>()
+    for (index in 0 until defaultNodes.length) {
+      val element = defaultNodes.item(index) as org.w3c.dom.Element
+      if ("MissingTranslation" in element.getAttribute("tools:ignore").split(",")) {
+        fallbackNames += element.getAttribute("name")
+      }
+    }
+    assertTrue("No default-locale fallback strings were marked", fallbackNames.isNotEmpty())
+
+    val translatedResources =
+      resourcesRoot.listFiles().orEmpty().filter { it.isDirectory && it.name.startsWith("values-") }
+    translatedResources.forEach { directory ->
+      val stringsFile = File(directory, "strings.xml")
+      if (!stringsFile.isFile) return@forEach
+      val document = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(stringsFile)
+      val nodes = document.getElementsByTagName("string")
+      for (index in 0 until nodes.length) {
+        val element = nodes.item(index) as org.w3c.dom.Element
+        val name = element.getAttribute("name")
+        assertFalse(
+          "Default-locale fallback string $name is duplicated in ${directory.name}",
+          name in fallbackNames,
+        )
+      }
+    }
   }
 
   @Test
