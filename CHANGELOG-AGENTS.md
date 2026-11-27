@@ -1036,3 +1036,13 @@ Entry format:
 
 - PR #206 merged to beta at `298b9fdaaa5b131d4442f5b40a22284584171ede`; exact-head and post-merge Markdown quality checks passed.
 - Issue #205 closed as completed. The current AGENT_WORK.md snapshot now records the merge SHA and verification evidence.
+
+
+## 2026-11-28 — Retire Markdown task queue and stale status mirrors (#208)
+
+- Changed AGENTS.md and AGENT_PROTOCOL.md so agents discover assignments from live GitHub issue labels/comments, open PRs targeting beta, current refs, and exact-head Actions. Explicitly states that older dated issue-body/status snapshots are superseded by current labels and latest valid assignment comments.
+- Retired AGENT_WORK.md as a live assignment queue (preserved its contents as a historical archive), STATUS.md as a live dashboard, and ISSUES.md as a backlog mirror. GitHub Issues/PRs/Actions are now the only live task/ownership/evidence system.
+- README now links to the live latest-release page and directs beta engine-version lookups to gradle/libs.versions.toml. Verified published v2.4.0 uses GeckoView 160; beta source pins GeckoView 161.0.20261118180411.
+- Refreshed CHANGELOG.md with missing published v2.2.0/v2.3.0/v2.4.0 entries, updated the reproducible-build record to run #46063532417 (98,226,200-byte byte-identical unsigned APKs), corrected the CI workflow reference from removed quality.yml to reproducible-build.yml, and marked the Nov 26 branch inventory historical.
+- Updated issue #167 to describe current GeckoView Stable runtime acceptance rather than a GeckoView 160 port. Corrected stale updater queue wording in #4/#15 and removed a stale beta SHA from the #23 milestone description.
+- GeckoView 161 remains the latest Stable artifact found in Maven metadata as of this audit; beta's exact pin remains defined by the version catalog.
