@@ -91,8 +91,8 @@ Every open issue has exactly one `agent:*` label. The label distinguishes active
 | #67 | `agent:owner` | Rights and third-party notice decision |
 | #81 | `agent:queued` | Chaty documentation/evidence task; not started |
 | #12 | `agent:queued` | #11 prerequisite merged; after #146/#147 and Phase B bridge work, explicit assignment required |
-| #146 | `agent:vibe` | Active Vibe assignment; proceed independently while Chaty integrates prior PRs |
-| #167 | `agent:queued` | PR #166 merged; wait for #146 integration and explicit Chaty assignment |
+| #146 | `agent:chaty` | Closed completed; PR #173 merged at `5ed6af6` |
+| #167 | `agent:vibe` | Active Vibe bridge assignment; branch creation and API-audit progress requested |
 | #168 | `agent:blocked` | Waits for #167 bridge integration and contract verification |
 | #169 | `agent:blocked` | Waits for #167 and #168 contracts to be integrated |
 | #6 | `agent:blocked` | Waits for #28 |
@@ -108,7 +108,7 @@ Every open issue has exactly one `agent:*` label. The label distinguishes active
 | #31 | `agent:blocked` | Release-tag/runtime verification requires explicit owner authorization |
 | #86 | `agent:blocked` | Deferred coordination scope requires owner confirmation |
 | #111 | `agent:blocked` | v2.5.0 hold: v2.4.0 release and explicit owner authorization |
-| #147 | `agent:blocked` | Waits for #146 |
+| #147 | `agent:queued` | #146 integrated; waiting for Vibe's #167 handoff and explicit assignment |
 | #148 | `agent:blocked` | Waits for #146 and coordination with #16 |
 | #170 | `agent:blocked` | Waits for #146/navigation and Phase B runtime prerequisites |
 
@@ -120,3 +120,12 @@ Every open issue has exactly one `agent:*` label. The label distinguishes active
 - No automatic update checks/downloads/installations; user action and Android installer confirmation remain required.
 - Validate compatibility before Gradle, SDK, Build Tools, GeckoView, signing or dependency/toolchain changes.
 - Never claim physical-device compatibility without real ARM64 hardware evidence.
+
+## 2026-11-27 — Post-merge integration reconciliation (#146)
+
+- **Current verified beta HEAD:** `5ed6af635954c8f4e2673dab3c60334eff4a8ae0`.
+- **#146 / PR #173:** closed completed; squash merge commit `5ed6af635954c8f4e2673dab3c60334eff4a8ae0`; exact PR-head Android, unsigned reproducibility and Markdown checks passed. Post-merge Markdown passed; post-merge Android/signing/ARM64 and reproducibility runs were still in progress at this checkpoint.
+- **#167:** remains Vibe's sole active implementation assignment (`agent:vibe`). A repository branch inventory at 01:34 UTC did not yet show `vibe/extension-bridge-167`; Chaty requested that Vibe create/confirm the dedicated branch from the latest beta and post the GeckoView 160 API audit findings. Do not treat the comment saying work is starting as evidence of an implementation branch or code delivery.
+- **#147:** its #146 dependency is now satisfied; ownership changed from `agent:blocked` to `agent:queued`. Do not start until Chaty explicitly assigns it after #167 handoff and a fresh overlap check.
+- **#148:** remains blocked by #16 and scheduling/dependency coordination. #168/#169 remain blocked pending #167 and security-contract integration. #170 remains blocked pending session/navigation/runtime prerequisites.
+- **No release, tag, publication, `main` promotion or physical ARM64 device test.**
