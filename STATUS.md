@@ -1,4 +1,4 @@
-# Current project snapshot — 2026-11-27
+## Current project snapshot — 2026-11-27
 
 - **Verified beta HEAD:** `78a3d12eb018e112a3443377e34e234ee9d3da7d`.
 - **Browser engine:** Mozilla GeckoView 161 Stable, ARM64 only; AndroidX Core 1.19.1; ktfmt 0.65.
