@@ -18,7 +18,7 @@
   const MAX_RUNTIME_ADDONS = 128;
   const MAX_RUNTIME_PATH_CHARS = 512;
   const FOLDER_PATTERN = /^[A-Za-z0-9_-]{1,128}$/;
-  const BASE64_PATTERN = /^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$/;
+  const BASE64_PATTERN = /^[A-Za-z0-9+/]*={0,2}$/;
 
   function isSafeFolder(folder) {
     return typeof folder === "string" &&
@@ -37,7 +37,7 @@
   }
 
   function encodedByteLength(value) {
-    if (typeof value !== "string" || !BASE64_PATTERN.test(value)) {
+    if (typeof value !== "string" || value.length % 4 !== 0 || !BASE64_PATTERN.test(value)) {
       return -1;
     }
     if (value.length === 0) {
