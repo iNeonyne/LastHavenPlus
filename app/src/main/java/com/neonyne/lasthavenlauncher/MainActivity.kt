@@ -190,17 +190,11 @@ private fun LastHavenApp(
       )
     }
 
-  // The bridge shares the process-scoped GeckoRuntime and is bound to the exact live game session.
-  // It never creates or opens a second GeckoSession. Library changes are picked up when returning
-  // from the manager, after its file operations have completed.
-  LaunchedEffect(gameSessionController.session) {
-    addonBridgeController.setGameSession(gameSessionController.session)
-  }
-  LaunchedEffect(currentScreen, gameSessionController.session) {
-    if (currentScreen == Screen.Game && gameSessionController.session != null) {
-      addonBridgeController.ensureInstalled(context)
-      addonBridgeController.refreshSnapshot()
-    }
+  // Install the built-in extension before loading the game URL, then bind the exact session
+  // before its first navigation so document_start scripts and native sender checks are ready.
+  // The bridge reuses the process-scoped runtime and never creates a second GeckoSession.
+  LaunchedEffect(currentScreen) {
+    if (currentScreen == Screen.Game) addonBridgeController.refreshSnapshot()
   }
   DisposableEffect(addonBridgeController, addonBridgeExecutor) {
     onDispose {
@@ -221,12 +215,22 @@ private fun LastHavenApp(
   val reloadGame: () -> Unit = { gameSessionController.reloadGame(context, gameUrl) }
 
   val startGame: () -> Unit = {
-    gameSessionController.startGame(context, gameUrl)
-    menuVisible = false
-    currentScreen = Screen.Game
+    addonBridgeController.ensureInstalled(context) {
+      gameSessionController.startGame(context, gameUrl) { session ->
+        addonBridgeController.setGameSession(session)
+      }
+      menuVisible = false
+      currentScreen = Screen.Game
+    }
   }
 
-  val restoreGame: () -> Unit = { gameSessionController.restoreGame(context, gameUrl) }
+  val restoreGame: () -> Unit = {
+    addonBridgeController.ensureInstalled(context) {
+      gameSessionController.restoreGame(context, gameUrl) { session ->
+        addonBridgeController.setGameSession(session)
+      }
+    }
+  }
 
   val checkForUpdates: (Boolean) -> Unit = { showResult ->
     isCheckingUpdate = true
