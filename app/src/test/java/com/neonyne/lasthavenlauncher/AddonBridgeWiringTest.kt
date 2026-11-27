@@ -13,13 +13,14 @@ class AddonBridgeWiringTest {
 
   @Test
   fun `extension installation and sender binding precede the first game navigation`() {
-    val mainSource =
-      File(sourceRoot, "com/neonyne/lasthavenlauncher/MainActivity.kt").readText()
+    val mainSource = File(sourceRoot, "com/neonyne/lasthavenlauncher/MainActivity.kt").readText()
     val sessionSource =
       File(sourceRoot, "com/neonyne/lasthavenlauncher/GameSessionController.kt").readText()
 
     assertTrue(mainSource.contains("addonBridgeController.ensureInstalled(context) {"))
-    assertTrue(mainSource.contains("gameSessionController.startGame(context, gameUrl) { session ->"))
+    assertTrue(
+      mainSource.contains("gameSessionController.startGame(context, gameUrl) { session ->")
+    )
     assertTrue(mainSource.contains("addonBridgeController.setGameSession(session)"))
 
     val bindPosition = sessionSource.indexOf("onSessionReady(gameSession)")
