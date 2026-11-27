@@ -6,8 +6,8 @@
 
 ## Roles and integration
 
-- **Chaty:** main orchestrator, issue triage/assignment, reviewer, documentation and CI coordinator, sole integrator into beta.
-- **Vibe:** implementation contributor; works only on the current active issue explicitly assigned by Chaty through GitHub.
+- **Chaty:** main orchestrator, issue triage/assignment, integration fixer, verification and CI coordinator, sole integrator into beta.
+- **Vibe:** implementation contributor; works only on the current active issue explicitly assigned by Chaty through GitHub. After PR handoff, Chaty owns branch fixes and integration.
 - **Repository owner:** final product, priority, Phase B and release authority.
 - GitHub Issues, comments, PRs, commits and Actions are the only agent-to-agent communication channel.
 - All implementation PRs target beta. No direct contributor push to beta/main. Chaty alone merges. No release/tag/publication or beta-to-main promotion without explicit owner approval.
@@ -38,12 +38,13 @@
 
 Vibe has exactly one active implementation issue. A queued issue is not an assignment; it becomes startable only when Chaty changes its label to `agent:vibe` and posts a scope/acceptance comment.
 
-### Active — #149 launcher-owned string resources
-- **Label:** `agent:vibe`; this is Vibe's only active implementation assignment.
-- Complete the launcher-owned string inventory, preserving exact wording/punctuation. Include remaining launcher dialogs and UpdateScreen labels/actions.
-- Keep source strings in the default `values/strings.xml` resources; do not copy untranslated English strings into locale-specific resource directories. Do not add translations or redesign copy.
-- Exclude game content, diagnostics payloads, developer logs and protocol values. No updater behavior, GeckoView/session lifecycle, Addon Manager or game/client changes.
-- PR #165 has review feedback; inspect the latest PR comments and current exact head before editing. Address all review findings, add required project documentation, run exact-head lint/format/unsigned release build/JVM tests and report CI links. Do not assume prior green checks cover a new head.
+### Chaty integration — #149 launcher-owned string resources
+- **GitHub ownership:** `agent:chaty`; PR #165 has been handed off and Chaty owns integration.
+- **Current PR:** #165, last recorded head `515c91366bf90c1b6232f459743e95a161cc8296`; re-fetch before editing and do not assume this SHA is current.
+- **Chaty actions:** inspect the exact diff and PR discussion, correct the PR directly, run exact-head lint/format/unsigned release build/JVM tests, verify CI, then merge only when the full issue scope and all gates pass.
+- **Known scope gaps to resolve:** PR #165 leaves UpdateScreen strings hardcoded despite #149's launcher-wide inventory scope; it also copied English source strings into locale-specific resources despite the assignment requiring default `values/strings.xml` only and no untranslated locale duplication. Inspect current beta/resource conventions and fix these directly, or document a technically justified narrower boundary before merging.
+- Preserve wording and punctuation. Exclude game content, diagnostics payloads, developer logs and protocol values. No updater behavior changes, GeckoView/session lifecycle, Addon Manager or game/client changes.
+- **Vibe:** no active implementation issue while Chaty integrates #149. Do not start #146 or any later item yet. #146 remains next in queue, pending successful #149 integration and a fresh file-overlap/dependency check.
 
 ### Next — #146 GameSessionController (queued)
 - **Label:** `agent:queued`; do not start until #149 is handed off and Chaty explicitly assigns #146 after checking file overlap.
@@ -90,7 +91,7 @@ Every open issue has exactly one `agent:*` label. The label distinguishes active
 | #23 | `agent:chaty` | Chaty owns Addon Manager Phase B coordination |
 | #18 | `agent:chaty` | Roadmap coordination |
 | #142 | `agent:chaty` | Assignment/queue coordination record |
-| #149 | `agent:vibe` | Vibe active; PR #165 corrections |
+| #149 | `agent:chaty` | Chaty integrating PR #165 directly; no routine review/return-to-Vibe cycle |
 | #67 | `agent:owner` | Rights and third-party notice decision |
 | #81 | `agent:queued` | Chaty documentation/evidence task; not started |
 | #12 | `agent:queued` | #11 test prerequisite merged; waiting for a Vibe turn and explicit assignment |
