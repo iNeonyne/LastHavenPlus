@@ -17,9 +17,15 @@ class AddonBridgeWiringTest {
     val sessionSource =
       File(sourceRoot, "com/neonyne/lasthavenlauncher/GameSessionController.kt").readText()
 
-    assertTrue(mainSource.contains("addonBridgeController.ensureInstalled(context) {"))
+    val startBlock =
+      mainSource.substringAfter("val startGame: () -> Unit = {").substringBefore("val restoreGame")
+
+    assertTrue(startBlock.contains("addonBridgeController.ensureInstalled(context) {"))
     assertTrue(
-      mainSource.contains("gameSessionController.startGame(context, gameUrl) { session ->")
+      startBlock.contains("gameSessionController.startGame(context, gameUrl) { session ->")
+    )
+    assertTrue(
+      startBlock.indexOf("ensureInstalled") < startBlock.indexOf("gameSessionController.startGame")
     )
     assertTrue(mainSource.contains("addonBridgeController.setGameSession(session)"))
 
