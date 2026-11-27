@@ -47,7 +47,7 @@ No direct dependency was added or removed. Direct AndroidX dependency necessity/
 
 ## Validation status
 
-The exact-head Android PR job passed on commit `0663710818e41c4e4077b3973cfe31707dfc4ae7`: dependency resolution, lint, Spotless, release assembly and 236 JVM tests passed with zero failures. The 145-coordinate GeckoView 161 resolved graph is recorded in [the checked-in report](reports/releaseRuntimeClasspath-geckoview-161.0.20261118180411.txt); the original 62,593-byte report is in [Actions artifact 15228427800](https://github.com/iNeonyne/LastHavenPlus/actions/runs/46060543522). Independent unsigned APK reproducibility is still running after one transient plugin-resolution failure on one worker; the other clean build passed. No physical ARM64 device test has been performed; no gameplay/runtime compatibility claim is made.
+The Android build and unit-test job passed on commit `0663710818e41c4e4077b3973cfe31707dfc4ae7`: dependency resolution, lint, Spotless, release assembly and 236 JVM tests passed with zero failures. The 145-coordinate GeckoView 161 resolved graph is recorded in [the checked-in report](reports/releaseRuntimeClasspath-geckoview-161.0.20261118180411.txt); the original 62,593-byte report is in [Actions artifact 15228427800](https://github.com/iNeonyne/LastHavenPlus/actions/runs/46060543522). Subsequent commits only rebased onto the latest beta and updated documentation/repository guidance; no application source or dependency pins changed after that report. A fresh exact-head Android and independent reproducibility run is now required on the final PR head. No physical ARM64 device test has been performed; no gameplay/runtime compatibility claim is made.
 
 ## Validation still required
 
