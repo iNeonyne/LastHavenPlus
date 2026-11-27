@@ -35,7 +35,7 @@ class AddonBridgeWiringTest {
   fun `bridge wiring reuses app private library and does not create a second game session`() {
     val source = File(sourceRoot, "com/neonyne/lasthavenlauncher/MainActivity.kt").readText()
 
-    assertTrue(source.contains("File(context.filesDir, \\\"addons\\\")"))
+    assertTrue(source.contains("File(context.filesDir, \"addons\")"))
     assertTrue(source.contains("snapshotProvider = { addonLibraryRepository.readLibrary() }"))
     assertTrue(source.contains("val gameSession = gameSessionController.session"))
     assertTrue(source.contains("addonBridgeController.setGameSession(gameSession)"))
