@@ -1,7 +1,7 @@
 "use strict";
 
 /**
- * Page-world payload validation helpers for the ZIP 0.5.1 runtime bridge.
+ * Isolated-world payload validation helpers for the ZIP 0.5.1 runtime bridge.
  *
  * XHR and Worker interception are deliberately implemented by issues #168 and #169. This file
  * only validates the already native-approved, read-only payload before the page runtime consumes it.
