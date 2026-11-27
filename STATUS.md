@@ -2,11 +2,11 @@
 
 **Last updated:** 2026-11-27  
 **Active branch:** beta  
-**Verified beta HEAD after PR #165:** `7e39d2553a11332d44326c1704e0d7647cc6aa40` (launcher strings integrated).
+**Verified beta HEAD after PR #175:** `022b4e2c4880d13b23e4e8c22cbd3dd5be679623` (documentation-only follow-up; latest app-code integration PR #173 is `5ed6af635954c8f4e2673dab3c60334eff4a8ae0`).
 **Stable release:** [v2.3.0](https://github.com/iNeonyne/LastHavenPlus/releases/tag/v2.3.0), tag commit ebc5b424e83ae66c2b0accc2bec6f050b8dc0d88; GitHub release metadata confirms the ARM64 APK, update manifest and v2.2.0-to-v2.3.0 BSDIFF asset. Main HEAD observed as e9c2b53d1ec84e27722da4b54fa4ddcbad65f891.  
-**Open PRs at the 2026-11-27 live check:** #173 (GameSessionController, head `eb9f64b672eced9143bc5689106223c3e7af3d16`; Android/reproducibility checks pending). PR #165 merged at `7e39d2553a11332d44326c1704e0d7647cc6aa40`; PR #166 merged at `d83e2dfc89087f67f4dbbe71e85668d80303e3ef`. No release, tag, publication or beta-to-main promotion is authorized.
+**Latest PR inventory:** no open PRs at the latest 2026-11-27 check. PR #173 / issue #146 merged at `5ed6af635954c8f4e2673dab3c60334eff4a8ae0`; documentation PRs #174 and #175 also merged. Post-merge Android #45923143717, unsigned reproducibility #45923143712 and Markdown #45923143716 passed. No release, tag, publication or beta-to-main promotion is authorized.
 
-## Current operational checkpoint — 2026-11-27
+## Historical operational checkpoint — 2026-11-27 (before PR #173 integration)
 
 - **PR #165 / issue #149:** squash-merged to beta at `7e39d2553a11332d44326c1704e0d7647cc6aa40`. Exact-head Android/unit tests #45919879256, independent unsigned APK reproducibility #45919879249 and Markdown #45919879248 passed on head `a62c7cd3154586d35d85a99ed1964d33ba007733`. Issue #149 closed. Launcher-owned strings, including UpdateScreen labels/actions, now use default `values/strings.xml`; untranslated English locale duplicates were removed.
 - **PR #173 / issue #146:** Vibe's GameSessionController PR is open/draft at `eb9f64b672eced9143bc5689106223c3e7af3d16`. Markdown #45920691560 passed; Android #45920691633 and independent unsigned reproducibility #45920691607 are still running. The branch is non-mergeable against beta because shared documentation files conflict with PR #165; Chaty is reconciling those files. No merge until exact-head checks pass and conflicts are resolved.
