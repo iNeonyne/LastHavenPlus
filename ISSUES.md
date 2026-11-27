@@ -1,5 +1,12 @@
 # Project backlog — LastHavenPlus
 
+## 2026-11-27 priority decision
+
+- **P0 — Addon Manager Phase B (#23):** top project priority by owner direction. Chaty coordinates; Vibe's active task is #167 GeckoView 160 bridge. Sequence #168–#170 only as dependencies and security contracts allow.
+- **Paused:** updater #4 and #15 are queued, not cancelled. They resume only after Chaty explicitly reassigns them following a safe Addon Manager milestone handoff.
+- Existing security, testing, ARM64 device-verification, signing and release-approval gates are unchanged.
+
+
 **Source of truth:** GitHub Issues and this version-controlled backlog. Keep issue scope, status and acceptance criteria aligned. Do not close an issue because documentation changed.
 
 ## Current state — 2026-11-27
@@ -27,7 +34,7 @@
 
 | Issue | Priority | Summary | Current state |
 |---|---:|---|---|
-| [#4](#issue-4) | P0.1 | Build reproducibility and updater test coverage | Chaty active; BSDIFF cleanup candidate PRs closed unmerged; broad adversarial tests and signed APK-pair evidence remain |
+| [#4](#issue-4) | P0.1 | Build reproducibility and updater test coverage | agent:queued; paused until Addon Manager P0 reaches a safe handoff |
 | [#5](#issue-5) | Feedback | Owner feedback — gameplay and update behavior after release | Closed; historical owner feedback thread |
 | [#6](#issue-6) | P2 | Essential launcher settings and safe storage controls | Open; `agent:blocked` pending #28 |
 | [#7](#issue-7) | P3 | Runtime performance and APK size | Open; measure before optimizing |
@@ -38,7 +45,7 @@
 | [#12](#issue-12) | P2 | GeckoView load-error details | Open |
 | [#13](#issue-13) | — | Accessible names / legacy addon-manager compile work | Closed — consolidated into #9 |
 | [#14](#issue-14) | P2 | Connection diagnostics | Open |
-| [#15](#issue-15) | P2 | Updater recovery and download progress visibility | Open; adds measurable speed/ETA, inline retry, install-later confirmation, storage preflight, package-size comparison and release-note/history UX |
+| [#15](#issue-15) | P2 | Updater recovery and download progress visibility | agent:queued; paused with #4 until Addon Manager P0 reaches a safe handoff |
 | [#16](#issue-16) | P2 | Gameplay orientation and keep-awake settings | Open |
 | [#17](#issue-17) | P2 | Settings backup and restore | Open |
 | [#18](#issue-18) | Roadmap | v2.4.0–v2.6.0 UI/UX, updater and settings roadmap | Open; owner-requested planning targets only, no release authorization |
@@ -46,7 +53,7 @@
 | [#20](#issue-20) | Deferred | GeckoView 160 artifact/dependency audit | `agent:blocked`; PR #122 closed unmerged; resume only after owner reprioritization; unresolved notice/distribution/device evidence remains |
 | [#21](#issue-21) | Feedback | Owner feedback — GeckoView runtime/profile behavior after release | Closed; historical owner feedback thread |
 | [#22](#issue-22) | Superseded | Home screen and Play/Settings navigation | Closed; replaced by direct-launch/overlay scope #56 |
-| [#23](#issue-23) | Engineering | Addon Manager Phase A / Phase B | Phase A integrated; owner authorized Phase B; Chaty coordinates child issues #167–#170; runtime not yet implemented |
+| [#23](#issue-23) | P0 | Addon Manager ZIP 0.5.1 Phase B | Top project priority; Phase A/planner integrated; Chaty coordinates #167–#170; runtime activation not yet implemented |
 | [#28](https://github.com/iNeonyne/LastHavenPlus/issues/28) | P2 | Storage usage accuracy and iterative directory sizing | Open; queued after #10 |
 | [#42](https://github.com/iNeonyne/LastHavenPlus/issues/42) | Superseded | v2.1.0 Home-screen UI verification | Closed as superseded by direct-launch redesign #56 |
 | [#29](https://github.com/iNeonyne/LastHavenPlus/issues/29) | Done | Reconcile beta documentation and CI evidence | Closed as completed after PR #46 merged to beta |
@@ -712,7 +719,7 @@ Fresh launch shows a simple branded home screen with Play and Settings. Do not l
 
 <a id="issue-23"></a>
 
-## Issue 23 — P1 — Integrate and harden the supplied GeckoView addon manager
+## Issue 23 — P0 — Integrate and harden the supplied GeckoView addon manager
 
 **GitHub:** https://github.com/iNeonyne/LastHavenPlus/issues/23  
 **State:** ACTIVE — the owner explicitly reauthorized work on 2026-11-25/26. Chaty (`agent:chaty`) owns native Phase A in draft PR #152, currently synced to beta at `97570ea` and awaiting exact-head CI/review.  
