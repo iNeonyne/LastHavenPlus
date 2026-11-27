@@ -132,7 +132,9 @@ val verifyNoGooglePlayServicesInApk = tasks.register("verifyNoGooglePlayServices
   }
 }
 
-tasks.named("assembleRelease") {
-  dependsOn(verifyNoGooglePlayServices)
-  finalizedBy(verifyNoGooglePlayServicesInApk)
+tasks.configureEach {
+  if (name == "assembleRelease") {
+    dependsOn(verifyNoGooglePlayServices)
+    finalizedBy(verifyNoGooglePlayServicesInApk)
+  }
 }
