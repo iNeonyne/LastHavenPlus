@@ -81,7 +81,11 @@ class AddonBridgeController(
               extension.setMessageDelegate(messageDelegate, AddonBridgePolicy.NATIVE_MESSAGING_NAME)
               bridgeExtension = extension
             } else if (extension == null) {
-              Diagnostics.error(context, TAG, "Addon bridge extension install returned no extension")
+              Diagnostics.error(
+                context,
+                TAG,
+                "Addon bridge extension install returned no extension",
+              )
             }
           }
         },
