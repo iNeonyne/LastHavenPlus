@@ -39,8 +39,7 @@ private const val DEFAULT_GAME_URL = "https://lasthavens.com/play"
 private const val PREFERENCES_NAME = UpdateFileCleanup.PREFERENCES_NAME
 private const val KEY_GAME_URL = "game_url"
 private const val KEY_PENDING_UPDATE_URI = UpdateFileCleanup.KEY_PENDING_UPDATE_URI
-private const val KEY_INSTALLER_HANDOFF_APK_NAME =
-  UpdateFileCleanup.KEY_INSTALLER_HANDOFF_APK_NAME
+private const val KEY_INSTALLER_HANDOFF_APK_NAME = UpdateFileCleanup.KEY_INSTALLER_HANDOFF_APK_NAME
 private const val KEY_INSTALLER_HANDOFF_CANDIDATE_APK_NAME =
   UpdateFileCleanup.KEY_INSTALLER_HANDOFF_CANDIDATE_APK_NAME
 
@@ -133,7 +132,8 @@ class MainActivity : ComponentActivity() {
     // Persist a candidate before handing the URI to Android. If the process dies between the
     // launch and promotion, cleanup protects both the previous handoff and this candidate.
     check(
-      preferences.edit()
+      preferences
+        .edit()
         .putString(KEY_INSTALLER_HANDOFF_CANDIDATE_APK_NAME, handoffApkName)
         .remove(KEY_PENDING_UPDATE_URI)
         .commit()
@@ -150,7 +150,8 @@ class MainActivity : ComponentActivity() {
       )
     } catch (error: Exception) {
       val rollback =
-        preferences.edit()
+        preferences
+          .edit()
           .remove(KEY_INSTALLER_HANDOFF_CANDIDATE_APK_NAME)
           .putString(KEY_PENDING_UPDATE_URI, uri.toString())
       if (previousHandoff == null) rollback.remove(KEY_INSTALLER_HANDOFF_APK_NAME)
@@ -159,12 +160,17 @@ class MainActivity : ComponentActivity() {
         Diagnostics.error(this, "Updater", "Could not restore installer handoff state")
       }
       pendingUpdateUri = uri
-      Diagnostics.error(this, "Updater", "Could not open Android package installer: ${error.message}")
+      Diagnostics.error(
+        this,
+        "Updater",
+        "Could not open Android package installer: ${error.message}",
+      )
       return
     }
 
     val promote =
-      preferences.edit()
+      preferences
+        .edit()
         .putString(KEY_INSTALLER_HANDOFF_APK_NAME, handoffApkName)
         .remove(KEY_INSTALLER_HANDOFF_CANDIDATE_APK_NAME)
         .remove(KEY_PENDING_UPDATE_URI)
