@@ -2,13 +2,13 @@
 
 **Last updated:** 2026-11-27  
 **Active branch:** beta  
-**Verified beta base for this assignment-system PR:** `0cc21b471fce646d03dad449b91acbe67a90df7d` (PR #171 base SHA).  
+**Verified beta base for the current integration set:** `aa4a1bacacc782e7f7f3c496a7ff0029896901cc` (PR #171 merge commit and PR #172 base SHA).  
 **Stable release:** [v2.3.0](https://github.com/iNeonyne/LastHavenPlus/releases/tag/v2.3.0), tag commit ebc5b424e83ae66c2b0accc2bec6f050b8dc0d88; GitHub release metadata confirms the ARM64 APK, update manifest and v2.2.0-to-v2.3.0 BSDIFF asset. Main HEAD observed as e9c2b53d1ec84e27722da4b54fa4ddcbad65f891.  
-**Open PRs at the 2026-11-27 live check:** #164 (docs), #165 (Vibe strings), #166 (Addon Manager groundwork), #171 (assignment system; this change). Recheck exact heads and CI before review/merge. No release, tag, publication or beta-to-main promotion is authorized.
+**Open PRs at the 2026-11-27 live check:** #172 (agent integration workflow; current head `dede1531941c83514487329cbba20d1260248621`), #165 (launcher strings; draft, scope corrections pending), and #166 (Addon Manager Phase B groundwork; draft, exact-head Android and reproducibility checks failed). PR #172 Markdown quality run #45915447132 passed; no merge has occurred yet. PR #165 Android run #45909450245 and reproducibility run #45909450342 passed on `515c91366bf90c1b6232f459743e95a161cc8296`, but the PR scope is not yet complete. PR #166 exact-head runs #45911960113 and #45911960168 failed on `f44fea476d6d223b0cad87d548782fed30525a31`. Recheck exact heads and CI before merge. No release, tag, publication or beta-to-main promotion is authorized.
 
 ## Current operational checkpoint — 2026-11-27
 
-The detailed CI, branch and commit evidence below is retained as the last verified 2026-11-26 checkpoint; it is historical until refreshed against current beta. The assignment semantics were reconciled on 2026-11-27, but this documentation-only change does not itself verify builds or device behavior.
+Current integration work is limited to the three open PRs listed above. PR #172 records the updated Vibe-to-Chaty integration handoff. PR #165 is owned by Chaty for direct branch corrections after handoff; #149 remains open until successful integration. PR #166 is Chaty-owned Phase B groundwork and remains draft until its API assertion, planner coverage/bounds and exact-head CI are corrected. The historical entries below are retained for traceability and must not be mistaken for the current beta state.
 
 ## Historical operational checkpoint — 2026-11-26
 
