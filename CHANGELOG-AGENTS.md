@@ -895,3 +895,19 @@ Entry format:
 - **Scope:** `Diagnostics.kt` testability seam (internal directory-scoped `writeEntry`/`readEntries`/`clearEntries`; public `Context` API unchanged) plus 9 focused JVM tests in `DiagnosticsTest.kt` covering redaction variants (key spellings, Bearer, sensitive query params preserving `view=game`, quoted/unquoted JSON), rotation/retention bounds (512 KiB, single `.log.1`, 4,000-char cap, 80 KiB read bound), rename-failure fallback, unwritable-directory failure path, read order and clear.
 - **Exclusions upheld:** no GeckoView runtime-version startup logging (explicitly deferred), no updater (#4/#15), Addon Manager (#23), game/client or unrelated `MainActivity` changes.
 - **Validation:** local Spotless (ratchet `origin/beta`), `lintDebug` and `testDebugUnitTest` passed at the implementation commit; fresh exact-head Android/Markdown/reproducibility run IDs are recorded in the fresh PR description and the issue #11 handoff comment.
+
+
+## 2026-11-27 — Chaty takes over Vibe PR integration
+
+- **Owner:** Chaty / workflow coordination; requested by the repository owner.
+- **Policy:** after Vibe submits a PR targeting `beta`, Chaty takes over integration and moves the linked issue to `agent:chaty`. Chaty inspects the changes, makes required fixes directly on the PR head branch, resolves conflicts, runs and verifies exact-head CI, and merges only after all applicable gates pass.
+- **Review process:** no routine formal GitHub review submission and no default return-to-Vibe correction cycle. Full internal risk-based verification remains mandatory. Escalate only when permissions, ambiguous scope, or an owner-only decision prevents safe direct correction.
+- **Safety unchanged:** Vibe cannot merge or push to `beta`/`main`; Chaty remains the sole beta integrator. No release, tag, publication or stable-branch promotion is authorized by this workflow change.
+
+
+## 2026-11-27 — Integrate PR #172 and correct PR handoffs
+
+- PR #172 squash-merged to beta at `a1a6eebedc205f059eac98db474c503643d35588`; exact-head Markdown quality run #45915899871 passed.
+- PR #165 / issue #149: Chaty took over after Vibe handoff. UpdateScreen user-facing labels/actions were resource-backed; untranslated English locale duplicates were removed; a CI-reported Spotless formatting issue was corrected. Exact-head Android and unsigned reproducibility checks are running; no merge yet.
+- PR #166 / issue #23 Phase B groundwork: corrected the pinned GeckoView 160 `WebExtension.Port.postMessage(JSONObject)` and delegate API assertion, added optional-dependency ordering, case-insensitive required dependency, deep-chain and bounds tests, and enforced validated addon/TOC limits at the planner boundary. Exact-head Android and unsigned reproducibility checks are running; no runtime activation or physical-device test is claimed.
+- No release, tag, publication, beta-to-main promotion or physical ARM64 testing.
