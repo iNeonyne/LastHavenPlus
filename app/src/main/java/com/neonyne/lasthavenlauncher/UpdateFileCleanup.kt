@@ -39,17 +39,6 @@ internal object UpdateFileCleanup {
   fun protectedApkNames(context: Context): Set<String> {
     val preferences =
       context.getSharedPreferences(PREFERENCES_NAME, Context.MODE_PRIVATE)
-    val protected = linkedSetOf<String>()
-    listOf(KEY_INSTALLER_HANDOFF_APK_NAME, KEY_INSTALLER_HANDOFF_CANDIDATE_APK_NAME)
-      .mapNotNull { key -> preferences.getString(key, null) }
-      .filter(::isManagedApkName)
-      .forEach(protected::add)
-    preferences.getString(KEY_PENDING_UPDATE_URI, null)?.let { value ->
-      runCatching { Uri.parse(value) }
-        .getOrNull()
-        ?.let { managedApkName(it, context.packageName) }
-        ?.let(protected::add)
-    }
     return protectedApkNames(
       pendingUriName = preferences.getString(KEY_PENDING_UPDATE_URI, null)
         ?.let { value ->
