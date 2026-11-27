@@ -6,7 +6,7 @@ These rules apply to every human and AI contributor. The repository owner makes 
 
 Maintain a lightweight Android launcher for the existing LastHaven Wrath of the Lich King browser game at [lasthavens.com/play](https://lasthavens.com/play). The app hosts the existing game; do not recreate, modify or develop the game client.
 
-The active embedded browser engine in `beta` is Mozilla GeckoView 160. Do not add Cefrium, Android System WebView or a second/fallback engine.
+The active embedded browser engine in `beta` is Mozilla GeckoView 161 Stable. Do not add Cefrium, Android System WebView or a second/fallback engine.
 
 ## Branch and integration workflow
 
@@ -86,7 +86,7 @@ Exactly one `agent:*` label describes each actionable issue's current owner/stat
 
 ## GeckoView
 
-The current beta uses the ARM64 GeckoView 160 artifact. Keep the runtime process-scoped and manage GeckoSession lifecycle explicitly. Use the exact API from the pinned artifact and official Mozilla documentation; do not infer APIs from unrelated versions.
+The current beta uses the ARM64 GeckoView 161 Stable artifact. Keep the runtime process-scoped and manage GeckoSession lifecycle explicitly. Use the exact API from the pinned artifact and official Mozilla documentation; do not infer APIs from unrelated versions.
 
 A successful CI build does not prove browser profile persistence or game compatibility. Physical-device verification must be performed on real ARM64 hardware and recorded with device, Android version, build commit and test results.
 
@@ -112,7 +112,7 @@ Issue #23 Phase A is integrated in beta by PR #152 at 103bb979c98589a8704459d28d
 Keep the work phased and accurately described:
 
 - **Phase A — native management:** bounded, user-initiated ZIP import/export, strict archive validation, app-private library storage, metadata/dependency analysis and a launcher-owned manager UI. Imported addons remain disabled by default. Local enablement is only library metadata; it does not enable runtime loading.
-- **Phase B — runtime port:** adapt the supplied XHR/Worker loader for the exact pinned GeckoView 160 APIs. Do not enable injection until origin/path restrictions, request/resource bounds, worker behavior, session isolation and failure handling are understood and regression-tested. Phase B authorization is not permission to skip issue-level assignment or review.
+- **Phase B — runtime port:** adapt the supplied XHR/Worker loader for the exact pinned GeckoView 161 APIs. Do not enable injection until origin/path restrictions, request/resource bounds, worker behavior, session isolation and failure handling are understood and regression-tested. Phase B authorization is not permission to skip issue-level assignment or review.
 - **Session integration:** the manager must retain and return to the existing game session; it must not start a second game instance or modify the game client or persistent game/profile data.
 
 Do not bundle the Chrome MV3 service worker unchanged. Do not assume external unsigned XPI installation is supported or treat a WoW addon ZIP/`.toc` package as a Firefox WebExtension. Never claim addon initialization or game-resource masking from local import, indexing, an enabled flag or an observed injection request.

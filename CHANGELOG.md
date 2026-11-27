@@ -1,5 +1,12 @@
 # LastHavenPlus release changelog
 
+## Unreleased
+
+### Browser engine and dependency baseline
+- Upgrade the embedded ARM64 browser engine from GeckoView 160 to GeckoView 161 Stable.
+- Align AndroidX Core with GeckoView 161's 1.19.1 runtime requirement.
+- Update ktfmt to 0.65; retain the existing Gradle, AGP, Kotlin, JDK and Android SDK pins after compatibility review and CI validation.
+
 ## v2.1.0 — 2026-11-25
 
 ### Launcher and navigation
