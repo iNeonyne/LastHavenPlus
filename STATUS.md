@@ -262,3 +262,10 @@ No code, CI, release, signing, dependency, ABI or device behavior changed in thi
 - Post-merge beta checks on the merge commit: Markdown [#45923143716](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45923143716) passed; Android/signing/ARM64 packaging [#45923143717](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45923143717) and independent unsigned APK reproducibility [#45923143712](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45923143712) were still in progress at this documentation checkpoint. Do not treat them as passed until their exact run conclusions are verified.
 - Scope: extracted GeckoSession lifecycle and load/crash state into `GameSessionController` and pure `GameSessionState` policies. Navigation and gameplay window-state follow-ups remain separate.
 - Issue #146 closed as completed. No physical ARM64 device test was performed; no release, tag, publication or `main` promotion occurred.
+
+## 2026-11-27 — Post-merge CI verified for #146
+
+- Android beta-push run [#45923143717](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45923143717) passed on merge commit `5ed6af635954c8f4e2673dab3c60334eff4a8ae0`: signed optimized release APK build, unit tests, established signing-certificate verification and ARM64-only ABI checks; signed APK artifact upload succeeded. Release-tag/publication and differential-package generation were skipped in this non-release beta run.
+- Independent unsigned APK reproducibility [#45923143712](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45923143712) passed: both clean builds and final APK hash/archive comparison succeeded.
+- Post-merge Markdown [#45923143716](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45923143716) passed on `5ed6af6`; after documentation reconciliation, Markdown [#45923558131](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45923558131) passed on `3856a4f`.
+- These are CI/build/package checks, not physical-device evidence. No physical ARM64 device test, release, tag, publication or `main` promotion occurred.
