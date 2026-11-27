@@ -10,6 +10,14 @@ Sequence #169 first. #167 may audit/test merged bridge code in parallel. #170 be
 
 Chaty remains sole reviewer, fixer, exact-head CI verifier and merger into beta. Do not claim physical device testing or actual in-game addon/Lua initialization unless observed. No release, tag, publication or main promotion is authorized.
 
+## 2026-11-27 — Vibe submitted #169 Worker interception and blocks.idx masking implementation
+
+- **Branch:** `vibe/worker-blocks-masking-169`, based on verified beta HEAD `837bfe9` (post-#194 beta). PR targeting `beta` is submitted and awaits Chaty integration; the exact commit SHA is recorded in the PR and the issue comment.
+- **Implementation:** new MAIN-world content script `worker-overlay.js` — fail-closed exact-URL Worker allowlist gate (inert while empty), bounded `em-pthread` blob bootstrap with 20 s boot timeout, queued-message cap 64, max 8 concurrent intercepted workers, object-URL revocation and teardown on every failure/termination path, idempotent `assignWasmImports` wrapping, read-only `blocks.idx` TAB-record parser with strict bounded limits and stage diagnostics, masking restricted to verified local-addon cache records with 48/35 fill pattern, and a worker-side XHR forwarder (GET/HEAD only, addon routes, inflight cap 4, sync fail-closed 404, non-addon passthrough) that reuses the `__LHAddonXhrOverlayCore` route/content-type resolution page-side.
+- **Local verification (executed):** `node --check` on all five extension JS assets passed; `node --test scripts/test-addon-worker-overlay.mjs` passed 61/61; `node --test scripts/test-addon-xhr-overlay.mjs` and `scripts/test-addon-bridge.mjs` passed unchanged; JVM asset/manifest guard tests updated for the sixth asset and third content-script entry.
+- **Not claimed:** no physical ARM64 device test, no in-game addon/Lua initialization, no runtime Worker URL or `blocks.idx` column-semantics verification. The worker URL allowlist is empty by default, so the overlay is inert until the exact worker URL is hardware-verified and registered.
+- **No release, tag, publication or beta-to-main promotion is authorized.**
+
 ## 2026-11-27 — PR #191 merged; Worker masking assigned (#169)
 
 - **Verified beta HEAD:** `d160b052370bbcbae6925174ac2cb10ec609ff91`.

@@ -234,7 +234,7 @@ test("manifest adds the MAIN-world overlay as a second exact-route content scrip
       "utf8",
     ),
   );
-  assert.equal(manifest.content_scripts.length, 2);
+  assert.equal(manifest.content_scripts.length, 3);
   const isolated = manifest.content_scripts[0];
   assert.deepEqual(isolated.js, ["payload-validation.js", "bridge.js"]);
   assert.equal(isolated.world, undefined);

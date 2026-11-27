@@ -18,7 +18,7 @@ Chaty remains sole reviewer, fixer, exact-head CI verifier and merger into beta.
 - **PR #191 exact-head checks:** Android #45951682137, unsigned APK reproducibility #45951682107, Markdown #45951682194 — all passed.
 - **#167:** open, `agent:chaty`; source-level bridge/payload/session wiring is integrated. Remaining work is physical ARM64 runtime verification and any defects found there. Do not claim actual addon/Lua initialization.
 - **#168:** closed after PR #191 merged.
-- **#169:** `agent:vibe`; active P0 implementation assignment for bounded Worker interception and read-only `blocks.idx` masking. The bridge and XHR contract dependencies are integrated.
+- **#169:** `agent:vibe`; active P0 implementation assignment for bounded Worker interception and read-only `blocks.idx` masking. Implementation submitted on branch `vibe/worker-blocks-masking-169` (PR targeting `beta`, awaiting integration); 61/61 worker-overlay suite tests executed locally.
 - **#170:** `agent:blocked`; waits for #169 integration and remaining same-session manager-navigation work.
 - **#23:** Chaty coordinates the milestone and owns integration; Vibe has exactly one active implementation issue (#169).
 - **Paused:** updater #4/#15 remain queued, not cancelled; do not resume before an explicit handoff.

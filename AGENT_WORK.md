@@ -10,6 +10,15 @@ Sequence #169 first. #167 may audit/test merged bridge code in parallel. #170 be
 
 Chaty remains sole reviewer, fixer, exact-head CI verifier and merger into beta. Do not claim physical device testing or actual in-game addon/Lua initialization unless observed. No release, tag, publication or main promotion is authorized.
 
+## Vibe — #169 Worker interception and blocks.idx masking (implementation complete; integration by Chaty)
+
+- **Branch/start:** `vibe/worker-blocks-masking-169`, based on beta HEAD `837bfe9` (post-#194 reconciliation). PR targeting `beta` submitted; integration and exact-head verification remain with Chaty.
+- **Delivered:** `worker-overlay.js` MAIN-world content script with fail-closed exact-URL Worker allowlist gate (empty by default, so inert until hardware-verified), bounded `em-pthread` blob bootstrap (20 s boot timeout, 64-message queue cap, 8 concurrent intercepted workers, object-URL revocation on every path), idempotent `assignWasmImports` wrapping, bounded read-only `blocks.idx` TAB-record parser with strict limits and fail-closed stage diagnostics, masking restricted to verified local-addon cache records with 48/35 fill pattern, and a worker-side XHR forwarder (GET/HEAD addon routes, inflight cap 4, sync fail-closed 404, non-addon passthrough) reusing `__LHAddonXhrOverlayCore` resolution page-side.
+- **Files:** `app/src/main/assets/extensions/addon-bridge/worker-overlay.js` (new), `manifest.json` (third content-script entry), `scripts/test-addon-worker-overlay.mjs` (new, 61 tests), `AddonBridgeAssetsTest.kt`, `.github/workflows/android.yml`, README/STATUS/ISSUES/CHANGELOG-AGENTS/AGENT_WORK updates.
+- **Executed:** `node --check` on all five extension assets; `node --test scripts/test-addon-worker-overlay.mjs` 61/61 pass; `node --test scripts/test-addon-xhr-overlay.mjs` and `scripts/test-addon-bridge.mjs` pass unchanged; JVM asset/manifest guard updates.
+- **Limitations:** no physical ARM64 device test, no in-game addon/Lua initialization, no runtime verification of the exact worker URL or `blocks.idx` record column semantics, and the 48/35 fill pattern awaits runtime confirmation. Sync worker XHR on addon routes fail-closes with 404 by design.
+- **Issue table:** #169 moves to implementation-complete awaiting review below.
+
 ## Current owner priority — 2026-11-27 (verified after PR #191)
 
 - **P0:** Addon Manager Phase B (#23); Chaty owns coordination, integration and verification.
@@ -137,7 +146,7 @@ Every open issue has exactly one `agent:*` label. The label distinguishes active
 | #146 | `agent:chaty` | Closed completed; PR #173 merged at `5ed6af6` |
 | #167 | `agent:chaty` | PRs #177/#180/#190 integrated; Chaty owns physical ARM64 runtime follow-up |
 | #168 | `agent:vibe` | Implementation complete; PR #191 exact-head Android, Markdown and reproducibility checks passed; Chaty integrating |
-| #169 | `agent:blocked` | Waits for #168 review and integration |
+| #169 | `agent:vibe` | Implementation complete on branch `vibe/worker-blocks-masking-169`; PR targeting `beta` awaiting Chaty integration |
 | #6 | `agent:blocked` | Waits for #28 |
 | #7 | `agent:blocked` | Requires comparable measured baseline and scoped authorization |
 | #10 | `agent:blocked` | Waits for #16 |

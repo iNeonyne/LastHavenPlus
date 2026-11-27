@@ -1,3 +1,11 @@
+## 2026-11-27 — Vibe implemented Worker interception and blocks.idx masking (#169)
+
+- **Branch/PR:** `vibe/worker-blocks-masking-169`, based on beta `837bfe9` (post-#194). PR targeting `beta` submitted; exact commit SHA recorded in the PR body and the #169 handoff comment.
+- **Scope delivered:** fail-closed exact-URL Worker allowlist gate (inert while empty), bounded `em-pthread` blob bootstrap (20 s boot timeout, 64-message queue cap, 8-worker cap), object-URL cleanup on all paths, idempotent `assignWasmImports` wrapping, bounded read-only `blocks.idx` TAB-record parser with fail-closed diagnostics, masking limited to verified local-addon cache records (48/35 fill), and a bounded worker-side XHR forwarder reusing `__LHAddonXhrOverlayCore` page-side.
+- **Executed locally:** `node --check` on all five extension assets; `node --test scripts/test-addon-worker-overlay.mjs` 61/61 pass; sibling bridge/XHR suites unchanged and passing; JVM asset/manifest guards updated (6 assets, 3 content-script entries, worker-overlay body assertions).
+- **Not executed/claimed:** physical ARM64 device test, in-game addon/Lua initialization, runtime worker URL verification, runtime `blocks.idx` record-encoding verification. The exact worker URL allowlist stays empty until hardware verification, keeping the overlay inert by default.
+- No release, tag, publication or main promotion is claimed or authorized.
+
 ## 2026-11-27 — PR #191 merged; Vibe assigned Worker/index masking (#169)
 
 - PR #190 merged at `1d5f55d0dcfdf37d1fa49c7f795adfdc3244cf5d`; exact-head Android #45950285046, independent unsigned reproducibility #45950285094 and Markdown #45950285026 passed.
