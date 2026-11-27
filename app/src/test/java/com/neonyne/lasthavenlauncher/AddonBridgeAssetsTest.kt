@@ -106,7 +106,7 @@ class AddonBridgeAssetsTest {
     assertTrue(background.contains("MAX_RECONNECT_DELAY_MS = 30000"))
     assertTrue(background.contains("nextPort.onDisconnect"))
     assertTrue(background.contains("stalePort.disconnect()"))
-    assertTrue(background.contains('requestNative("ping")'))
+    assertTrue(background.contains("requestNative(\"ping\")"))
     assertTrue(background.contains("MAX_PENDING_REQUESTS = 8"))
     assertTrue(background.contains("MAX_RUNTIME_BUNDLE_BYTES = 16 * 1024 * 1024"))
     assertTrue(background.contains("getFileChunk"))
