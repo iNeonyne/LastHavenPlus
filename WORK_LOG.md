@@ -780,3 +780,12 @@ No branch was deleted. The available GitHub connector exposes no branch-delete o
 - **Latest stable GeckoView check:** Maven metadata search still showed 161.0.20261118180411 as latest Stable on 2026-11-28. Beta remains on that artifact; newer 162 entries were Beta/Nightly, not Stable.
 - **Open integration consideration:** PR #203 is an open draft and modifies overlapping README.md, AGENTS.md, STATUS.md, and docs/GECKOVIEW_MIGRATION.md. This audit PR is based on beta; integrate it before syncing/rechecking the unmerged #203 branch to avoid overwriting the cleanup.
 - **Validation:** Markdown exact-head and post-merge gates remain to be run for this audit PR. No application source, binary, dependency, CI workflow, signing, release, or branch setting was changed.
+
+
+### Correction and final audit detail — 2026-11-28
+
+- **Correction to the preceding audit entry:** the conservative agent-label backfill change does modify `.github/workflows/agent-ownership.yml`. No Android build, signed-release, Markdown, or reproducible-build workflow logic was changed. The previous broad statement that no CI workflow changed is superseded by this clarification.
+- Removed the old issue-number-to-owner backfill map. Opt-in backfill now assigns only `agent:unassigned` to an open issue with no `agent:*` label; Chaty must inspect live state and make the assignment. The workflow now ensures the `agent:ib` label alongside the existing contributor labels.
+- Marked all sections in AGENT_WORK.md that contained old “active work”, “Vibe work queue”, “blocked queue”, and owner/ownership snapshots as historical records. The file is not a startup input or task queue.
+- Clarified in AGENTS.md and AGENT_PROTOCOL.md that current labels take precedence for owner/state, latest valid assignment comments govern scope, and old issue body/dated comments may be superseded.
+- The current exact branch head after these edits: `1c14b3441c3e9299330fd410587753fe50ed3f0e`.
