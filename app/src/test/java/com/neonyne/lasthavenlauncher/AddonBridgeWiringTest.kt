@@ -32,12 +32,14 @@ class AddonBridgeWiringTest {
   }
 
   @Test
-  fun `bridge refreshes after returning from addon manager and tears down with composition`() {
+  fun `bridge refreshes payload before explicit reload and tears down with composition`() {
     val source = File(sourceRoot, "com/neonyne/lasthavenlauncher/MainActivity.kt").readText()
+    val reloadBlock =
+      source.substringAfter("val reloadGame: () -> Unit = {").substringBefore("val startGame")
 
-    assertTrue(source.contains("LaunchedEffect(currentScreen)"))
-    assertTrue(source.contains("currentScreen == Screen.Game"))
-    assertTrue(source.contains("addonBridgeController.refreshSnapshot()"))
+    assertTrue(reloadBlock.contains("addonBridgeController.ensureInstalled(context)"))
+    assertTrue(reloadBlock.contains("addonBridgeController.refreshSnapshot {"))
+    assertTrue(reloadBlock.indexOf("refreshSnapshot") < reloadBlock.indexOf("reloadGame"))
     assertTrue(source.contains("addonBridgeController.teardown()"))
     assertTrue(source.contains("addonBridgeExecutor.shutdown()"))
   }
@@ -49,6 +51,7 @@ class AddonBridgeWiringTest {
     assertTrue(source.contains("File(context.filesDir, \"addons\")"))
     assertTrue(source.contains("snapshotProvider = { addonLibraryRepository.readLibrary() }"))
     assertTrue(source.contains("gameSessionController.restoreGame(context, gameUrl) { session ->"))
+    assertTrue(source.contains("addonBridgeController.refreshSnapshot {"))
     assertTrue(source.contains("gameSessionController.startGame(context, gameUrl) { session ->"))
     assertTrue(source.contains("addonBridgeController.setGameSession(session)"))
     assertTrue(source.contains("gameSessionController.reloadGame(context, gameUrl)"))
