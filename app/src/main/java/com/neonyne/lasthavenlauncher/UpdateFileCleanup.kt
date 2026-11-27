@@ -5,7 +5,9 @@ import android.net.Uri
 import java.io.File
 import java.nio.file.Files
 
-/** Removes updater-owned temporary files and obsolete finalized APKs without touching user files. */
+/**
+ * Removes updater-owned temporary files and obsolete finalized APKs without touching user files.
+ */
 internal object UpdateFileCleanup {
   internal const val PREFERENCES_NAME = "launcher_settings"
   internal const val KEY_PENDING_UPDATE_URI = "pending_update_uri"
@@ -15,12 +17,13 @@ internal object UpdateFileCleanup {
   private const val FILE_PROVIDER_ROOT = "update_apks"
   private const val MAX_ENTRIES_PER_CLEANUP = 256
   private val managedApkName =
-    Regex("""^LastHavenPlus-update-\d+-[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}\.apk$""")
+    Regex(
+      """^LastHavenPlus-update-\d+-[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}\.apk$"""
+    )
 
   /** Returns only a validated APK filename from this app's expected FileProvider URI. */
-  fun managedApkName(uri: Uri, packageName: String): String? {
-    return managedApkName(uri.scheme, uri.authority, uri.pathSegments, packageName)
-  }
+  fun managedApkName(uri: Uri, packageName: String): String? =
+    managedApkName(uri.scheme, uri.authority, uri.pathSegments, packageName)
 
   internal fun managedApkName(
     scheme: String?,
@@ -37,11 +40,10 @@ internal object UpdateFileCleanup {
 
   /** Protects the APK awaiting permission/installer handoff and the latest launched installer. */
   fun protectedApkNames(context: Context): Set<String> {
-    val preferences =
-      context.getSharedPreferences(PREFERENCES_NAME, Context.MODE_PRIVATE)
+    val preferences = context.getSharedPreferences(PREFERENCES_NAME, Context.MODE_PRIVATE)
     return protectedApkNames(
-      pendingUriName = preferences.getString(KEY_PENDING_UPDATE_URI, null)
-        ?.let { value ->
+      pendingUriName =
+        preferences.getString(KEY_PENDING_UPDATE_URI, null)?.let { value ->
           runCatching { Uri.parse(value) }
             .getOrNull()
             ?.let { managedApkName(it, context.packageName) }
