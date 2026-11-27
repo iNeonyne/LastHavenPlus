@@ -3,9 +3,9 @@ package com.neonyne.lasthavenlauncher
 /**
  * Pure wire contract for the addon-bridge native messages (issue #167).
  *
- * Requests and responses are flat JSON objects with scalar values only; the Android adapter is
- * responsible for converting to/from `org.json` and must reject nested structures. This layer owns
- * the schema: unknown fields, unknown types and out-of-bounds values fail closed.
+ * Requests are flat JSON objects with scalar values; bounded responses may contain nested addon
+ * summaries and lists. The Android adapter converts to/from `org.json` and rejects nested request
+ * values. This layer owns the schema: unknown fields, unknown types and out-of-bounds values fail closed.
  */
 object AddonBridgeProtocol {
   const val KEY_TYPE = "type"
@@ -116,7 +116,7 @@ object AddonBridgeProtocol {
   ): AddonListResponse? {
     if (!isRequestIdValid(requestId) || !isRevisionValid(revision)) return null
     if (addons.size > MAX_RESPONSE_ITEMS) return null
-    if (addons.any { !isItemText(it.folder) || !isDisplayText(it.version) }) return null
+    if (addons.any { !isFolderName(it.folder) || !isDisplayText(it.version) }) return null
     return AddonListResponse(requestId, revision, addons)
   }
 
@@ -128,7 +128,7 @@ object AddonBridgeProtocol {
   ): LoadOrderResponse? {
     if (!isRequestIdValid(requestId) || !isRevisionValid(revision)) return null
     if (loadOrder.size + blocked.size > MAX_RESPONSE_ITEMS) return null
-    if ((loadOrder + blocked).any { !isItemText(it) || it.length > MAX_ITEM_CHARS }) return null
+    if ((loadOrder + blocked).any { !isFolderName(it) }) return null
     return LoadOrderResponse(requestId, revision, loadOrder, blocked)
   }
 
@@ -141,11 +141,10 @@ object AddonBridgeProtocol {
   private fun isRevisionValid(revision: String): Boolean =
     revision.length in 1..MAX_ITEM_CHARS && revision.matches(ITEM_PATTERN)
 
-  private fun isItemText(value: String): Boolean =
+  private fun isFolderName(value: String): Boolean =
     value.length in 1..MAX_ITEM_CHARS &&
-      value != "." &&
-      value != ".." &&
-      value.matches(ITEM_PATTERN)
+      value.matches(Regex("[A-Za-z0-9_-]+")) &&
+      !value.startsWith("blizzard_", ignoreCase = true)
 
   private fun isDisplayText(value: String): Boolean =
     value.length <= MAX_ITEM_CHARS && value.none { it.isISOControl() }
