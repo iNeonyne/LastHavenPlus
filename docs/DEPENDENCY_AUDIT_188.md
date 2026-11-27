@@ -29,6 +29,13 @@ Audit performed against `beta` starting at `4d0a6e1be16ee192862d82ea37986ede44e6
 
 No direct dependency was added or removed. Direct AndroidX dependency necessity/manifest analysis remains assigned separately to #187; this change does not pre-empt that investigation. GeckoView remains ARM64-only and no Beta/Nightly artifact is selected.
 
+## Follow-up — Gradle release drift (2026-11-28)
+
+- The beta wrapper still pins Gradle `9.7.1` in `gradle/wrapper/gradle-wrapper.properties`.
+- Gradle `9.9.3` was released on 2026-11-27; see the [official 9.9.3 release notes](https://docs.gradle.org/9.9.3/release-notes.html). The open [Dependabot PR #210](https://github.com/iNeonyne/LastHavenPlus/pull/210) proposes `9.9.2`, so it is already one patch behind this latest upstream patch release.
+- Kotlin `2.4.21` remains the latest stable Kotlin 2.4 release; Kotlin `2.5.0` is planned for December 2026 and RC builds are not stable. See the [official Kotlin release table](https://kotlinlang.org/docs/releases.html).
+- Do not merge or manually upgrade the wrapper solely because a newer release exists. The existing audit records Kotlin 2.4.21's fully supported Gradle range as ending at 9.7.0; check the current Kotlin/AGP compatibility tables and run exact beta CI before adopting 9.9.x. Update PR #210 to 9.9.3 or close/recreate it only after that compatibility review.
+
 ## Source references
 
 - Mozilla Maven metadata: https://maven.mozilla.org/maven2/org/mozilla/geckoview/geckoview-arm64-v8a/maven-metadata.xml
