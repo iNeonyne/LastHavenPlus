@@ -1,6 +1,7 @@
 package com.neonyne.lasthavenlauncher
 
 import java.security.MessageDigest
+import java.util.ArrayDeque
 import java.util.Locale
 import java.util.PriorityQueue
 
@@ -61,26 +62,42 @@ object AddonRuntimePlanner {
     val report = AddonDependencyAnalyzer.analyze(snapshot.addons)
     val enabledByLower = enabled.associateBy { it.folder.lowercase(Locale.ROOT) }
     val blocked = linkedMapOf<String, AddonBlockedReason>()
+    val dependentsByDependency = mutableMapOf<String, MutableList<AddonLibraryItem>>()
 
     for (addon in enabled) {
+      val addonKey = addon.folder.lowercase(Locale.ROOT)
+      for (dependency in addon.dependencies.map { it.lowercase(Locale.ROOT) }.distinct()) {
+        if (dependency in enabledByLower) {
+          dependentsByDependency.getOrPut(dependency) { mutableListOf() } += addon
+        }
+      }
       if (addon.folder in report.cyclicFolders) {
         blocked[addon.folder] = AddonBlockedReason.DependencyCycle
+      } else {
+        val missing =
+          addon.dependencies.filter { it.lowercase(Locale.ROOT) !in enabledByLower }
+        if (missing.isNotEmpty()) {
+          blocked[addon.folder] = AddonBlockedReason.MissingDependencies(missing)
+        }
       }
     }
 
-    var changed = true
-    while (changed) {
-      changed = false
-      for (addon in enabled) {
-        if (addon.folder in blocked) continue
+    // Propagate unavailable required dependencies once per edge. This stays linear in the
+    // validated graph size instead of rescanning every addon for every propagation round.
+    val blockedQueue = ArrayDeque<String>()
+    blocked.keys.forEach { blockedQueue.addLast(it.lowercase(Locale.ROOT)) }
+    while (blockedQueue.isNotEmpty()) {
+      val unavailableKey = blockedQueue.removeFirst()
+      for (dependent in dependentsByDependency[unavailableKey].orEmpty()) {
+        if (dependent.folder in blocked) continue
         val unavailable =
-          addon.dependencies.filter { dependency ->
+          dependent.dependencies.filter { dependency ->
             val target = enabledByLower[dependency.lowercase(Locale.ROOT)]
             target == null || target.folder in blocked
           }
         if (unavailable.isNotEmpty()) {
-          blocked[addon.folder] = AddonBlockedReason.MissingDependencies(unavailable)
-          changed = true
+          blocked[dependent.folder] = AddonBlockedReason.MissingDependencies(unavailable)
+          blockedQueue.addLast(dependent.folder.lowercase(Locale.ROOT))
         }
       }
     }
