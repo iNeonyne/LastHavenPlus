@@ -260,9 +260,7 @@ class AddonBridgeController(
     return when (request.type) {
       "ping" -> AddonBridgeProtocol.ack(request.requestId)
       "listAddons" -> {
-        val snapshot =
-          cachedSnapshot
-            ?: return AddonBridgeProtocol.error(request.requestId, "unavailable")
+        val snapshot = cachedSnapshot ?: return AddonBridgeProtocol.error(request.requestId, "unavailable")
         val summaries =
           snapshot.addons.map {
             AddonBridgeProtocol.AddonSummary(it.folder, it.version, it.enabled)
@@ -302,11 +300,12 @@ class AddonBridgeController(
         if (request.revision != manifest.revision) {
           return AddonBridgeProtocol.error(request.requestId, "staleRevision")
         }
-        val files =
-          runCatching { payloadProvider.page(manifest, request.page ?: -1) }.getOrElse {
-            val code = (it as? AddonRuntimePayloadException)?.code ?: "invalidRequest"
-            return AddonBridgeProtocol.error(request.requestId, code)
-          }
+        val files = runCatching {
+          payloadProvider.page(manifest, request.page ?: -1)
+        }.getOrElse {
+          val code = (it as? AddonRuntimePayloadException)?.code ?: "invalidRequest"
+          return AddonBridgeProtocol.error(request.requestId, code)
+        }
         AddonBridgeProtocol.manifestPage(
           request.requestId,
           manifest,
@@ -328,9 +327,7 @@ class AddonBridgeController(
     return fields
   }
 
-  private fun respond(
-    request: AddonBridgeProtocol.AddonBridgeRequest
-  ): Map<String, Any?>? {
+  private fun respond(request: AddonBridgeProtocol.AddonBridgeRequest): Map<String, Any?>? {
     val response = buildResponse(request) ?: return null
     return responseFields(response)
       ?: AddonBridgeProtocol.error(request.requestId, "payloadTooLarge")?.toFields()
