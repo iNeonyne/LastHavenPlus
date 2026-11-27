@@ -63,6 +63,30 @@ class AddonBridgeAssetsTest {
   }
 
   @Test
+  fun `content bridge uses bounded messages and no page-forgeable channel`() {
+    val bridge = File(assetsDir, "extensions/addon-bridge/bridge.js").readText()
+    assertTrue(bridge.contains("browser.runtime.sendMessage"))
+    assertTrue(bridge.contains("MAX_FILE_CHUNK_BYTES = 32 * 1024"))
+    assertTrue(bridge.contains("MAX_STARTUP_WAIT_MS = 20000"))
+    assertTrue(bridge.contains("window.wrappedJSObject"))
+    assertTrue(bridge.contains("exportFunction"))
+    assertTrue(bridge.contains("cloneInto"))
+    assertTrue(bridge.contains("core.validatePayload(payload)"))
+    assertFalse(bridge.contains("window.postMessage"))
+    assertFalse(bridge.contains("eval("))
+  }
+
+  @Test
+  fun `runtime core validates the ZIP payload without page-controlled inputs`() {
+    val core = File(assetsDir, "extensions/addon-bridge/runtime-core.js").readText()
+    assertTrue(core.contains("function validatePayload(payload)"))
+    assertTrue(core.contains("MAX_RUNTIME_BUNDLE_BYTES = 16 * 1024 * 1024"))
+    assertTrue(core.contains("MAX_RUNTIME_FILES = 1024"))
+    assertTrue(core.contains("MAX_RUNTIME_FILE_BYTES = 8 * 1024 * 1024"))
+    assertTrue(core.contains("function deepFreeze(value)"))
+  }
+
+  @Test
   fun `assets stay within the deterministic size bounds`() {
     val dir = File(assetsDir, AddonBridgePolicy.BUILTIN_LOCATION.removePrefix("/"))
     val files = dir.walkTopDown().filter { it.isFile }.toList()
