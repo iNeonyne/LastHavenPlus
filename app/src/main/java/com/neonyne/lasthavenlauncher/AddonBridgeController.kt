@@ -269,9 +269,7 @@ class AddonBridgeController(
           ?: AddonBridgeProtocol.error(request.requestId, "tooManyAddons")
       }
       "getLoadOrder" -> {
-        val snapshot =
-          cachedSnapshot
-            ?: return AddonBridgeProtocol.error(request.requestId, "unavailable")
+        val snapshot = cachedSnapshot ?: return AddonBridgeProtocol.error(request.requestId, "unavailable")
         val plan = AddonRuntimePlanner.plan(snapshot)
         AddonBridgeProtocol.loadOrder(
           request.requestId,
@@ -356,11 +354,10 @@ class AddonBridgeController(
     request: AddonBridgeProtocol.AddonBridgeRequest,
     port: WebExtension.Port,
   ) {
-    val manifest =
-      cachedPayloadManifest ?: run {
-        sendPortError(port, request.requestId, payloadErrorCode ?: "unavailable")
-        return
-      }
+    val manifest = cachedPayloadManifest ?: run {
+      sendPortError(port, request.requestId, payloadErrorCode ?: "unavailable")
+      return
+    }
     if (request.revision != manifest.revision) {
       sendPortError(port, request.requestId, "staleRevision")
       return
