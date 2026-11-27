@@ -19,10 +19,18 @@ internal object UpdateFileCleanup {
 
   /** Returns only a validated APK filename from this app's expected FileProvider URI. */
   fun managedApkName(uri: Uri, packageName: String): String? {
-    if (uri.scheme != "content" || uri.authority != "$packageName.updates") return null
-    val segments = uri.pathSegments
-    if (segments.size != 2 || segments[0] != FILE_PROVIDER_ROOT) return null
-    return segments[1].takeIf(::isManagedApkName)
+    return managedApkName(uri.scheme, uri.authority, uri.pathSegments, packageName)
+  }
+
+  internal fun managedApkName(
+    scheme: String?,
+    authority: String?,
+    pathSegments: List<String>,
+    packageName: String,
+  ): String? {
+    if (scheme != "content" || authority != "$packageName.updates") return null
+    if (pathSegments.size != 2 || pathSegments[0] != FILE_PROVIDER_ROOT) return null
+    return pathSegments[1].takeIf(::isManagedApkName)
   }
 
   fun isManagedApkName(name: String): Boolean = managedApkName.matches(name)
@@ -42,8 +50,26 @@ internal object UpdateFileCleanup {
         ?.let { managedApkName(it, context.packageName) }
         ?.let(protected::add)
     }
-    return protected
+    return protectedApkNames(
+      pendingUriName = preferences.getString(KEY_PENDING_UPDATE_URI, null)
+        ?.let { value ->
+          runCatching { Uri.parse(value) }
+            .getOrNull()
+            ?.let { managedApkName(it, context.packageName) }
+        },
+      handoffApkName = preferences.getString(KEY_INSTALLER_HANDOFF_APK_NAME, null),
+      candidateApkName = preferences.getString(KEY_INSTALLER_HANDOFF_CANDIDATE_APK_NAME, null),
+    )
   }
+
+  internal fun protectedApkNames(
+    pendingUriName: String?,
+    handoffApkName: String?,
+    candidateApkName: String?,
+  ): Set<String> =
+    listOfNotNull(pendingUriName, handoffApkName, candidateApkName)
+      .filter(::isManagedApkName)
+      .toSet()
 
   /**
    * Deletes abandoned partials and obsolete finalized updater APKs in one bounded directory scan.
