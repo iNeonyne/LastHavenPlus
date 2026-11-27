@@ -74,7 +74,7 @@ internal class AddonRuntimePayloadProvider(private val repository: AddonLibraryR
           Files.newDirectoryStream(current.toPath()).use { entries ->
             for (entry in entries) {
               addonEntries += 1
-              if (addonEntries > AddonArchive.MAX_ENTRIES) {
+              if (addonEntries > MAX_RUNTIME_ENTRIES_PER_ADDON) {
                 throw AddonRuntimePayloadException("payloadTooLarge")
               }
               children += entry.toFile()
@@ -232,6 +232,7 @@ internal class AddonRuntimePayloadProvider(private val repository: AddonLibraryR
     const val MAX_RUNTIME_FILES = 1024
     const val MAX_RUNTIME_ADDONS = 128
     const val MAX_RUNTIME_PATH_CHARS = 512
+    const val MAX_RUNTIME_ENTRIES_PER_ADDON = 4096
     const val MAX_FILE_CHUNK_BYTES = 32 * 1024
     const val MANIFEST_PAGE_SIZE = 32
   }
