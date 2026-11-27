@@ -183,7 +183,7 @@ fun SettingsScreen(
       TextButton(onClick = { showNotices = !showNotices }) {
         Text(
           if (showNotices) stringResource(R.string.settings_hide_notices)
-          else stringResource(R.string.settings_show_notices)
+          else stringResource(R.string.settings_show_notices),
         )
       }
       if (showNotices) {
@@ -271,7 +271,7 @@ fun DiagnosticsScreen(
           onClick = {
             Diagnostics.clear(context)
             content = clearedMessage
-          }
+          },
         ) {
           Text(stringResource(R.string.diagnostics_clear))
         }
@@ -285,7 +285,7 @@ fun DiagnosticsScreen(
               putExtra(Intent.EXTRA_TEXT, content)
             }
           context.startActivity(
-            Intent.createChooser(share, context.getString(R.string.diagnostics_share_chooser))
+            Intent.createChooser(share, context.getString(R.string.diagnostics_share_chooser)),
           )
         },
         modifier = Modifier.fillMaxWidth(),
@@ -351,7 +351,7 @@ fun UpdateScreen(
             ) {
               Text(
                 if (update.patch != null) stringResource(R.string.updates_download_smaller)
-                else stringResource(R.string.updates_download_full)
+                else stringResource(R.string.updates_download_full),
               )
             }
             if (update.patch != null) {
