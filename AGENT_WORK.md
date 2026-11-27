@@ -61,8 +61,9 @@ Vibe has exactly one active implementation issue at a time. After handing off a 
 
 ### Vibe — #168 XHR resource overlay (active)
 - **GitHub ownership:** `agent:vibe`; sole active implementation issue.
-- **Branch/start:** `vibe/addon-xhr-overlay-168`, based on beta `892494aa8f0333f907b2e730f6b754ba2dabe2a1`.
+- **Branch/start:** `vibe/addon-xhr-overlay-168`, based on beta `a90d7ce6e7589f3ecba1dc477ffd23fe223a223f` (contains required base `892494aa8f0333f907b2e730f6b754ba2dabe2a1`).
 - **Assignment:** issue comment #7210226239 defines expected behavior, scope, exclusions, constraints, tests and documentation requirements.
+- **Status:** implementation complete; new MAIN-world `xhr-overlay.js` content script plus manifest, Node/JVM tests and CI updates committed and a draft PR targeting beta submitted. Local evidence: 37/37 and 7/7 Node tests, Spotless ratchet, 226/226 JVM tests, lint and debug assembly with all 5 extension assets packaged; local release assembly cgroup-OOM-blocked (environmental, CI covers). Awaiting Chaty review and integration.
 - **Required handoff:** draft PR targeting beta; exact-head Node/Android/Markdown/reproducibility evidence; report exact SHA, changed files, limitations and physical-device status. Chaty alone reviews and merges.
 - **Hard exclusions:** no Worker/`blocks.idx` masking (#169), navigation/session wiring (#170), native bridge/protocol edits, game/profile writes, dependency/toolchain/signing/ABI changes, downloads/updates, release/tag/publication or main promotion.
 
@@ -109,7 +110,7 @@ Every open issue has exactly one `agent:*` label. The label distinguishes active
 | #12 | `agent:queued` | #11 prerequisite merged; after #146/#147 and Phase B bridge work, explicit assignment required |
 | #146 | `agent:chaty` | Closed completed; PR #173 merged at `5ed6af6` |
 | #167 | `agent:chaty` | PRs #177/#180 integrated; Chaty owns runtime/device follow-up |
-| #168 | `agent:vibe` | Sole active Vibe task: bounded XHR resource overlay |
+| #168 | `agent:vibe` | Implementation complete; draft PR targeting beta awaiting Chaty review |
 | #169 | `agent:blocked` | Waits for #168 review and integration |
 | #6 | `agent:blocked` | Waits for #28 |
 | #7 | `agent:blocked` | Requires comparable measured baseline and scoped authorization |

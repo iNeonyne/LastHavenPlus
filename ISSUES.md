@@ -5,7 +5,7 @@
 - **P0 — Addon Manager Phase B (#23):** Chaty coordinates and integrates; Vibe has exactly one active implementation assignment, #168 (XHR resource overlay).
 - **Merged bridge foundation:** PR #177 and payload transport PR #180 are integrated into beta. PR #180 merge commit / verified beta HEAD: `892494aa8f0333f907b2e730f6b754ba2dabe2a1`.
 - **#167:** remains open, `agent:chaty`; Chaty owns integration follow-up and physical ARM64 runtime verification. Do not infer actual addon initialization from bridge transport.
-- **#168:** `agent:vibe`; active assignment. Vibe must complete only the bounded XHR resource overlay and its security/test contract.
+- **#168:** `agent:vibe`; active assignment. Vibe must complete only the bounded XHR resource overlay and its security/test contract. Implementation complete: draft PR targeting beta submitted with local test evidence; awaiting Chaty review and integration.
 - **#169:** `agent:blocked`; waits for #168 review and integration before Worker/`blocks.idx` masking.
 - **#170:** `agent:blocked`; waits for runtime tasks and navigation/session prerequisites.
 - **Paused:** updater #4/#15 remain queued, not cancelled. Resume only after Chaty explicitly reassigns them following a safe Addon Manager milestone handoff.
@@ -18,13 +18,13 @@
 - **Latest stable:** v2.3.0; no new release is authorized.
 - **Development:** beta HEAD `892494aa8f0333f907b2e730f6b754ba2dabe2a1`.
 - **Integrated:** PR #177 native-messaging foundation and PR #180 bounded ZIP 0.5.1 payload transport. Exact-head Android PR validation #45938326655 and unsigned reproducibility #45938326638 passed; no post-merge CI result is claimed.
-- **Addon Manager:** Phase A/planner and bridge transport code are integrated. Production session wiring, XHR (#168), Worker/index masking (#169), same-session navigation (#170), and in-game addon activation remain incomplete.
+- **Addon Manager:** Phase A/planner and bridge transport code are integrated. Production session wiring, Worker/index masking (#169), same-session navigation (#170), and in-game addon activation remain incomplete; the bounded XHR overlay (#168) is implemented in a draft PR pending review.
 - **Device/release:** no physical ARM64 runtime test, release, tag, publication or beta-to-main promotion is claimed or authorized.
 
 ## Current ownership
 
 - **Chaty active:** #23 coordination, #167 bridge follow-up/device verification, PR review and integration.
-- **Vibe active:** #168 XHR resource overlay only.
+- **Vibe active:** #168 XHR resource overlay; implemented, draft PR submitted, awaiting Chaty review.
 - **Blocked:** #169 waits for #168 integration; #170 waits for runtime/navigation prerequisites.
 - **Updater:** #4/#15 remain queued/paused under Chaty.
 - **Chaty queued:** #81 dependency-evidence documentation; not started. #20/#31 remain owner/authorization blocked.

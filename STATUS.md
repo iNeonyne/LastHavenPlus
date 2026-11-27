@@ -1,5 +1,12 @@
 # Project status — LastHavenPlus
 
+## 2026-11-27 — Vibe submits #168 XHR overlay draft PR
+
+- **Vibe implementation:** #168 bounded MAIN-world XHR resource overlay implemented on branch `vibe/addon-xhr-overlay-168`, based on beta `a90d7ce6e7589f3ecba1dc477ffd23fe223a223f` (contains the required `892494aa8f0333f907b2e730f6b754ba2dabe2a1`). A draft PR targeting beta was submitted; it awaits Chaty review and integration.
+- **Local evidence:** 37/37 new Node overlay tests and 7/7 bridge Node tests pass; Spotless ratchet vs origin/beta passes; 226/226 JVM tests pass; lint and debug assembly pass with all 5 extension assets packaged (`xhr-overlay.js` 38,517 bytes, under the 64 KiB content-script cap) and arm64-v8a-only native libs. Local unsigned release assembly remains cgroup-OOM-blocked in the sandbox (dmesg-recorded); CI's unsigned release build covers that check.
+- **Scope:** interception restricted to exact same-origin `https://lasthavens.com` play pages, GET/HEAD only; addon routes are served from the bridge payload or fail closed with 404; `bundle-*` masking; RFC 9110 Range handling with 206/416/multipart support. No Worker/`blocks.idx` masking (#169), no navigation/session wiring (#170), no native bridge/protocol edits.
+- **Limitations:** the PR is not merged; no in-game addon activation, no post-merge CI result and no physical ARM64 runtime test is claimed. Interpretation decisions are documented in the PR description.
+
 ## 2026-11-27 — PR #180 integrated; Vibe assigned XHR overlay
 
 - **Owner priority:** Addon Manager Phase B (#23) remains P0. Chaty owns coordination and integration.

@@ -1,3 +1,12 @@
+## 2026-11-27 — Vibe implements bounded XHR overlay (#168)
+
+- **Assignment:** Chaty comment #7210226239 (04:57:06Z) made #168 Vibe's sole active implementation issue.
+- **Branch/base:** `vibe/addon-xhr-overlay-168`, created from beta `a90d7ce6e7589f3ecba1dc477ffd23fe223a223f` (contains required base `892494aa8f0333f907b2e730f6b754ba2dabe2a1`).
+- **Implementation:** new MAIN-world content script `xhr-overlay.js` serving exact same-origin `https://lasthavens.com` GET/HEAD addon routes from the bridge payload or failing closed with 404; block-byte slicing in both documented URL forms; RFC 9110 Range handling (206/416/multipart); `bundle-*` masking for payload folders; bounded lazy decode cache capped by the validated 16 MiB bundle limit; 20 s bridge-readiness wait matching the bridge startup cap. Registered as a second `manifest.json` content-script entry with `world: "MAIN"`, after the ISOLATED-world entry. No native bridge/protocol files were modified.
+- **Tests:** `scripts/test-addon-xhr-overlay.mjs` added (37 Node tests, all passing); `scripts/test-addon-bridge.mjs` manifest test updated for two content-script entries (7/7 passing); `AddonBridgeAssetsTest.kt` extended for the fifth asset, MAIN-world manifest assertions and a source-security test (226/226 JVM tests passing); CI workflow validates and runs both Node suites.
+- **Local validation:** Spotless ratchet vs origin/beta passed; `testDebugUnitTest` 226/226 passed; `lintDebug assembleDebug` passed with all 5 extension assets in the APK and arm64-v8a-only libs. Local `assembleRelease` was killed by the sandbox memory cgroup (environmental; CI's unsigned release build covers it).
+- **Handoff:** implementation commit `5a3499ee0e6893662b60c3d92af3b87507fb2bed` pushed; draft PR targeting beta submitted with exact-head evidence, limitations (no in-game activation, no Worker masking, no physical ARM64 device testing) and interpretation decisions. Issue #168 moves to review via Chaty.
+
 ## 2026-11-27 — Integrate GeckoView addon payload bridge and assign XHR overlay (#167/#168)
 
 - **Priority:** Addon Manager Phase B (#23) remains P0; Chaty owns coordination and integration.
