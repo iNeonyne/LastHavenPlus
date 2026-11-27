@@ -40,8 +40,8 @@ Vibe has exactly one active implementation issue at a time. After handing off a 
 
 ### Chaty integration — #149 launcher-owned string resources
 - **GitHub ownership:** `agent:chaty`; PR #165 has been handed off and Chaty owns integration.
-- **Current PR:** #165, latest Chaty fix head `22bdc622cdc68f92b5b0e1f0c56a8ad2fbca58a9`.
-- **Chaty actions:** direct corrections are committed; Android #45919019357 passed; Markdown #45919019564 passed; independent unsigned reproducibility #45919019411 is still running. Recheck exact-head/base and merge only after reproducibility passes.
+- **Current PR:** #165, latest Chaty fix head `b7e4ce20804c5489df734d84daf4a26dda412f69`.
+- **Chaty actions:** direct corrections are committed; Fresh exact-head Android #45919517720 and independent unsigned reproducibility #45919517863 are pending; Markdown #45919517707 is in progress. Prior head 22bdc622cdc68f92b5b0e1f0c56a8ad2fbca58a9 passed Android and Markdown; its reproducibility run was not yet complete. Recheck exact-head/base and merge only after reproducibility passes.
 - **Corrections made:** UpdateScreen labels/actions are now resource-backed in default `values/strings.xml`; untranslated English duplicates were removed from locale-specific resource files. `SettingsDialogs.kt` Spotless violations found by exact-head CI were corrected. Required project documentation updates are included in this PR branch.
 - Preserve wording and punctuation. Exclude game content, diagnostics payloads, developer logs and protocol values. No updater behavior changes, GeckoView/session lifecycle, Addon Manager or game/client changes.
 - **Vibe:** #146 is now active. Vibe starts this independent task immediately while Chaty integrates #149/#165; do not wait for PR #165 to merge. Chaty checked current open PR scopes: #165 changes launcher UI/resources/docs and #166 changes Addon Manager planner/repository/tests; neither overlaps MainActivity or GeckoSession ownership. PR #145 is closed unmerged.
