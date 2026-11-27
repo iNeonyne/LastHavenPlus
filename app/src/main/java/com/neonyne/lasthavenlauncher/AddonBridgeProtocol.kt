@@ -237,7 +237,8 @@ object AddonBridgeProtocol {
         if (!isBundleRevisionValid(revision)) return null
         val pageText = fields[KEY_PAGE] as? String ?: return null
         if (!DECIMAL_PATTERN.matches(pageText)) return null
-        val page = pageText.toIntOrNull()?.takeIf { it in 0 until MAX_MANIFEST_PAGES } ?: return null
+        val page =
+          pageText.toIntOrNull()?.takeIf { it in 0 until MAX_MANIFEST_PAGES } ?: return null
         AddonBridgeRequest(type, requestId, revision = revision, page = page)
       }
       "getFileChunk" -> {
