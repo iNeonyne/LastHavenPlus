@@ -15,7 +15,7 @@ The active embedded browser engine in `beta` is Mozilla GeckoView 160. Do not ad
 - Pull requests are the normal integration path for task work. Open PRs against `beta`; do not target `main` for routine development.
 - Parallel agents may work on separate issues only when their file scopes do not overlap. Never let two agents work on the same issue concurrently.
 - Contributors work on dedicated task branches, open PRs targeting `beta`, and provide Chaty the PR link, exact head commit, changed files, test evidence and remaining limitations.
-- **Chaty is the sole orchestrator and integrator.** Chaty reviews PR diffs and CI, resolves conflicts, requests changes, and merges accepted PRs into `beta`. Chaty coordinates verification and release readiness; no other agent may merge or push directly to `beta`.
+- **Chaty is the sole orchestrator and integrator.** When Vibe opens a PR, Chaty takes over integration: inspect the diff and CI, make required fixes directly on the PR head branch, resolve conflicts, rerun checks, and merge the verified result into `beta`. Do not leave a formal review or send routine corrections back to Vibe. Vibe must not merge or push directly to `beta`/`main`.
 - Promote `beta` to `main` only after all release gates pass and the owner explicitly approves. Publishing a release or creating a release tag also requires explicit approval.
 - Never develop routinely on `main`, force-push shared branches or bypass required checks.
 - Task branches use `<owner>/<task-slug>` naming, one issue per branch, started from current `beta`. `infra/*` branches never merge wholesale into `beta`; `beta-legacy-*` snapshots are preserved and never wholesale-merged.
@@ -30,7 +30,7 @@ Review effort must match risk without removing the review gate:
 - **Standard review:** normal UI, settings, diagnostics and contained application changes. Inspect affected call paths, regression risks, relevant tests and the required unsigned PR build.
 - **Strict review:** GeckoView/session lifecycle, updater/download/patching, storage/profile, network/security, dependencies/toolchain, manifest/permissions, signing and CI/release workflows. Inspect success and failure paths, require focused regression tests, exact-head CI, and relevant post-merge signed/packaging checks. Require physical ARM64 testing for claims that depend on device behavior.
 
-All PRs remain subject to Chaty's review and required CI. “Lightweight” means a smaller review scope, not automatic approval, bypassed CI, or permission to merge. Keep one issue per PR, avoid unrelated cleanup, and keep file ownership non-overlapping. Contributors must provide a concise handoff: outcome, scope/non-goals, changed files, exact head SHA, test commands/results and CI links, limitations, and physical-device status. If `beta` advances, refresh the branch and rerun affected checks before merge.
+Every PR remains subject to Chaty's internal verification and required CI; this is an integration gate, not a formal GitHub review cycle. Chaty does not submit APPROVE, COMMENT, or REQUEST_CHANGES reviews for routine Vibe PRs. Instead, Chaty commits fixes directly to the PR head branch where needed, then verifies the resulting exact head. Keep one issue per PR, avoid unrelated cleanup, and keep file ownership non-overlapping. Vibe provides a concise handoff: outcome, scope/non-goals, changed files, exact head SHA, test commands/results and CI links, limitations, and physical-device status. If `beta` advances, Chaty syncs the PR branch safely and reruns affected checks before merge.
 
 ## Before changing code
 
@@ -60,14 +60,14 @@ Exactly one `agent:*` label describes each actionable issue's current owner/stat
 | `agent:chaty` | Chaty owns the active implementation/coordination | Chaty only |
 | `agent:vibe` | Vibe has an explicit active assignment and scope comment | Vibe may start |
 | `agent:blocked` | Cannot proceed until a documented dependency, prerequisite, measurement, or owner decision is cleared | No |
-| `agent:review` | Implementation PR submitted; awaiting Chaty's review | No; await review |
+| `agent:review` | PR handoff awaiting Chaty's integration check (temporary transition state only) | No; Chaty takes over |
 | `agent:owner` | Repository-owner decision required | No |
 
 - `agent:queued` is a queue state, not an assignment. It does not authorize Vibe or Chaty to start implementation. The issue must identify its queue position or readiness condition, and Chaty must later replace it with `agent:vibe` or `agent:chaty` plus an explicit assignment comment.
 - `agent:blocked` is reserved for a real blocker: a dependency, missing prerequisite/evidence, owner hold, or decision that prevents safe progress. Do not use it merely because work is waiting its turn.
 - New issues receive `agent:unassigned` automatically. Chaty triages promptly and sets exactly one state label; never leave an actionable issue unassigned after triage.
 - Only Chaty changes ownership/state labels. Replace the prior `agent:*` label on every transition. Contributors must not self-assign or change labels.
-- Vibe works on one active issue at a time. After a PR handoff, Chaty sets `agent:review`; once review begins, Chaty may return it to `agent:vibe` for bounded corrections, assign the next independent ready issue, or set `agent:blocked`/`agent:owner` when a genuine hold applies.
+- Vibe works on one active issue at a time. On PR handoff, Chaty takes ownership of integration and changes the issue label from `agent:vibe` to `agent:chaty`; do not leave the issue in `agent:review` for a formal review cycle. Chaty fixes issues directly on the PR branch, verifies exact-head CI, then merges or documents a genuine blocker. A Vibe correction/reassignment is exceptional and requires an access or scope constraint that prevents Chaty from safely making the fix.
 - Chaty maintains the ordered Vibe and Chaty queues in `AGENT_WORK.md`; GitHub issue comments record each task's scope, exclusions, dependencies, tests and documentation requirements.
 - On successful merge, Chaty records evidence and closes the issue as completed without `agent:blocked`. If Chaty closes an issue for any reason other than successful merge, apply `agent:blocked` to that closed issue as the historical closure marker. Do not mistake that closed marker for an open-work blocker.
 - The label automation is `.github/workflows/agent-ownership.yml`. GitHub issue-event workflows must exist on the repository default branch to run automatically. A beta-only PR prepares the automation but does not activate issue-open labeling until the owner separately approves promotion of that workflow to the default branch.
