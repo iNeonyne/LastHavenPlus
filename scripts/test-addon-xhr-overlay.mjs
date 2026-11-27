@@ -283,6 +283,21 @@ test("core resolves exact game file routes and rejects everything else", () => {
       "https://lasthavens.com/game/Interface/AddOns/Foo/bar.lua",
       BASE_HREF,
     ).kind,
+    "methodNotAllowed",
+  );
+  assert.equal(
+    core.resolveRoute("GET", "https://lasthavens.com/game/Assets/texture.png", BASE_HREF)
+      .kind,
+    "passthrough",
+  );
+  assert.equal(
+    core.resolveRoute("GET", "https://lasthavens.com/blocks/Other/data.bin", BASE_HREF)
+      .kind,
+    "passthrough",
+  );
+  assert.equal(
+    core.resolveRoute("POST", "https://lasthavens.com/game/Assets/texture.png", BASE_HREF)
+      .kind,
     "passthrough",
   );
   assert.equal(
@@ -381,38 +396,37 @@ test("core fails closed on traversal, escapes and unsafe decoded paths", () => {
     "https://lasthavens.com/game/Interface/AddOns/Foo/back%5Cslash.lua",
     "https://lasthavens.com/game/Interface/AddOns/Foo/col%3Aon.lua",
     "https://lasthavens.com/game/Interface/AddOns/Foo/nul%00byte.lua",
-    "https://lasthavens.com/game//double-slash.lua",
     "https://lasthavens.com/game/Interface/AddOns/Foo/%zzmalformed.lua",
     "https://lasthavens.com/game/Interface/AddOns/Foo/" + "x".repeat(600) + ".lua",
   ];
   for (const url of urls) {
     assert.equal(core.resolveRoute("GET", url, BASE_HREF).kind, "notFound", url);
   }
+  assert.equal(
+    core.resolveRoute("GET", "https://lasthavens.com/game//double-slash.lua", BASE_HREF)
+      .kind,
+    "passthrough",
+  );
 });
 
-test("encoded and plain dot segments are URL-normalized away from payload paths", () => {
+test("URL-normalized dot segments that leave the addon prefix pass through untouched", () => {
   const core = loadCore();
   for (const url of [
     "https://lasthavens.com/game/Interface/AddOns/%2e%2e/escape.lua",
     "https://lasthavens.com/game/Interface/AddOns/Foo/../../../etc/passwd",
   ]) {
-    const route = core.resolveRoute("GET", url, BASE_HREF);
-    assert.equal(route.kind, "file", url);
-    assert.equal(route.payloadPath.includes(".."), false, url);
-    assert.equal(route.payloadPath.startsWith("Interface/AddOns/Foo/"), false, url);
+    assert.equal(core.resolveRoute("GET", url, BASE_HREF).kind, "passthrough", url);
   }
 });
 
-test("plain dot-segment traversal is URL-normalized and cannot match payload paths", () => {
+test("plain dot-segment traversal is URL-normalized outside the addon prefix", () => {
   const core = loadCore();
   const route = core.resolveRoute(
     "GET",
     "https://lasthavens.com/game/Interface/AddOns/Foo/../../../etc/passwd",
     BASE_HREF,
   );
-  assert.equal(route.kind, "file");
-  assert.equal(route.payloadPath.includes(".."), false);
-  assert.equal(route.payloadPath.startsWith(ADDON_PREFIX_TEST), false);
+  assert.equal(route.kind, "passthrough");
 });
 
 test("encoded slash cannot forge a longer payload path", () => {
@@ -484,7 +498,7 @@ function makePayloadWithFiles(files, folder = "Foo") {
   return makePayload([makeAddon(folder, payloadFiles)]);
 }
 
-function deliveredXhr({
+async function deliveredXhr({
   url,
   method = "GET",
   payload,
@@ -505,15 +519,20 @@ function deliveredXhr({
     for (const [name, value] of requestHeaders) xhr.setRequestHeader(name, value);
   }
   xhr.send();
+  await sleep(25);
   return { xhr, events, context };
 }
 
 test("async intercepted request delivers the full payload with native ordering", async () => {
   const payload = makePayloadWithFiles({ "bar.lua": "hello addon" });
-  const { xhr, events } = deliveredXhr({
-    url: "https://lasthavens.com/game/Interface/AddOns/Foo/bar.lua",
-    payload,
-  });
+  const { context } = loadWrapper({ payload });
+  const xhr = new context.XMLHttpRequest();
+  const events = collectEvents(xhr, context);
+  xhr.open("GET", "https://lasthavens.com/game/Interface/AddOns/Foo/bar.lua");
+  xhr.send();
+  assert.equal(xhr.readyState, 1);
+  assert.equal(xhr.status, 0);
+  await sleep(25);
   assert.equal(xhr.status, 200);
   assert.equal(xhr.statusText, "OK");
   assert.equal(xhr.responseText, "hello addon");
@@ -537,9 +556,9 @@ test("async intercepted request delivers the full payload with native ordering",
   ]);
 });
 
-test("synchronous intercepted request completes without firing events", () => {
+test("synchronous intercepted request completes without firing events", async () => {
   const payload = makePayloadWithFiles({ "bar.lua": "sync body" });
-  const { xhr, events } = deliveredXhr({
+  const { xhr, events } = await deliveredXhr({
     url: "https://lasthavens.com/game/Interface/AddOns/Foo/bar.lua",
     payload,
     async: false,
@@ -552,7 +571,7 @@ test("synchronous intercepted request completes without firing events", () => {
 
 test("response types expose arraybuffer, json and blob only when done", async () => {
   const payload = makePayloadWithFiles({ "data.json": '{"value":42}' });
-  const { xhr } = deliveredXhr({
+  const { xhr } = await deliveredXhr({
     url: "https://lasthavens.com/game/Interface/AddOns/Foo/data.json",
     payload,
     responseType: "json",
@@ -560,14 +579,14 @@ test("response types expose arraybuffer, json and blob only when done", async ()
   assert.deepEqual(plain(xhr.response), { value: 42 });
 
   const binary = makePayloadWithFiles({ "data.bin": "\u0001\u0002\u0003" });
-  const bufferResult = deliveredXhr({
+  const bufferResult = await deliveredXhr({
     url: "https://lasthavens.com/game/Interface/AddOns/Foo/data.bin",
     payload: binary,
     responseType: "arraybuffer",
   });
   assert.deepEqual(Array.from(new Uint8Array(bufferResult.xhr.response)), [1, 2, 3]);
 
-  const blobResult = deliveredXhr({
+  const blobResult = await deliveredXhr({
     url: "https://lasthavens.com/game/Interface/AddOns/Foo/data.bin",
     payload: binary,
     responseType: "blob",
@@ -579,7 +598,7 @@ test("response types expose arraybuffer, json and blob only when done", async ()
 
 test("HEAD serves real length headers without a body", async () => {
   const payload = makePayloadWithFiles({ "bar.lua": "12345" });
-  const { xhr } = deliveredXhr({
+  const { xhr } = await deliveredXhr({
     url: "https://lasthavens.com/game/Interface/AddOns/Foo/bar.lua",
     payload,
     method: "HEAD",
@@ -591,20 +610,20 @@ test("HEAD serves real length headers without a body", async () => {
 
 test("missing and case-conflicting addon paths fail closed with 404", async () => {
   const payload = makePayloadWithFiles({ "bar.lua": "x" });
-  const missing = deliveredXhr({
+  const missing = await deliveredXhr({
     url: "https://lasthavens.com/game/Interface/AddOns/Foo/absent.lua",
     payload,
   });
   assert.equal(missing.xhr.status, 404);
   assert.equal(missing.xhr.responseText, "");
 
-  const wrongCase = deliveredXhr({
+  const wrongCase = await deliveredXhr({
     url: "https://lasthavens.com/game/Interface/AddOns/foo/bar.lua",
     payload,
   });
   assert.equal(wrongCase.xhr.status, 404);
 
-  const unknownFolder = deliveredXhr({
+  const unknownFolder = await deliveredXhr({
     url: "https://lasthavens.com/game/Interface/AddOns/Missing/x.lua",
     payload,
   });
@@ -613,7 +632,7 @@ test("missing and case-conflicting addon paths fail closed with 404", async () =
 
 test("closed, open-ended and suffix ranges return exact 206 slices", async () => {
   const payload = makePayloadWithFiles({ "bar.lua": "0123456789" });
-  const closed = deliveredXhr({
+  const closed = await deliveredXhr({
     url: "https://lasthavens.com/game/Interface/AddOns/Foo/bar.lua",
     payload,
     requestHeaders: [["Range", "bytes=2-5"]],
@@ -623,7 +642,7 @@ test("closed, open-ended and suffix ranges return exact 206 slices", async () =>
   assert.equal(closed.xhr.getResponseHeader("content-range"), "bytes 2-5/10");
   assert.equal(closed.xhr.getResponseHeader("content-length"), "4");
 
-  const openEnded = deliveredXhr({
+  const openEnded = await deliveredXhr({
     url: "https://lasthavens.com/game/Interface/AddOns/Foo/bar.lua",
     payload,
     requestHeaders: [["Range", "bytes=7-"]],
@@ -631,7 +650,7 @@ test("closed, open-ended and suffix ranges return exact 206 slices", async () =>
   assert.equal(openEnded.xhr.status, 206);
   assert.equal(openEnded.xhr.responseText, "789");
 
-  const suffix = deliveredXhr({
+  const suffix = await deliveredXhr({
     url: "https://lasthavens.com/game/Interface/AddOns/Foo/bar.lua",
     payload,
     requestHeaders: [["Range", "bytes=-3"]],
@@ -639,7 +658,7 @@ test("closed, open-ended and suffix ranges return exact 206 slices", async () =>
   assert.equal(suffix.xhr.status, 206);
   assert.equal(suffix.xhr.responseText, "789");
 
-  const clamped = deliveredXhr({
+  const clamped = await deliveredXhr({
     url: "https://lasthavens.com/game/Interface/AddOns/Foo/bar.lua",
     payload,
     requestHeaders: [["Range", "bytes=8-99"]],
@@ -650,7 +669,7 @@ test("closed, open-ended and suffix ranges return exact 206 slices", async () =>
 
 test("unsatisfiable ranges return 416 and malformed ranges serve the full body", async () => {
   const payload = makePayloadWithFiles({ "bar.lua": "0123456789" });
-  const unsatisfiable = deliveredXhr({
+  const unsatisfiable = await deliveredXhr({
     url: "https://lasthavens.com/game/Interface/AddOns/Foo/bar.lua",
     payload,
     requestHeaders: [["Range", "bytes=10-"]],
@@ -658,7 +677,7 @@ test("unsatisfiable ranges return 416 and malformed ranges serve the full body",
   assert.equal(unsatisfiable.xhr.status, 416);
   assert.equal(unsatisfiable.xhr.getResponseHeader("content-range"), "bytes */10");
 
-  const malformed = deliveredXhr({
+  const malformed = await deliveredXhr({
     url: "https://lasthavens.com/game/Interface/AddOns/Foo/bar.lua",
     payload,
     requestHeaders: [["Range", "bytes=zz-yy"]],
@@ -666,7 +685,7 @@ test("unsatisfiable ranges return 416 and malformed ranges serve the full body",
   assert.equal(malformed.xhr.status, 200);
   assert.equal(malformed.xhr.responseText, "0123456789");
 
-  const emptyFile = deliveredXhr({
+  const emptyFile = await deliveredXhr({
     url: "https://lasthavens.com/game/Interface/AddOns/Foo/empty.toc",
     payload: makePayloadWithFiles({ "empty.toc": "" }),
     requestHeaders: [["Range", "bytes=0-0"]],
@@ -676,7 +695,7 @@ test("unsatisfiable ranges return 416 and malformed ranges serve the full body",
 
 test("multipart ranges return a bounded deterministic byteranges body", async () => {
   const payload = makePayloadWithFiles({ "bar.lua": "0123456789" });
-  const { xhr } = deliveredXhr({
+  const { xhr } = await deliveredXhr({
     url: "https://lasthavens.com/game/Interface/AddOns/Foo/bar.lua",
     payload,
     requestHeaders: [["Range", "bytes=0-1,4-5"]],
@@ -694,7 +713,7 @@ test("multipart ranges return a bounded deterministic byteranges body", async ()
 
 test("block URLs slice local bytes with exact bounds", async () => {
   const payload = makePayloadWithFiles({ "data.bin": "0123456789ABCDEF" });
-  const { xhr } = deliveredXhr({
+  const { xhr } = await deliveredXhr({
     url: "https://lasthavens.com/blocks/Interface/AddOns/Foo/data.bin-0-0-4k.bin",
     payload,
   });
@@ -705,14 +724,14 @@ test("block URLs slice local bytes with exact bounds", async () => {
 
 test("block URLs beyond the file end and on empty files fail with 416", async () => {
   const payload = makePayloadWithFiles({ "data.bin": "abc" });
-  const beyond = deliveredXhr({
+  const beyond = await deliveredXhr({
     url: "https://lasthavens.com/blocks/Interface/AddOns/Foo/data.bin-0-1-4k.bin",
     payload,
   });
   assert.equal(beyond.xhr.status, 416);
   assert.equal(beyond.xhr.getResponseHeader("content-range"), "bytes */3");
 
-  const empty = deliveredXhr({
+  const empty = await deliveredXhr({
     url: "https://lasthavens.com/blocks/Interface/AddOns/Foo/empty.bin-0-1-4k.bin",
     payload: makePayloadWithFiles({ "empty.bin": "" }),
   });
@@ -721,7 +740,7 @@ test("block URLs beyond the file end and on empty files fail with 416", async ()
 
 test("an explicit Range header takes precedence over the block slice", async () => {
   const payload = makePayloadWithFiles({ "data.bin": "0123456789ABCDEF" });
-  const { xhr } = deliveredXhr({
+  const { xhr } = await deliveredXhr({
     url: "https://lasthavens.com/blocks/Interface/AddOns/Foo/data.bin-0-1-4k.bin",
     payload,
     requestHeaders: [["Range", "bytes=0-1"]],
@@ -733,7 +752,7 @@ test("an explicit Range header takes precedence over the block slice", async () 
 
 test("bundle block URLs are masked only when the addon folder exists locally", async () => {
   const payload = makePayloadWithFiles({ "bar.lua": "x" }, "Foo");
-  const masked = deliveredXhr({
+  const masked = await deliveredXhr({
     url: "https://lasthavens.com/blocks/Interface/AddOns/Foo/bundle-9.bin",
     payload,
   });
@@ -741,7 +760,7 @@ test("bundle block URLs are masked only when the addon folder exists locally", a
   assert.equal(masked.xhr.responseText, "");
 });
 
-test("bundle mask for an unknown folder passes through to the native XHR", () => {
+test("bundle mask for an unknown folder passes through to the native XHR", async () => {
   const payload = makePayloadWithFiles({ "bar.lua": "x" }, "Foo");
   const { context } = loadWrapper({ payload });
   const xhr = new context.XMLHttpRequest();
@@ -749,6 +768,7 @@ test("bundle mask for an unknown folder passes through to the native XHR", () =>
   xhr.open("GET", "https://lasthavens.com/blocks/Interface/AddOns/Absent/bundle-9.bin");
   xhr.addEventListener("load", () => events.push("load"));
   xhr.send();
+  await sleep(25);
   assert.equal(xhr.responseText, "mock-body");
   assert.equal(xhr.status, 200);
   assert.equal(xhr.responseURL, "https://lasthavens.com/mock");
@@ -771,7 +791,7 @@ test("async requests wait for a bridge that publishes later", async () => {
 });
 
 test("a bridge in an error state fails closed with 404", async () => {
-  const { xhr, events } = deliveredXhr({
+  const { xhr, events } = await deliveredXhr({
     url: "https://lasthavens.com/game/Interface/AddOns/Foo/bar.lua",
     payload: null,
     bridgeState: { ready: true, error: "native_disconnected" },
@@ -783,7 +803,7 @@ test("a bridge in an error state fails closed with 404", async () => {
 
 test("a bridge that never becomes ready fails closed after the bounded wait", async () => {
   let fakeNow = 0;
-  const { xhr } = deliveredXhr({
+  const { xhr } = await deliveredXhr({
     url: "https://lasthavens.com/game/Interface/AddOns/Foo/bar.lua",
     payload: null,
     bridgeState: { ready: false, error: null },
@@ -798,7 +818,7 @@ test("a bridge that never becomes ready fails closed after the bounded wait", as
 
 test("timeout fires error steps without corrupting the request", async () => {
   let fakeNow = 0;
-  const { xhr, events } = deliveredXhr({
+  const { xhr, events } = await deliveredXhr({
     url: "https://lasthavens.com/game/Interface/AddOns/Foo/bar.lua",
     payload: null,
     bridgeState: { ready: false, error: null },
@@ -827,7 +847,7 @@ test("abort during the readiness wait follows the request error steps", async ()
   assert.deepEqual(events, ["readystatechange:1", "loadstart:1", "readystatechange:4", "abort:4", "loadend:4"]);
 });
 
-test("abort before send and after completion follow the abort spec", () => {
+test("abort before send and after completion follow the abort spec", async () => {
   const payload = makePayloadWithFiles({ "bar.lua": "x" });
   const { context, XHR } = loadWrapper({ payload });
   const beforeSend = new context.XMLHttpRequest();
@@ -840,6 +860,7 @@ test("abort before send and after completion follow the abort spec", () => {
   const afterDone = new context.XMLHttpRequest();
   afterDone.open("GET", "https://lasthavens.com/game/Interface/AddOns/Foo/bar.lua");
   afterDone.send();
+  await sleep(25);
   assert.equal(afterDone.readyState, 4);
   const afterEvents = collectEvents(afterDone, context);
   afterDone.abort();
@@ -847,7 +868,7 @@ test("abort before send and after completion follow the abort spec", () => {
   assert.equal(afterDone.readyState, 0);
 });
 
-test("state-machine violations throw without corrupting instances", () => {
+test("state-machine violations throw without corrupting instances", async () => {
   const payload = makePayloadWithFiles({ "bar.lua": "x" });
   const { context, XHR } = loadWrapper({ payload });
   assert.throws(
@@ -861,6 +882,8 @@ test("state-machine violations throw without corrupting instances", () => {
   xhr.open("GET", "https://lasthavens.com/game/Interface/AddOns/Foo/bar.lua");
   xhr.send();
   assert.throws(() => xhr.send(), (error) => error.name === "InvalidStateError");
+  await sleep(25);
+  assert.equal(xhr.readyState, 4);
   assert.throws(() => {
     xhr.responseType = "text";
   }, (error) => error.name === "InvalidStateError");
@@ -911,7 +934,7 @@ test("pass-through requests delegate entirely to the native XHR", () => {
   assert.deepEqual(events, ["rsc:2", "rsc:3", "rsc:4", "load"]);
 });
 
-test("pass-through never opens the native XHR for intercepted URLs", () => {
+test("pass-through never opens the native XHR for intercepted URLs", async () => {
   const payload = makePayloadWithFiles({ "bar.lua": "local" });
   const opened = [];
   class TrackingNativeXHR extends MockNativeXHR {
@@ -924,11 +947,12 @@ test("pass-through never opens the native XHR for intercepted URLs", () => {
   const xhr = new context.XMLHttpRequest();
   xhr.open("GET", "https://lasthavens.com/game/Interface/AddOns/Foo/bar.lua");
   xhr.send();
+  await sleep(25);
   assert.equal(xhr.responseText, "local");
   assert.deepEqual(opened, []);
 });
 
-test("upload listeners receive bounded events around delivery", () => {
+test("upload listeners receive bounded events around delivery", async () => {
   const payload = makePayloadWithFiles({ "bar.lua": "x" });
   const { context } = loadWrapper({ payload });
   const xhr = new context.XMLHttpRequest();
@@ -941,11 +965,12 @@ test("upload listeners receive bounded events around delivery", () => {
   xhr.addEventListener("loadstart", () => xhrEvents.push("xhr-loadstart"));
   xhr.addEventListener("load", () => xhrEvents.push("xhr-load"));
   xhr.send();
+  await sleep(25);
   assert.deepEqual(uploadEvents, ["ul-loadstart", "ul-load", "ul-loadend"]);
   assert.deepEqual(xhrEvents, ["xhr-loadstart", "xhr-load"]);
 });
 
-test("once listeners fire exactly once and synthetic dispatch reaches listeners", () => {
+test("once listeners fire exactly once and synthetic dispatch reaches listeners", async () => {
   const payload = makePayloadWithFiles({ "bar.lua": "x" });
   const { context } = loadWrapper({ payload });
   const xhr = new context.XMLHttpRequest();
@@ -955,19 +980,198 @@ test("once listeners fire exactly once and synthetic dispatch reaches listeners"
   }, { once: true });
   xhr.open("GET", "https://lasthavens.com/game/Interface/AddOns/Foo/bar.lua");
   xhr.send();
+  await sleep(25);
   assert.equal(onceCount, 1);
   xhr.dispatchEvent({ type: "load" });
   assert.equal(onceCount, 1);
 });
 
-test("overrideMimeType replaces the served content type", () => {
+test("overrideMimeType replaces the served content type", async () => {
   const payload = makePayloadWithFiles({ "bar.lua": "x" });
   const { context } = loadWrapper({ payload });
   const xhr = new context.XMLHttpRequest();
   xhr.open("GET", "https://lasthavens.com/game/Interface/AddOns/Foo/bar.lua");
   xhr.overrideMimeType("application/xml");
   xhr.send();
+  await sleep(25);
   assert.equal(xhr.getResponseHeader("content-type"), "application/xml");
+});
+
+
+test("unsupported methods fail closed for addon URLs without native networking", async () => {
+  const payload = makePayloadWithFiles({ "bar.lua": "local" });
+  const opened = [];
+  class TrackingNativeXHR extends MockNativeXHR {
+    open(...args) {
+      opened.push(args[1]);
+      super.open(...args);
+    }
+  }
+  const { context } = loadWrapper({ payload, nativeXhr: TrackingNativeXHR });
+  const xhr = new context.XMLHttpRequest();
+  const events = collectEvents(xhr, context);
+  xhr.open("POST", "https://lasthavens.com/game/Interface/AddOns/Foo/bar.lua");
+  xhr.send();
+  assert.equal(xhr.status, 405);
+  assert.equal(xhr.statusText, "Method Not Allowed");
+  assert.equal(xhr.responseText, "");
+  assert.equal(xhr.getResponseHeader("allow"), "GET, HEAD");
+  assert.deepEqual(opened, []);
+  await sleep(25);
+  assert.ok(events.includes("load:4"));
+  assert.ok(!events.includes("error:4"));
+});
+
+test("non-addon game and blocks paths delegate to the native XHR", () => {
+  const payload = makePayloadWithFiles({ "bar.lua": "local" });
+  const { context } = loadWrapper({ payload });
+  const gameXhr = new context.XMLHttpRequest();
+  gameXhr.open("GET", "https://lasthavens.com/game/Assets/texture.png");
+  gameXhr.send();
+  assert.equal(gameXhr.responseText, "mock-body");
+  assert.equal(gameXhr.status, 200);
+  const blocksXhr = new context.XMLHttpRequest();
+  blocksXhr.open("GET", "https://lasthavens.com/blocks/World/chunk.bin");
+  blocksXhr.send();
+  assert.equal(blocksXhr.responseText, "mock-body");
+});
+
+test("a revision change invalidates the shared bundle index cache", async () => {
+  const payloadA = makePayloadWithFiles({ "bar.lua": "content-a" });
+  const { context } = loadWrapper({ payload: payloadA });
+  const first = new context.XMLHttpRequest();
+  first.open("GET", "https://lasthavens.com/game/Interface/AddOns/Foo/bar.lua");
+  first.send();
+  await sleep(25);
+  assert.equal(first.responseText, "content-a");
+
+  const payloadB = makePayloadWithFiles({ "bar.lua": "content-b" });
+  payloadB.revision = "b".repeat(64);
+  context.__LASTHAVEN_ADDON_BRIDGE__ = {
+    getBundle: () => payloadB,
+    getState: () => ({ ready: true, error: null }),
+  };
+  const second = new context.XMLHttpRequest();
+  second.open("GET", "https://lasthavens.com/game/Interface/AddOns/Foo/bar.lua");
+  second.send();
+  await sleep(25);
+  assert.equal(second.responseText, "content-b");
+});
+
+test("decode aggregate bound rejects files before large allocations", async () => {
+  const big1 = Buffer.alloc(8 * 1024 * 1024, 1).toString("base64");
+  const big2 = Buffer.alloc(8 * 1024 * 1024, 2).toString("base64");
+  const addon = {
+    folder: "Huge",
+    files: Object.assign(Object.create(null), {
+      "Huge.toc": "",
+      "a.bin": big1,
+      "b.bin": big2,
+      "c.bin": Buffer.from("x").toString("base64"),
+    }),
+  };
+  const { context } = loadWrapper({ payload: makePayload([addon]) });
+  const a = new context.XMLHttpRequest();
+  a.open("GET", "https://lasthavens.com/game/Interface/AddOns/Huge/a.bin");
+  a.send();
+  await sleep(60);
+  assert.equal(a.status, 200);
+  assert.equal(a.responseText.length, 8 * 1024 * 1024);
+
+  const b = new context.XMLHttpRequest();
+  b.open("GET", "https://lasthavens.com/game/Interface/AddOns/Huge/b.bin");
+  b.send();
+  await sleep(60);
+  assert.equal(b.status, 200);
+
+  const c = new context.XMLHttpRequest();
+  c.open("GET", "https://lasthavens.com/game/Interface/AddOns/Huge/c.bin");
+  c.send();
+  await sleep(25);
+  assert.equal(c.status, 404);
+});
+
+test("concurrent intercepted requests are capped and slots are cleaned up", async () => {
+  const { context } = loadWrapper({
+    payload: null,
+    bridgeState: { ready: false, error: null },
+  });
+  const pending = [];
+  for (let i = 0; i < 8; i += 1) {
+    const xhr = new context.XMLHttpRequest();
+    xhr.open("GET", "https://lasthavens.com/game/Interface/AddOns/Foo/bar.lua");
+    xhr.send();
+    pending.push(xhr);
+  }
+  const ninth = new context.XMLHttpRequest();
+  ninth.open("GET", "https://lasthavens.com/game/Interface/AddOns/Foo/bar.lua");
+  ninth.send();
+  assert.equal(ninth.status, 404);
+  assert.equal(ninth.readyState, 4);
+
+  for (const xhr of pending) {
+    xhr.abort();
+  }
+  const recovered = new context.XMLHttpRequest();
+  recovered.open("GET", "https://lasthavens.com/game/Interface/AddOns/Foo/bar.lua");
+  recovered.send();
+  assert.equal(recovered.readyState, 1);
+  assert.equal(recovered.status, 0);
+});
+
+test("reopening an XHR clears stale request headers before the next send", () => {
+  const payload = makePayloadWithFiles({ "bar.lua": "x" });
+  const created = [];
+  class RecordingNativeXHR extends MockNativeXHR {
+    constructor() {
+      super();
+      created.push(this);
+    }
+  }
+  const { context } = loadWrapper({ payload, nativeXhr: RecordingNativeXHR });
+  const xhr = new context.XMLHttpRequest();
+  xhr.open("GET", "https://lasthavens.com/game/Interface/AddOns/Foo/bar.lua");
+  xhr.setRequestHeader("X-Stale", "leak");
+  xhr.open("GET", "https://lasthavens.com/other-endpoint");
+  xhr.send();
+  assert.equal(created.length, 1);
+  assert.deepEqual(created[0]._requestHeaders, []);
+  assert.equal(xhr.responseText, "mock-body");
+});
+
+test("reopening an XHR invalidates the previous in-flight wait", async () => {
+  const payload = makePayloadWithFiles({ "bar.lua": "first", "second.lua": "second" });
+  const { context } = loadWrapper({ payload });
+  const xhr = new context.XMLHttpRequest();
+  const events = collectEvents(xhr, context);
+  xhr.open("GET", "https://lasthavens.com/game/Interface/AddOns/Foo/bar.lua");
+  xhr.send();
+  xhr.open("GET", "https://lasthavens.com/game/Interface/AddOns/Foo/second.lua");
+  xhr.send();
+  await sleep(25);
+  assert.equal(xhr.status, 200);
+  assert.equal(xhr.responseText, "second");
+  assert.equal(events.filter((entry) => entry === "load:4").length, 1);
+  assert.equal(events.filter((entry) => entry === "loadstart:1").length, 2);
+});
+
+test("an aborted XHR can be reused for a fresh request", async () => {
+  const payload = makePayloadWithFiles({ "bar.lua": "reused" });
+  const { context } = loadWrapper({
+    payload: null,
+    bridgeState: { ready: false, error: null },
+  });
+  const xhr = new context.XMLHttpRequest();
+  xhr.open("GET", "https://lasthavens.com/game/Interface/AddOns/Foo/bar.lua");
+  xhr.send();
+  xhr.abort();
+  assert.equal(xhr.readyState, 0);
+  context.__LASTHAVEN_ADDON_BRIDGE__ = makeBridge(payload);
+  xhr.open("GET", "https://lasthavens.com/game/Interface/AddOns/Foo/bar.lua");
+  xhr.send();
+  await sleep(25);
+  assert.equal(xhr.status, 200);
+  assert.equal(xhr.responseText, "reused");
 });
 
 test("overlay asset stays within the deterministic packaging bounds", () => {

@@ -29,10 +29,12 @@
   const MULTIPART_BOUNDARY = "LastHavenAddonRangeBoundary";
   const READY_WAIT_MS = 20000;
   const READY_POLL_MS = 50;
+  const MAX_CONCURRENT_REQUESTS = 8;
   const STATUS_TEXTS = {
     200: "OK",
     206: "Partial Content",
     404: "Not Found",
+    405: "Method Not Allowed",
     416: "Range Not Satisfiable"
   };
   const CONTENT_TYPES = {
@@ -128,9 +130,6 @@
       return { kind: "passthrough" };
     }
     const upper = String(method).toUpperCase();
-    if (upper !== "GET" && upper !== "HEAD") {
-      return { kind: "passthrough" };
-    }
     let raw;
     let isBlocks = false;
     if (url.pathname.startsWith("/game/")) {
@@ -141,8 +140,14 @@
     } else {
       return { kind: "passthrough" };
     }
+    if (!raw.startsWith(ADDON_PREFIX)) {
+      return { kind: "passthrough" };
+    }
+    if (upper !== "GET" && upper !== "HEAD") {
+      return { kind: "methodNotAllowed", isHead: false };
+    }
     const decoded = decodePath(raw);
-    if (decoded === null) {
+    if (decoded === null || !decoded.startsWith(ADDON_PREFIX)) {
       return { kind: "notFound" };
     }
     if (isBlocks && decoded.startsWith(ADDON_PREFIX)) {
@@ -275,6 +280,7 @@
     MULTIPART_BOUNDARY: MULTIPART_BOUNDARY,
     READY_WAIT_MS: READY_WAIT_MS,
     READY_POLL_MS: READY_POLL_MS,
+    MAX_CONCURRENT_REQUESTS: MAX_CONCURRENT_REQUESTS,
     contentTypeFor: contentTypeFor,
     decodePath: decodePath,
     parseBlock: parseBlock,
@@ -300,6 +306,30 @@
   const LOADING = 3;
   const DONE = 4;
   const states = new WeakMap();
+  const bundleCache = { revision: null, index: null };
+  let outstandingRequests = 0;
+
+  function releaseOutstanding(state) {
+    if (state.counted) {
+      state.counted = false;
+      outstandingRequests -= 1;
+    }
+  }
+
+  function getIndexForPayload(payload) {
+    if (!payload || typeof payload !== "object" || typeof payload.revision !== "string") {
+      return null;
+    }
+    if (bundleCache.index !== null && payload.revision === bundleCache.revision) {
+      return bundleCache.index;
+    }
+    const index = buildIndex(payload);
+    if (index !== null) {
+      bundleCache.revision = payload.revision;
+      bundleCache.index = index;
+    }
+    return index;
+  }
 
   function baseHref() {
     return global.location && typeof global.location.href === "string"
@@ -366,13 +396,13 @@
     if (cached !== undefined) {
       return cached;
     }
-    if (index.decodedTotal > MAX_PAYLOAD_BYTES) {
-      return null;
-    }
     let binary;
     try {
       binary = atob(entry.encoded);
     } catch (_error) {
+      return null;
+    }
+    if (index.decodedTotal + binary.length > MAX_PAYLOAD_BYTES) {
       return null;
     }
     const bytes = new Uint8Array(binary.length);
@@ -422,6 +452,12 @@
   }
 
   function serveRoute(index, route, requestHeaders, overrideMimeType) {
+    if (route.kind === "methodNotAllowed") {
+      return {
+        kind: "serve",
+        response: createResponse(405, [["allow", "GET, HEAD"]], new Uint8Array(0), "text/plain")
+      };
+    }
     if (route.kind === "bundleMask") {
       if (index !== null && index.folders.has(route.folder)) {
         return { kind: "serve", response: notFoundResponse(route) };
@@ -648,7 +684,8 @@
       waitTimer: null,
       timeoutTimer: null,
       native: native,
-      index: null,
+      requestId: 0,
+      counted: false,
       pendingBody: null
     };
     states.set(this, state);
@@ -673,6 +710,7 @@
   }
 
   function startPassthrough(target, state, body) {
+    releaseOutstanding(state);
     state.intercepted = false;
     state.nativeActive = true;
     const native = state.native;
@@ -703,6 +741,7 @@
   }
 
   function applyResponse(target, state, response, fireEvents) {
+    releaseOutstanding(state);
     state.status = response.status;
     state.statusText = response.statusText;
     const headers = [];
@@ -752,6 +791,7 @@
       return;
     }
     clearTimers(state);
+    releaseOutstanding(state);
     state.readyState = DONE;
     state.done = true;
     dispatchEventOn(target, state.listeners, state.handlers, "readystatechange");
@@ -759,13 +799,10 @@
     dispatchEventOn(target, state.listeners, state.handlers, "loadend");
   }
 
-  function resolveBundleNow(state) {
+  function resolveBundleNow() {
     const bridge = global[BRIDGE_KEY];
     if (!bridge || typeof bridge.getBundle !== "function") {
-      return state.index;
-    }
-    if (state.index !== null) {
-      return state.index;
+      return bundleCache.index;
     }
     let payload = null;
     let bridgeState = null;
@@ -776,23 +813,19 @@
       payload = null;
     }
     if (payload) {
-      const index = buildIndex(payload);
-      if (index !== null) {
-        state.index = index;
-        return index;
-      }
-      return null;
+      return getIndexForPayload(payload);
     }
     if (bridgeState && bridgeState.ready) {
       return null;
     }
-    return state.index;
+    return bundleCache.index;
   }
 
-  function waitForBundle(target, state, onResolved) {
+  function waitForBundle(target, state, requestId, onResolved) {
     const startedAt = Date.now();
     const poll = () => {
-      if (state.aborted || state.done) {
+      state.waitTimer = null;
+      if (state.requestId !== requestId || state.aborted || state.done) {
         return;
       }
       const bridge = global[BRIDGE_KEY];
@@ -807,13 +840,7 @@
         }
       }
       if (payload) {
-        const index = buildIndex(payload);
-        if (index !== null) {
-          state.index = index;
-          onResolved(index);
-        } else {
-          onResolved(null);
-        }
+        onResolved(getIndexForPayload(payload));
         return;
       }
       if (bridgeState && bridgeState.ready) {
@@ -826,7 +853,7 @@
       }
       state.waitTimer = setTimeout(poll, READY_POLL_MS);
     };
-    poll();
+    state.waitTimer = setTimeout(poll, 0);
   }
 
   prototype.open = function (method, url, async, user, password) {
@@ -839,6 +866,8 @@
       throw new SyntaxError("unsupported method");
     }
     clearTimers(state);
+    releaseOutstanding(state);
+    state.requestId += 1;
     state.method = upper;
     state.url = String(url);
     state.async = async === undefined ? true : Boolean(async);
@@ -849,6 +878,8 @@
     state.decided = false;
     state.intercepted = false;
     state.nativeActive = false;
+    state.counted = false;
+    state.requestHeaders = [];
     state.readyState = OPENED;
     state.status = 0;
     state.statusText = "";
@@ -867,6 +898,7 @@
     }
     state.sent = true;
     state.pendingBody = body === undefined ? null : body;
+    const requestId = state.requestId;
     const route = resolveRoute(state.method, state.url, baseHref());
     state.decided = true;
     if (route.kind === "passthrough") {
@@ -874,8 +906,13 @@
       return;
     }
     state.intercepted = true;
+    if (route.kind === "methodNotAllowed") {
+      const outcome = serveRoute(null, route, state.requestHeaders, state.mimeType);
+      applyResponse(this, state, outcome.response, state.async);
+      return;
+    }
     if (!state.async) {
-      const index = resolveBundleNow(state);
+      const index = resolveBundleNow();
       const outcome = serveRoute(index, route, state.requestHeaders, state.mimeType);
       if (outcome.kind === "passthrough") {
         startPassthrough(this, state, body);
@@ -888,17 +925,26 @@
       applyResponse(this, state, outcome.response, false);
       return;
     }
+    if (outstandingRequests >= MAX_CONCURRENT_REQUESTS) {
+      applyNotFound(this, state, true, route);
+      return;
+    }
+    outstandingRequests += 1;
+    state.counted = true;
     if (state.uploadFlag) {
       dispatchEventOn(this, state.uploadListeners, state.uploadHandlers, "loadstart");
     }
     dispatchEventOn(this, state.listeners, state.handlers, "loadstart");
     if (state.timeout > 0) {
       state.timeoutTimer = setTimeout(() => {
+        if (state.requestId !== requestId || state.aborted || state.done) {
+          return;
+        }
         runErrorSteps(this, state, "timeout");
       }, state.timeout);
     }
-    waitForBundle(this, state, (index) => {
-      if (state.aborted || state.done) {
+    waitForBundle(this, state, requestId, (index) => {
+      if (state.requestId !== requestId || state.aborted || state.done) {
         return;
       }
       clearTimers(state);
@@ -918,6 +964,7 @@
   prototype.abort = function () {
     const state = states.get(this);
     clearTimers(state);
+    releaseOutstanding(state);
     state.aborted = true;
     if (state.nativeActive) {
       state.native.abort();
