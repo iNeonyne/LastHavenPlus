@@ -10,33 +10,77 @@
  */
 const NATIVE_APP = "neonyneAddonBridge";
 const REQUEST_TIMEOUT_MS = 15000;
+const INITIAL_RECONNECT_DELAY_MS = 250;
+const MAX_RECONNECT_DELAY_MS = 30000;
 
-const port = browser.runtime.connectNative(NATIVE_APP);
 const pending = new Map();
+let port = null;
+let reconnectTimer = null;
+let reconnectDelayMs = INITIAL_RECONNECT_DELAY_MS;
+let startupSequence = 0;
+
+function scheduleReconnect() {
+  if (reconnectTimer !== null) {
+    return;
+  }
+  const delay = reconnectDelayMs;
+  reconnectDelayMs = Math.min(reconnectDelayMs * 2, MAX_RECONNECT_DELAY_MS);
+  reconnectTimer = setTimeout(() => {
+    reconnectTimer = null;
+    connect();
+  }, delay);
+}
 
 function send(requestId, type) {
-  if (pending.size >= 8) {
+  if (!port || pending.size >= 8) {
     return;
   }
   pending.set(requestId, Date.now());
-  port.postMessage({ type: type, requestId: requestId });
+  try {
+    port.postMessage({ type: type, requestId: requestId });
+  } catch (_error) {
+    pending.delete(requestId);
+    scheduleReconnect();
+  }
 }
 
-port.onMessage.addListener((message) => {
-  if (!message || typeof message !== "object") {
+function connect() {
+  let nextPort;
+  try {
+    nextPort = browser.runtime.connectNative(NATIVE_APP);
+  } catch (_error) {
+    scheduleReconnect();
     return;
   }
-  const requestId = message.requestId;
-  if (typeof requestId !== "string" || !pending.delete(requestId)) {
-    return;
-  }
-  // Responses are consumed by later launcher issues; nothing leaves the extension here.
-});
 
-port.onDisconnect.addListener(() => pending.clear());
+  port = nextPort;
+  nextPort.onMessage.addListener((message) => {
+    if (!message || typeof message !== "object") {
+      return;
+    }
+    const requestId = message.requestId;
+    if (typeof requestId !== "string" || !pending.delete(requestId)) {
+      return;
+    }
+    // Responses are consumed by later launcher issues; nothing leaves the extension here.
+    reconnectDelayMs = INITIAL_RECONNECT_DELAY_MS;
+  });
 
-// Exercise the native messaging round-trip as soon as the bundled bridge connects.
-send("startup", "ping");
+  nextPort.onDisconnect.addListener(() => {
+    if (port !== nextPort) {
+      return;
+    }
+    port = null;
+    pending.clear();
+    scheduleReconnect();
+  });
+
+  // Exercise the native messaging round-trip on every successful connection.
+  startupSequence += 1;
+  send("startup-" + startupSequence, "ping");
+}
+
+connect();
 
 setInterval(() => {
   const now = Date.now();
