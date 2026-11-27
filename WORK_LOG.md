@@ -646,7 +646,7 @@ No branch was deleted. The available GitHub connector exposes no branch-delete o
 
 ### 2026-11-27 — Integrate #165 and start #167 while reviewing #173
 - **Issue/task:** #149 integration; #146 integration; #167 Vibe assignment.
-- **Beta before integration:** `d83e2dfc89087f67f7dbbe71e85668d80303e3ef`.
+- **Beta before integration:** `d83e2dfc89087f67f4dbbe71e85668d80303e3ef`.
 - **Action:** PR #165 squash-merged at `7e39d2553a11332d44326c1704e0d7647cc6aa40`; exact-head Android/unit, reproducibility and Markdown checks passed on `a62c7cd3154586d35d85a99ed1964d33ba007733`. Issue #149 closed.
 - **Ownership:** #146 changed to `agent:chaty` after Vibe submitted PR #173. #167 changed to `agent:vibe`; assignment comment #7207049285 defines behavior, scope, exclusions, tests and docs requirements.
 - **PR #173:** head `eb9f64b672eced9143bc5689106223c3e7af3d16`; Markdown passed, Android and unsigned reproducibility were in progress. Mergeability became dirty after #165 updated overlapping docs. Chaty is reconciling docs and will rerun exact-head checks.
