@@ -41,7 +41,8 @@ class AddonRuntimePayloadProviderTest {
     check(directory.mkdirs())
     for ((path, bytes) in files) {
       val file = File(directory, path)
-      check(file.parentFile?.mkdirs() != false)
+      val parent = file.parentFile
+      check(parent == null || parent.mkdirs() || parent.isDirectory)
       file.writeBytes(bytes)
     }
     return directory
@@ -129,19 +130,28 @@ class AddonRuntimePayloadProviderTest {
         .buildManifest(AddonLibrarySnapshot("revision", listOf(wrongCount)))
     }
 
-    val unsafe = File(directory, "../outside.lua")
-    assertTrue(!unsafe.exists())
+    val unsafeName = File(directory, "bad\\\\escape.lua")
+    unsafeName.writeBytes(byteArrayOf(2))
+    val withUnsafePath = item("UnitFrame", directory)
+    val unsafeError =
+      assertThrows(AddonRuntimePayloadException::class.java) {
+        AddonRuntimePayloadProvider(AddonLibraryRepository(root))
+          .buildManifest(AddonLibrarySnapshot("revision", listOf(withUnsafePath)))
+      }
+    assertEquals("invalidPath", unsafeError.code)
+    unsafeName.delete()
+
     val outside = File(root, "outside.lua")
-    outside.writeBytes(byteArrayOf(2))
+    outside.writeBytes(byteArrayOf(3))
     val symlink = File(directory, "escape.lua")
     Files.createSymbolicLink(symlink.toPath(), outside.toPath())
     val withSymlink = item("UnitFrame", directory)
-    val error =
+    val symlinkError =
       assertThrows(AddonRuntimePayloadException::class.java) {
         AddonRuntimePayloadProvider(AddonLibraryRepository(root))
           .buildManifest(AddonLibrarySnapshot("revision", listOf(withSymlink)))
       }
-    assertEquals("invalidPath", error.code)
+    assertEquals("invalidPath", symlinkError.code)
   }
 
   @Test
