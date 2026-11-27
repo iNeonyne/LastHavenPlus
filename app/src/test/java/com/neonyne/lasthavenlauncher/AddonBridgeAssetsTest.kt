@@ -3,7 +3,6 @@ package com.neonyne.lasthavenlauncher
 import java.io.File
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
-import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
@@ -35,7 +34,16 @@ class AddonBridgeAssetsTest {
     assertTrue(manifest.contains("\"bridge.js\""))
     assertFalse(manifest.contains("\"<all_urls>\""))
     assertFalse(manifest.contains("\"all_frames\": true"))
-    assertTrue(manifest.contains("\"content_scripts\""))
+    val parsed = org.json.JSONObject(manifest)
+    val scripts = parsed.getJSONArray("content_scripts")
+    assertEquals(1, scripts.length())
+    val script = scripts.getJSONObject(0)
+    assertEquals("document_start", script.getString("run_at"))
+    assertFalse(script.getBoolean("all_frames"))
+    val matches = script.getJSONArray("matches")
+    assertEquals(2, matches.length())
+    assertEquals("https://lasthavens.com/play", matches.getString(0))
+    assertEquals("https://lasthavens.com/play/", matches.getString(1))
   }
 
   @Test
