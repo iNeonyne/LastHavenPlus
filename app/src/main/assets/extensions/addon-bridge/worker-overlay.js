@@ -323,7 +323,7 @@
     const spans = [];
     for (let i = 0; i < records.length; i += 1) {
       const record = records[i];
-      if (!record || record.masked !== true) {
+      if (!record) {
         continue;
       }
       if (!isSafeAddonPath(record.path) || (record.value !== FILL_ZERO && record.value !== FILL_HASH)) {
@@ -332,7 +332,7 @@
       const start = Math.max(record.start, readStart);
       const end = Math.min(record.end, readEnd);
       if (end > start) {
-        spans.push(Object.freeze({ start: start, end: end }));
+        spans.push(Object.freeze({ start: start, end: end, value: record.value }));
       }
     }
     return spans;
