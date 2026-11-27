@@ -1,12 +1,15 @@
 # LastHavenPlus
 
-LastHavenPlus is an Android launcher for the existing LastHaven Wrath of the Lich King browser game. It hosts the game; it does not recreate, modify or develop the game client.
+LastHavenPlus is an Android launcher for the existing LastHaven Wrath of the Lich King browser game at [lasthavens.com/play](https://lasthavens.com/play). It hosts the game; it does not recreate, modify, or develop the game client.
 
-- **Game:** [lasthavens.com/play](https://lasthavens.com/play)
-- **Latest stable release:** [v2.3.0 on GitHub Releases](https://github.com/iNeonyne/LastHavenPlus/releases/tag/v2.3.0)
-- **Development:** `beta`; stable releases: `main`
+This is an agent-operated repository. All code and documentation contributions must be made by agents explicitly authorized under [AGENTS.md](AGENTS.md).
 
-## Compatibility and identity
+- **Game:** https://lasthavens.com/play
+- **Stable release:** [v2.3.0](https://github.com/iNeonyne/LastHavenPlus/releases/tag/v2.3.0)
+- **Development/integration branch:** `beta`
+- **Stable branch:** `main`
+
+## Compatibility
 
 | Item | Configuration |
 |---|---|
@@ -17,71 +20,47 @@ LastHavenPlus is an Android launcher for the existing LastHaven Wrath of the Lic
 | Application ID | `com.neonyne.lasthavenlauncher` |
 | Game URL | `https://lasthavens.com/play` |
 
-Preserve the application ID and established release signing identity to maintain update compatibility.
+The application ID and established release-signing identity must be preserved to maintain update compatibility.
 
-## Current beta features
+## Product outline
 
-These are features integrated into beta and covered by the repository's automated build and test checks where applicable.
+The launcher starts directly in the game and provides launcher-owned navigation, settings, diagnostics, and a user-initiated updater. GeckoView uses an app-private browser profile. No supported Cefrium-to-GeckoView profile migration exists; never copy or delete Cefrium profile data as part of the engine transition. A fresh game login may be required.
 
-- **Direct launch:** The app opens directly into the game. Android Back opens a responsive in-game menu with Reload, Settings and Return to game; Settings does not initialize a separate game session.
-- **Navigation:** Settings, diagnostics and update details are full-screen pages rather than stacked popup dialogs. The existing GeckoSession is retained when the game view is detached for launcher pages.
-- **Responsive layout:** The in-game menu adapts to available window space; settings pages cap content width on larger windows. The Activity is resizeable.
-- **Launcher icon:** Adaptive launcher icon resources are included.
-- **Settings and storage:** Installed APK size, persistent app-private data size and cache size are reported separately. App-private data includes GeckoView data and is not a profile-only measurement.
-- **Network usage:** Android per-UID counters report app traffic, including both game and updater traffic; they are not game-only totals.
-- **Diagnostics:** Bounded local diagnostic logs support viewing, clearing and explicit user-initiated sharing. Review logs before sharing.
-- **Updater:** Stable release checks and downloads remain user-initiated. Manifest, version, URL, payload and digest validation are applied; differential patch failures retain a verified full-APK fallback. Obsolete generated APKs and abandoned partials are cleaned safely while pending installer/handoff files are protected. Android's package installer controls installation.
-- **Addon manager:** Native Phase A local ZIP/library management, planner/origin-policy groundwork, GeckoView 161 built-in extension/native-messaging foundation (PR #177), bounded revision-bound ZIP 0.5.1 payload transport (PR #180), and production bridge wiring to the existing game session before navigation/restore (PR #190) are integrated. The bounded same-origin MAIN-world XHR overlay (#168) is merged in PR #191. Worker/OPFS `blocks.idx` masking (#169) has a draft implementation in PR #195 awaiting exact-head validation and integration; its Worker URL allowlist remains empty pending physical-device verification; same-session manager navigation/page-world refresh (#170) remains blocked pending runtime and navigation prerequisites. Verified in-game addon initialization remains incomplete. Imported addons remain library data; local enablement is metadata only and does not by itself establish activation in the game. No physical ARM64 runtime test has been performed. Imported addons remain library data; local enablement is metadata only and does not activate addons in the game. No physical ARM64 runtime test has been performed.
+The Addon Manager includes local library-management foundations. Local import, metadata, planning, or an enabled flag do not prove that an addon is active in the game. Runtime activation remains unverified; consult STATUS.md and the live issues before describing its state.
 
-## Site permissions
-
-The launcher grants only persistent site storage and audible/inaudible autoplay to `lasthavens.com` and its subdomains. Other website permission requests are denied. Android runtime-permission and camera/microphone media-capture requests are also denied, so features that require those capabilities are unavailable unless a future reviewed policy change explicitly enables them.
-
-## GeckoView profile transition
-
-GeckoView uses its own browser profile. No supported, verified migration of Cefrium cookies or other browser data has been established. Do not copy or delete existing Cefrium profile data as part of this transition. A fresh game login may be required.
-
-The repository owner evaluates releases on their own schedule and may report gameplay, profile, browser API, media and updater behavior. Feedback is recorded in GitHub Issues and used to prioritize follow-up fixes; pending feedback is not a publication prerequisite.
+Site permissions are deny-by-default. Persistent storage and audible/inaudible autoplay are allowed only for lasthavens.com and its subdomains. Other website permissions, Android runtime-permission requests, and camera/microphone capture requests are denied. See [docs/GECKOVIEW_MIGRATION.md](docs/GECKOVIEW_MIGRATION.md) for the source-level contract and evidence.
 
 ## Build and test
 
-Requirements: JDK 25, Gradle 9.7.1 via the committed Gradle Wrapper, Android SDK Platform 37.2 and Android Build Tools 37.0.0.
+Use the committed Gradle Wrapper with the pinned toolchain:
 
-```bash
+- JDK 25
+- Gradle 9.7.1
+- Android SDK Platform 37.2
+- Android Build Tools 37.0.0
+
+Common local checks:
+
+```sh
 ./gradlew assembleRelease
 ./gradlew testDebugUnitTest
+python3 -m unittest discover -s .github/scripts/tests -v
 ```
 
-A signed release build requires the established project keystore and credentials. CI obtains these from repository secrets; never commit keystores or credentials.
+PR and release checks are defined by the live workflows under .github/workflows. PR validation is unsigned and must not require signing secrets. Signed release packaging and publication have separate authorization and verification gates.
 
-## Release policy
+## Agent and project records
 
-- Package ARM64 only.
-- Preserve application ID and established signing identity.
-- Keep update checks, downloads and installation user-initiated.
-- Never publish debug APKs or incomplete features.
-- Promote beta only after release gates pass and the owner explicitly approves.
-- The repository owner may test published releases and report findings on their own schedule. Pending feedback is not a release blocker.
+| File | Purpose |
+|---|---|
+| [AGENTS.md](AGENTS.md) | Single authoritative source for agent roles, permissions, workflow, and engineering rules |
+| [AGENT_PROTOCOL.md](AGENT_PROTOCOL.md) | Startup sequence and bootstrap prompt |
+| [AGENT_WORK.md](AGENT_WORK.md) | Current assignments, queues, and historical work records |
+| [STATUS.md](STATUS.md) | Verified project state, blockers, and CI evidence |
+| [ISSUES.md](ISSUES.md) | Backlog/index; GitHub Issues remain authoritative for live task state |
+| [docs/BRANCH_LIFECYCLE.md](docs/BRANCH_LIFECYCLE.md) | Branch naming, reuse, synchronization, retirement, and audit |
+| [docs/GECKOVIEW_MIGRATION.md](docs/GECKOVIEW_MIGRATION.md) | GeckoView integration contract, migration notes, and evidence |
+| [docs/CI_ACTIONS.md](docs/CI_ACTIONS.md) | CI permissions and supply-chain policy |
+| [CHANGELOG-AGENTS.md](CHANGELOG-AGENTS.md), [WORK_LOG.md](WORK_LOG.md) | Append-only history |
 
-## Project workflow and records
-
-- `beta` is the development, integration and testing branch; `main` is the stable release branch.
-- Task PRs target `beta`. When Vibe opens a PR, Chaty makes required fixes directly on that PR branch, verifies exact-head checks, and merges it into `beta`; routine formal review comments and correction handoffs are not used.
-- Chaty owns integration and verification; Vibe implements only existing issues explicitly assigned by Chaty. After handing off a PR, Vibe immediately continues with the next independent assigned issue while Chaty integrates the earlier PR in parallel.
-- GitHub Issues, PRs, reviews, commits and Actions are the only agent-to-agent communication channel.
-- Every actionable issue has exactly one `agent:*` state/ownership label: `agent:unassigned` (intake), `agent:queued` (ready, waiting its turn), `agent:chaty`, `agent:vibe`, `agent:blocked` (dependency/hold), `agent:review` or `agent:owner`.
-- `ISSUES.md` and GitHub Issues are the task sources of truth.
-- `STATUS.md` records verified, unverified and incomplete work plus exact CI evidence.
-- `AGENTS.md` and `AGENT_WORK.md` define contributor workflow and active assignments.
-- `CHANGELOG-AGENTS.md` and `WORK_LOG.md` preserve project/work-session history.
-
-See [Mozilla GeckoView consumer documentation](https://firefox-source-docs.mozilla.org/mobile/android/geckoview/consumer/index.html), [quick start](https://firefox-source-docs.mozilla.org/mobile/android/geckoview/consumer/geckoview-quick-start.html) and [WebExtensions documentation](https://firefox-source-docs.mozilla.org/mobile/android/geckoview/consumer/web-extensions.html).
-
-
-## 2026-11-27 — Chaty corrected #169 index masking contract
-
-- PR #195 now reads the root OPFS `blocks.idx` through `navigator.storage.getDirectory()` and `getFileHandle("blocks.idx")`, checks the 2 MiB ceiling before reading, and sends validated spans in the Worker boot message before the original worker script is imported.
-- The authoritative five-column loader format is respected: column 5 (`cols[4]`) is the addon path; digits in column 2 (`cols[1]`) are filled with byte 48 (`0`), and the first byte of column 5 is filled with byte 35 (`#`). Byte offsets are calculated from UTF-8 encoded bytes and only enabled addon folders are eligible.
-- The Worker validates the complete span set atomically (path/folder eligibility, exact record shape, safe integer spans, index bounds and allowed fill bytes). Any malformed entry rejects the whole set; OPFS/index failures apply no mask and emit only a bounded stage diagnostic. Persistent OPFS bytes are never written.
-- The generated bootstrap now includes parser/path-validator dependencies, and the WASM hook checks the actual `scope.wasmImports` object after `assignWasmImports()` runs.
-- The exact Worker URL allowlist remains empty pending physical ARM64 observation. No physical device test or in-game addon/Lua initialization is claimed. PR #195 remains unmerged pending exact-head CI and Chaty's integration acceptance.
+README is a stable overview, not a live assignment queue or work-session log. Check the operational records and live GitHub state before making claims about current progress.

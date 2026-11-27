@@ -1016,3 +1016,17 @@ Entry format:
 - The Worker validates the complete span set atomically (path/folder eligibility, exact record shape, safe integer spans, index bounds and allowed fill bytes). Any malformed entry rejects the whole set; OPFS/index failures apply no mask and emit only a bounded stage diagnostic. Persistent OPFS bytes are never written.
 - The generated bootstrap now includes parser/path-validator dependencies, and the WASM hook checks the actual `scope.wasmImports` object after `assignWasmImports()` runs.
 - The exact Worker URL allowlist remains empty pending physical ARM64 observation. No physical device test or in-game addon/Lua initialization is claimed. PR #195 remains unmerged pending exact-head CI and Chaty's integration acceptance.
+
+
+## 2026-11-28 — Agent documentation consolidation (#205)
+
+- Made root AGENTS.md the single authoritative source for agent roles, permissions, workflow, PR integration, validation, and engineering invariants.
+- Reduced AGENT_PROTOCOL.md to startup/bootstrap instructions; simplified README.md to a stable product overview and record index; replaced CONTRIBUTING.md's duplicate workflow with an explicit pointer to AGENTS.md.
+- Marked the active AGENT_WORK.md snapshot and separated its historical records; removed duplicated role and safety-policy sections from the operational/history file.
+- Documentation-only change. No application source, runtime behavior, dependency, CI workflow, signing, release, or branch policy changed.
+
+
+### Live assignment snapshot refresh — 2026-11-28
+
+- Reconciled the top-level AGENT_WORK.md snapshot with current GitHub labels and PRs: Vibe's active assignment is #147 / PR #204; #167 remains Chaty-owned; #183 and #170 are blocked; #168/#169 are merged and closed; updater #4/#15 are blocked.
+- Historical dated assignment snapshots remain for audit only and are explicitly marked as historical.
