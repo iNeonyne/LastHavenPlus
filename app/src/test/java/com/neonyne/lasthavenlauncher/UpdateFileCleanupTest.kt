@@ -44,7 +44,11 @@ class UpdateFileCleanupTest {
     assertTrue(UpdateFileCleanup.isManagedApkName(apkName(123456)))
     assertFalse(UpdateFileCleanup.isManagedApkName("LastHavenPlus-update-123456.apk"))
     assertFalse(UpdateFileCleanup.isManagedApkName("LastHavenPlus-update-123456-not-a-uuid.apk"))
-    assertFalse(UpdateFileCleanup.isManagedApkName("../LastHavenPlus-update-123456-12345678-1234-1234-1234-123456789abc.apk"))
+    assertFalse(
+      UpdateFileCleanup.isManagedApkName(
+        "../LastHavenPlus-update-123456-12345678-1234-1234-1234-123456789abc.apk"
+      )
+    )
   }
 
   @Test
