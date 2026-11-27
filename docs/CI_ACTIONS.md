@@ -4,7 +4,7 @@
 
 - Workflow-level permissions default to `contents: read`.
 - In `.github/workflows/android.yml`, only `create_tag` and `publish_release` receive `contents: write`; build and PR-validation jobs are read-only.
-- `.github/workflows/quality.yml` and `.github/workflows/markdown-quality.yml` are read-only.
+- `.github/workflows/markdown-quality.yml` and `.github/workflows/reproducible-build.yml` are read-only.
 - `.github/workflows/agent-ownership.yml` grants only `issues: write` to the issue-labeling job.
 - Pull-request validation does not reference Android signing secrets. It builds an unsigned release APK and uploads test reports only to GitHub Actions artifact storage. It does not publish GitHub releases or signed APKs.
 
