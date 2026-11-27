@@ -2,27 +2,29 @@
 
 **Source of truth:** GitHub Issues and this version-controlled backlog. Keep issue scope, status and acceptance criteria aligned. Do not close an issue because documentation changed.
 
-## Current state — 2026-11-26
+## Current state — 2026-11-27
 
 - **Latest stable:** v2.3.0 is published; release metadata confirms the ARM64 APK, update manifest and v2.2.0-to-v2.3.0 BSDIFF asset.
-- **Development:** beta HEAD is 7451b940dc0adfa1ea14234fe6d489bba688b12c; v2.4.0 icon, visual-system and overlay-accessibility source integrations are merged.
-- **Addon Manager:** Phase A is integrated by PR #152 at 103bb979c98589a8704459d28d13861eccca39d6; local enablement is metadata only. Phase B/runtime injection is not implemented and waits for owner authorization. Issue #23 is agent:owner.
+- **Development:** beta HEAD at the PR #171 base is `0cc21b471fce646d03dad449b91acbe67a90df7d`; v2.4.0 icon, visual-system and overlay-accessibility source integrations are merged.
+- **Addon Manager:** Phase A is integrated by PR #152 at `103bb979c98589a8704459d28d13861eccca39d6`; local enablement is metadata only. The owner authorized Phase B investigation/implementation; #23 is Chaty-owned and child issues #167–#170 are separately queued/blocked. No runtime injection is claimed.
 - **Latest docs integration:** PR #158 merged at 7451b940dc0adfa1ea14234fe6d489bba688b12c; Markdown push run #45890132670 passed.
-- **Open PRs:** none. PR #154, #157, #159, #160, #122, #143 and #144 were closed without merge; do not treat their branch-only changes as integrated.
+- **Open PRs at the 2026-11-27 live check:** #164 (documentation), #165 (Vibe string resources), #166 (Addon Manager groundwork), and #171 (assignment system). Recheck exact heads and CI before review/merge. PR #154, #157, #159, #160, #122, #143 and #144 were closed without merge; do not treat their branch-only changes as integrated.
 - **Updater:** #4/#15 are coordinated under Chaty. BSDIFF cleanup candidates were not merged; PR #160 Markdown passed but one reproducibility build failed resolving Kotlin Compose plugin 2.4.21, while Android and second reproducibility job were incomplete at closure. #4 acceptance remains open. #31 and #111 remain blocked for their stated authorization/release holds.
-- **Diagnostics:** #11 is active with Vibe; PR #154 was closed unmerged because stale. A fresh implementation is required.
+- **Diagnostics:** #11's test work merged via PR #163; remaining GeckoView runtime-version startup reporting is deferred and marked `agent:blocked`.
 - **Housekeeping:** #128 closed after PR #161 merged at a0e5271793c9bb7754b7ac41429065e5602df569; exact-head and post-merge Markdown passed. #70 is closed; Markdown lint is integrated.
 - **GeckoView audit:** #20 remains owner-deferred/blocked; PR #122 closed without merge. Preserve unresolved notice/license/distribution and device-testing gaps.
 - **Rights/notices:** #67 remains agent:owner; PR #144 closed without merge. The owner's All Rights Reserved decision governs original project material; third-party distribution review remains unresolved.
-- **Ownership:** all 25 open issues have exactly one agent:* label and none are agent:unassigned. Vibe: #11 active, #149 then #146 queued. Chaty: #4/#15 and #128 active; #81 queued. Owner: #23 and #67. Blocked dependencies/holds are documented on their issues.
+- **Ownership:** each open issue has exactly one `agent:*` label. `agent:queued` means ready but waiting its turn, not permission to start; `agent:blocked` means a genuine dependency/hold. Vibe has no active issue while Chaty integrates PR #165/#149; #146 remains next queued, then separately assigned #167–#169; #170 is blocked. Chaty owns #4/#15/#18/#23/#142; #81 is queued. #67 is owner-controlled.
 - **Device/release:** no new physical ARM64 testing, release, tag, publication or beta-to-main promotion is claimed or authorized.
 
 ## Current ownership
 
-- **Chaty active:** #4 updater reliability and #15 coordinated recovery. #128 is complete.
-- **Chaty queued:** #81 dependency-evidence documentation after #128; #20 and #31 remain blocked, not queued, until their owner holds are lifted.
-- **Vibe active:** #11 diagnostics tests.
-- **Vibe queued:** #149 launcher-owned strings, then #146 GameSessionController; one active implementation task at a time.
+- **Chaty active:** #4/#15 coordinated updater reliability/recovery and #23 Addon Manager Phase B coordination. #18/#142 are coordination records; #128 is complete.
+- **Chaty queued:** #81 dependency-evidence documentation only; not yet started. #20 and #31 remain blocked pending owner decisions.
+- **Chaty active integration:** #149 launcher-owned strings (PR #165; scope corrections committed, exact-head CI running). Vibe has no active implementation issue.
+- **Vibe queued:** #146 GameSessionController, then separately assigned Addon Manager Phase B child work #167–#169. #170 is dependency-blocked. One active implementation issue at a time; queued does not authorize work.
+- **Diagnostics:** #11's test work merged via PR #163; remaining runtime-version startup reporting is deferred and blocked pending reprioritization.
+- **Diagnostics:** #11's test work merged via PR #163; the remaining runtime-version startup reporting is deferred and blocked pending reprioritization.
 - **Owner decision:** #23 Phase B and #67 third-party rights/distribution questions.
 - **Blocked:** #7, #86, #111, #19, #16, #147, #148, #12, #14, #10, #28, #6 and #17 remain gated by dependencies/decisions recorded on their GitHub issues.
 
@@ -32,12 +34,12 @@
 |---|---:|---|---|
 | [#4](#issue-4) | P0.1 | Build reproducibility and updater test coverage | Chaty active; BSDIFF cleanup candidate PRs closed unmerged; broad adversarial tests and signed APK-pair evidence remain |
 | [#5](#issue-5) | Feedback | Owner feedback — gameplay and update behavior after release | Closed; historical owner feedback thread |
-| [#6](#issue-6) | P2 | Essential launcher settings and safe storage controls | Open; includes version identity, theme preference and accessible storage loading-state candidates |
+| [#6](#issue-6) | P2 | Essential launcher settings and safe storage controls | Open; `agent:blocked` pending #28 |
 | [#7](#issue-7) | P3 | Runtime performance and APK size | Open; measure before optimizing |
 | [#8](#issue-8) | — | Legacy addon manager | Closed — superseded; no planned work |
 | [#9](#issue-9) | P2 | Overlay accessibility and navigation | Closed after PR #139 integration; physical-device coverage is not claimed by CI |
 | [#10](#issue-10) | P2 | Persistent app-wide network usage totals | Open; app-wide counters are implemented, automated counter tests remain |
-| [#11](#issue-11) | P2 | Privacy-conscious log tests | Vibe active; fresh beta-based implementation on `vibe/diagnostics-tests-11-refresh` (closed PR #154 kept as reference only) |
+| [#11](#issue-11) | P2 | Privacy-conscious log tests | Tests merged by PR #163; remaining runtime-version reporting is deferred (`agent:blocked`) |
 | [#12](#issue-12) | P2 | GeckoView load-error details | Open |
 | [#13](#issue-13) | — | Accessible names / legacy addon-manager compile work | Closed — consolidated into #9 |
 | [#14](#issue-14) | P2 | Connection diagnostics | Open |
@@ -49,7 +51,7 @@
 | [#20](#issue-20) | Deferred | GeckoView 160 artifact/dependency audit | `agent:blocked`; PR #122 closed unmerged; resume only after owner reprioritization; unresolved notice/distribution/device evidence remains |
 | [#21](#issue-21) | Feedback | Owner feedback — GeckoView runtime/profile behavior after release | Closed; historical owner feedback thread |
 | [#22](#issue-22) | Superseded | Home screen and Play/Settings navigation | Closed; replaced by direct-launch/overlay scope #56 |
-| [#23](#issue-23) | Owner decision | Addon Manager Phase A / Phase B | Phase A integrated by PR #152 at `103bb979`; local metadata only; Phase B not implemented and awaits owner decision |
+| [#23](#issue-23) | Engineering | Addon Manager Phase A / Phase B | Phase A integrated; owner authorized Phase B; Chaty coordinates child issues #167–#170; runtime not yet implemented |
 | [#28](https://github.com/iNeonyne/LastHavenPlus/issues/28) | P2 | Storage usage accuracy and iterative directory sizing | Open; queued after #10 |
 | [#42](https://github.com/iNeonyne/LastHavenPlus/issues/42) | Superseded | v2.1.0 Home-screen UI verification | Closed as superseded by direct-launch redesign #56 |
 | [#29](https://github.com/iNeonyne/LastHavenPlus/issues/29) | Done | Reconcile beta documentation and CI evidence | Closed as completed after PR #46 merged to beta |
@@ -75,11 +77,11 @@
 
 GitHub Issues are the canonical records for each task's discussion, owner, dependencies and lifecycle. This file is the project-wide index and roadmap checklist. The GitHub issue number is the only task ID; do not invent a parallel numbering scheme.
 
-**Chaty handles intake and triage.** For every new request, search open and closed issues and this index for duplicates before creating anything. Reuse or update an existing issue whenever it already covers the requested outcome. New issues must use one of the forms in `.github/ISSUE_TEMPLATE/` and include a clear outcome, bounded scope, non-goals, testable acceptance criteria, verification plan and dependencies. New issues may briefly receive `agent:unassigned` from automation; Chaty must resolve ownership promptly by assigning `agent:chaty`, `agent:vibe`, `agent:blocked` or `agent:owner` before implementation can begin. Do not leave actionable issues unassigned after triage. The GitHub workflow that creates/applies ownership labels is `.github/workflows/agent-ownership.yml`; it must be present on the repository default branch before issue-open automation becomes active. Only then add a concise entry here.
+**Chaty handles intake and triage.** For every new request, search open and closed issues and this index for duplicates before creating anything. Reuse or update an existing issue whenever it already covers the requested outcome. New issues must use one of the forms in `.github/ISSUE_TEMPLATE/` and include a clear outcome, bounded scope, non-goals, testable acceptance criteria, verification plan and dependencies. New issues may briefly receive `agent:unassigned` from automation; Chaty must resolve ownership promptly by assigning `agent:chaty`, `agent:vibe`, `agent:queued`, `agent:blocked` or `agent:owner` before implementation can begin. Do not leave actionable issues unassigned after triage. The GitHub workflow that creates/applies ownership labels is `.github/workflows/agent-ownership.yml`; it must be present on the repository default branch before issue-open automation becomes active. Only then add a concise entry here.
 
 Priority guide: P0 = core/release blocker or data/security risk; P1 = important reliability or planned release capability; P2 = normal improvement; P3 = optional/low urgency. Priority does not guarantee scheduling or inclusion in a release. Set a target release/milestone only after triage.
 
-Lifecycle: Needs triage → Ready → Active → Review → Done; Blocked and Deferred are explicit side states. An issue is not Ready just because it is open. One active owner per issue. Every open actionable issue must have exactly one `agent:*` label; use `agent:blocked` or `agent:owner` when work cannot proceed. Owner, exact subtask, permitted files, branch and dependencies must be recorded in `STATUS.md` before editing. Vibe only works on the active assignment in `AGENT_WORK.md`; Chaty owns issue creation, triage and central tracking.
+Lifecycle: Needs triage → Ready → Active → Review → Done; Blocked and Deferred are explicit side states. An issue is not Ready just because it is open. `agent:queued` is not an active assignment; only `agent:vibe` plus a Chaty scope comment permits Vibe to start. One active implementation owner per issue. Every open actionable issue must have exactly one `agent:*` label; use `agent:queued` only for ready work waiting its turn; use `agent:blocked` for real dependencies/holds and `agent:owner` for owner decisions. Owner, exact subtask, permitted files, branch and dependencies must be recorded in `STATUS.md` before editing. Vibe only works on the active assignment in `AGENT_WORK.md`; Chaty owns issue creation, triage and central tracking.
 
 Close only when every acceptance criterion is met and evidence is recorded. If an integrated task commit only partially addresses an issue, keep it open and record the remaining work. Record blockers and decisions on the GitHub issue as well as the repository status. Do not represent unreported owner feedback as a test result; owner feedback is optional and is not a release gate.
 
