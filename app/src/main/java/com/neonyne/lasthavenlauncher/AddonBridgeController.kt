@@ -34,6 +34,9 @@ class AddonBridgeController(
   private val mainHandler = Handler(Looper.getMainLooper())
   private var runtime: GeckoRuntime? = null
   private var bridgeExtension: WebExtension? = null
+  private var installInFlight = false
+  private var installationGeneration = 0L
+  private var snapshotGeneration = 0L
   private var gameSession: GeckoSession? = null
   private val pendingRequests = LinkedHashMap<String, Long>()
   private val connectedPorts = mutableListOf<WebExtension.Port>()
@@ -42,7 +45,13 @@ class AddonBridgeController(
 
   /** Refreshes the cached library snapshot off the main thread; native reads use this cache. */
   fun refreshSnapshot() {
-    worker.execute { cachedSnapshot = snapshotProvider() }
+    val generation = ++snapshotGeneration
+    worker.execute {
+      val snapshot = runCatching(snapshotProvider).getOrNull() ?: return@execute
+      mainHandler.post {
+        if (generation == snapshotGeneration) cachedSnapshot = snapshot
+      }
+    }
   }
 
   /** Records the live game session for sender identity checks; drops pending state. */
@@ -54,7 +63,9 @@ class AddonBridgeController(
   /** Installs the bundled extension once per runtime and registers the message delegate. */
   fun ensureInstalled(context: Context) {
     refreshSnapshot()
-    if (bridgeExtension != null) return
+    if (bridgeExtension != null || installInFlight) return
+    installInFlight = true
+    val generation = installationGeneration
     val currentRuntime = runtime ?: GeckoRuntimeProvider.get(context).also { runtime = it }
     currentRuntime.webExtensionController
       .ensureBuiltIn(
@@ -64,28 +75,38 @@ class AddonBridgeController(
       .accept(
         { extension ->
           mainHandler.post {
+            if (generation != installationGeneration) return@post
+            installInFlight = false
             if (extension != null && bridgeExtension == null) {
               extension.setMessageDelegate(messageDelegate, AddonBridgePolicy.NATIVE_MESSAGING_NAME)
               bridgeExtension = extension
+            } else if (extension == null) {
+              Diagnostics.error(context, TAG, "Addon bridge extension install returned no extension")
             }
           }
         },
         { error ->
-          Diagnostics.error(
-            context,
-            TAG,
-            "Addon bridge extension install failed: ${error?.message ?: "unknown"}",
-          )
+          mainHandler.post {
+            if (generation == installationGeneration) installInFlight = false
+            Diagnostics.error(
+              context,
+              TAG,
+              "Addon bridge extension install failed: ${error?.message ?: "unknown"}",
+            )
+          }
         },
       )
   }
 
   /** Detaches the delegate and drops all session/port/pending state. */
   fun teardown() {
+    installationGeneration += 1
+    installInFlight = false
     bridgeExtension?.setMessageDelegate(null, AddonBridgePolicy.NATIVE_MESSAGING_NAME)
     bridgeExtension = null
-    connectedPorts.forEach { it.disconnect() }
+    val portsToDisconnect = connectedPorts.toList()
     connectedPorts.clear()
+    portsToDisconnect.forEach { it.disconnect() }
     pendingRequests.clear()
     gameSession = null
   }
