@@ -114,6 +114,15 @@ function indexBytes(text) {
   return new TextEncoder().encode(text);
 }
 
+function maskBufferFor(records) {
+  const buffer = new Uint32Array(records.length * 4);
+  for (let i = 0; i < records.length; i += 1) {
+    const record = records[i];
+    buffer.set([record.start, record.end, record.value, record.folderIndex ?? 0], i * 4);
+  }
+  return buffer.buffer;
+}
+
 function createPageContext({ allowlist = [WORKER_URL], withXhrCore = true, opfsBytes = new Uint8Array(0) } = {}) {
   const state = {
     timers: [],
@@ -166,6 +175,8 @@ function createPageContext({ allowlist = [WORKER_URL], withXhrCore = true, opfsB
     RegExp,
     Error,
     Uint8Array,
+    Uint32Array,
+    ArrayBuffer,
     __bridge: bridge,
     navigator: {
       storage: {
@@ -262,6 +273,8 @@ function createWorkerScopeContext({ importScriptsImpl, nativeXHR } = {}) {
     RegExp,
     Error,
     Uint8Array,
+    Uint32Array,
+    ArrayBuffer,
     decodeURIComponent,
     console,
   });
@@ -274,7 +287,7 @@ function bootWorkerScope(core, { url = WORKER_URL, importScriptsImpl, nativeXHR 
   vm.runInContext(bootstrapSource, context, { filename: "bootstrap.js" });
   const channel = new FakeMessageChannel();
   function dispatchBoot(ports, mask = {}) {
-    const bootData = Object.assign({ maskRecords: [], indexSize: 0, enabledFolders: [], maskError: null }, mask);
+    const bootData = Object.assign({ maskBuffer: new ArrayBuffer(0), indexSize: 0, enabledFolders: [], maskError: null }, mask);
     Object.defineProperty(bootData, "__lhBoot", { value: true, enumerable: true });
     scope.receive({
       type: "message",
@@ -837,10 +850,10 @@ test("bootstrap wraps the loader's global wasmImports assignment and masks only 
   dispatchBoot(undefined, {
     indexSize: 16,
     enabledFolders: ["Foo"],
-    maskRecords: [
-      { path: "Interface/AddOns/Foo/main", start: 2, end: 4, value: 48 },
-      { path: "Interface/AddOns/Foo/main", start: 8, end: 9, value: 35 },
-    ],
+    maskBuffer: maskBufferFor([
+      { start: 2, end: 4, value: 48 },
+      { start: 8, end: 9, value: 35 },
+    ]),
   });
   vm.runInContext(`
     (function () {
@@ -879,7 +892,7 @@ test("maskWebVfsStoreIo guards types, ranges and heap bounds", () => {
   assert.equal(core.maskWebVfsStoreIo({ WebVfsStoreIo: 42 }, []), false);
   const heap = new Uint8Array(16);
   const imports = { WebVfsStoreIo: function () {}, HEAPU8: heap };
-  const records = [{ path: "Interface/AddOns/Foo/main", start: 2, end: 6, value: 48 }];
+  const records = new Uint32Array([2, 6, 48, 0]);
   assert.equal(core.maskWebVfsStoreIo(imports, records), true);
   assert.equal(imports.WebVfsStoreIo.__lhMasked, true);
   imports.WebVfsStoreIo(1, false, 0, 8);
@@ -896,7 +909,7 @@ test("maskWebVfsStoreIo skips writes, other files and out-of-bounds reads", () =
   const { core } = createPageContext();
   const heap = new Uint8Array(16);
   const imports = { WebVfsStoreIo: function () {}, HEAPU8: heap };
-  const records = [{ path: "Interface/AddOns/Foo/main", start: 0, end: 16, value: 48 }];
+  const records = new Uint32Array([0, 16, 48, 0]);
   core.maskWebVfsStoreIo(imports, records);
   imports.WebVfsStoreIo(1, true, 0, 16);
   assert.ok(heap.every((byte) => byte === 0));
@@ -914,10 +927,7 @@ test("maskReadSpan preserves byte positions and only fills intersections", () =>
   const { core } = createPageContext();
   const heap = new Uint8Array(20);
   for (let i = 0; i < heap.length; i += 1) heap[i] = 0xAA;
-  const records = [
-    { path: "Interface/AddOns/Foo/a", start: 2, end: 6, value: 48 },
-    { path: "Interface/AddOns/Foo/a", start: 10, end: 18, value: 35 },
-  ];
+  const records = new Uint32Array([2, 6, 48, 0, 10, 18, 35, 0]);
   const written = core.maskReadSpan(heap, 0, 20, records);
   assert.equal(written, 12);
   for (let i = 0; i < heap.length; i += 1) {
@@ -934,7 +944,7 @@ test("maskReadSpan preserves byte positions and only fills intersections", () =>
 test("maskReadSpan rejects invalid heaps, offsets and counts", () => {
   const { core } = createPageContext();
   const heap = new Uint8Array(8);
-  const records = [{ path: "Interface/AddOns/Foo/a", start: 0, end: 4, value: 48 }];
+  const records = new Uint32Array([0, 4, 48, 0]);
   assert.equal(core.maskReadSpan(null, 0, 4, records), -1);
   assert.equal(core.maskReadSpan("nope", 0, 4, records), -1);
   assert.equal(core.maskReadSpan(heap, -1, 4, records), -1);
@@ -947,10 +957,7 @@ test("maskReadSpan rejects invalid heaps, offsets and counts", () => {
 test("maskReadSpan fills overlapping masked records", () => {
   const { core } = createPageContext();
   const heap = new Uint8Array(10);
-  const records = [
-    { path: "Interface/AddOns/Foo/a", start: 0, end: 4, value: 48 },
-    { path: "Interface/AddOns/Foo/b", start: 4, end: 8, value: 35 },
-  ];
+  const records = new Uint32Array([0, 4, 48, 0, 4, 8, 35, 0]);
   const written = core.maskReadSpan(heap, 2, 4, records);
   assert.equal(written, 4);
   assert.deepEqual(Array.from(heap.subarray(0, 8)), [0, 0, 48, 48, 35, 35, 0, 0]);
@@ -1055,27 +1062,33 @@ test("OPFS blocks.idx is read bounded and its spans are sent in the worker boot 
   assert.equal(boot.enabledFolders[0], "Foo");
   assert.equal(boot.indexSize, bytes.length);
   assert.equal(boot.maskError, null);
-  assert.equal(boot.maskRecords.length, 2);
+  const spans = Array.from(new Uint32Array(boot.maskBuffer));
+  const digitStart = new TextEncoder().encode("file\\t").length;
+  const pathStart = new TextEncoder().encode("file\\t123\\tkind\\tmeta\\t").length;
+  assert.deepEqual(spans, [digitStart, digitStart + 3, 48, 0, pathStart, pathStart + 1, 35, 0]);
   assert.deepEqual(Array.from(bytes), snapshot);
 });
 
-test("mask-record receiver rejects invalid spans, values and ineligible addon paths", () => {
+test("mask-record receiver validates compact span shape, bounds and enabled-folder indices", () => {
   const { core } = createPageContext();
-  const valid = { path: "Interface/AddOns/Foo/a", start: 2, end: 4, value: 48 };
-  assert.equal(core.validateMaskRecords([valid], 8, ["Foo"]).ok, true);
+  const valid = maskBufferFor([{ start: 2, end: 4, value: 48, folderIndex: 0 }]);
+  assert.equal(core.validateMaskRecords(valid, 8, ["Foo"]).ok, true);
   for (const invalid of [
-    { ...valid, start: -1 },
-    { ...valid, end: 9 },
-    { ...valid, start: 1.5 },
-    { ...valid, value: 0 },
-    { ...valid, path: "Interface/AddOns/Other/a" },
-    { ...valid, path: "Interface/AddOns/Foo/../a" },
-    { ...valid, extra: true },
+    maskBufferFor([{ start: -1, end: 4, value: 48, folderIndex: 0 }]),
+    maskBufferFor([{ start: 2, end: 9, value: 48, folderIndex: 0 }]),
+    maskBufferFor([{ start: 2, end: 4, value: 0, folderIndex: 0 }]),
+    maskBufferFor([{ start: 2, end: 4, value: 48, folderIndex: 1 }]),
+    maskBufferFor([
+      { start: 2, end: 5, value: 48, folderIndex: 0 },
+      { start: 4, end: 6, value: 35, folderIndex: 0 },
+    ]),
+    new ArrayBuffer(3),
+    {},
   ]) {
-    assert.equal(core.validateMaskRecords([valid, invalid], 8, ["Foo"]).ok, false);
+    assert.equal(core.validateMaskRecords(invalid, 8, ["Foo"]).ok, false);
   }
-  assert.equal(core.validateMaskRecords([valid, { ...valid, start: 3, end: 5 }], 8, ["Foo"]).ok, false);
-  assert.equal(core.validateMaskRecords([valid], 1, ["Foo"]).ok, false);
+  assert.equal(core.validateMaskRecords(valid, 1, ["Foo"]).ok, false);
+  assert.equal(core.validateMaskRecords(valid, 8, ["blizzard_ui"]).ok, false);
 });
 
 test("worker rejects malformed mask records as a whole", () => {
@@ -1089,10 +1102,10 @@ test("worker rejects malformed mask records as a whole", () => {
   dispatchBoot(undefined, {
     indexSize: 16,
     enabledFolders: ["Foo"],
-    maskRecords: [
-      { path: "Interface/AddOns/Foo/a", start: 2, end: 4, value: 48 },
-      { path: "Interface/AddOns/Other/a", start: 4, end: 5, value: 35 },
-    ],
+    maskBuffer: maskBufferFor([
+      { start: 2, end: 4, value: 48, folderIndex: 0 },
+      { start: 4, end: 5, value: 35, folderIndex: 1 },
+    ]),
   });
   vm.runInContext("self.assignWasmImports(); self.wasmImports.WebVfsStoreIo(1, false, 0, 16)", context);
   assert.ok(vm.runInContext("Array.from(self.wasmImports.HEAPU8).every((value) => value === 0)", context));
