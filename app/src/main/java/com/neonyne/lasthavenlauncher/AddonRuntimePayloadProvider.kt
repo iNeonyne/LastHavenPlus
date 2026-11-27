@@ -33,12 +33,12 @@ internal class AddonRuntimePayloadProvider(
     val totalBytes: Long,
   ) {
     val pageCount: Int
-      get() = (files.size + MANIFEST_PAGE_SIZE - 1) / MANIFEST_PAGE_SIZE
+      get() = (files.size + AddonRuntimePayloadProvider.MANIFEST_PAGE_SIZE - 1) / AddonRuntimePayloadProvider.MANIFEST_PAGE_SIZE
   }
 
   fun buildManifest(snapshot: AddonLibrarySnapshot): Manifest {
     val plan = AddonRuntimePlanner.plan(snapshot)
-    require(plan.orderedAddons.size <= MAX_RUNTIME_ADDONS) {
+    if (plan.orderedAddons.size > MAX_RUNTIME_ADDONS) {
       throw AddonRuntimePayloadException("payloadTooLarge")
     }
 
@@ -74,7 +74,10 @@ internal class AddonRuntimePayloadProvider(
             throw AddonRuntimePayloadException("invalidPath")
           }
           val canonicalChild = child.canonicalFile
-          if (!canonicalChild.toPath().startsWith(canonicalRootPath) || canonicalChild == canonicalDirectory) {
+          if (
+            !canonicalChild.toPath().startsWith(canonicalRootPath) ||
+              canonicalChild == canonicalDirectory
+          ) {
             throw AddonRuntimePayloadException("invalidPath")
           }
           if (child.isDirectory) {
@@ -130,7 +133,8 @@ internal class AddonRuntimePayloadProvider(
       addonFolders += folder
     }
 
-    val sortedFiles = descriptors.sortedWith(compareBy<FileDescriptor> { it.folder }.thenBy { it.path })
+    val sortedFiles =
+      descriptors.sortedWith(compareBy<FileDescriptor> { it.folder }.thenBy { it.path })
     val filesByKey = sortedFiles.associateBy { key(it.folder, it.path) }
     if (filesByKey.size != sortedFiles.size) {
       throw AddonRuntimePayloadException("invalidPath")
