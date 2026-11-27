@@ -16,7 +16,7 @@ import java.util.Locale
  */
 internal class AddonRuntimePayloadProvider(private val repository: AddonLibraryRepository) {
   data class FileDescriptor
-    internal constructor(
+  internal constructor(
     val folder: String,
     val path: String,
     val sizeBytes: Long,
@@ -26,7 +26,7 @@ internal class AddonRuntimePayloadProvider(private val repository: AddonLibraryR
   )
 
   data class Manifest
-    internal constructor(
+  internal constructor(
     val revision: String,
     val sourceRevision: String,
     val addonFolders: List<String>,
@@ -109,8 +109,10 @@ internal class AddonRuntimePayloadProvider(private val repository: AddonLibraryR
           }
 
           val relativePath = child.relativeTo(directory).invariantSeparatorsPath
-          val validatedPath =
-            runCatching { AddonArchive.validateEntryPath(relativePath) }.getOrElse {
+          val validatedPath = runCatching {
+            AddonArchive.validateEntryPath(relativePath)
+          }
+            .getOrElse {
               throw AddonRuntimePayloadException("invalidPath")
             }
           if (validatedPath != relativePath || relativePath.length > MAX_RUNTIME_PATH_CHARS) {
@@ -152,26 +154,24 @@ internal class AddonRuntimePayloadProvider(private val repository: AddonLibraryR
 
     val sortedFiles =
       descriptors.sortedWith(compareBy<FileDescriptor> { it.folder }.thenBy { it.path })
-    val normalizedKeys =
-      sortedFiles.map { key(it.folder, it.path).lowercase(Locale.ROOT) }
+    val normalizedKeys = sortedFiles.map { key(it.folder, it.path).lowercase(Locale.ROOT) }
     if (normalizedKeys.distinct().size != normalizedKeys.size) {
       throw AddonRuntimePayloadException("invalidPath")
     }
     val filesByKey = sortedFiles.associateBy { key(it.folder, it.path) }
-    val revisionSignature =
-      buildString {
-        append(plan.bundleRevision)
-        sortedFiles.forEach {
-          append('\n')
-            .append(it.folder)
-            .append('\t')
-            .append(it.path)
-            .append('\t')
-            .append(it.sizeBytes)
-            .append('\t')
-            .append(it.lastModified)
-        }
+    val revisionSignature = buildString {
+      append(plan.bundleRevision)
+      sortedFiles.forEach {
+        append('\n')
+          .append(it.folder)
+          .append('\t')
+          .append(it.path)
+          .append('\t')
+          .append(it.sizeBytes)
+          .append('\t')
+          .append(it.lastModified)
       }
+    }
     val revision =
       MessageDigest.getInstance("SHA-256")
         .digest(revisionSignature.toByteArray(Charsets.UTF_8))
