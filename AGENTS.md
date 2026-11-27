@@ -20,7 +20,7 @@ The active embedded browser engine in `beta` is Mozilla GeckoView 161 Stable. Do
 - Never develop routinely on `main`, force-push shared branches or bypass required checks.
 - Task branches use `<owner>/<task-slug>` naming, one issue per branch, started from current `beta`. `infra/*` branches never merge wholesale into `beta`; `beta-legacy-*` snapshots are preserved and never wholesale-merged.
 - To sync a branch with an advanced `beta`, merge `origin/beta` into it (never rebase pushed history), rerun affected checks, and update the PR handoff with the new exact head SHA.
-- Branch deletion/retirement requires explicit owner approval recorded in the disposal log of `docs/BRANCH_LIFECYCLE.md`. Refresh that audit before any cleanup decision.
+- Do not delete or rename task branches as routine cleanup. Retain merged/abandoned task branches as archives and stop pushing to them. Any branch deletion requires explicit owner approval recorded in the disposal log of `docs/BRANCH_LIFECYCLE.md`; no scheduled branch-deletion automation is permitted.
 
 ## Review depth and change sizing
 
