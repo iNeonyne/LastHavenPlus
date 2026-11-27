@@ -30,6 +30,9 @@ jobs:
           ref: main
           fetch-depth: 1
 
+      - name: Test roadmap generator
+        run: python3 .github/scripts/test_generate_roadmap.py
+
       - name: Generate roadmap from live GitHub state
         env:
           GITHUB_REPOSITORY: ${{ github.repository }}
