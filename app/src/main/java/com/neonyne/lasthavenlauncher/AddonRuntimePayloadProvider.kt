@@ -46,10 +46,8 @@ internal class AddonRuntimePayloadProvider(
     val addonFolders = mutableListOf<String>()
     var totalBytes = 0L
 
-    val addonsByFolder = snapshot.addons.associateBy { it.folder }
-    for (folder in plan.orderedAddons) {
-      val addon = addonsByFolder[folder] ?: throw AddonRuntimePayloadException("unavailable")
-      val directory = repository.addonDirectory(folder)
+    for (addon in plan.orderedAddons) {
+      val directory = repository.addonDirectory(addon.folder)
       if (!directory.isDirectory) {
         throw AddonRuntimePayloadException("unavailable")
       }
@@ -117,7 +115,7 @@ internal class AddonRuntimePayloadProvider(
 
           descriptors +=
             FileDescriptor(
-              folder = folder,
+              folder = addon.folder,
               path = relativePath,
               sizeBytes = size,
               file = child,
@@ -130,7 +128,7 @@ internal class AddonRuntimePayloadProvider(
       if (addonFiles != addon.filesCount || addonBytes != addon.sizeBytes) {
         throw AddonRuntimePayloadException("unavailable")
       }
-      addonFolders += folder
+      addonFolders += addon.folder
     }
 
     val sortedFiles =
