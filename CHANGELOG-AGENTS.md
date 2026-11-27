@@ -1070,3 +1070,9 @@ Entry format:
 ### Latest beta unsigned APK reproducibility refreshed — 2026-11-28
 
 - Updated docs/REPRODUCIBLE_BUILDS.md to use post-PR #203 beta commit `cfcc19d863aff828ad3db42a628cd5f95569a962` and successful run [#46071208839](https://github.com/iNeonyne/LastHavenPlus/actions/runs/46071208839): byte-identical APKs, 97,637,264 bytes, SHA-256 `38de17fead60507567b1641643b97edbfbd96064bce3e6880a3de2822dd5c719`, 818 entries.
+
+
+### README toolchain references and Gradle drift — 2026-11-28
+
+- README now points to the Gradle wrapper, version catalog, and Android CI workflow for live toolchain pins instead of duplicating version numbers.
+- Recorded Gradle 9.9.3 as the latest upstream patch release and noted Dependabot PR #210 still proposes 9.9.2. The project remains on 9.7.1 until compatibility review and CI prove an upgrade safe.
