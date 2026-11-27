@@ -18,8 +18,9 @@ object AddonRuntimeOriginPolicy {
     if (!uri.isAbsolute || uri.isOpaque) return false
     if (!uri.scheme.equals("https", ignoreCase = true)) return false
     val host = uri.host ?: return false
-    if (!host.equals(DEFAULT_GAME_HOST, ignoreCase = true) &&
-      !host.equals(ALTERNATE_GAME_HOST, ignoreCase = true)
+    if (
+      !host.equals(DEFAULT_GAME_HOST, ignoreCase = true) &&
+        !host.equals(ALTERNATE_GAME_HOST, ignoreCase = true)
     ) {
       return false
     }
