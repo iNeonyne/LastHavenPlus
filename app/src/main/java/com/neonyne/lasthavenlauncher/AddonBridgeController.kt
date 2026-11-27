@@ -3,7 +3,6 @@ package com.neonyne.lasthavenlauncher
 import android.content.Context
 import android.os.Handler
 import android.os.Looper
-import android.os.SystemClock
 import androidx.annotation.MainThread
 import java.util.LinkedHashMap
 import java.util.concurrent.Executor
@@ -14,50 +13,88 @@ import org.mozilla.geckoview.GeckoSession
 import org.mozilla.geckoview.WebExtension
 
 /**
- * Android boundary for the bundled addon-bridge WebExtension foundation (issue #167).
+ * Android boundary for the bundled addon-bridge WebExtension (issue #167).
  *
  * The controller installs only the launcher-owned built-in extension, validates every native sender
- * through [AddonBridgePolicy], parses messages through [AddonBridgeProtocol] and serves read-only
- * answers from the Phase A local addon library snapshot, which remains the sole source of truth. It
- * never enables addons, touches the library, writes files or activates runtime injection. It is
- * intentionally unwired: issue #170 owns session/navigation wiring.
+ * through [AddonBridgePolicy], and serves read-only metadata/file chunks from the Phase A app-private
+ * library. It never enables addons, writes library files or activates runtime interception. Issue
+ * #170 owns production session/navigation wiring.
  *
- * All decision logic lives in the pure policy/protocol objects; this class only adapts GeckoView
- * types to them and fails closed on any mismatch. Library reads run on [worker]; the immutable
- * snapshot they produce is cached and served to native messages.
+ * Snapshot and file reads run on [worker]. Native responses are bounded; large payloads are exposed
+ * only through revision-bound manifest pages and one bounded file chunk at a time.
  */
 @MainThread
 class AddonBridgeController(
   private val snapshotProvider: () -> AddonLibrarySnapshot,
+  private val payloadProvider: AddonRuntimePayloadProvider,
   private val worker: Executor,
 ) {
+  private data class PendingPortRequest(
+    val port: WebExtension.Port,
+    val generation: Long,
+    val timeout: Runnable,
+  )
+
   private val mainHandler = Handler(Looper.getMainLooper())
   private var runtime: GeckoRuntime? = null
   private var bridgeExtension: WebExtension? = null
   private var installInFlight = false
   private var installationGeneration = 0L
   private var snapshotGeneration = 0L
+  private var requestGeneration = 0L
   private var gameSession: GeckoSession? = null
-  private val pendingRequests = LinkedHashMap<String, Long>()
+  private val pendingRequests = LinkedHashMap<String, PendingPortRequest>()
   private val connectedPorts = mutableListOf<WebExtension.Port>()
 
   @Volatile private var cachedSnapshot: AddonLibrarySnapshot? = null
+  @Volatile private var cachedPayloadManifest: AddonRuntimePayloadProvider.Manifest? = null
+  @Volatile private var payloadErrorCode: String? = null
 
-  /** Refreshes the cached library snapshot off the main thread; native reads use this cache. */
+  /** Refreshes the library snapshot and validated payload manifest off the main thread. */
   fun refreshSnapshot() {
     val generation = ++snapshotGeneration
-    worker.execute {
-      val snapshot = runCatching(snapshotProvider).getOrNull() ?: return@execute
+    try {
+      worker.execute {
+        val snapshotResult = runCatching(snapshotProvider)
+        val snapshot = snapshotResult.getOrNull()
+        val manifestResult =
+          snapshot?.let { value -> runCatching { payloadProvider.buildManifest(value) } }
+        mainHandler.post {
+          if (generation != snapshotGeneration) return@post
+          val manifest = manifestResult?.getOrNull()
+          if (cachedPayloadManifest?.revision != manifest?.revision) {
+            requestGeneration += 1
+            clearPendingRequests()
+          }
+          cachedSnapshot = snapshot
+          cachedPayloadManifest = manifest
+          payloadErrorCode =
+            when {
+              snapshot == null -> "unavailable"
+              manifest != null -> null
+              else ->
+                (manifestResult?.exceptionOrNull() as? AddonRuntimePayloadException)?.code
+                  ?: "unavailable"
+            }
+        }
+      }
+    } catch (_: Exception) {
       mainHandler.post {
-        if (generation == snapshotGeneration) cachedSnapshot = snapshot
+        if (generation != snapshotGeneration) return@post
+        requestGeneration += 1
+        clearPendingRequests()
+        cachedSnapshot = null
+        cachedPayloadManifest = null
+        payloadErrorCode = "unavailable"
       }
     }
   }
 
-  /** Records the live game session for sender identity checks; drops pending state. */
+  /** Records the live game session for sender identity checks; drops pending chunk reads. */
   fun setGameSession(session: GeckoSession?) {
     gameSession = session
-    pendingRequests.clear()
+    requestGeneration += 1
+    clearPendingRequests()
   }
 
   /** Installs the bundled extension once per runtime and registers the message delegate. */
@@ -132,49 +169,92 @@ class AddonBridgeController(
   fun teardown() {
     installationGeneration += 1
     snapshotGeneration += 1
+    requestGeneration += 1
     installInFlight = false
     cachedSnapshot = null
+    cachedPayloadManifest = null
+    payloadErrorCode = "unavailable"
     bridgeExtension?.setMessageDelegate(null, AddonBridgePolicy.NATIVE_MESSAGING_NAME)
     bridgeExtension = null
     val portsToDisconnect = connectedPorts.toList()
     connectedPorts.clear()
+    clearPendingRequests()
     portsToDisconnect.forEach { it.disconnect() }
-    pendingRequests.clear()
     gameSession = null
   }
 
-  /**
-   * Registers a request id for back-pressure/timeout tracking. Returns false when the id is already
-   * pending, expired entries were just evicted and the set is saturated, or the limit is reached.
-   */
-  private fun recordRequest(requestId: String, nowMs: Long): Boolean {
-    pendingRequests.entries.removeAll { AddonBridgeTimeoutPolicy.isExpired(it.value, nowMs) }
-    if (requestId in pendingRequests) return false
-    if (!AddonBridgeTimeoutPolicy.canAcceptPendingRequest(pendingRequests.size)) return false
-    pendingRequests[requestId] = nowMs
-    return true
+  private fun clearPendingRequests() {
+    pendingRequests.values.forEach { mainHandler.removeCallbacks(it.timeout) }
+    pendingRequests.clear()
   }
 
-  private fun completeRequest(requestId: String) {
-    pendingRequests.remove(requestId)
+  private fun registerPendingRequest(
+    requestId: String,
+    port: WebExtension.Port,
+    generation: Long,
+  ): PendingPortRequest? {
+    if (requestId in pendingRequests) return null
+    if (!AddonBridgeTimeoutPolicy.canAcceptPendingRequest(pendingRequests.size)) return null
+
+    lateinit var pending: PendingPortRequest
+    val timeout =
+      Runnable {
+        if (pendingRequests[requestId] !== pending) return@Runnable
+        pendingRequests.remove(requestId)
+        if (generation == requestGeneration && connectedPorts.contains(port)) {
+          postPortResponse(
+            port,
+            AddonBridgeProtocol.error(requestId, "timeout")
+              ?: return@Runnable,
+          )
+        }
+      }
+    pending = PendingPortRequest(port, generation, timeout)
+    pendingRequests[requestId] = pending
+    mainHandler.postDelayed(timeout, AddonBridgeTimeoutPolicy.REQUEST_TIMEOUT_MS)
+    return pending
+  }
+
+  private fun completePendingRequest(requestId: String, pending: PendingPortRequest) {
+    if (pendingRequests[requestId] === pending) {
+      pendingRequests.remove(requestId)
+      mainHandler.removeCallbacks(pending.timeout)
+    }
   }
 
   private fun toFlatFields(message: Any?): Map<String, Any?>? {
     val json = message as? JSONObject ?: return null
-    if (json.length() != 2) return null
+    if (json.length() !in 2..AddonBridgeProtocol.MAX_MESSAGE_FIELDS) return null
     val fields = LinkedHashMap<String, Any?>()
     for (key in json.keys()) {
-      if (key != AddonBridgeProtocol.KEY_TYPE && key != AddonBridgeProtocol.KEY_REQUEST_ID) {
+      if (
+        key !in
+          setOf(
+            AddonBridgeProtocol.KEY_TYPE,
+            AddonBridgeProtocol.KEY_REQUEST_ID,
+            AddonBridgeProtocol.KEY_REVISION,
+            AddonBridgeProtocol.KEY_PAGE,
+            AddonBridgeProtocol.KEY_FOLDER,
+            AddonBridgeProtocol.KEY_PATH,
+            AddonBridgeProtocol.KEY_OFFSET,
+          )
+      ) {
         return null
       }
       val value = json.opt(key) as? String ?: return null
-      if (value.length > AddonBridgeProtocol.MAX_REQUEST_ID_CHARS) return null
+      val maxLength =
+        when (key) {
+          AddonBridgeProtocol.KEY_REQUEST_ID -> AddonBridgeProtocol.MAX_REQUEST_ID_CHARS
+          AddonBridgeProtocol.KEY_PATH -> AddonBridgeProtocol.MAX_RUNTIME_PATH_CHARS
+          else -> AddonBridgeProtocol.MAX_ITEM_CHARS
+        }
+      if (value.length > maxLength) return null
       fields[key] = value
     }
     return fields
   }
 
-  /** Builds the bounded read-only response for a validated request; null fails closed. */
+  /** Builds a synchronous, bounded response for metadata and manifest-page requests. */
   private fun buildResponse(
     request: AddonBridgeProtocol.AddonBridgeRequest
   ): AddonBridgeProtocol.AddonBridgeResponse? {
@@ -183,10 +263,7 @@ class AddonBridgeController(
       "listAddons" -> {
         val snapshot =
           cachedSnapshot
-            ?: return AddonBridgeProtocol.error(
-              request.requestId,
-              "unavailable",
-            )
+            ?: return AddonBridgeProtocol.error(request.requestId, "unavailable")
         val summaries =
           snapshot.addons.map {
             AddonBridgeProtocol.AddonSummary(it.folder, it.version, it.enabled)
@@ -197,10 +274,7 @@ class AddonBridgeController(
       "getLoadOrder" -> {
         val snapshot =
           cachedSnapshot
-            ?: return AddonBridgeProtocol.error(
-              request.requestId,
-              "unavailable",
-            )
+            ?: return AddonBridgeProtocol.error(request.requestId, "unavailable")
         val plan = AddonRuntimePlanner.plan(snapshot)
         AddonBridgeProtocol.loadOrder(
           request.requestId,
@@ -209,25 +283,139 @@ class AddonBridgeController(
           plan.blockedAddons.keys.toList(),
         ) ?: AddonBridgeProtocol.error(request.requestId, "tooManyAddons")
       }
+      "getBundleInfo" -> {
+        val manifest =
+          cachedPayloadManifest
+            ?: return AddonBridgeProtocol.error(
+              request.requestId,
+              payloadErrorCode ?: "unavailable",
+            )
+        AddonBridgeProtocol.bundleInfo(request.requestId, manifest)
+          ?: AddonBridgeProtocol.error(request.requestId, "payloadTooLarge")
+      }
+      "getBundleManifestPage" -> {
+        val manifest =
+          cachedPayloadManifest
+            ?: return AddonBridgeProtocol.error(
+              request.requestId,
+              payloadErrorCode ?: "unavailable",
+            )
+        if (request.revision != manifest.revision) {
+          return AddonBridgeProtocol.error(request.requestId, "staleRevision")
+        }
+        val files =
+          runCatching { payloadProvider.page(manifest, request.page ?: -1) }.getOrElse {
+            val code = (it as? AddonRuntimePayloadException)?.code ?: "invalidRequest"
+            return AddonBridgeProtocol.error(request.requestId, code)
+          }
+        AddonBridgeProtocol.manifestPage(
+          request.requestId,
+          manifest,
+          request.page ?: -1,
+          files,
+        ) ?: AddonBridgeProtocol.error(request.requestId, "invalidRequest")
+      }
+      "getFileChunk" -> AddonBridgeProtocol.error(request.requestId, "unsupported")
       else -> AddonBridgeProtocol.error(request.requestId, "unsupported")
     }
   }
 
-  private fun respond(fields: Map<String, Any?>): Map<String, Any?>? {
-    val request = AddonBridgeProtocol.parse(fields) ?: return null
-    if (!recordRequest(request.requestId, SystemClock.elapsedRealtime())) return null
-    val response =
-      try {
-        buildResponse(request)
-      } finally {
-        completeRequest(request.requestId)
-      }
-    val responseFields = response?.toFields() ?: return null
-    val encodedBytes = JSONObject(responseFields).toString().toByteArray(Charsets.UTF_8).size
-    if (!AddonBridgeProtocol.isResponseWithinByteLimit(encodedBytes)) {
-      return AddonBridgeProtocol.error(request.requestId, "tooManyAddons")?.toFields()
+  private fun responseFields(
+    response: AddonBridgeProtocol.AddonBridgeResponse
+  ): Map<String, Any?>? {
+    val fields = response.toFields()
+    val encodedBytes = JSONObject(fields).toString().toByteArray(Charsets.UTF_8).size
+    if (!AddonBridgeProtocol.isResponseWithinByteLimit(encodedBytes)) return null
+    return fields
+  }
+
+  private fun respond(
+    request: AddonBridgeProtocol.AddonBridgeRequest
+  ): Map<String, Any?>? {
+    val response = buildResponse(request) ?: return null
+    return responseFields(response)
+      ?: AddonBridgeProtocol.error(request.requestId, "payloadTooLarge")?.toFields()
+  }
+
+  private fun postPortResponse(
+    port: WebExtension.Port,
+    response: AddonBridgeProtocol.AddonBridgeResponse,
+  ) {
+    val fields =
+      responseFields(response)
+        ?: AddonBridgeProtocol.error(response.requestId, "payloadTooLarge")?.toFields()
+        ?: return
+    try {
+      port.postMessage(JSONObject(fields))
+    } catch (_: Exception) {
+      port.disconnect()
     }
-    return responseFields
+  }
+
+  private fun sendPortError(port: WebExtension.Port, requestId: String, code: String) {
+    AddonBridgeProtocol.error(requestId, code)?.let { postPortResponse(port, it) }
+  }
+
+  private fun handleFileChunk(
+    request: AddonBridgeProtocol.AddonBridgeRequest,
+    port: WebExtension.Port,
+  ) {
+    val manifest =
+      cachedPayloadManifest ?: run {
+        sendPortError(port, request.requestId, payloadErrorCode ?: "unavailable")
+        return
+      }
+    if (request.revision != manifest.revision) {
+      sendPortError(port, request.requestId, "staleRevision")
+      return
+    }
+    val folder = request.folder ?: return
+    val path = request.path ?: return
+    val offset = request.offset ?: return
+    val generation = requestGeneration
+    val pending = registerPendingRequest(request.requestId, port, generation)
+    if (pending == null) {
+      port.disconnect()
+      return
+    }
+
+    try {
+      worker.execute {
+        val response =
+          runCatching {
+              val bytes = payloadProvider.readChunk(manifest, folder, path, offset)
+              AddonBridgeProtocol.fileChunk(
+                request.requestId,
+                manifest,
+                folder,
+                path,
+                offset,
+                bytes,
+              ) ?: throw AddonRuntimePayloadException("invalidRequest")
+            }
+            .getOrElse { error ->
+              AddonBridgeProtocol.error(
+                request.requestId,
+                (error as? AddonRuntimePayloadException)?.code ?: "readFailed",
+              )
+            }
+        mainHandler.post {
+          if (pendingRequests[request.requestId] !== pending) return@post
+          completePendingRequest(request.requestId, pending)
+          if (
+            pending.generation != requestGeneration ||
+              generation != requestGeneration ||
+              !connectedPorts.contains(port)
+          ) {
+            return@post
+          }
+          response?.let { postPortResponse(port, it) }
+        }
+      }
+    } catch (_: Exception) {
+      completePendingRequest(request.requestId, pending)
+      sendPortError(port, request.requestId, "unavailable")
+    }
   }
 
   private fun senderAllowed(sender: WebExtension.MessageSender?): Boolean {
@@ -254,7 +442,8 @@ class AddonBridgeController(
           return GeckoResult.fromValue(null)
         }
         val fields = toFlatFields(message) ?: return GeckoResult.fromValue(null)
-        val response = respond(fields) ?: return GeckoResult.fromValue(null)
+        val request = AddonBridgeProtocol.parse(fields) ?: return GeckoResult.fromValue(null)
+        val response = respond(request) ?: return GeckoResult.fromValue(null)
         return GeckoResult.fromValue(JSONObject(response))
       }
 
@@ -278,15 +467,29 @@ class AddonBridgeController(
           port.disconnect()
           return
         }
-        val fields = toFlatFields(message)
-        val response = fields?.let { respond(it) }
-        if (response != null) {
-          port.postMessage(JSONObject(response))
+        val fields = toFlatFields(message) ?: return
+        val request = AddonBridgeProtocol.parse(fields) ?: return
+        if (request.type == "getFileChunk") {
+          handleFileChunk(request, port)
+        } else {
+          val response = respond(request)
+          if (response != null) {
+            try {
+              port.postMessage(JSONObject(response))
+            } catch (_: Exception) {
+              port.disconnect()
+            }
+          }
         }
       }
 
       override fun onDisconnect(port: WebExtension.Port) {
         connectedPorts.remove(port)
+        val abandoned =
+          pendingRequests.filterValues { it.port === port }.toMap()
+        for ((requestId, pending) in abandoned) {
+          completePendingRequest(requestId, pending)
+        }
       }
     }
 
