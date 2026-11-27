@@ -115,12 +115,21 @@ object AddonRuntimePlanner {
       }
     }
 
-    // Static optional-dependency preference keeps the ready queue deterministic and bounded
-    // to O((V + E) log V), even for the full validated library limit.
-    val optionalPriority = byLower.mapValues { (_, addon) ->
-      addon.optionalDependencies.count { it.lowercase(Locale.ROOT) in byLower }
+    // Prefer addons that provide optional dependencies to other enabled addons. This is a
+    // deterministic tie-break only: optional edges never block loading or create dependency cycles.
+    val optionalProviderPriority = byLower.keys.associateWith { 0 }.toMutableMap()
+    for (addon in loadable) {
+      for (dependency in addon.optionalDependencies.map { it.lowercase(Locale.ROOT) }.distinct()) {
+        if (dependency in optionalProviderPriority) {
+          optionalProviderPriority[dependency] = optionalProviderPriority.getValue(dependency) + 1
+        }
+      }
     }
-    val ready = PriorityQueue<String>(compareBy({ optionalPriority.getValue(it) }, { it }))
+    // Keep the ready queue deterministic and bounded to O((V + E) log V).
+    val ready =
+      PriorityQueue<String>(
+        compareByDescending<String> { optionalProviderPriority.getValue(it) }.thenBy { it }
+      )
     inDegree.filterValues { it == 0 }.keys.forEach(ready::add)
     val ordered = mutableListOf<AddonLibraryItem>()
     while (ready.isNotEmpty()) {
