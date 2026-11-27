@@ -41,6 +41,8 @@ class AddonBridgeTimeoutPolicyTest {
   @Test
   fun `native port connections are bounded`() {
     assertTrue(AddonBridgeTimeoutPolicy.canAcceptConnection(0))
-    assertFalse(AddonBridgeTimeoutPolicy.canAcceptConnection(AddonBridgeTimeoutPolicy.MAX_CONNECTED_PORTS))
+    assertFalse(
+      AddonBridgeTimeoutPolicy.canAcceptConnection(AddonBridgeTimeoutPolicy.MAX_CONNECTED_PORTS)
+    )
   }
 }
