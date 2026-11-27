@@ -5,6 +5,8 @@ import java.io.RandomAccessFile
 import java.nio.file.Files
 import java.nio.file.LinkOption
 import java.util.ArrayDeque
+import java.util.Locale
+import java.security.MessageDigest
 
 /**
  * Bounded, read-only view of enabled addon resources for the ZIP 0.5.1 runtime payload.
@@ -63,12 +65,27 @@ internal class AddonRuntimePayloadProvider(
       pendingDirectories.add(directory)
       var addonBytes = 0L
       var addonFiles = 0
+      var addonEntries = 0
 
       while (pendingDirectories.isNotEmpty()) {
         val current = pendingDirectories.removeLast()
-        val children =
-          current.listFiles()?.sortedBy { it.name }
-            ?: throw AddonRuntimePayloadException("readFailed")
+        val children = mutableListOf<File>()
+        try {
+          Files.newDirectoryStream(current.toPath()).use { entries ->
+            for (entry in entries) {
+              addonEntries += 1
+              if (addonEntries > AddonArchive.MAX_ENTRIES) {
+                throw AddonRuntimePayloadException("payloadTooLarge")
+              }
+              children += entry.toFile()
+            }
+          }
+        } catch (error: AddonRuntimePayloadException) {
+          throw error
+        } catch (_: Exception) {
+          throw AddonRuntimePayloadException("readFailed")
+        }
+        children.sortBy { it.name }
         for (child in children) {
           if (Files.isSymbolicLink(child.toPath())) {
             throw AddonRuntimePayloadException("invalidPath")
@@ -135,12 +152,32 @@ internal class AddonRuntimePayloadProvider(
 
     val sortedFiles =
       descriptors.sortedWith(compareBy<FileDescriptor> { it.folder }.thenBy { it.path })
-    val filesByKey = sortedFiles.associateBy { key(it.folder, it.path) }
-    if (filesByKey.size != sortedFiles.size) {
+    val normalizedKeys =
+      sortedFiles.map { key(it.folder, it.path).lowercase(Locale.ROOT) }
+    if (normalizedKeys.distinct().size != normalizedKeys.size) {
       throw AddonRuntimePayloadException("invalidPath")
     }
+    val filesByKey = sortedFiles.associateBy { key(it.folder, it.path) }
+    val revisionSignature =
+      buildString {
+        append(plan.bundleRevision)
+        sortedFiles.forEach {
+          append('\n')
+            .append(it.folder)
+            .append('\t')
+            .append(it.path)
+            .append('\t')
+            .append(it.sizeBytes)
+            .append('\t')
+            .append(it.lastModified)
+        }
+      }
+    val revision =
+      MessageDigest.getInstance("SHA-256")
+        .digest(revisionSignature.toByteArray(Charsets.UTF_8))
+        .joinToString("") { "%02x".format(it) }
     return Manifest(
-      revision = plan.bundleRevision,
+      revision = revision,
       sourceRevision = snapshot.revision,
       addonFolders = addonFolders,
       files = sortedFiles,
