@@ -129,3 +129,10 @@ Every open issue has exactly one `agent:*` label. The label distinguishes active
 - **#147:** its #146 dependency is now satisfied; ownership changed from `agent:blocked` to `agent:queued`. Do not start until Chaty explicitly assigns it after #167 handoff and a fresh overlap check.
 - **#148:** remains blocked by #16 and scheduling/dependency coordination. #168/#169 remain blocked pending #167 and security-contract integration. #170 remains blocked pending session/navigation/runtime prerequisites.
 - **No release, tag, publication, `main` promotion or physical ARM64 device test.**
+
+## 2026-11-27 — Final CI verification for PR #173
+
+- Post-merge Android run [#45923143717](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45923143717) passed signed optimized APK build, unit tests, signing-certificate verification and ARM64-only ABI checks; signed APK artifact upload succeeded. Release publication/tag and differential-package generation were skipped as expected on a beta push.
+- Independent unsigned APK reproducibility [#45923143712](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45923143712) passed both clean builds and APK archive/hash comparison.
+- Post-merge Markdown [#45923143716](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45923143716) and documentation follow-up Markdown [#45923558131](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45923558131) passed.
+- PR #173 / issue #146 integration gates are complete. Physical ARM64 gameplay/session behavior remains unverified; no device test is claimed.

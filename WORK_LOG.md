@@ -652,3 +652,12 @@ No branch was deleted. The available GitHub connector exposes no branch-delete o
 - **PR #173:** head `eb9f64b672eced9143bc5689106223c3e7af3d16`; Markdown passed, Android and unsigned reproducibility were in progress. Mergeability became dirty after #165 updated overlapping docs. Chaty is reconciling docs and will rerun exact-head checks.
 - **Physical device:** no ARM64 hardware testing performed.
 - **Next safe action:** finish PR #173 code/doc review, resolve documentation merge conflicts, verify exact-head CI, then merge only if all gates pass.
+
+### 2026-11-27 — Complete PR #173 post-merge verification
+
+- **Issue/PR:** #146 / #173, GameSessionController extraction.
+- **Merge:** `5ed6af635954c8f4e2673dab3c60334eff4a8ae0` on `beta`; post-merge docs reconciliation PR #174 merged at `3856a4f1163ffe464e46d0c51a9acfcd36dae2e5`.
+- **Exact PR-head checks:** Android validation #45921162358, independent unsigned APK reproducibility #45921162325 and Markdown #45921162310 all passed on PR head `6160ede68fb7073680feef2e35f4176bd08a433d`.
+- **Post-merge beta checks:** Android #45923143717 passed signed optimized APK build, unit tests, signing-certificate verification and ARM64-only ABI checks; signed APK artifact upload succeeded. Release tag/publication and differential-package generation were skipped because this was a beta push. Independent unsigned APK reproducibility #45923143712 passed both clean builds and archive/hash comparison. Markdown #45923143716 passed on `5ed6af6`; documentation follow-up Markdown #45923558131 passed on `3856a4f`.
+- **Review:** no blocking code defect identified. Session ownership remains in `GameSessionController`; the composition-root `DisposableEffect` enforces session close on replacement/composition exit. #146 closed completed; #147 moved to `agent:queued`; #167 remains Vibe's active assignment.
+- **Limitations:** no physical ARM64 device test. CI does not establish real game loading, crash recovery or navigation/session behavior on hardware. No release/tag/publication/main promotion.

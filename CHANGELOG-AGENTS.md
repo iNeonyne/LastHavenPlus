@@ -944,3 +944,10 @@ Entry format:
 - Integration review found no blocking code issue. The keep-alive invariant remains enforced by the composition-root `DisposableEffect`; physical ARM64 behavior remains unverified.
 - Closed #146 as completed. Changed #147 from `agent:blocked` to `agent:queued` because its session-controller dependency is now integrated; it is not assigned to Vibe yet.
 - No release, tag, publication, `main` promotion or physical-device test.
+
+## 2026-11-27 — Verify post-merge CI for GameSessionController (#146)
+
+- Beta Android run #45923143717 passed signed optimized APK assembly, JVM tests, signing-certificate verification and ARM64-only ABI checks; signed APK artifact upload succeeded. Release tag/publication and differential package generation were skipped on the beta push.
+- Independent unsigned APK reproducibility #45923143712 passed both clean builds and final APK hash/archive comparison.
+- Post-merge Markdown #45923143716 passed; documentation follow-up Markdown #45923558131 passed.
+- CI evidence is not physical-device evidence. No ARM64 hardware test, release, tag, publication or `main` promotion occurred.

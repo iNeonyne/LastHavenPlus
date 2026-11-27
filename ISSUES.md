@@ -912,3 +912,10 @@ Verify the current manifest and GeckoView delegates, then document the strict al
 - No physical ARM64 device testing is claimed.
 - #147's #146 dependency is satisfied. Chaty moved #147 from `agent:blocked` to `agent:queued`; it is not an active assignment and must not start until Chaty explicitly assigns it after checking Vibe's current #167 work.
 - #167 remains Vibe's active Phase B bridge assignment. #168/#169 remain blocked pending bridge implementation and contract review.
+
+## 2026-11-27 — Final post-merge verification for #146
+
+- Post-merge Android run #45923143717 passed signed optimized APK build, JVM tests, signing-certificate verification and ARM64-only ABI checks; signed APK artifact upload succeeded. Release-tag/publication and differential-package steps were skipped because this was a beta push, not an authorized versioned release.
+- Independent unsigned APK reproducibility #45923143712 passed both clean builds and final archive/hash comparison.
+- Post-merge Markdown #45923143716 passed on merge commit `5ed6af6`; documentation-only follow-up Markdown #45923558131 passed on `3856a4f`.
+- No physical ARM64 device testing is claimed.
