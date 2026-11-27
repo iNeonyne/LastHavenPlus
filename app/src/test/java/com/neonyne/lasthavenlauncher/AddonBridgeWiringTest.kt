@@ -4,14 +4,17 @@ import java.io.File
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
-/** Guards the composition-root wiring that makes the bundled bridge part of the live game session. */
+/**
+ * Guards the composition-root wiring that makes the bundled bridge part of the live game session.
+ */
 class AddonBridgeWiringTest {
   private val sourceRoot =
     File("src/main/java").takeIf { it.isDirectory } ?: File("app/src/main/java")
 
   @Test
   fun `extension installation and sender binding precede the first game navigation`() {
-    val mainSource = File(sourceRoot, "com/neonyne/lasthavenlauncher/MainActivity.kt").readText()
+    val mainSource =
+      File(sourceRoot, "com/neonyne/lasthavenlauncher/MainActivity.kt").readText()
     val sessionSource =
       File(sourceRoot, "com/neonyne/lasthavenlauncher/GameSessionController.kt").readText()
 
@@ -21,7 +24,10 @@ class AddonBridgeWiringTest {
 
     val bindPosition = sessionSource.indexOf("onSessionReady(gameSession)")
     val loadPosition = sessionSource.indexOf("gameSession.loadUri(gameUrl)")
-    assertTrue("session must be bound before the first loadUri", bindPosition >= 0 && loadPosition > bindPosition)
+    assertTrue(
+      "session must be bound before the first loadUri",
+      bindPosition >= 0 && loadPosition > bindPosition,
+    )
   }
 
   @Test
