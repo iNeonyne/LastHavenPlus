@@ -132,6 +132,9 @@ object AddonBridgeProtocol {
     return LoadOrderResponse(requestId, revision, loadOrder, blocked)
   }
 
+  fun isResponseWithinByteLimit(encodedByteCount: Int): Boolean =
+    encodedByteCount in 0..MAX_RESPONSE_BYTES
+
   fun isRequestIdValid(requestId: String): Boolean =
     requestId.length in 1..MAX_REQUEST_ID_CHARS && requestId.matches(REQUEST_ID_PATTERN)
 
