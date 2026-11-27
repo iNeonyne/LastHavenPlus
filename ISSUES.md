@@ -14,7 +14,7 @@
 - **Housekeeping:** #128 closed after PR #161 merged at a0e5271793c9bb7754b7ac41429065e5602df569; exact-head and post-merge Markdown passed. #70 is closed; Markdown lint is integrated.
 - **GeckoView audit:** #20 remains owner-deferred/blocked; PR #122 closed without merge. Preserve unresolved notice/license/distribution and device-testing gaps.
 - **Rights/notices:** #67 remains agent:owner; PR #144 closed without merge. The owner's All Rights Reserved decision governs original project material; third-party distribution review remains unresolved.
-- **Ownership:** each open issue has exactly one `agent:*` label. `agent:queued` means ready but waiting its turn, not permission to start; `agent:blocked` means a genuine dependency/hold. Vibe active: #146 while Chaty integrates PR #165/#149; next after #146 integration: #147; Phase B #167–#169 are dependency-blocked until their explicit prerequisites are merged. Chaty owns #4/#15/#18/#23/#142; #81 is queued. #67 is owner-controlled.
+- **Ownership:** each open issue has exactly one `agent:*` label. `agent:queued` means ready but waiting its turn, not permission to start; `agent:blocked` means a genuine dependency/hold. Vibe active: #146 while Chaty integrates PR #165/#149; next after #146 integration: #147; Phase B #167 is queued after PR #166 merged; #168/#169 remain dependency-blocked until #167 and the required runtime contracts are integrated. Chaty owns #4/#15/#18/#23/#142; #81 is queued. #67 is owner-controlled.
 - **Device/release:** no new physical ARM64 testing, release, tag, publication or beta-to-main promotion is claimed or authorized.
 
 ## Current ownership
@@ -22,7 +22,7 @@
 - **Chaty active:** #4/#15 coordinated updater reliability/recovery and #23 Addon Manager Phase B coordination. #18/#142 are coordination records; #128 is complete.
 - **Chaty queued:** #81 dependency-evidence documentation only; not yet started. #20 and #31 remain blocked pending owner decisions.
 - **Chaty active integration:** #149 launcher-owned strings (PR #165; exact-head Android and reproducibility CI running). **Vibe active implementation:** #146 GameSessionController.
-- **Vibe next:** #147 navigation/back-stack consolidation after #146 is handed off and integrated, because it depends on the new session ownership boundary. Addon Manager Phase B #167 is agent:blocked until PR #166 is merged; #168/#169 are agent:blocked behind #167 and their respective security/runtime prerequisites. #170 remains dependency-blocked. One active implementation issue at a time; queued does not authorize work.
+- **Vibe next:** #147 navigation/back-stack consolidation after #146 is handed off and integrated, because it depends on the new session ownership boundary. Addon Manager Phase B #167 is agent:queued now that PR #166 merged; #168/#169 remain agent:blocked behind #167 and their respective security/runtime prerequisites. #170 remains dependency-blocked. One active implementation issue at a time; queued does not authorize work.
 - **Diagnostics:** #11's test work merged via PR #163; remaining runtime-version startup reporting is deferred and blocked pending reprioritization.
 - **Diagnostics:** #11's test work merged via PR #163; the remaining runtime-version startup reporting is deferred and blocked pending reprioritization.
 - **Owner decision:** #23 Phase B and #67 third-party rights/distribution questions.
