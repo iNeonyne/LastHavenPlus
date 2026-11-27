@@ -2,11 +2,11 @@ name: Agent issue ownership
 
 on:
   issues:
-    types: [opened, reopened]
+    types: [opened, reopened, labeled, unlabeled]
   workflow_dispatch:
     inputs:
       backfill_existing:
-        description: "Apply ownership labels to existing open issues (beta only)"
+        description: "Apply missing ownership labels and validate existing open issues (beta only)"
         required: false
         type: boolean
         default: false
@@ -16,22 +16,31 @@ permissions:
 
 jobs:
   ownership:
-    name: Ensure agent labels and classify issues
+    name: Validate single issue owner
     if: github.event_name == 'issues' || github.ref == 'refs/heads/beta'
     runs-on: ubuntu-latest
     timeout-minutes: 5
     permissions:
       issues: write
     steps:
-      - name: Create missing ownership labels and apply issue ownership
+      - name: Ensure labels and validate ownership
         env:
           GH_TOKEN: ${{ github.token }}
           EVENT_NAME: ${{ github.event_name }}
+          EVENT_ACTION: ${{ github.event.action }}
           ISSUE_NUMBER: ${{ github.event.issue.number }}
           BACKFILL: ${{ inputs.backfill_existing }}
         shell: bash
         run: |
           set -euo pipefail
+
+          OWNER_LABELS=(
+            "agent:unassigned"
+            "agent:chaty"
+            "agent:vibe"
+            "agent:ib"
+            "agent:review"
+          )
 
           ensure_label() {
             local name="$1"
@@ -39,7 +48,6 @@ jobs:
             local description="$3"
             if ! gh api --paginate "repos/$GITHUB_REPOSITORY/labels?per_page=100" --jq '.[].name' | grep -Fx "$name" >/dev/null; then
               # Two simultaneous issue events can race to create the same label.
-              # Recheck after a failed POST so an already-created label is treated as success.
               if ! gh api --method POST "repos/$GITHUB_REPOSITORY/labels" \
                 -f "name=$name" -f "color=$color" -f "description=$description" >/dev/null; then
                 if ! gh api --paginate "repos/$GITHUB_REPOSITORY/labels?per_page=100" --jq '.[].name' | grep -Fx "$name" >/dev/null; then
@@ -50,49 +58,106 @@ jobs:
             fi
           }
 
-          ensure_label "agent:unassigned" "f9d0c4" "No agent owns this issue; Chaty may triage and assign it."
-          ensure_label "agent:chaty" "0052cc" "Implementation or coordination owned by Chaty."
-          ensure_label "agent:vibe" "5319e7" "Explicitly assigned to Vibe; implementation may start."
-          ensure_label "agent:queued" "c5def5" "Ready and waiting its turn; not an active assignment and must not be started."
-          ensure_label "agent:blocked" "d93f0b" "Cannot proceed until a documented dependency, prerequisite, or owner decision is cleared."
-          ensure_label "agent:review" "fbca04" "Implementation PR submitted; awaiting Chaty review."
-          ensure_label "agent:owner" "0e8a16" "Waiting for repository-owner decision or optional feedback."
+          ensure_label "agent:unassigned" "f9d0c4" "No active implementation owner; Chaty must triage and record the next step."
+          ensure_label "agent:chaty" "0052cc" "Owned or coordinated by Chaty."
+          ensure_label "agent:vibe" "5319e7" "Explicitly assigned to Vibe; implementation may start within scope."
+          ensure_label "agent:ib" "1d76db" "Explicitly assigned to IB; implementation may start within scope."
+          ensure_label "agent:review" "fbca04" "Submitted for Chaty's review and integration."
+          ensure_label "agent:blocked" "d93f0b" "Historical closure marker for issues closed without successful merging."
 
-          add_if_unassigned() {
+          # Retire the obsolete queue state. Waiting issues now retain their actual owner label.
+          if gh api "repos/$GITHUB_REPOSITORY/labels/agent%3Aqueued" >/dev/null 2>&1; then
+            gh api --method DELETE "repos/$GITHUB_REPOSITORY/labels/agent%3Aqueued" >/dev/null
+            echo "Retired the legacy agent:queued label."
+          fi
+
+          # Retire the obsolete owner label from open issues and the repository.
+          while IFS= read -r number; do
+            [[ -n "$number" ]] || continue
+            gh api --method DELETE "repos/$GITHUB_REPOSITORY/issues/$number/labels/agent%3Aowner" >/dev/null 2>&1 || true
+          done < <(gh api --paginate "repos/$GITHUB_REPOSITORY/issues?state=open&per_page=100" --jq '.[] | select(.pull_request == null) | .number')
+          gh api --method DELETE "repos/$GITHUB_REPOSITORY/labels/agent%3Aowner" >/dev/null 2>&1 || true
+
+          # Apply consistent colors to all repository labels.
+          while IFS= read -r label; do
+            [[ -n "$label" ]] || continue
+            color="ededed"
+            case "$label" in
+              bug) color="d73a4a" ;;
+              enhancement) color="a2eeef" ;;
+              documentation) color="0075ca" ;;
+              P0|P0.1) color="b60205" ;;
+              P1) color="d93f0b" ;;
+              P2) color="fbca04" ;;
+              P3) color="0e8a16" ;;
+              agent:unassigned) color="cfd3d7" ;;
+              agent:chaty) color="0052cc" ;;
+              agent:vibe) color="5319e7" ;;
+              agent:ib) color="1d76db" ;;
+              agent:review) color="fbca04" ;;
+              agent:blocked) color="d93f0b" ;;
+            esac
+            encoded="$(printf '%s' "$label" | sed 's/:/%3A/g')"
+            gh api --method PATCH "repos/$GITHUB_REPOSITORY/labels/$encoded" -f "color=$color" >/dev/null
+          done < <(gh api --paginate "repos/$GITHUB_REPOSITORY/labels?per_page=100" --jq '.[].name')
+
+          validate_issue() {
             local number="$1"
-            local label="$2"
-            local has_owner_label
-            has_owner_label="$(gh api "repos/$GITHUB_REPOSITORY/issues/$number" --jq '[.labels[].name | select(startswith("agent:"))] | length > 0')"
-            if [[ "$has_owner_label" == "false" ]]; then
-              gh api --method POST "repos/$GITHUB_REPOSITORY/issues/$number/labels" \
-                --raw-field "labels[]=$label" >/dev/null
-              echo "Issue #$number -> $label"
-            else
-              echo "Issue #$number already has an agent ownership label; leaving it unchanged."
+            local state labels count blocked_count label
+            state="$(gh api "repos/$GITHUB_REPOSITORY/issues/$number" --jq '.state')"
+            if [[ "$state" != "open" ]]; then
+              echo "Issue #$number is closed; active owner validation is not applicable."
+              return 0
             fi
+
+            labels="$(gh api "repos/$GITHUB_REPOSITORY/issues/$number" --jq '[.labels[].name]')"
+            count="$(jq --argjson owners "$(printf '%s\n' "${OWNER_LABELS[@]}" | jq -R . | jq -s .)" '[.[] | select(. as $name | $owners | index($name))] | length' <<<"$labels")"
+            blocked_count="$(jq '[.[] | select(. == "agent:blocked")] | length' <<<"$labels")"
+
+            if [[ "$blocked_count" -gt 0 ]]; then
+              echo "::error::Open issue #$number uses agent:blocked. Open waiting issues must retain their actual owner label; agent:blocked is a closed-issue marker."
+              return 1
+            fi
+            if [[ "$count" -ne 1 ]]; then
+              echo "::error::Open issue #$number has $count active agent owner labels; exactly one is required. Labels: $labels"
+              return 1
+            fi
+
+            echo "Issue #$number has one permitted active owner."
+          }
+
+          add_unassigned_if_missing() {
+            local number="$1"
+            local count
+            count="$(gh api "repos/$GITHUB_REPOSITORY/issues/$number" --jq '[.labels[].name | select(. as $name | ["agent:unassigned","agent:chaty","agent:vibe","agent:ib","agent:review"] | index($name))] | length')"
+            if [[ "$count" -eq 0 ]]; then
+              gh api --method POST "repos/$GITHUB_REPOSITORY/issues/$number/labels" \
+                --raw-field "labels[]=agent:unassigned" >/dev/null
+              echo "Issue #$number -> agent:unassigned"
+            fi
+            validate_issue "$number"
           }
 
           if [[ "$EVENT_NAME" == "issues" ]]; then
-            add_if_unassigned "$ISSUE_NUMBER" "agent:unassigned"
+            if [[ "$EVENT_ACTION" == "opened" || "$EVENT_ACTION" == "reopened" ]]; then
+              add_unassigned_if_missing "$ISSUE_NUMBER"
+            else
+              # On label changes, validate the final issue state. Never remove/replace labels
+              # automatically: ownership changes are Chaty's responsibility.
+              validate_issue "$ISSUE_NUMBER"
+            fi
             exit 0
           fi
 
           if [[ "$BACKFILL" != "true" ]]; then
-            echo "Labels ensured (including agent:queued). Backfill was not requested."
+            echo "Ownership labels ensured. Backfill was not requested."
             exit 0
           fi
 
+          # Backfill never assigns by issue number and never overwrites existing labels.
+          # Unlabelled open issues enter intake; conflicts fail visibly for Chaty to repair.
           while IFS= read -r number; do
             [[ -n "$number" ]] || continue
-            case "$number" in
-              67) label="agent:owner" ;;
-              6|7|10|11|14|16|17|19|20|28|31|86|111|147|148|170) label="agent:blocked" ;;
-              4|15|18|23|142) label="agent:chaty" ;;
-              12|81|146|167|168|169) label="agent:queued" ;;
-              149) label="agent:vibe" ;;
-              106|107) label="agent:review" ;;
-              *) label="agent:unassigned" ;;
-            esac
-            add_if_unassigned "$number" "$label"
+            add_unassigned_if_missing "$number"
           done < <(gh api --paginate "repos/$GITHUB_REPOSITORY/issues?state=open&per_page=100" \
             --jq '.[] | select(.pull_request == null) | .number')
