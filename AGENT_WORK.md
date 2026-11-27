@@ -1,3 +1,15 @@
+## Owner-directed Vibe assignments — 2026-11-27
+
+The repository owner explicitly assigned Vibe three related Addon Manager Phase B issues; the prior one-active-issue-only instruction is superseded.
+
+- **#169 (P0, primary implementation):** bounded Worker interception and read-only `blocks.idx` masking.
+- **#167 (P0):** audit the already-merged bridge against acceptance, close source-level gaps, and perform/coordinate physical ARM64 runtime verification. Do not duplicate PRs #177, #180 or #190.
+- **#170 (P1):** inspect #147 and prepare/implement same-session Addon Manager navigation, with strict shared-file ownership coordination.
+
+Sequence #169 first. #167 may audit/test merged bridge code in parallel. #170 begins with #147 and an affected-file/state-transition plan; do not overlap #169 or #147 ownership. End-to-end #170 acceptance still depends on #169 and verified runtime behavior.
+
+Chaty remains sole reviewer, fixer, exact-head CI verifier and merger into beta. Do not claim physical device testing or actual in-game addon/Lua initialization unless observed. No release, tag, publication or main promotion is authorized.
+
 ## Current owner priority — 2026-11-27 (verified after PR #191)
 
 - **P0:** Addon Manager Phase B (#23); Chaty owns coordination, integration and verification.
