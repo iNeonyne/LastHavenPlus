@@ -116,7 +116,7 @@ object AddonBridgeProtocol {
   ): AddonListResponse? {
     if (!isRequestIdValid(requestId) || !isRevisionValid(revision)) return null
     if (addons.size > MAX_RESPONSE_ITEMS) return null
-    if (addons.any { !isItemText(it.folder) || !isItemText(it.version) }) return null
+    if (addons.any { !isItemText(it.folder) || !isDisplayText(it.version) }) return null
     return AddonListResponse(requestId, revision, addons)
   }
 
@@ -146,4 +146,7 @@ object AddonBridgeProtocol {
       value != "." &&
       value != ".." &&
       value.matches(ITEM_PATTERN)
+
+  private fun isDisplayText(value: String): Boolean =
+    value.length <= MAX_ITEM_CHARS && value.none { it.isISOControl() }
 }
