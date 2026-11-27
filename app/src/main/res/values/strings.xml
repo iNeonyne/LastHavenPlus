@@ -29,6 +29,20 @@
     <string name="addon_manager_cancel">Cancel</string>
 
     <string name="action_cancel">Cancel</string>
+    <string name="action_back">Back</string>
+    <string name="settings_brand_mark" translatable="false">LASTHAVENPLUS</string>
+    <string name="updates_title">App updates</string>
+    <string name="updates_status_section">Update status</string>
+    <string name="updates_checking">Checking the stable release channel…</string>
+    <string name="updates_available">LastHavenPlus %1$s is available.</string>
+    <string name="updates_delta_available">A smaller differential package is available (%1$s MiB).</string>
+    <string name="updates_downloading_delta">Downloading differential update…</string>
+    <string name="updates_downloading_full">Downloading full APK…</string>
+    <string name="updates_download_smaller">Download smaller update</string>
+    <string name="updates_download_full">Download update</string>
+    <string name="updates_download_full_instead">Download full APK instead</string>
+    <string name="updates_no_info">No update information yet. Check for updates from Settings.</string>
+    <string name="updates_download_status">Download status</string>
     <string name="action_refresh">Refresh</string>
     <string name="action_retry">Retry</string>
     <string name="action_view">View</string>
