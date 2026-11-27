@@ -3,7 +3,7 @@
 - **Verified beta HEAD:** `78a3d12eb018e112a3443377e34e234ee9d3da7d`.
 - **Browser engine:** Mozilla GeckoView 161 Stable, ARM64 only; AndroidX Core 1.19.1; ktfmt 0.65.
 - **Integrated:** PR #199 (GeckoView 160 audit), PR #200 (manual dependency-report workflow), and PR #201 (GeckoView 161/dependency audit). Issues #20 and #188 are closed after successful integration.
-- **Current rights/notice work:** PR #203 is the current-beta replacement for the superseded draft #202. It remains open pending final APK/about:license inspection and the owner-level Google Play services distribution-terms decision in issue #67.
+- **Current rights/notice work:** PR #203 is the current-beta replacement for the superseded draft #202. The GeckoView 161 about:license inventory has been extracted from the exact ARM64 APK and added to the Settings viewer; exact PR #203 APK packaging checks are running. The owner-level Google Play services distribution-terms decision in issue #67 remains open.
 - **Addon Manager Phase B remains the top project priority**, gated by navigation/back-stack #147, bridge-port work #183, and physical ARM64 acceptance #167.
 - No physical ARM64 device test of GeckoView 161 has been performed. No release, tag, or `main` promotion is authorized by this snapshot.
 - Dated sections below are historical records; their branch heads and task statuses must not override this current snapshot.
