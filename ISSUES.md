@@ -18,7 +18,7 @@ Chaty remains sole reviewer, fixer, exact-head CI verifier and merger into beta.
 - **PR #191 exact-head checks:** Android #45951682137, unsigned APK reproducibility #45951682107, Markdown #45951682194 — all passed.
 - **#167:** open, `agent:chaty`; source-level bridge/payload/session wiring is integrated. Remaining work is physical ARM64 runtime verification and any defects found there. Do not claim actual addon/Lua initialization.
 - **#168:** closed after PR #191 merged.
-- **#169:** `agent:vibe`; active P0 implementation assignment for bounded Worker interception and read-only `blocks.idx` masking. The bridge and XHR contract dependencies are integrated.
+- **#169:** `agent:vibe`; active P0 implementation assignment for bounded Worker interception and read-only `blocks.idx` masking. Implementation submitted on branch `vibe/worker-blocks-masking-169` (PR targeting `beta`, awaiting integration); 61/61 worker-overlay suite tests executed locally.
 - **#170:** `agent:blocked`; waits for #169 integration and remaining same-session manager-navigation work.
 - **#23:** Chaty coordinates the milestone and owns integration; Vibe has exactly one active implementation issue (#169).
 - **Paused:** updater #4/#15 remain queued, not cancelled; do not resume before an explicit handoff.
@@ -970,3 +970,12 @@ Verify the current manifest and GeckoView delegates, then document the strict al
 - This is source-level integration only. It does not implement XHR interception (#168), Worker/OPFS `blocks.idx` masking (#169), same-session Addon Manager navigation/page-world refresh (#170), or addon activation. No physical ARM64 test or in-game addon initialization is claimed.
 - Exact PR-head Android validation [#45947192586](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45947192586) and independent unsigned APK reproducibility [#45947192520](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45947192520) passed on head `0a291ca0edd7ac7db03ffe126a02349cbd1b758a`. Documentation updates require fresh exact-head Markdown and Android/reproducibility checks before merge.
 - Issue #167 remains open until physical ARM64 runtime acceptance and the remaining Addon Manager workstream gates are satisfied; merging this source integration does not imply runtime compatibility.
+
+
+## 2026-11-27 — Chaty corrected #169 index masking contract
+
+- PR #195 now reads the root OPFS `blocks.idx` through `navigator.storage.getDirectory()` and `getFileHandle("blocks.idx")`, checks the 2 MiB ceiling before reading, and sends validated spans in the Worker boot message before the original worker script is imported.
+- The authoritative five-column loader format is respected: column 5 (`cols[4]`) is the addon path; digits in column 2 (`cols[1]`) are filled with byte 48 (`0`), and the first byte of column 5 is filled with byte 35 (`#`). Byte offsets are calculated from UTF-8 encoded bytes and only enabled addon folders are eligible.
+- The Worker validates the complete span set atomically (path/folder eligibility, exact record shape, safe integer spans, index bounds and allowed fill bytes). Any malformed entry rejects the whole set; OPFS/index failures apply no mask and emit only a bounded stage diagnostic. Persistent OPFS bytes are never written.
+- The generated bootstrap now includes parser/path-validator dependencies, and the WASM hook checks the actual `scope.wasmImports` object after `assignWasmImports()` runs.
+- The exact Worker URL allowlist remains empty pending physical ARM64 observation. No physical device test or in-game addon/Lua initialization is claimed. PR #195 remains unmerged pending exact-head CI and Chaty's integration acceptance.

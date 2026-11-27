@@ -10,6 +10,14 @@ Sequence #169 first. #167 may audit/test merged bridge code in parallel. #170 be
 
 Chaty remains sole reviewer, fixer, exact-head CI verifier and merger into beta. Do not claim physical device testing or actual in-game addon/Lua initialization unless observed. No release, tag, publication or main promotion is authorized.
 
+## 2026-11-27 — Vibe submitted #169 Worker interception and blocks.idx masking implementation
+
+- **Branch:** `vibe/worker-blocks-masking-169`, based on verified beta HEAD `837bfe9` (post-#194 beta). PR targeting `beta` is submitted and awaits Chaty integration; the exact commit SHA is recorded in the PR and the issue comment.
+- **Implementation:** new MAIN-world content script `worker-overlay.js` — fail-closed exact-URL Worker allowlist gate (inert while empty), bounded `em-pthread` blob bootstrap with 20 s boot timeout, queued-message cap 64, max 8 concurrent intercepted workers, object-URL revocation and teardown on every failure/termination path, idempotent `assignWasmImports` wrapping, read-only `blocks.idx` TAB-record parser with strict bounded limits and stage diagnostics, masking from bounded read-only OPFS spans: zero column-2 digits and replace the first byte of enabled-addon paths in column 5, and a worker-side XHR forwarder (GET/HEAD only, addon routes, inflight cap 4, sync fail-closed 404, non-addon passthrough) that reuses the `__LHAddonXhrOverlayCore` route/content-type resolution page-side.
+- **Local verification (executed):** `node --check` on all five extension JS assets passed; `node --test scripts/test-addon-worker-overlay.mjs` passed 61/61; `node --test scripts/test-addon-xhr-overlay.mjs` and `scripts/test-addon-bridge.mjs` passed unchanged; JVM asset/manifest guard tests updated for the sixth asset and third content-script entry.
+- **Not claimed:** no physical ARM64 device test, no in-game addon/Lua initialization, no physical ARM64 test or in-game addon/Lua initialization. The Worker URL allowlist is empty by default, so the overlay is inert until the exact worker URL is hardware-verified and registered.
+- **No release, tag, publication or beta-to-main promotion is authorized.**
+
 ## 2026-11-27 — PR #191 merged; Worker masking assigned (#169)
 
 - **Verified beta HEAD:** `d160b052370bbcbae6925174ac2cb10ec609ff91`.
@@ -324,3 +332,12 @@ No code, CI, release, signing, dependency, ABI or device behavior changed in thi
 - This is source-level integration only. It does not implement XHR interception (#168), Worker/OPFS `blocks.idx` masking (#169), same-session Addon Manager navigation/page-world refresh (#170), or addon activation. No physical ARM64 test or in-game addon initialization is claimed.
 - Exact PR-head Android validation [#45947192586](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45947192586) and independent unsigned APK reproducibility [#45947192520](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45947192520) passed on head `0a291ca0edd7ac7db03ffe126a02349cbd1b758a`. Documentation updates require fresh exact-head Markdown and Android/reproducibility checks before merge.
 - Issue #167 remains open until physical ARM64 runtime acceptance and the remaining Addon Manager workstream gates are satisfied; merging this source integration does not imply runtime compatibility.
+
+
+## 2026-11-27 — Chaty corrected #169 index masking contract
+
+- PR #195 now reads the root OPFS `blocks.idx` through `navigator.storage.getDirectory()` and `getFileHandle("blocks.idx")`, checks the 2 MiB ceiling before reading, and sends validated spans in the Worker boot message before the original worker script is imported.
+- The authoritative five-column loader format is respected: column 5 (`cols[4]`) is the addon path; digits in column 2 (`cols[1]`) are filled with byte 48 (`0`), and the first byte of column 5 is filled with byte 35 (`#`). Byte offsets are calculated from UTF-8 encoded bytes and only enabled addon folders are eligible.
+- The Worker validates the complete span set atomically (path/folder eligibility, exact record shape, safe integer spans, index bounds and allowed fill bytes). Any malformed entry rejects the whole set; OPFS/index failures apply no mask and emit only a bounded stage diagnostic. Persistent OPFS bytes are never written.
+- The generated bootstrap now includes parser/path-validator dependencies, and the WASM hook checks the actual `scope.wasmImports` object after `assignWasmImports()` runs.
+- The exact Worker URL allowlist remains empty pending physical ARM64 observation. No physical device test or in-game addon/Lua initialization is claimed. PR #195 remains unmerged pending exact-head CI and Chaty's integration acceptance.
