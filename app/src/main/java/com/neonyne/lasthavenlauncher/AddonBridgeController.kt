@@ -39,6 +39,7 @@ internal class AddonBridgeController(
   private var runtime: GeckoRuntime? = null
   private var bridgeExtension: WebExtension? = null
   private var installInFlight = false
+  private val installationCallbacks = mutableListOf<(Boolean) -> Unit>()
   private var installationGeneration = 0L
   private var snapshotGeneration = 0L
   private var requestGeneration = 0L
@@ -98,21 +99,27 @@ internal class AddonBridgeController(
     clearPendingRequests()
   }
 
-  /** Installs the bundled extension once per runtime and registers the message delegate. */
-  fun ensureInstalled(context: Context) {
-    if (bridgeExtension != null || installInFlight) return
+  /** Installs the bundled extension before game navigation and reports completion on main. */
+  fun ensureInstalled(context: Context, onComplete: (Boolean) -> Unit = {}) {
+    if (bridgeExtension != null) {
+      onComplete(true)
+      return
+    }
+    installationCallbacks += onComplete
+    if (installInFlight) return
+
     installInFlight = true
     val generation = installationGeneration
     val currentRuntime =
       try {
         runtime ?: GeckoRuntimeProvider.get(context).also { runtime = it }
       } catch (error: Exception) {
-        installInFlight = false
         Diagnostics.error(
           context,
           TAG,
           "Addon bridge runtime initialization failed: ${error.message}",
         )
+        completeInstallation(false)
         return
       }
     val installation =
@@ -122,8 +129,8 @@ internal class AddonBridgeController(
           AddonBridgePolicy.BRIDGE_EXTENSION_ID,
         )
       } catch (error: Exception) {
-        if (generation == installationGeneration) installInFlight = false
         Diagnostics.error(context, TAG, "Addon bridge extension install failed: ${error.message}")
+        completeInstallation(false)
         return
       }
     refreshSnapshot()
@@ -131,11 +138,12 @@ internal class AddonBridgeController(
       { extension ->
         mainHandler.post {
           if (generation != installationGeneration) return@post
-          installInFlight = false
+          var installed = bridgeExtension != null
           if (extension != null && bridgeExtension == null) {
             try {
               extension.setMessageDelegate(messageDelegate, AddonBridgePolicy.NATIVE_MESSAGING_NAME)
               bridgeExtension = extension
+              installed = true
             } catch (error: Exception) {
               Diagnostics.error(
                 context,
@@ -150,20 +158,28 @@ internal class AddonBridgeController(
               "Addon bridge extension install returned no extension",
             )
           }
+          completeInstallation(installed)
         }
       },
       { error ->
         mainHandler.post {
           if (generation != installationGeneration) return@post
-          installInFlight = false
           Diagnostics.error(
             context,
             TAG,
             "Addon bridge extension install failed: ${error?.message ?: "unknown"}",
           )
+          completeInstallation(false)
         }
       },
     )
+  }
+
+  private fun completeInstallation(installed: Boolean) {
+    installInFlight = false
+    val callbacks = installationCallbacks.toList()
+    installationCallbacks.clear()
+    callbacks.forEach { callback -> runCatching { callback(installed) } }
   }
 
   /** Detaches the delegate and drops all session/port/pending state. */
@@ -172,6 +188,7 @@ internal class AddonBridgeController(
     snapshotGeneration += 1
     requestGeneration += 1
     installInFlight = false
+    installationCallbacks.clear()
     cachedSnapshot = null
     cachedPayloadManifest = null
     payloadErrorCode = "unavailable"
