@@ -1,34 +1,34 @@
 # Project backlog — LastHavenPlus
 
-## 2026-11-27 priority decision
+## 2026-11-27 — Addon Manager Phase B execution checkpoint
 
-- **P0 — Addon Manager Phase B (#23):** top project priority by owner direction. Chaty coordinates; Vibe's active task is #167 GeckoView 160 bridge. Sequence #168–#170 only as dependencies and security contracts allow.
-- **Paused:** updater #4 and #15 are queued, not cancelled. They resume only after Chaty explicitly reassigns them following a safe Addon Manager milestone handoff.
-- Existing security, testing, ARM64 device-verification, signing and release-approval gates are unchanged.
-
+- **P0 — Addon Manager Phase B (#23):** Chaty coordinates and integrates; Vibe has exactly one active implementation assignment, #168 (XHR resource overlay).
+- **Merged bridge foundation:** PR #177 and payload transport PR #180 are integrated into beta. PR #180 merge commit / verified beta HEAD: `892494aa8f0333f907b2e730f6b754ba2dabe2a1`.
+- **#167:** remains open, `agent:chaty`; Chaty owns integration follow-up and physical ARM64 runtime verification. Do not infer actual addon initialization from bridge transport.
+- **#168:** `agent:vibe`; active assignment. Vibe must complete only the bounded XHR resource overlay and its security/test contract.
+- **#169:** `agent:blocked`; waits for #168 review and integration before Worker/`blocks.idx` masking.
+- **#170:** `agent:blocked`; waits for runtime tasks and navigation/session prerequisites.
+- **Paused:** updater #4/#15 remain queued, not cancelled. Resume only after Chaty explicitly reassigns them following a safe Addon Manager milestone handoff.
+- Existing ARM64-only, security, signing, device-verification and owner release-approval gates remain unchanged.
 
 **Source of truth:** GitHub Issues and this version-controlled backlog. Keep issue scope, status and acceptance criteria aligned. Do not close an issue because documentation changed.
 
 ## Current state — 2026-11-27
 
 - **Latest stable:** v2.3.0; no new release is authorized.
-- **Development:** beta HEAD `606e7c2a2df06de798df4cc3d8057483617e4a4e`.
-- **Integrated:** PR #166 Addon Manager planner groundwork at `d83e2dfc89087f67f4dbbe71e85668d80303e3ef`; PR #165 launcher strings at `7e39d2553a11332d44326c1704e0d7647cc6aa40`. PR #165 exact-head Android/unit tests, unsigned APK reproducibility and Markdown passed; #149 is closed.
-- **Open PRs:** #177 Vibe's draft GeckoView bridge handoff (#167), awaiting Chaty's code/security review; #179 documentation-only priority update, Markdown run #45927607793 passed (merge pending).
-- **Vibe handoff:** #167 GeckoView 160 extension bridge is submitted as draft PR #177; issue is `agent:review` while Chaty reviews.
-- **Addon Manager:** Phase A and planner groundwork are integrated; extension installation, XHR/Worker interception and actual in-game activation are not implemented. #168/#169 remain blocked behind #167/runtime prerequisites.
-- **Updater:** #4/#15 remain coordinated under Chaty; earlier BSDIFF candidate PRs were not merged and signed APK-pair acceptance remains incomplete.
-- **Device/release:** no physical ARM64 test, release, tag, publication or beta-to-main promotion is claimed or authorized.
+- **Development:** beta HEAD `892494aa8f0333f907b2e730f6b754ba2dabe2a1`.
+- **Integrated:** PR #177 native-messaging foundation and PR #180 bounded ZIP 0.5.1 payload transport. Exact-head Android PR validation #45938326655 and unsigned reproducibility #45938326638 passed; no post-merge CI result is claimed.
+- **Addon Manager:** Phase A/planner and bridge transport code are integrated. Production session wiring, XHR (#168), Worker/index masking (#169), same-session navigation (#170), and in-game addon activation remain incomplete.
+- **Device/release:** no physical ARM64 runtime test, release, tag, publication or beta-to-main promotion is claimed or authorized.
 
 ## Current ownership
 
-- **Chaty active:** #23 Phase B coordination and review/integration of #167/PR #177. Updater #4/#15 are queued/paused.
-- **Vibe handoff under review:** #167 GeckoView 160 extension bridge, PR #177 (`agent:review`).
-- **Completed integration:** #146 GameSessionController, PR #173, merged and post-merge CI verified.
-- **Vibe next:** no new implementation issue until Chaty reviews #167 and checks dependency/file ownership. #168/#169 remain blocked pending bridge/security integration; #170 remains blocked.
+- **Chaty active:** #23 coordination, #167 bridge follow-up/device verification, PR review and integration.
+- **Vibe active:** #168 XHR resource overlay only.
+- **Blocked:** #169 waits for #168 integration; #170 waits for runtime/navigation prerequisites.
+- **Updater:** #4/#15 remain queued/paused under Chaty.
 - **Chaty queued:** #81 dependency-evidence documentation; not started. #20/#31 remain owner/authorization blocked.
 - **Owner-controlled:** #67 third-party rights/distribution decision.
-- **Diagnostics:** #11 test work merged; remaining runtime-version startup reporting remains deferred.
 
 ## Backlog index
 
