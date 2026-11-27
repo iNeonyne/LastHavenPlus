@@ -1076,3 +1076,11 @@ Entry format:
 
 - README now points to the Gradle wrapper, version catalog, and Android CI workflow for live toolchain pins instead of duplicating version numbers.
 - Recorded Gradle 9.9.3 as the latest upstream patch release and noted Dependabot PR #210 still proposes 9.9.2. The project remains on 9.7.1 until compatibility review and CI prove an upgrade safe.
+
+
+### Final consistency and branch-retention audit — 2026-11-28
+
+- Removed duplicated policy/inventory content from docs/BRANCH_LIFECYCLE.md and retained one copy of the Nov 26 inventory, explicitly historical.
+- Corrected issue #167 to distinguish its superseded GeckoView 160 port target from current beta GeckoView 161 runtime acceptance, and corrected issue #23's PR #203 status to merged.
+- Added explicit Chaty searches for unassigned and queued issues on startup.
+- Documented that GitHub's live `delete_branch_on_merge=true` setting conflicts with PR #203's branch-retention rule. The owner must disable automatic head-branch deletion before merging if task branches are to be retained.
