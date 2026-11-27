@@ -735,3 +735,13 @@ No branch was deleted. The available GitHub connector exposes no branch-delete o
 - The Worker validates the complete span set atomically (path/folder eligibility, exact record shape, safe integer spans, index bounds and allowed fill bytes). Any malformed entry rejects the whole set; OPFS/index failures apply no mask and emit only a bounded stage diagnostic. Persistent OPFS bytes are never written.
 - The generated bootstrap now includes parser/path-validator dependencies, and the WASM hook checks the actual `scope.wasmImports` object after `assignWasmImports()` runs.
 - The exact Worker URL allowlist remains empty pending physical ARM64 observation. No physical device test or in-game addon/Lua initialization is claimed. PR #195 remains unmerged pending exact-head CI and Chaty's integration acceptance.
+
+
+## 2026-11-28 — Agent documentation consolidation (#205)
+
+- **Base:** beta commit `78a3d12eb018e112a3443377e34e234ee9d3da7d`. Work branch: `chaty/agent-doc-consolidation-2026-11-28`.
+- **Inspection:** compared README.md, AGENTS.md, AGENT_PROTOCOL.md, AGENT_WORK.md, CONTRIBUTING.md, docs/BRANCH_LIFECYCLE.md, the pinned GeckoView catalog entry, and the GeckoView migration notes.
+- **Changes:** consolidated normative rules and roles in AGENTS.md; reduced AGENT_PROTOCOL.md to startup guidance; removed assignment, label, and merge-policy duplication from README.md; replaced CONTRIBUTING.md's repeated workflow with a policy pointer; marked AGENT_WORK.md's current snapshot and historical boundary, replacing repeated policy sections with references.
+- **Validation:** fetched the updated Markdown files from the task branch; checked headings and fenced-code balance. README.md has two balanced fences; the other updated entry-point docs have no fences. Manual local-link and full Markdown-lint validation remain to be confirmed by PR CI.
+- **Scope:** documentation only. No application source or runtime behavior changed. No branch deletion, release, tag, or promotion was performed.
+- **Next:** inspect exact PR diff and Markdown CI on the latest head; merge only after required checks pass, then verify the beta commit and close #205 as completed.
