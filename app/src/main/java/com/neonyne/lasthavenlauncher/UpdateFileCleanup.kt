@@ -10,6 +10,7 @@ internal object UpdateFileCleanup {
   internal const val PREFERENCES_NAME = "launcher_settings"
   internal const val KEY_PENDING_UPDATE_URI = "pending_update_uri"
   internal const val KEY_INSTALLER_HANDOFF_APK_NAME = "installer_handoff_apk_name"
+  internal const val KEY_INSTALLER_HANDOFF_CANDIDATE_APK_NAME = "installer_handoff_candidate_apk_name"
 
   private const val FILE_PROVIDER_ROOT = "update_apks"
   private const val MAX_ENTRIES_PER_CLEANUP = 256
@@ -31,9 +32,10 @@ internal object UpdateFileCleanup {
     val preferences =
       context.getSharedPreferences(PREFERENCES_NAME, Context.MODE_PRIVATE)
     val protected = linkedSetOf<String>()
-    preferences.getString(KEY_INSTALLER_HANDOFF_APK_NAME, null)
-      ?.takeIf(::isManagedApkName)
-      ?.let(protected::add)
+    listOf(KEY_INSTALLER_HANDOFF_APK_NAME, KEY_INSTALLER_HANDOFF_CANDIDATE_APK_NAME)
+      .mapNotNull(preferences::getString)
+      .filter(::isManagedApkName)
+      .forEach(protected::add)
     preferences.getString(KEY_PENDING_UPDATE_URI, null)?.let { value ->
       runCatching { Uri.parse(value) }
         .getOrNull()
