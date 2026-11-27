@@ -158,7 +158,10 @@ class AddonRuntimePlannerTest {
     val plan = AddonRuntimePlanner.plan(AddonLibrarySnapshot("deep-chain", addons))
     assertEquals(AddonArchive.MAX_ADDONS_PER_ARCHIVE, plan.orderedAddons.size)
     assertEquals("Addon0", plan.orderedAddons.first().folder)
-    assertEquals("Addon${AddonArchive.MAX_ADDONS_PER_ARCHIVE - 1}", plan.orderedAddons.last().folder)
+    assertEquals(
+      "Addon${AddonArchive.MAX_ADDONS_PER_ARCHIVE - 1}",
+      plan.orderedAddons.last().folder,
+    )
   }
 
   @Test
@@ -172,7 +175,9 @@ class AddonRuntimePlannerTest {
   @Test
   fun tocLoadOrderRejectsOversizedInput() {
     org.junit.Assert.assertThrows(IllegalArgumentException::class.java) {
-      AddonRuntimePlanner.parseTocLoadFiles("x".repeat(AddonArchive.MAX_TOC_BYTES.toInt() + 1))
+      AddonRuntimePlanner.parseTocLoadFiles(
+        "x".repeat(AddonArchive.MAX_TOC_BYTES.toInt() + 1)
+      )
     }
   }
 
