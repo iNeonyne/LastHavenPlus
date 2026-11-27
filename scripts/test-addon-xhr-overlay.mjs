@@ -1024,6 +1024,37 @@ test("opening a new pass-through request aborts the previous native request", ()
   assert.equal(xhr.readyState, 1);
 });
 
+test("aborting a pass-through request resets the facade before XHR reuse", () => {
+  let native;
+  class DeferredNativeXHR extends MockNativeXHR {
+    constructor() {
+      super();
+      this.abortCount = 0;
+      native = this;
+    }
+    send(body) {
+      this._sent = true;
+      this._body = body === undefined ? null : body;
+    }
+    abort() {
+      this.abortCount += 1;
+      super.abort();
+    }
+  }
+  const { context } = loadWrapper({ nativeXhr: DeferredNativeXHR });
+  const xhr = new context.XMLHttpRequest();
+  xhr.open("GET", "https://lasthavens.com/api/first");
+  xhr.send();
+  xhr.abort();
+  assert.equal(xhr.readyState, 0);
+  assert.equal(xhr.status, 0);
+  assert.equal(native.abortCount, 1);
+  xhr.open("GET", "https://lasthavens.com/api/second");
+  assert.equal(native.abortCount, 1);
+  xhr.send();
+  assert.equal(native._openArgs.url, "https://lasthavens.com/api/second");
+});
+
 test("pass-through never opens the native XHR for intercepted URLs", async () => {
   const payload = makePayloadWithFiles({ "bar.lua": "local" });
   const opened = [];
