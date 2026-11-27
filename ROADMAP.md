@@ -56,7 +56,7 @@ Every open issue is listed below, grouped by its current priority. Opening a new
 
 ### Active issues
 
-### P0.1
+#### P0.1
 
 - [#4 — P0.1 — Improve build reproducibility and updater test coverage](https://github.com/iNeonyne/LastHavenPlus/issues/4) — bug, P0.1
 
@@ -98,7 +98,7 @@ Every open issue is listed below, grouped by its current priority. Opening a new
 - [#213 — Add alternate game server setting and harden updater retries](https://github.com/iNeonyne/LastHavenPlus/pull/213) (beta <- chaty/game-url-setting-updater-hardening)
 - [#214 — Enable roadmap sync from the default beta branch](https://github.com/iNeonyne/LastHavenPlus/pull/214) (beta <- chaty/roadmap-sync-beta-default)
 
-## Recently completed (last 30 days)
+### Recently completed (last 30 days)
 
 - [#208 — Make GitHub the only live task queue and retire stale status snapshots](https://github.com/iNeonyne/LastHavenPlus/issues/208)
 - [#205 — Consolidate agent documentation and remove workflow duplication](https://github.com/iNeonyne/LastHavenPlus/issues/205)
