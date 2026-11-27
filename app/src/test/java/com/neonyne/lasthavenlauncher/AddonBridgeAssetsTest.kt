@@ -30,7 +30,7 @@ class AddonBridgeAssetsTest {
     assertTrue(manifest.contains("\"run_at\": \"document_start\""))
     assertTrue(manifest.contains("\"https://lasthavens.com/play\""))
     assertTrue(manifest.contains("\"https://lasthavens.com/play/\""))
-    assertTrue(manifest.contains("\"runtime-core.js\""))
+    assertTrue(manifest.contains("\"payload-validation.js\""))
     assertTrue(manifest.contains("\"bridge.js\""))
     assertFalse(manifest.contains("\"<all_urls>\""))
     assertFalse(manifest.contains("\"all_frames\": true"))
@@ -80,8 +80,8 @@ class AddonBridgeAssetsTest {
   }
 
   @Test
-  fun `runtime core validates the ZIP payload without page-controlled inputs`() {
-    val core = File(assetsDir, "extensions/addon-bridge/runtime-core.js").readText()
+  fun `payload validator checks the ZIP payload without page-controlled inputs`() {
+    val core = File(assetsDir, "extensions/addon-bridge/payload-validation.js").readText()
     assertTrue(core.contains("function validatePayload(payload)"))
     assertTrue(core.contains("MAX_RUNTIME_BUNDLE_BYTES = 16 * 1024 * 1024"))
     assertTrue(core.contains("MAX_RUNTIME_FILES = 1024"))
