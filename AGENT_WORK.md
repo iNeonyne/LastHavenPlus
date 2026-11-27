@@ -9,7 +9,7 @@
 
 
 **Last verified:** 2026-11-27  
-**Verified beta HEAD after PR #175:** `022b4e2c4880d13b23e4e8c22cbd3dd5be679623` (documentation-only follow-up; latest app-code merge remains PR #173 at `5ed6af635954c8f4e2673dab3c60334eff4a8ae0`).  
+**Verified beta HEAD:** `606e7c2a2df06de798df4cc3d8057483617e4a4e` (base of the current documentation-priority change).  
 **Stable release:** v2.3.0 (tag commit ebc5b424e83ae66c2b0accc2bec6f050b8dc0d88).
 
 ## Roles and integration
@@ -24,7 +24,7 @@
 
 ### Chaty — #4 / #15 updater reliability and recovery (paused)
 - **Owner/state:** agent:queued; paused by the 2026-11-27 owner priority decision. Not cancelled; do not resume until explicitly reassigned after Addon Manager P0 handoff. Keep #4/#15/#31 coordinated and do not parallelize.
-- **Current beta:** 7451b940dc0adfa1ea14234fe6d489bba688b12c.
+- **Current beta:** `606e7c2a2df06de798df4cc3d8057483617e4a4e`.
 - **Candidate:** partial-open BSDIFF cleanup exists only on chaty/updater-patch-stream-cleanup-4-beta; PRs #157/#159/#160 closed unmerged. No candidate code is integrated.
 - **Latest exact-head evidence:** PR #160 head d0cb2f5144257a2270ae0ed42f649833ad688207; Markdown #45891807077 passed. Reproducibility build A failed resolving org.jetbrains.kotlin.plugin.compose:2.4.21; build B and Android PR validation were incomplete when closed. No overall pass claimed.
 - **Remaining #4 acceptance:** adversarial updater test matrix, real signed ARM64 APK-pair byte-for-byte reconstruction and signature/package/version/ABI verification, differential benchmark, current-beta signed packaging checks. No physical-device update test claimed.
@@ -46,17 +46,16 @@
 
 Vibe has exactly one active implementation issue at a time. After handing off a PR, Vibe immediately starts the next explicitly assigned independent issue while Chaty integrates earlier PRs. A queued issue is not an assignment; Chaty must change its label to `agent:vibe` and post a complete scope/acceptance comment.
 
-### Chaty integration — #146 GameSessionController (PR #173)
-- **GitHub ownership:** `agent:chaty`; Vibe handed off PR #173 and Chaty owns all integration fixes and merge.
-- **PR:** #173, branch `vibe/game-session-controller-146`, head `eb9f64b672eced9143bc5689106223c3e7af3d16`, based on beta `d83e2df`.
-- **Validation:** Markdown #45920691560 passed; Android #45920691633 and unsigned reproducibility #45920691607 were still running. PR is draft and conflicts with beta documentation changed by PR #165. Chaty must reconcile docs, resolve mergeability, rerun exact-head checks and merge only after code review and all gates pass.
-- **Code scope:** controller/state extraction from MainActivity; no physical ARM64 device test. See PR #173 for full handoff and limitations.
+### Completed — #146 GameSessionController (PR #173)
+- **GitHub ownership:** completed; issue #146 closed after Chaty integrated PR #173.
+- **Merge:** `5ed6af635954c8f4e2673dab3c60334eff4a8ae0`.
+- **Validation:** post-merge Android/signing/ARM64 run #45923143717, unsigned reproducibility #45923143712 and Markdown #45923143716 passed. Physical ARM64 gameplay/session behavior remains unverified.
 
-### Active — #167 GeckoView 160 extension bridge
-- **GitHub ownership:** `agent:vibe`; explicitly assigned by Chaty on 2026-11-27 after PR #146 handoff. Vibe may work while Chaty integrates #146 because the initial adapter/asset work is separate.
+### Review — #167 GeckoView 160 extension bridge (PR #177)
+- **GitHub ownership:** `agent:review`; Vibe handed off draft PR #177 and Chaty owns review, corrections, verification and integration.
 - **Scope:** audit pinned GeckoView 160 APIs; deterministic APK-bundled extension assets; isolated bridge/adapter classes; exact-origin/path policy, sender/session validation, bounded payload schema and focused fail-closed tests.
 - **Hard exclusions:** do not edit MainActivity, GameSessionController, GameSessionState, GameScreen, navigation/session ownership or shared project docs while PR #173 is being integrated. If an integration point needs an excluded file, stop and record the blocker. No Chrome MV3 service worker/APIs, external unsigned XPI, toolchain/dependency changes, game/profile changes, auto-updates or runtime-activation claims.
-- **Handoff:** PR targeting beta with exact SHA, tests, CI evidence, limitations and device status. Chaty alone fixes, verifies and merges.
+- **Handoff evidence:** draft PR #177 targets beta at `4fc06e5328bef96aec42b117400c350a2b00d348`, branch `vibe/extension-bridge-167`, based on `7e39d2553a11332d44326c1704e0d7647cc6aa40`. Android run #45924935347 and independent unsigned reproducibility #45924935341 passed. Markdown did not run because the PR contains no docs. Review is not complete; do not merge until code/security review and branch-freshness checks pass.
 
 ### Later Vibe work
 - **#147:** navigation/back-stack consolidation; remains blocked until #146 is integrated.
@@ -65,7 +64,7 @@ Vibe has exactly one active implementation issue at a time. After handing off a 
 
 ## Owner-controlled work
 
-- **#23 — Addon Manager:** Phase A is integrated by PR #152 at 103bb979c98589a8704459d28d13861eccca39d6. The repository owner has authorized Phase B investigation/implementation under Chaty's coordination. Runtime injection is not yet implemented or verified. Chaty owns #23; Vibe may work only on a separately assigned child issue (#167–#170).
+- **#23 — Addon Manager (P0):** Phase A and planner groundwork are integrated. Phase B runtime remains incomplete. Chaty owns #23 coordination; #167 is in review via PR #177; #168/#169 remain blocked pending bridge review/integration and security-contract validation; #170 remains blocked on navigation/runtime prerequisites.
 - **#67 — rights and third-party notices:** original project material follows the owner's All Rights Reserved decision. Third-party notice completeness and distribution-rights review remain unresolved. Issue label: agent:owner.
 
 ## Blocked dependency/authorization queue
@@ -100,7 +99,7 @@ Every open issue has exactly one `agent:*` label. The label distinguishes active
 | #81 | `agent:queued` | Chaty documentation/evidence task; not started |
 | #12 | `agent:queued` | #11 prerequisite merged; after #146/#147 and Phase B bridge work, explicit assignment required |
 | #146 | `agent:chaty` | Closed completed; PR #173 merged at `5ed6af6` |
-| #167 | `agent:vibe` | Active Vibe bridge assignment; branch creation and API-audit progress requested |
+| #167 | `agent:review` | Vibe handed off draft PR #177; Chaty review and exact-head verification required |
 | #168 | `agent:blocked` | Waits for #167 bridge integration and contract verification |
 | #169 | `agent:blocked` | Waits for #167 and #168 contracts to be integrated |
 | #6 | `agent:blocked` | Waits for #28 |
@@ -129,11 +128,11 @@ Every open issue has exactly one `agent:*` label. The label distinguishes active
 - Validate compatibility before Gradle, SDK, Build Tools, GeckoView, signing or dependency/toolchain changes.
 - Never claim physical-device compatibility without real ARM64 hardware evidence.
 
-## 2026-11-27 — Post-merge integration reconciliation (#146)
+## 2026-11-27 — Post-merge integration reconciliation (#146) and #167 handoff
 
-- **Current verified beta HEAD:** `5ed6af635954c8f4e2673dab3c60334eff4a8ae0`.
-- **#146 / PR #173:** closed completed; squash merge commit `5ed6af635954c8f4e2673dab3c60334eff4a8ae0`; exact PR-head Android, unsigned reproducibility and Markdown checks passed. Post-merge Markdown passed; post-merge Android/signing/ARM64 and reproducibility runs were still in progress at this checkpoint.
-- **#167:** remains Vibe's sole active implementation assignment (`agent:vibe`). A repository branch inventory at 01:34 UTC did not yet show `vibe/extension-bridge-167`; Chaty requested that Vibe create/confirm the dedicated branch from the latest beta and post the GeckoView 160 API audit findings. Do not treat the comment saying work is starting as evidence of an implementation branch or code delivery.
+- **Verified beta HEAD at current checkpoint:** `606e7c2a2df06de798df4cc3d8057483617e4a4e`.
+- **#146 / PR #173:** completed and merged at `5ed6af635954c8f4e2673dab3c60334eff4a8ae0`; post-merge Android/signing/ARM64 #45923143717, unsigned reproducibility #45923143712 and Markdown #45923143716 passed.
+- **#167:** Vibe handed off draft PR #177 at `4fc06e5328bef96aec42b117400c350a2b00d348` on `vibe/extension-bridge-167`; issue ownership changed to `agent:review`. Exact-head Android #45924935347 and unsigned reproducibility #45924935341 passed. No Markdown run because no docs changed. Chaty review remains outstanding.
 - **#147:** its #146 dependency is now satisfied; ownership changed from `agent:blocked` to `agent:queued`. Do not start until Chaty explicitly assigns it after #167 handoff and a fresh overlap check.
 - **#148:** remains blocked by #16 and scheduling/dependency coordination. #168/#169 remain blocked pending #167 and security-contract integration. #170 remains blocked pending session/navigation/runtime prerequisites.
 - **No release, tag, publication, `main` promotion or physical ARM64 device test.**
