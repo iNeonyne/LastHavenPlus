@@ -104,7 +104,7 @@ internal class AddonRuntimePayloadProvider(
           addonFiles += 1
           if (
             addonFiles > AddonArchive.MAX_ENTRIES ||
-              descriptors.size + addonFiles > MAX_RUNTIME_FILES ||
+              descriptors.size + 1 > MAX_RUNTIME_FILES ||
               totalBytes > MAX_RUNTIME_BUNDLE_BYTES
           ) {
             throw AddonRuntimePayloadException("payloadTooLarge")
