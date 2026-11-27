@@ -82,17 +82,10 @@ jobs:
             exit 0
           fi
 
+          # Backfill is deliberately conservative: historical issue-number maps go stale.
+          # Every unlabeled issue enters intake and must be triaged by Chaty from live state.
           while IFS= read -r number; do
             [[ -n "$number" ]] || continue
-            case "$number" in
-              67) label="agent:owner" ;;
-              6|7|10|11|14|16|17|19|20|28|31|86|111|147|148|170) label="agent:blocked" ;;
-              4|15|18|23|142) label="agent:chaty" ;;
-              12|81|146|167|168|169) label="agent:queued" ;;
-              149) label="agent:vibe" ;;
-              106|107) label="agent:review" ;;
-              *) label="agent:unassigned" ;;
-            esac
-            add_if_unassigned "$number" "$label"
+            add_if_unassigned "$number" "agent:unassigned"
           done < <(gh api --paginate "repos/$GITHUB_REPOSITORY/issues?state=open&per_page=100" \
             --jq '.[] | select(.pull_request == null) | .number')
