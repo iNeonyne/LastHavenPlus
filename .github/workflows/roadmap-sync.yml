@@ -1,6 +1,8 @@
 name: Keep roadmap synchronized
 
 on:
+  push:
+    branches: [main]
   issues:
     types: [opened, edited, labeled, unlabeled, closed, reopened]
   pull_request:
