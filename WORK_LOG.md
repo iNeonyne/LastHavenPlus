@@ -805,3 +805,10 @@ No branch was deleted. The available GitHub connector exposes no branch-delete o
 
 - Exact PR validation on intermediate merge head `3c1dd70f7f234406df3f8caf26db85827e68a22e` found only MD047 trailing-newline violations in the retired pointer files `ISSUES.md` and `STATUS.md`.
 - Added the required single final newline to both files. The check was on an intermediate head and does not validate the final PR head; new exact-head Actions results are required.
+
+
+### Refresh reproducible-build evidence to post-PR #203 beta — 2026-11-28
+
+- Further audit of the live beta Actions history found a newer successful unsigned APK reproducibility run on the merged PR #203 commit `cfcc19d863aff828ad3db42a628cd5f95569a962`, replacing the earlier `78a3d12` result as the latest app/build-source baseline.
+- Run [#46071208839](https://github.com/iNeonyne/LastHavenPlus/actions/runs/46071208839): both clean unsigned APK builds and the comparison job passed. APKs were byte-identical: 97,637,264 bytes; SHA-256 `38de17fead60507567b1641643b97edbfbd96064bce3e6880a3de2822dd5c719`; 818 ZIP entries; no missing, duplicate, or content/metadata differences.
+- Updated docs/REPRODUCIBLE_BUILDS.md to identify the PR #203 commit as the latest verified app/build baseline. Later beta commits after cfcc are documentation-only as of this audit.
