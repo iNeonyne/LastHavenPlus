@@ -246,6 +246,8 @@ test("manifest adds the MAIN-world overlay as a second exact-route content scrip
   assert.deepEqual(overlay.matches, [
     "https://lasthavens.com/play",
     "https://lasthavens.com/play/",
+    "https://alt.lasthavens.com/play",
+    "https://alt.lasthavens.com/play/",
   ]);
 });
 
