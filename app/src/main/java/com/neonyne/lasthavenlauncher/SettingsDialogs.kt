@@ -170,7 +170,6 @@ fun SettingsScreen(
       }
     }
   }
-
 }
 
 @Composable
