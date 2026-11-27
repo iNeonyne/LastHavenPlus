@@ -105,6 +105,14 @@
     <string tools:ignore="MissingTranslation" name="settings_hide_notices">Hide third-party notices</string>
     <string tools:ignore="MissingTranslation" name="settings_show_notices">Third-party notices</string>
     <string tools:ignore="MissingTranslation" name="settings_notices_load_failed">Third-party notice could not be loaded.</string>
+    <string tools:ignore="MissingTranslation" name="settings_show_licenses">Licenses &amp; third-party notices</string>
+    <string tools:ignore="MissingTranslation" name="settings_project_rights_heading">Project copyright and rights</string>
+    <string tools:ignore="MissingTranslation" name="settings_third_party_heading">Third-party components</string>
+    <string tools:ignore="MissingTranslation" name="settings_apache_license_heading">Apache License, Version 2.0 (third-party components)</string>
+    <string tools:ignore="MissingTranslation" name="settings_mpl_license_heading">Mozilla Public License, Version 2.0</string>
+    <string tools:ignore="MissingTranslation" name="settings_geckoview_inventory_heading">GeckoView 161 bundled license inventory</string>
+    <string tools:ignore="MissingTranslation" name="settings_licenses_loading">Loading license notices…</string>
+    <string tools:ignore="MissingTranslation" name="settings_licenses_close">Close</string>
 
     <string tools:ignore="MissingTranslation" name="diagnostics_title">App diagnostics</string>
     <string tools:ignore="MissingTranslation" name="diagnostics_log_section">Local diagnostic log</string>
