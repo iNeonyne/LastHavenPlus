@@ -11,9 +11,9 @@ This is the single strategic roadmap for the project. It records the current pri
 
 Finish the remaining code-level integration while preserving the existing game session and app-private addon library.
 
-- [#147 — Consolidate launcher navigation and back-stack state](https://github.com/iNeonyne/LastHavenPlus/issues/147). Navigation implementation is submitted in [PR #204](https://github.com/iNeonyne/LastHavenPlus/pull/204); Chaty owns integration and merge.
-- [#183 — Disconnect stale addon bridge ports when GeckoSession changes](https://github.com/iNeonyne/LastHavenPlus/issues/183). Fix stale-session port cleanup and cover session replacement/teardown with automated regression tests.
-- [#170 — Integrate Addon Manager navigation and same-session behavior](https://github.com/iNeonyne/LastHavenPlus/issues/170). Complete the overlay entry/return flow and automated lifecycle/navigation tests after the preceding work is integrated.
+- [#147 — Consolidate launcher navigation and back-stack state](https://github.com/iNeonyne/LastHavenPlus/issues/147). Completed and integrated into beta by [PR #204](https://github.com/iNeonyne/LastHavenPlus/pull/204) (merge commit `ba1edf6a3919e8942ad8796326e2d67f40667a09`).
+- [#183 — Disconnect stale addon bridge ports when GeckoSession changes](https://github.com/iNeonyne/LastHavenPlus/issues/183). Assigned to Vibe (`agent:vibe`) as the next isolated code-level fix; disconnect old-session ports, reject late callbacks and cover replacement/teardown with automated regression tests.
+- [#170 — Integrate Addon Manager navigation and same-session behavior](https://github.com/iNeonyne/LastHavenPlus/issues/170). Remains sequenced after #183 is integrated; then complete the overlay entry/return flow and automated lifecycle/navigation tests.
 
 The former physical-device runtime acceptance task [#167](https://github.com/iNeonyne/LastHavenPlus/issues/167) is out of scope and closed. This project does not perform physical-device testing. Acceptance is based on source review, coding/debugging, automated tests and CI; do not make unsupported claims about actual in-game addon execution.
 
