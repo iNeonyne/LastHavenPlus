@@ -12,7 +12,7 @@ class GeckoViewWebExtensionPortApiTest {
 
     assertTrue(hasMethod(port, "setDelegate", delegate))
     assertTrue(hasMethod(port, "postMessage", org.json.JSONObject::class.java))
-    assertTrue(hasMethod(delegate, "onPortMessage", org.json.JSONObject::class.java, port))
+    assertTrue(hasMethod(delegate, "onPortMessage", Any::class.java, port))
     assertTrue(hasMethod(delegate, "onDisconnect", port))
   }
 
