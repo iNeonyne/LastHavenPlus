@@ -232,6 +232,7 @@ fun DiagnosticsScreen(
 }
 
 @Composable
+// All launcher-owned update-page copy is sourced from default Android string resources.
 fun UpdateScreen(
   update: AppUpdateInfo?,
   message: String?,
