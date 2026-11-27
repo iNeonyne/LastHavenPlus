@@ -62,45 +62,66 @@ class AddonBridgeController(
 
   /** Installs the bundled extension once per runtime and registers the message delegate. */
   fun ensureInstalled(context: Context) {
-    refreshSnapshot()
     if (bridgeExtension != null || installInFlight) return
     installInFlight = true
     val generation = installationGeneration
-    val currentRuntime = runtime ?: GeckoRuntimeProvider.get(context).also { runtime = it }
-    currentRuntime.webExtensionController
-      .ensureBuiltIn(
-        AddonBridgePolicy.BUILTIN_LOCATION_URI,
-        AddonBridgePolicy.BRIDGE_EXTENSION_ID,
-      )
-      .accept(
-        { extension ->
-          mainHandler.post {
-            if (generation != installationGeneration) return@post
-            installInFlight = false
-            if (extension != null && bridgeExtension == null) {
+    val currentRuntime =
+      try {
+        runtime ?: GeckoRuntimeProvider.get(context).also { runtime = it }
+      } catch (error: Exception) {
+        installInFlight = false
+        Diagnostics.error(context, TAG, "Addon bridge runtime initialization failed: ${error.message}")
+        return
+      }
+    val installation =
+      try {
+        currentRuntime.webExtensionController.ensureBuiltIn(
+          AddonBridgePolicy.BUILTIN_LOCATION_URI,
+          AddonBridgePolicy.BRIDGE_EXTENSION_ID,
+        )
+      } catch (error: Exception) {
+        if (generation == installationGeneration) installInFlight = false
+        Diagnostics.error(context, TAG, "Addon bridge extension install failed: ${error.message}")
+        return
+      }
+    refreshSnapshot()
+    installation.accept(
+      { extension ->
+        mainHandler.post {
+          if (generation != installationGeneration) return@post
+          installInFlight = false
+          if (extension != null && bridgeExtension == null) {
+            try {
               extension.setMessageDelegate(messageDelegate, AddonBridgePolicy.NATIVE_MESSAGING_NAME)
               bridgeExtension = extension
-            } else if (extension == null) {
+            } catch (error: Exception) {
               Diagnostics.error(
                 context,
                 TAG,
-                "Addon bridge extension install returned no extension",
+                "Addon bridge message delegate registration failed: ${error.message}",
               )
             }
-          }
-        },
-        { error ->
-          mainHandler.post {
-            if (generation != installationGeneration) return@post
-            installInFlight = false
+          } else if (extension == null) {
             Diagnostics.error(
               context,
               TAG,
-              "Addon bridge extension install failed: ${error?.message ?: "unknown"}",
+              "Addon bridge extension install returned no extension",
             )
           }
-        },
-      )
+        }
+      },
+      { error ->
+        mainHandler.post {
+          if (generation != installationGeneration) return@post
+          installInFlight = false
+          Diagnostics.error(
+            context,
+            TAG,
+            "Addon bridge extension install failed: ${error?.message ?: "unknown"}",
+          )
+        }
+      },
+    )
   }
 
   /** Detaches the delegate and drops all session/port/pending state. */
