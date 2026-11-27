@@ -13,6 +13,23 @@
 - Add a private vulnerability reporting policy, weekly Gradle dependency update checks, and an in-app viewer for project rights, third-party notices and the complete 94-entry GeckoView 161 about:license inventory.
 - Retain merged and abandoned task branches as archives; do not delete or rename them as routine cleanup, and do not schedule branch-deletion automation.
 
+## v2.4.0 — 2026-11-26
+
+### Native Addon Manager and launcher experience
+- Add native Addon Manager Phase A: import/export ZIP files, store addons in a private local library, and inspect metadata and dependencies.
+- Improve accessibility with clearer screen-reader structure, a keyboard/controller focus entry point, and transitions that respect Android reduced-motion settings.
+- Refresh launcher screens with the icy-blue theme, updated typography, spacing, shapes, buttons and touch targets.
+- Add a new icy-blue pixel-art castle launcher icon, subtle menu transitions and haptic feedback for primary actions.
+- Stage addon-library changes so interrupted operations can be rolled back safely.
+
+### Compatibility and limitations
+- Android 10/API 29+, ARM64 only.
+- Published v2.4.0 uses GeckoView 160 Stable; current beta later upgrades to GeckoView 161 (see Unreleased).
+- Addons can be stored, inspected and organized but are not activated in-game by this release.
+- Update checks remain user-initiated. Physical ARM64 gameplay, TalkBack, launcher-icon masking and the Addon Manager document picker were not verified for this release.
+
+Release notes: [v2.4.0](https://github.com/iNeonyne/LastHavenPlus/releases/tag/v2.4.0).
+
 ## v2.3.0 — 2026-11-26
 
 ### Launcher UI and gameplay recovery

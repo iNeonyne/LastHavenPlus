@@ -27,16 +27,15 @@ A whole-file hash mismatch fails the workflow after the report is generated and 
 
 ## Latest verified result
 
-- Source commit: `31e645cad3cc6fec04725eb2647baa72514db21a`.
-- Workflow run: [#45861894860](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45861894860).
+- Source commit: `78a3d12eb018e112a3443377e34e234ee9d3da7d` (GeckoView 161 Stable and refreshed dependency pins).
+- Workflow run: [#46063532417](https://github.com/iNeonyne/LastHavenPlus/actions/runs/46063532417).
 - Result: **byte-identical** unsigned APKs from two independent clean runners.
-- APK size: 95,890,221 bytes each.
-- SHA-256: `3f7811a8abd3091e742c459ccb7db3bda1ed6d3d80c432d4a009478f01691ab3`.
-- ZIP entries: 851 in each build; no missing/extra entries, duplicate entries or metadata/content differences.
-- Runner images: `ubuntu24 20261116.376.1` and `ubuntu24 20261122.23.1`.
-- JDKs: Temurin `25.0.5` and `25.0.5.1`; both used Gradle `9.7.1`, Android platform `37.2` and Build Tools `37.0.0`.
+- APK size: 98,226,200 bytes each.
+- SHA-256: `e4847d2d048527a12e316b6444fdafa877af9750d87c03d1ba55fde5250a7110`.
+- ZIP entries: 860 in each build; no missing/extra entries, duplicate entries or metadata/content differences.
+- Both clean build jobs and the comparison job passed. The source commit is the latest beta application/build change; later beta commits through `ce13c2968c67fe680dc38c35ad13a5c7bb78ab73` changed documentation only.
 
-The two runners used different hosted image versions and different JDK patch versions, yet produced byte-identical APKs. This result applies to the exact source commit and recorded environments only. Repeat the check after relevant toolchain or build configuration changes.
+This result applies to the exact source commit and recorded environments only. Repeat the check after relevant application, toolchain, or build-configuration changes.
 ## F-Droid
 
 F-Droid compatibility is a separate assessment. GeckoView's binary distribution, licensing, source-build availability, and toolchain requirements must be evaluated independently before making any F-Droid compatibility claim.

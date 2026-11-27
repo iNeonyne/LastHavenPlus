@@ -1,21 +1,6 @@
-# Agent work assignments — LastHavenPlus
+# Agent work history (archive)
 
-> **Live snapshot verified 2026-11-28 against GitHub and beta HEAD `298b9fdaaa5b131d4442f5b40a22284584171ede`.** This section is the current assignment/priority summary. Everything under “Historical snapshots and work records” is retained for audit context only and must not be used as live assignment state. Recheck GitHub before acting. [AGENTS.md](AGENTS.md) is the only policy source.
-
-## Current priority and ownership — 2026-11-28
-
-- **P0 — Addon Manager Phase B (#23):** Chaty owns coordination, integration, and runtime acceptance.
-- **#167 — bridge runtime acceptance:** open, `agent:chaty`. Chaty owns the remaining source-level audit and physical ARM64 runtime verification of the integrated bridge. No physical-device verification or actual in-game addon/Lua initialization is claimed.
-- **#147 — launcher navigation/back stack:** open, `agent:vibe`. This is Vibe's sole active implementation assignment. Draft PR [#204](https://github.com/iNeonyne/LastHavenPlus/pull/204) targets beta; latest reported head is `6c4fcc7d014eac08868ac11441e929ab57778ca6`. Chaty owns integration and merge.
-- **#183 — stale GeckoSession bridge ports:** open, `agent:blocked`. Assign only after #147 is handed off; Chaty then coordinates the next bridge-safety fix.
-- **#170 — same-session Addon Manager navigation:** open, `agent:blocked`. Remains behind #147, #183, and #167's runtime-acceptance gates; do not start implementation early.
-- **#168:** completed and closed after PR [#191](https://github.com/iNeonyne/LastHavenPlus/pull/191) merged.
-- **#169:** completed and closed after PR [#195](https://github.com/iNeonyne/LastHavenPlus/pull/195) merged at `3959d890f7a65f69e9eb78d5e3339b3a88746097`. The Worker URL allowlist remains empty pending physical ARM64 observation; no in-game addon/Lua initialization is claimed.
-- **Updater #4 and #15:** open, `agent:blocked`; paused behind the Addon Manager P0 milestone. Do not resume until Chaty explicitly reopens this workstream.
-- **#205 — documentation consolidation:** completed; PR [#206](https://github.com/iNeonyne/LastHavenPlus/pull/206) merged to beta at `298b9fdaaa5b131d4442f5b40a22284584171ede`. Exact-head Markdown gate #46070052764 and post-merge beta Markdown gate #46070108200 passed.
-
-**Stable release:** v2.3.0 (tag commit `ebc5b424e83ae66c2b0accc2bec6f050b8dc0d88`).  
-**No release, tag, publication, or beta-to-main promotion is authorized by this snapshot.**
+> This file is **not a live task queue, assignment list, or source of current project status**. All entries below are dated historical snapshots and may be obsolete. Do not update this file when an issue is assigned, queued, blocked, merged, or closed. The live task queue is GitHub Issues: search by current `agent:*` labels, inspect the latest issue comments, open PRs, and Actions at the time of use. [AGENTS.md](AGENTS.md) defines the durable workflow and permissions.
 
 ## Historical snapshots and work records (not live assignments)
 
@@ -36,7 +21,7 @@
 
 Agent roles, permissions, assignment rules, handoffs, integration, and engineering constraints are defined only in [AGENTS.md](AGENTS.md). This historical snapshot intentionally does not repeat those rules.
 
-## Active work
+## Historical work snapshot — active assignments at the time of record
 
 ### Chaty — #4 / #15 updater reliability and recovery (paused)
 - **Owner/state:** agent:queued; paused by the 2026-11-27 owner priority decision. Not cancelled; do not resume until explicitly reassigned after Addon Manager P0 handoff. Keep #4/#15/#31 coordinated and do not parallelize.
@@ -58,7 +43,7 @@ Agent roles, permissions, assignment rules, handoffs, integration, and engineeri
 - Five approved library-only pins are already integrated by PR #104 at cff8dd2078cb240a69c11fd8c59db648bd0a9d58.
 - Remaining work is evidence/documentation reconciliation only. No AGP, Kotlin, Gradle, JDK, SDK/Build Tools, GeckoView, signing or ABI changes.
 
-## Vibe work queue
+## Historical Vibe queue snapshot
 
 Vibe has exactly one active implementation issue at a time. After handing off a PR, Vibe immediately starts the next explicitly assigned independent issue while Chaty integrates earlier PRs. A queued issue is not an assignment; Chaty must change its label to `agent:vibe` and post a complete scope/acceptance comment.
 
@@ -86,12 +71,12 @@ Vibe has exactly one active implementation issue at a time. After handing off a 
 - **#169:** Worker/`blocks.idx` masking; remains `agent:blocked` until #168 is reviewed and integrated.
 - **#170:** same-session navigation; remains `agent:blocked` pending runtime and navigation prerequisites.
 
-## Owner-controlled work
+## Historical owner-controlled work snapshot
 
 - **#23 — Addon Manager (P0):** Phase A/planner and bridge payload transport are integrated. Chaty owns coordination; #167 is Chaty-owned for runtime/device follow-up; #168 is Vibe's active XHR task; #169 and #170 remain blocked by their documented dependencies.
 - **#67 — rights and third-party notices:** original project material follows the owner's All Rights Reserved decision. Third-party notice completeness and distribution-rights review remain unresolved. Issue label: agent:owner.
 
-## Blocked dependency/authorization queue
+## Historical blocked dependency queue snapshot
 
 These are genuinely blocked by prerequisites or owner decisions. They use `agent:blocked`; neither agent starts until the stated gate is cleared. Ready work waiting for an agent turn uses `agent:queued` instead:
 
@@ -107,7 +92,7 @@ These are genuinely blocked by prerequisites or owner decisions. They use `agent
 - #7 performance/size optimization — requires comparable measured baseline and explicit scope.
 - #86 deferred feature coordination index — not an implementation assignment until owner scope is confirmed.
 
-## Current ownership inventory — 2026-11-27 (reconciled after PR #180)
+## Historical ownership inventory — 2026-11-27 (superseded)
 
 Every open issue has exactly one `agent:*` label. The label distinguishes active ownership from queue and blocker state.
 
@@ -187,3 +172,4 @@ Current safety and technical invariants are maintained in [AGENTS.md](AGENTS.md)
 - The Worker validates the complete span set atomically (path/folder eligibility, exact record shape, safe integer spans, index bounds and allowed fill bytes). Any malformed entry rejects the whole set; OPFS/index failures apply no mask and emit only a bounded stage diagnostic. Persistent OPFS bytes are never written.
 - The generated bootstrap now includes parser/path-validator dependencies, and the WASM hook checks the actual `scope.wasmImports` object after `assignWasmImports()` runs.
 - The exact Worker URL allowlist remains empty pending physical ARM64 observation. No physical device test or in-game addon/Lua initialization is claimed. PR #195 remains unmerged pending exact-head CI and Chaty's integration acceptance.
+

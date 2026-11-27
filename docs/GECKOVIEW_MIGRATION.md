@@ -25,7 +25,7 @@ Beta uses `org.mozilla.geckoview:geckoview-arm64-v8a:161.0.20261118180411`, a pr
 
 The app launches directly into the game. Android Back opens a responsive in-game overlay with Reload, Settings and Return to game while keeping the existing game session mounted. Settings, diagnostics and update details are launcher-owned full-screen destinations. Settings navigation detaches and later restores the existing GeckoView rather than creating a second game session.
 
-The Addon Manager's native Phase A library/import and bridge groundwork is present in beta, but verified in-game addon activation remains incomplete. Phase B is the top project priority and remains gated by navigation/back-stack consolidation (#147), bridge-port work (#183), and physical ARM64 acceptance (#167). This GeckoView 160 audit does not claim that addon runtime behavior is complete.
+The Addon Manager's native library/import and bridge foundations are present in beta, including the XHR and Worker overlays. Verified in-game addon activation remains incomplete; the Worker URL allowlist is intentionally empty pending physical ARM64 observation. Runtime/device acceptance is tracked in the live parent issue [#23](https://github.com/iNeonyne/LastHavenPlus/issues/23) and its linked child issues. Check those issues and their current labels/comments for dependencies and sequencing; this technical document is not a task queue.
 
 Automated source/JVM tests cover selected navigation, bridge and GeckoView API contracts. They do not prove physical-device session retention, gameplay rendering, or addon activation. No physical ARM64 device verification is claimed.
 

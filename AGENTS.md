@@ -11,9 +11,9 @@ When another document repeats a rule, this file is authoritative. Task-specific 
 - **GitHub:** the durable agent-to-agent communication and task system. Issues, comments, pull requests, commits, checks, and Actions are the records of assignments, decisions, progress, blockers, and evidence.
 - **This file:** authoritative agent roles, permissions, workflow, and repository-wide engineering constraints.
 - **AGENT_PROTOCOL.md:** startup/bootstrap instructions only; it does not duplicate or override this policy.
-- **AGENT_WORK.md:** current agent assignments and queue, followed by historical work records. It is not a policy source.
-- **STATUS.md:** verified, unverified, incomplete, and blocked project state. It is not an assignment or policy source.
-- **GitHub Issues and ISSUES.md:** GitHub Issues are authoritative for task state and assignment; ISSUES.md is the repository's detailed backlog/index and must stay synchronized.
+- **AGENT_WORK.md:** historical work records only. It is not a live queue, assignment source, or required startup document; old entries may be obsolete.
+- **STATUS.md:** retired as a live status dashboard. It is a pointer to authoritative sources, not a current project-state or assignment source.
+- **GitHub Issues:** the sole source of truth for task scope, acceptance criteria, ownership labels, dependencies, blockers, and current state. **ISSUES.md is retired as a backlog mirror** and must not be used to select or scope current work.
 - **CHANGELOG-AGENTS.md and WORK_LOG.md:** historical records. Never treat an old entry as current state without checking GitHub and current project records.
 - **docs/BRANCH_LIFECYCLE.md:** authoritative detailed branch naming, reuse, synchronization, retirement, and disposal policy/audit.
 - **Technical documents under docs/:** component-specific design and verification details; read the relevant document before changing that area.
@@ -26,10 +26,10 @@ Every agent must:
 
 1. Use the exact agent identity assigned at startup. Never invent, change, or impersonate another agent identity.
 2. Read this entire file before acting. AGENT_PROTOCOL.md provides the short startup sequence and reusable bootstrap prompt.
-3. Read README.md, AGENT_WORK.md, and STATUS.md. Read the relevant sections of ISSUES.md and the latest relevant entries in CHANGELOG-AGENTS.md and WORK_LOG.md.
-4. Read the linked GitHub issue, all assignment comments, relevant PRs, and the technical documents for the affected component.
-5. Check live GitHub issue/PR state, current beta and task-branch heads, CI state, dependencies, and other agents' file ownership. Do not rely on historical snapshots or prior chat context as proof of current state.
-6. Confirm that the issue is explicitly assigned to this exact agent identity and has a clear outcome, scope, exclusions, dependencies, acceptance criteria, and validation requirements.
+3. Fetch the live `beta` head. Search open GitHub Issues for your exact ownership label (for example `is:open label:agent:vibe` or `is:open label:agent:chaty`). Also inspect `is:open label:agent:blocked` for dependencies and `is:open is:pr base:beta` for active integration work.
+4. Read the selected issue, its latest assignment comments, linked parent/dependency issues, related PRs, and the technical documents for the affected component.
+5. Verify the issue is still open and explicitly assigned to your exact identity; confirm its current label, scope, acceptance criteria, exclusions, dependencies, file ownership, and validation requirements. For Chaty, inspect all open PRs targeting beta as part of integration coordination.
+6. Check the current beta/task-branch heads and required CI on the exact latest PR head. Treat the current `agent:*` label as the live owner/state and the latest valid assignment comment as the task scope. Issue bodies and older comments may contain dated historical status blocks; do not treat them as current when later comments or labels supersede them.
 7. Do not edit files, claim work, start implementation, or open an implementation PR until Chaty has explicitly assigned an existing GitHub issue. Chaty may create/clarify issues and coordinate its own work.
 
 A mention, suggestion, queue entry, label by itself, or issue appearing in a list is not permission to start. Work only within the assigned scope. If scope, dependencies, acceptance criteria, or ownership are unclear, stop the affected work and ask Chaty on the issue.
@@ -109,6 +109,7 @@ Every actionable issue must have exactly one mutually exclusive `agent:*` owners
 | `agent:queued` | Triaged and ready, but waiting for its turn or a documented prerequisite to scheduling | No |
 | `agent:chaty` | Chaty owns active implementation, coordination, or integration | Chaty only |
 | `agent:vibe` | Vibe has an explicit active assignment and scope comment | Vibe may start |
+| `agent:ib` | IB has an explicit active assignment and scope comment | IB may start |
 | `agent:blocked` | A real dependency, missing prerequisite/evidence, owner hold, or decision prevents safe progress | No |
 | `agent:review` | Temporary handoff state only, where explicitly used | No; Chaty takes over integration |
 | `agent:owner` | Repository-owner decision is required | No |
@@ -118,7 +119,7 @@ Rules:
 - A queue state is not an assignment. The issue must state its queue position/readiness condition. Chaty must replace `agent:queued` with the appropriate owner label and post an explicit assignment comment before work starts.
 - Do not use `agent:blocked` merely because work is waiting its turn.
 - Only Chaty changes ownership/state labels and assignments. Replace the previous `agent:*` label on every transition. Contributors must never self-assign, reassign another agent, or change ownership labels.
-- Chaty maintains ordered agent queues in AGENT_WORK.md. The issue comment records the task's exact scope, exclusions, dependencies, acceptance criteria, and required tests/docs.
+- Chaty maintains task order and handoffs directly in GitHub Issues using ownership labels, issue comments, parent/dependency links, and PR state. **Never maintain a second live assignment or queue table in Markdown.** The issue comment records exact scope, exclusions, dependencies, acceptance criteria, and required tests/docs.
 - One implementation owner per issue. Parallel work is allowed only for explicitly assigned issues with non-overlapping file scopes and compatible dependencies. Do not let two agents implement the same issue or edit overlapping files concurrently without a documented coordination plan.
 - Vibe may move to another explicitly assigned independent issue after PR handoff; the earlier PR's integration is then Chaty's responsibility. Never use this to bypass overlap or dependency checks.
 - On successful merge, Chaty records evidence and closes the issue as completed **without** `agent:blocked`.
@@ -156,7 +157,7 @@ For every contributor PR, Chaty must:
 4. Resolve conflicts and safely synchronize with beta. Re-run every affected check after any change.
 5. Confirm all required checks are green for the exact latest head SHA; verify any required signed/package checks on the resulting beta commit.
 6. Merge into beta only after acceptance requirements are met.
-7. Verify the resulting beta commit, record evidence, update STATUS.md/AGENT_WORK.md/ISSUES.md as applicable, and close the issue under the label policy above.
+7. Verify the resulting beta commit, record evidence on the GitHub PR/issue, and close the issue under the label policy above. Update maintained technical documentation only when durable project behavior or a contract changes; do not copy queue labels, assignment state, or volatile task order into Markdown.
 
 Chaty does not submit routine APPROVE, COMMENT, or REQUEST_CHANGES formal reviews for Vibe PRs. Chaty integrates the work, fixes it on the PR branch, and verifies the exact resulting head. If Chaty cannot safely make a correction because of permissions, unclear scope, or a decision reserved for the repository owner, stop and document that specific blocker.
 
@@ -190,7 +191,8 @@ Review depth must match risk:
 - Package ARM64 only: `arm64-v8a`. Do not add other ABIs.
 - Preserve application ID `com.neonyne.lasthavenlauncher`.
 - Preserve the established release-signing identity. Never commit, replace, or expose keystores, signing credentials, tokens, or secrets.
-- Use Mozilla GeckoView 161 Stable as the embedded browser engine on beta. Do not add Cefrium, Android System WebView, or a second/fallback engine.
+- Use the Mozilla GeckoView ARM64 Stable artifact currently pinned in `gradle/libs.versions.toml` as the embedded browser engine on beta. Read the catalog for the exact version; do not hard-code a version in this policy. Do not add Cefrium, Android System WebView, or a second/fallback engine.
+- Do not add Google Play services modules (`com.google.android.gms`) to the runtime dependency graph or APK. The current build intentionally excludes that group; GeckoView WebAuthn/passkey sign-in is unavailable as a result. Any reconsideration requires an explicit owner decision and updated dependency, licensing, privacy, and packaging review.
 - Use the exact API surface of the pinned GeckoView artifact in gradle/libs.versions.toml and the official documentation for that version. Do not infer APIs from a different version.
 - Keep GeckoRuntime process-scoped and manage GeckoSession lifecycle explicitly. A successful CI build does not prove game compatibility or profile persistence.
 - Keep update checks/downloads and installation user-initiated. Android's package installer controls installation. Do not add background or automatic installation.
@@ -221,7 +223,7 @@ Addon Manager local management and runtime integration are distinct capabilities
 - The manager must retain and return to the existing game session. It must not start a second game instance or modify game-client code or persistent game/profile data.
 - Never claim addon initialization, Lua execution, or game-resource masking without verified runtime and physical-device evidence.
 
-Check STATUS.md and the live Addon Manager issues for the current phase, dependencies, and assignment. Do not treat this policy section as a live progress report.
+Check the live Addon Manager parent/child GitHub issues and PRs for current phase, dependencies, and assignment. Do not infer queue order or task state from Markdown.
 
 ## 9. Documentation and continuity
 
@@ -229,13 +231,13 @@ Keep each file focused on its distinct purpose:
 
 - README.md: stable repository/product overview, compatibility, build entry points, and links to agent/technical records. Do not put assignment queues, detailed workflow rules, or dated work-session logs here.
 - AGENT_PROTOCOL.md: agent startup/bootstrap only.
-- AGENT_WORK.md: current assignments/queues and historical work records; do not copy the full workflow policy here.
-- STATUS.md: verified project state, open verification gaps, active blockers, and exact CI evidence.
-- ISSUES.md and GitHub Issues: issue scope and task tracking; keep them synchronized.
+- AGENT_WORK.md: historical work/decision records only; not a queue and not required for startup.
+- STATUS.md: retired status-dashboard pointer; consult live code, issues, PRs, and Actions instead.
+- ISSUES.md: retired backlog mirror; do not update it or use it for task discovery. GitHub Issues are authoritative.
 - CHANGELOG-AGENTS.md and WORK_LOG.md: append-only agent/project history; do not rewrite or erase earlier entries.
 - Technical documents: detailed component-specific contracts and evidence. Keep them consistent with source and live CI.
 
-When work changes verified state, update the appropriate operational records. Clearly distinguish implemented, tested, unverified, blocked, and incomplete behavior. Do not update STATUS.md with assumptions or close issues solely because documentation changed.
+When work changes verified behavior or a durable engineering contract, update the relevant technical document and append meaningful history to CHANGELOG-AGENTS.md/WORK_LOG.md. Record task state, evidence, blockers, and handoffs on the live GitHub issue/PR. Do not create or maintain Markdown copies of live assignments, labels, queues, or blocker state. Never convert assumptions into verified facts.
 
 ## 10. Branch lifecycle and release authority
 
