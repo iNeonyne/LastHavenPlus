@@ -136,14 +136,15 @@ class AddonRuntimePlannerTest {
         AddonLibrarySnapshot(
           "optional-order",
           listOf(
-            item("OptionalConsumer", optionalDependencies = listOf("OptionalProvider")),
-            item("OptionalProvider"),
+            item("AConsumer", optionalDependencies = listOf("ZProvider")),
+            item("ZProvider", optionalDependencies = listOf("OptionalExtra")),
             item("Independent"),
+            item("OptionalExtra"),
           ),
         )
       )
     val ordered = plan.orderedAddons.map { it.folder }
-    assertTrue(ordered.indexOf("OptionalProvider") < ordered.indexOf("OptionalConsumer"))
+    assertTrue(ordered.indexOf("ZProvider") < ordered.indexOf("AConsumer"))
     assertTrue(plan.blockedAddons.isEmpty())
   }
 
