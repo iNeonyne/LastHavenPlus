@@ -65,7 +65,6 @@ object AddonRuntimePlanner {
     val dependentsByDependency = mutableMapOf<String, MutableList<AddonLibraryItem>>()
 
     for (addon in enabled) {
-      val addonKey = addon.folder.lowercase(Locale.ROOT)
       for (dependency in addon.dependencies.map { it.lowercase(Locale.ROOT) }.distinct()) {
         if (dependency in enabledByLower) {
           dependentsByDependency.getOrPut(dependency) { mutableListOf() } += addon
