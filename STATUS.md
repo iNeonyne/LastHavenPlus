@@ -2,21 +2,18 @@
 
 **Last updated:** 2026-11-27  
 **Active branch:** beta  
-**Verified beta base for the current integration set:** `aa4a1bacacc782e7f7f3c496a7ff0029896901cc` (PR #171 merge commit and PR #172 base SHA).  
+**Verified beta HEAD after PR #165:** `7e39d2553a11332d44326c1704e0d7647cc6aa40` (launcher strings integrated).
 **Stable release:** [v2.3.0](https://github.com/iNeonyne/LastHavenPlus/releases/tag/v2.3.0), tag commit ebc5b424e83ae66c2b0accc2bec6f050b8dc0d88; GitHub release metadata confirms the ARM64 APK, update manifest and v2.2.0-to-v2.3.0 BSDIFF asset. Main HEAD observed as e9c2b53d1ec84e27722da4b54fa4ddcbad65f891.  
-**Open PRs at the 2026-11-27 live check:** #172 (agent integration workflow; current head `dede1531941c83514487329cbba20d1260248621`), #165 (launcher strings; draft, scope corrections pending), and #166 (Addon Manager Phase B groundwork; draft, exact-head Android and reproducibility checks failed). PR #172 Markdown quality run #45915447132 passed; no merge has occurred yet. PR #165 Android run #45909450245 and reproducibility run #45909450342 passed on `515c91366bf90c1b6232f459743e95a161cc8296`, but the PR scope is not yet complete. PR #166 exact-head runs #45911960113 and #45911960168 failed on `f44fea476d6d223b0cad87d548782fed30525a31`. Recheck exact heads and CI before merge. No release, tag, publication or beta-to-main promotion is authorized.
+**Open PRs at the 2026-11-27 live check:** #173 (GameSessionController, head `eb9f64b672eced9143bc5689106223c3e7af3d16`; Android/reproducibility checks pending). PR #165 merged at `7e39d2553a11332d44326c1704e0d7647cc6aa40`; PR #166 merged at `d83e2dfc89087f67f7dbbe71e85668d80303e3ef`. No release, tag, publication or beta-to-main promotion is authorized.
 
 ## Current operational checkpoint — 2026-11-27
 
-Current integration work is limited to the three open PRs listed above. PR #172 records the updated Vibe-to-Chaty integration handoff. PR #165 is owned by Chaty for direct branch corrections after handoff; #149 remains open until successful integration. PR #166 is Chaty-owned Phase B groundwork and remains draft until its API assertion, planner coverage/bounds and exact-head CI are corrected. The historical entries below are retained for traceability and must not be mistaken for the current beta state.
-
-## 2026-11-27 — GameSessionController extraction (#146)
-
-- **Assignment:** Chaty actively assigned #146 (`agent:vibe`) with an explicit start confirmation; implementation started from beta `d83e2df` without waiting for PR #165 or #166.
-- **Change:** GeckoView session lifecycle — lazy runtime acquisition, session creation/open, reload, crash restore and GeckoView delegate wiring — moved out of `MainActivity`/`LastHavenApp` into `GameSessionController`; pure decisions and state transitions live in `GameSessionState.kt` (`GameSessionUiState`, `GameSessionActions`) with JVM coverage in `GameSessionStateTest.kt` (17 tests).
-- **Invariants preserved:** lazy main-thread process-scoped `GeckoRuntimeProvider` (no `Application.onCreate()` runtime creation); the keep-alive invariant (Settings/Diagnostics/Update/Addon Manager navigation never closes the live session; the composition keep-alive effect closes a session only when the controller replaces it or the composition root leaves) is documented at the enforcing effect; the renderer-crash vs navigation-failure distinction and all start/reload/restore semantics are unchanged.
-- **Validation:** Spotless (ratchet `origin/beta`), 181/181 JVM tests, `lintDebug` and `assembleDebug` passed at the implementation commit; exact-head CI run IDs are recorded in the PR description and the issue #146 handoff comment.
-- **Limitations:** no physical ARM64 device test; crash restore and delegate behavior are verified by equivalent-code review plus JVM policy tests, not on-device. No game, updater, Addon Manager (#23), navigation (#147), toolchain, signing, ABI or application-ID changes.
+- **PR #165 / issue #149:** squash-merged to beta at `7e39d2553a11332d44326c1704e0d7647cc6aa40`. Exact-head Android/unit tests #45919879256, independent unsigned APK reproducibility #45919879249 and Markdown #45919879248 passed on head `a62c7cd3154586d35d85a99ed1964d33ba007733`. Issue #149 closed. Launcher-owned strings, including UpdateScreen labels/actions, now use default `values/strings.xml`; untranslated English locale duplicates were removed.
+- **PR #173 / issue #146:** Vibe's GameSessionController PR is open/draft at `eb9f64b672eced9143bc5689106223c3e7af3d16`. Markdown #45920691560 passed; Android #45920691633 and independent unsigned reproducibility #45920691607 are still running. The branch is non-mergeable against beta because shared documentation files conflict with PR #165; Chaty is reconciling those files. No merge until exact-head checks pass and conflicts are resolved.
+- **Vibe assignment:** #146 is handed off and now `agent:chaty` for integration. #167 GeckoView 160 extension bridge is explicitly assigned to Vibe (`agent:vibe`) with a separate bridge/adapter scope; MainActivity, GameSessionController, GameSessionState, GameScreen and shared docs are excluded during PR #173 integration.
+- **Addon Manager:** PR #166 planner groundwork is merged at `d83e2dfc89087f67f7dbbe71e85668d80303e3ef`; post-merge Android #45919654642 and reproducibility #45919654675 passed. Runtime extension installation, XHR/Worker interception and actual addon activation remain unimplemented.
+- **Beta HEAD:** `7e39d2553a11332d44326c1704e0d7647cc6aa40`. Post-merge Android #45920923646, Markdown #45920923679 and unsigned reproducibility #45920923633 were running at this checkpoint.
+- **Device/release:** no physical ARM64 testing, release, tag, publication or beta-to-main promotion is claimed or authorized.
 
 ## Historical operational checkpoint — 2026-11-26
 
@@ -27,7 +24,7 @@ Current integration work is limited to the three open PRs listed above. PR #172 
 - **Diagnostics:** PR #163 merged the bounded diagnostics test work into beta. Issue #11 remains open/blocked only for the explicitly deferred runtime-version startup reporting; do not describe it as Vibe's active task.
 - **Housekeeping:** #128 completed through PR #161 at a0e5271793c9bb7754b7ac41429065e5602df569. Exact-head Markdown #45892727113 and post-merge Markdown #45892884986 passed.
 - **Open PR inventory:** GitHub returned no open PRs at this checkpoint. Closed unmerged work remains documented in its issues and is not treated as integrated.
-- **Assignment model:** every open issue must have exactly one agent label. `agent:queued` means ready/waiting its turn and is not permission to start; `agent:blocked` is reserved for real prerequisites/holds. Vibe active: #149; next queued: #146, then separately assigned #167–#169. #170 is blocked. Chaty owns #4/#15/#18/#23/#142; #81 is queued. #67 remains owner-controlled. See AGENT_WORK.md for the live issue inventory.
+- **Assignment model:** every open issue must have exactly one agent label. `agent:queued` means ready/waiting its turn and is not permission to start; `agent:blocked` is reserved for real prerequisites/holds. Vibe active: #146; next after integration: #147. Addon Manager #167 waits for PR #166 merge and a separate explicit assignment; #168/#169 wait for #167. #170 is blocked. Chaty owns #4/#15/#18/#23/#142; #81 is queued. #67 remains owner-controlled. See AGENT_WORK.md for the live issue inventory.
 - **Device status:** no new physical ARM64 device testing was performed or claimed.
 
 ## Historical Addon Manager Phase A implementation checkpoint (#23)
