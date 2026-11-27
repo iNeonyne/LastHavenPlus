@@ -10,6 +10,33 @@ const validatorPath = new URL(
 );
 const validatorSource = readFileSync(fileURLToPath(validatorPath), "utf8");
 
+const manifestPath = new URL(
+  "../app/src/main/assets/extensions/addon-bridge/manifest.json",
+  import.meta.url,
+);
+const manifest = JSON.parse(readFileSync(fileURLToPath(manifestPath), "utf8"));
+
+test("manifest has the exact built-in identity, permissions and game route", () => {
+  assert.equal(manifest.manifest_version, 2);
+  assert.equal(manifest.version, "0.5.1");
+  assert.equal(manifest.browser_specific_settings.gecko.id, "lasthaven-addon-bridge@neonyne");
+  assert.deepEqual(manifest.background, {
+    scripts: ["background.js"],
+    persistent: true,
+  });
+  assert.deepEqual(manifest.permissions, ["geckoViewAddons", "nativeMessaging"]);
+  assert.deepEqual(manifest.content_scripts, [
+    {
+      matches: ["https://lasthavens.com/play", "https://lasthavens.com/play/"],
+      js: ["payload-validation.js", "bridge.js"],
+      run_at: "document_start",
+      all_frames: false,
+      match_about_blank: false,
+    },
+  ]);
+  assert.equal(JSON.stringify(manifest).includes("<all_urls>"), false);
+});
+
 function loadCore() {
   const context = vm.createContext({});
   vm.runInContext(validatorSource, context, { filename: "payload-validation.js" });
