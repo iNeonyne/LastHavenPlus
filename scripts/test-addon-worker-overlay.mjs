@@ -919,10 +919,12 @@ test("maskReadSpan preserves byte positions and only fills intersections", () =>
     { path: "Interface/AddOns/Foo/a", start: 10, end: 18, value: 35 },
   ];
   const written = core.maskReadSpan(heap, 0, 20, records);
-  assert.equal(written, 4);
+  assert.equal(written, 12);
   for (let i = 0; i < heap.length; i += 1) {
     if (i >= 2 && i < 6) {
       assert.equal(heap[i], 48, "position " + i);
+    } else if (i >= 10 && i < 18) {
+      assert.equal(heap[i], 35, "position " + i);
     } else {
       assert.equal(heap[i], 0xAA, "position " + i);
     }
