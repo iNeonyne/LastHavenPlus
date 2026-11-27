@@ -33,7 +33,9 @@ internal class AddonRuntimePayloadProvider(
     val totalBytes: Long,
   ) {
     val pageCount: Int
-      get() = (files.size + AddonRuntimePayloadProvider.MANIFEST_PAGE_SIZE - 1) / AddonRuntimePayloadProvider.MANIFEST_PAGE_SIZE
+      get() =
+        (files.size + AddonRuntimePayloadProvider.MANIFEST_PAGE_SIZE - 1) /
+          AddonRuntimePayloadProvider.MANIFEST_PAGE_SIZE
   }
 
   fun buildManifest(snapshot: AddonLibrarySnapshot): Manifest {
