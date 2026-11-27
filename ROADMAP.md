@@ -49,7 +49,7 @@ Update this file when strategic priorities, sequence or release direction change
 <!-- ROADMAP-LIVE-START -->
 ## Live issue and PR inventory
 
-Generated: 2026-11-27T23:04:14+00:00
+Generated: 2026-11-27T23:05:01+00:00
 Source of truth: live GitHub Issues, pull requests and labels. This section is generated automatically; do not edit it manually.
 
 Every open issue is listed below, grouped by its current priority. Opening a newer issue or PR does not supersede an older one. Duplicates and supersession must be explicitly reviewed and linked in GitHub.
@@ -89,7 +89,6 @@ Every open issue is listed below, grouped by its current priority. Opening a new
 - [#23 — P0 — Complete Addon Manager ZIP 0.5.1 Phase B for GeckoView](https://github.com/iNeonyne/LastHavenPlus/issues/23) — enhancement
 - [#31 — P0 — Fix draft release asset verification and verify differential fallback](https://github.com/iNeonyne/LastHavenPlus/issues/31) — bug
 - [#67 — Repository: reserve original project rights and complete third-party notices](https://github.com/iNeonyne/LastHavenPlus/issues/67)
-- [#147 — P1 — Consolidate launcher navigation and back-stack state](https://github.com/iNeonyne/LastHavenPlus/issues/147) — enhancement
 - [#170 — P1 — Integrate addon manager navigation and verify same-session runtime behavior](https://github.com/iNeonyne/LastHavenPlus/issues/170) — enhancement
 
 ### Open pull requests
@@ -109,6 +108,7 @@ Every open issue is listed below, grouped by its current priority. Opening a new
 - [#167 — P0 — Verify ZIP 0.5.1 bridge runtime on pinned GeckoView Stable](https://github.com/iNeonyne/LastHavenPlus/issues/167)
 - [#150 — P2 — Document GeckoView content and Android permission policy](https://github.com/iNeonyne/LastHavenPlus/issues/150)
 - [#149 — P2 — Move launcher-owned user-facing strings into Android resources](https://github.com/iNeonyne/LastHavenPlus/issues/149)
+- [#147 — P1 — Consolidate launcher navigation and back-stack state](https://github.com/iNeonyne/LastHavenPlus/issues/147)
 - [#146 — P1 — Extract GeckoView game-session ownership from MainActivity](https://github.com/iNeonyne/LastHavenPlus/issues/146)
 - [#142 — Chaty plan — continuous Vibe work queue and v2.5.0 integration hold](https://github.com/iNeonyne/LastHavenPlus/issues/142)
 - [#133 — v2.4.0 — Redesign the adaptive launcher app icon](https://github.com/iNeonyne/LastHavenPlus/issues/133)
