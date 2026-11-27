@@ -7,4 +7,4 @@
 5. Start only after Chaty explicitly assigns the issue to your exact identity with clear acceptance criteria.
 6. Record progress, blockers, test results and handoff evidence on the issue or PR.
 
-Waiting issues keep their actual owner label; there is no separate queue label. GitHub is the live task system. Do not use stale chat history or Markdown snapshots as assignment authority. Follow AGENTS.md for all permissions and technical constraints.
+Waiting issues keep their actual agent label; there is no separate queue or owner label. A new issue or PR never automatically supersedes an older one. GitHub is the live task system. Do not use stale chat history or Markdown snapshots as assignment authority. Follow AGENTS.md for all permissions and technical constraints.
