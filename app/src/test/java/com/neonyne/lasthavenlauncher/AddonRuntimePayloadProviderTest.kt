@@ -5,6 +5,7 @@ import java.io.RandomAccessFile
 import java.nio.file.Files
 import org.junit.Assert.assertArrayEquals
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNotEquals
 import org.junit.Assert.assertThrows
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -190,6 +191,75 @@ class AddonRuntimePayloadProviderTest {
         AddonRuntimePayloadProvider(AddonLibraryRepository(root)).buildManifest(snapshot)
       }
     assertEquals("payloadTooLarge", error.code)
+  }
+
+  @Test
+  fun rejectsCaseInsensitiveResourcePathCollisions() = withRoot { root ->
+    val directory =
+      writeAddon(
+        root,
+        "UnitFrame",
+        mapOf("Init.lua" to byteArrayOf(1), "init.lua" to byteArrayOf(2)),
+      )
+    val snapshot = AddonLibrarySnapshot("revision", listOf(item("UnitFrame", directory)))
+    val error =
+      assertThrows(AddonRuntimePayloadException::class.java) {
+        AddonRuntimePayloadProvider(AddonLibraryRepository(root)).buildManifest(snapshot)
+      }
+    assertEquals("invalidPath", error.code)
+  }
+
+  @Test
+  fun rejectsExcessiveEmptyDirectoryEntries() = withRoot { root ->
+    val directory = File(root, "EmptyDirectories")
+    assertTrue(directory.mkdirs())
+    for (index in 0..AddonArchive.MAX_ENTRIES) {
+      assertTrue(File(directory, "empty-$index").mkdir())
+    }
+    val snapshot =
+      AddonLibrarySnapshot(
+        "revision",
+        listOf(
+          AddonLibraryItem(
+            title = "EmptyDirectories",
+            folder = "EmptyDirectories",
+            version = "",
+            interfaceVersion = "",
+            notes = "",
+            dependencies = emptyList(),
+            sizeBytes = 0,
+            filesCount = 0,
+            enabled = true,
+            importedAt = 0,
+            warnings = emptyList(),
+          )
+        ),
+      )
+    val error =
+      assertThrows(AddonRuntimePayloadException::class.java) {
+        AddonRuntimePayloadProvider(AddonLibraryRepository(root)).buildManifest(snapshot)
+      }
+    assertEquals("payloadTooLarge", error.code)
+  }
+
+  @Test
+  fun revisionChangesWhenTheResourceInventoryChanges() = withRoot { root ->
+    val directory = writeAddon(root, "UnitFrame", mapOf("init.lua" to byteArrayOf(1)))
+    val provider = AddonRuntimePayloadProvider(AddonLibraryRepository(root))
+    val first = provider.buildManifest(
+      AddonLibrarySnapshot("same-index-revision", listOf(item("UnitFrame", directory)))
+    )
+
+    File(directory, "Textures/icon.blp").apply {
+      parentFile?.mkdirs()
+      writeBytes(byteArrayOf(2))
+    }
+    val second = provider.buildManifest(
+      AddonLibrarySnapshot("same-index-revision", listOf(item("UnitFrame", directory)))
+    )
+
+    assertEquals(first.sourceRevision, second.sourceRevision)
+    assertNotEquals(first.revision, second.revision)
   }
 
   @Test
