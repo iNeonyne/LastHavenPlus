@@ -37,7 +37,7 @@ class AddonBridgeWiringTest {
 
     assertTrue(source.contains("File(context.filesDir, \"addons\")"))
     assertTrue(source.contains("snapshotProvider = { addonLibraryRepository.readLibrary() }"))
-    assertTrue(source.contains("val gameSession = gameSessionController.session"))
+    assertTrue(source.contains("addonBridgeController.setGameSession(gameSessionController.session)"))
     assertTrue(source.contains("addonBridgeController.setGameSession(gameSession)"))
     assertTrue(source.contains("addonBridgeController.ensureInstalled(context)"))
     assertTrue(source.contains("gameSessionController.startGame(context, gameUrl)"))
