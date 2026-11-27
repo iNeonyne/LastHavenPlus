@@ -303,10 +303,11 @@ class AddonBridgeController(
           return AddonBridgeProtocol.error(request.requestId, "staleRevision")
         }
         val files =
-          runCatching { payloadProvider.page(manifest, request.page ?: -1) }.getOrElse {
-            val code = (it as? AddonRuntimePayloadException)?.code ?: "invalidRequest"
-            return AddonBridgeProtocol.error(request.requestId, code)
-          }
+          runCatching { payloadProvider.page(manifest, request.page ?: -1) }
+            .getOrElse {
+              val code = (it as? AddonRuntimePayloadException)?.code ?: "invalidRequest"
+              return AddonBridgeProtocol.error(request.requestId, code)
+            }
         AddonBridgeProtocol.manifestPage(
           request.requestId,
           manifest,
@@ -358,10 +359,11 @@ class AddonBridgeController(
     port: WebExtension.Port,
   ) {
     val manifest =
-      cachedPayloadManifest ?: run {
-        sendPortError(port, request.requestId, payloadErrorCode ?: "unavailable")
-        return
-      }
+      cachedPayloadManifest
+        ?: run {
+          sendPortError(port, request.requestId, payloadErrorCode ?: "unavailable")
+          return
+        }
     if (request.revision != manifest.revision) {
       sendPortError(port, request.requestId, "staleRevision")
       return
