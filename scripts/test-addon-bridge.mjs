@@ -33,6 +33,14 @@ test("manifest has the exact built-in identity, permissions and game route", () 
       all_frames: false,
       match_about_blank: false,
     },
+    {
+      matches: ["https://lasthavens.com/play", "https://lasthavens.com/play/"],
+      js: ["xhr-overlay.js"],
+      run_at: "document_start",
+      all_frames: false,
+      match_about_blank: false,
+      world: "MAIN",
+    },
   ]);
   assert.equal(JSON.stringify(manifest).includes("<all_urls>"), false);
 });
