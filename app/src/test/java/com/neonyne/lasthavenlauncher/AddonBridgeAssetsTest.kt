@@ -62,7 +62,7 @@ class AddonBridgeAssetsTest {
     assertTrue(background.contains("nextPort.onDisconnect"))
     assertTrue(background.contains("if (expired && port)"))
     assertTrue(background.contains("stalePort.disconnect()"))
-    assertTrue(background.contains('send("startup-" + startupSequence, "ping")'))
+    assertTrue(background.contains("send(\"startup-\" + startupSequence, \"ping\")"))
     assertFalse(background.contains("eval("))
     assertFalse(background.contains("XMLHttpRequest"))
     assertNotNull(background)
