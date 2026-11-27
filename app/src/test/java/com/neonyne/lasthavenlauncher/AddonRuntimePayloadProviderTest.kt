@@ -211,7 +211,7 @@ class AddonRuntimePayloadProviderTest {
   fun rejectsExcessiveEmptyDirectoryEntries() = withRoot { root ->
     val directory = File(root, "EmptyDirectories")
     assertTrue(directory.mkdirs())
-    for (index in 0..AddonArchive.MAX_ENTRIES) {
+    for (index in 0..AddonRuntimePayloadProvider.MAX_RUNTIME_ENTRIES_PER_ADDON) {
       assertTrue(File(directory, "empty-$index").mkdir())
     }
     val snapshot =
