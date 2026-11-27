@@ -55,10 +55,10 @@ Vibe has exactly one active implementation issue at a time. After handing off a 
 - **Label:** `agent:blocked` until #146 is integrated. After #146 merges, Chaty rechecks file overlap and explicitly assigns #147 to Vibe.
 - Centralize Game, Settings, Diagnostics and Update navigation/back-stack state while preserving the current Back overlay and same-session behavior. Do not take over GeckoSession ownership from #146 or add Compose Navigation without evidence.
 
-### Later — Addon Manager Phase B child work (queued)
-- **#167:** GeckoView 160 extension bridge port; wait until PR #166 planner groundwork is reviewed and merged, then require a separate explicit Chaty assignment.
-- **#168:** bounded XHR resource overlay; wait for #167 and Chaty's explicit assignment.
-- **#169:** Worker interception and blocks.idx read masking; wait for #167 and Chaty's explicit assignment.
+### Blocked — Addon Manager Phase B child work (dependency gates)
+- **#167:** `agent:blocked`; waits for PR #166 planner groundwork to be reviewed and merged, then requires a separate explicit Chaty assignment.
+- **#168:** `agent:blocked`; waits for #167 bridge integration and contract verification, then explicit assignment.
+- **#169:** `agent:blocked`; waits for #167 and #168 contracts to be integrated, then explicit assignment.
 - **#170:** same-session navigation integration; blocked until #146 and the required navigation/runtime prerequisites are complete.
 - **#12 — Actionable GeckoView load-error details:** now ready and queued because #11's test work merged. Schedule after #146/#147 and the higher-priority Phase B bridge work; do not start until Chaty explicitly assigns it.
 - Owner authorization for Phase B does not grant blanket permission to Vibe. Chaty assigns each child issue separately, checks overlapping files, and supplies issue-specific security boundaries/tests. Never start from queue status alone.
@@ -100,9 +100,9 @@ Every open issue has exactly one `agent:*` label. The label distinguishes active
 | #81 | `agent:queued` | Chaty documentation/evidence task; not started |
 | #12 | `agent:queued` | #11 prerequisite merged; after #146/#147 and Phase B bridge work, explicit assignment required |
 | #146 | `agent:vibe` | Active Vibe assignment; proceed independently while Chaty integrates prior PRs |
-| #167 | `agent:queued` | Phase B bridge port; blocked by PR #166 integration gate until merged, then explicit Chaty assignment |
-| #168 | `agent:queued` | XHR overlay; wait for #167 and explicit assignment |
-| #169 | `agent:queued` | Worker/read masking; wait for #167 and explicit assignment |
+| #167 | `agent:blocked` | Waits for PR #166 planner groundwork to merge, then explicit Chaty assignment |
+| #168 | `agent:blocked` | Waits for #167 bridge integration and contract verification |
+| #169 | `agent:blocked` | Waits for #167 and #168 contracts to be integrated |
 | #6 | `agent:blocked` | Waits for #28 |
 | #7 | `agent:blocked` | Requires comparable measured baseline and scoped authorization |
 | #10 | `agent:blocked` | Waits for #16 |
