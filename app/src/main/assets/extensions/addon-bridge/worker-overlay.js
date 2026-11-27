@@ -28,6 +28,7 @@
   const RESPONSE_SIGNAL = "lhAddonResponse";
   const FAILURE_SIGNAL = "lhWorkerFailed";
   const MASK_SIGNAL = "lhMaskRecords";
+  const MASK_DIAGNOSTIC_SIGNAL = "lhMaskDiagnostic";
   const ADDON_PREFIX = "Interface/AddOns/";
   const FOLDER_PATTERN = /^[A-Za-z0-9_-]{1,128}$/;
   const UNSIGNED_PATTERN = /^[0-9]+$/;
@@ -213,87 +214,108 @@
     return { ok: false, reason: "allowlist-miss" };
   }
 
-  function parseBlocksIndex(bytes, limits) {
-    function reject(stage) {
-      return { ok: false, stage: stage, records: null };
-    }
-    const resolved = limits && typeof limits === "object" ? limits : {};
-    const maxFileBytes = canonicalUnsigned(String(resolved.maxFileBytes || MAX_INDEX_FILE_BYTES));
-    const maxLines = canonicalUnsigned(String(resolved.maxLines || MAX_INDEX_LINES));
-    const maxLineChars = canonicalUnsigned(String(resolved.maxLineChars || MAX_INDEX_LINE_CHARS));
-    const maxRecords = canonicalUnsigned(String(resolved.maxRecords || MAX_INDEX_RECORDS));
-    if (maxFileBytes === null || maxLines === null || maxLineChars === null || maxRecords === null) {
-      return reject("limits");
-    }
-    if (!(bytes instanceof Uint8Array)) {
-      return reject("input-type");
-    }
-    if (bytes.length > maxFileBytes) {
-      return reject("file-size");
-    }
-    if (typeof TextDecoder !== "function") {
-      return reject("decoder");
-    }
-    let text;
-    try {
-      text = new TextDecoder("utf-8", { fatal: true }).decode(bytes);
-    } catch (error) {
-      return reject("utf-8");
-    }
-    const lines = text.split("\n");
-    if (lines.length - 1 > maxLines) {
-      return reject("line-count");
-    }
-    if (lines.length > 0 && lines[lines.length - 1] === "") {
-      lines.pop();
-    }
-    const records = [];
-    for (let i = 0; i < lines.length; i += 1) {
-      let line = lines[i];
-      if (line.endsWith("\r")) {
-        line = line.slice(0, -1);
+  function parseBlocksIndex(bytes, enabledFolders, limits) {
+      function reject(stage) { return { ok: false, stage: stage, records: null }; }
+      const resolved = limits && typeof limits === "object" ? limits : {};
+      const maxFileBytes = canonicalUnsigned(String(resolved.maxFileBytes || MAX_INDEX_FILE_BYTES));
+      const maxLines = canonicalUnsigned(String(resolved.maxLines || MAX_INDEX_LINES));
+      const maxLineChars = canonicalUnsigned(String(resolved.maxLineChars || MAX_INDEX_LINE_CHARS));
+      const maxRecords = canonicalUnsigned(String(resolved.maxRecords || MAX_INDEX_RECORDS));
+      if (maxFileBytes === null || maxLines === null || maxLineChars === null || maxRecords === null) return reject("limits");
+      if (!(bytes instanceof Uint8Array)) return reject("input-type");
+      if (bytes.length > maxFileBytes) return reject("file-size");
+      if (!Array.isArray(enabledFolders) || enabledFolders.length > 128) return reject("folders");
+      const enabled = new Set();
+      for (let i = 0; i < enabledFolders.length; i += 1) {
+        const folder = enabledFolders[i];
+        if (typeof folder !== "string" || !FOLDER_PATTERN.test(folder) ||
+            folder.toLowerCase().startsWith("blizzard_") || enabled.has(folder.toLowerCase())) return reject("folders");
+        enabled.add(folder.toLowerCase());
       }
-      if (line.length === 0) {
-        continue;
-      }
-      if (line.length > maxLineChars) {
-        return reject("line-length");
-      }
-      if (records.length >= maxRecords) {
-        return reject("record-count");
-      }
-      const fields = line.split("\t");
-      if (fields.length !== 5) {
-        return reject("record-columns");
-      }
-      for (let f = 0; f < fields.length; f += 1) {
-        const field = fields[f];
-        if (field.length === 0 || field.length > MAX_INDEX_FIELD_CHARS || CONTROL_CHARS_PATTERN.test(field)) {
-          return reject("record-field");
+      if (typeof TextDecoder !== "function" || typeof TextEncoder !== "function") return reject("decoder");
+      let text;
+      try { text = new TextDecoder("utf-8", { fatal: true }).decode(bytes); }
+      catch (error) { return reject("utf-8"); }
+      const encoder = new TextEncoder();
+      const hasTrailingNewline = text.endsWith("\n");
+      const lines = text.split("\n");
+      if (hasTrailingNewline) lines.pop();
+      if (lines.length > maxLines) return reject("line-count");
+      const records = [];
+      let byteOffset = 0;
+      let rowCount = 0;
+      for (let i = 0; i < lines.length; i += 1) {
+        const rawLine = lines[i];
+        const line = rawLine.endsWith("\r") ? rawLine.slice(0, -1) : rawLine;
+        const lineBytes = encoder.encode(rawLine).length;
+        if (line.length > maxLineChars) return reject("line-length");
+        if (line.length > 0) {
+          rowCount += 1;
+          if (rowCount > maxRecords) return reject("record-count");
+          const fields = line.split("\t");
+          if (fields.length !== 5) return reject("record-columns");
+          for (let f = 0; f < fields.length; f += 1) {
+            if (fields[f].length === 0 || fields[f].length > MAX_INDEX_FIELD_CHARS ||
+                CONTROL_CHARS_PATTERN.test(fields[f])) return reject("record-field");
+          }
+          const digits = fields[1];
+          if (!UNSIGNED_PATTERN.test(digits)) return reject("record-numbers");
+          const path = fields[4];
+          if (path.includes("\\") || path.includes(":") || path.startsWith("/") ||
+              path.split("/").some((part) => part === "." || part === ".." || part.length === 0)) return reject("record-path");
+          if (path.startsWith(ADDON_PREFIX)) {
+            if (!isSafeAddonPath(path)) return reject("record-path");
+            const folder = path.slice(ADDON_PREFIX.length).split("/")[0];
+            if (enabled.has(folder.toLowerCase())) {
+              const column2Start = byteOffset + encoder.encode(fields[0]).length + 1;
+              const column2End = column2Start + encoder.encode(digits).length;
+              const pathStart = byteOffset + encoder.encode(fields[0]).length + 1 +
+                encoder.encode(fields[1]).length + 1 + encoder.encode(fields[2]).length + 1 +
+                encoder.encode(fields[3]).length + 1;
+              const pathEnd = pathStart + 1;
+              if (!Number.isSafeInteger(column2Start) || !Number.isSafeInteger(column2End) ||
+                  !Number.isSafeInteger(pathStart) || column2Start < 0 ||
+                  column2End <= column2Start || pathEnd > bytes.length) return reject("record-span");
+              records.push(Object.freeze({ path, start: column2Start, end: column2End, value: FILL_ZERO }));
+              records.push(Object.freeze({ path, start: pathStart, end: pathEnd, value: FILL_HASH }));
+            }
+          }
         }
+        byteOffset += lineBytes + (i < lines.length - 1 || hasTrailingNewline ? 1 : 0);
       }
-      const path = fields[0];
-      if (CONTROL_CHARS_PATTERN.test(path) || path.includes("\\") || path.includes(":")) {
-        return reject("record-path");
-      }
-      const start = canonicalUnsigned(fields[1]);
-      const length = canonicalUnsigned(fields[2]);
-      if (start === null || length === null) {
-        return reject("record-numbers");
-      }
-      if (start + length > bytes.length) {
-        return reject("record-span");
-      }
-      records.push(Object.freeze({
-        path: Object.freeze(path),
-        start: start,
-        end: start + length,
-        masked: isSafeAddonPath(path)
-      }));
+      if (byteOffset !== bytes.length || records.length > maxRecords * 2) return reject("record-span");
+      return { ok: true, stage: null, records: Object.freeze(records), indexSize: bytes.length };
     }
-    return { ok: true, stage: null, records: Object.freeze(records) };
-  }
-
+  
+    function validateMaskRecords(records, indexSize, enabledFolders) {
+      if (!Array.isArray(records) || records.length > MAX_INDEX_RECORDS * 2 ||
+          !Number.isSafeInteger(indexSize) || indexSize < 0 || indexSize > MAX_INDEX_FILE_BYTES ||
+          !Array.isArray(enabledFolders) || enabledFolders.length > 128) return { ok: false, records: null };
+      const enabled = new Set();
+      for (let i = 0; i < enabledFolders.length; i += 1) {
+        const folder = enabledFolders[i];
+        if (typeof folder !== "string" || !FOLDER_PATTERN.test(folder) ||
+            folder.toLowerCase().startsWith("blizzard_") || enabled.has(folder.toLowerCase())) return { ok: false, records: null };
+        enabled.add(folder.toLowerCase());
+      }
+      const validated = [];
+      for (let i = 0; i < records.length; i += 1) {
+        const record = records[i];
+        if (!record || typeof record !== "object" || Array.isArray(record) ||
+            Object.keys(record).length !== 4 || typeof record.path !== "string" ||
+            !isSafeAddonPath(record.path) || !Number.isSafeInteger(record.start) ||
+            !Number.isSafeInteger(record.end) || record.start < 0 || record.end <= record.start ||
+            record.end > indexSize || (record.value !== FILL_ZERO && record.value !== FILL_HASH)) return { ok: false, records: null };
+        const folder = record.path.slice(ADDON_PREFIX.length).split("/")[0];
+        if (!enabled.has(folder.toLowerCase())) return { ok: false, records: null };
+        validated.push(Object.freeze({ path: record.path, start: record.start, end: record.end, value: record.value }));
+      }
+      validated.sort((a, b) => a.start - b.start);
+      for (let i = 1; i < validated.length; i += 1) {
+        if (validated[i].start < validated[i - 1].end) return { ok: false, records: null };
+      }
+      return { ok: true, records: Object.freeze(validated) };
+    }
   function intersectingSpans(records, readStart, readEnd) {
     if (!Array.isArray(records) || !Number.isSafeInteger(readStart) || !Number.isSafeInteger(readEnd)) {
       return [];
@@ -302,6 +324,9 @@
     for (let i = 0; i < records.length; i += 1) {
       const record = records[i];
       if (!record || record.masked !== true) {
+        continue;
+      }
+      if (!isSafeAddonPath(record.path) || (record.value !== FILL_ZERO && record.value !== FILL_HASH)) {
         continue;
       }
       const start = Math.max(record.start, readStart);
@@ -329,7 +354,7 @@
     for (let i = 0; i < spans.length; i += 1) {
       const span = spans[i];
       for (let position = span.start; position < span.end; position += 1) {
-        heap[position] = position % 2 === 0 ? FILL_ZERO : FILL_HASH;
+        heap[position] = span.value;
         written += 1;
       }
     }
@@ -374,7 +399,7 @@
     const wrapped = function () {
       const result = original.apply(this, arguments);
       try {
-        const candidates = [result, arguments[0]];
+        const candidates = [result, arguments[0], scope.wasmImports];
         for (let i = 0; i < candidates.length; i += 1) {
           const candidate = candidates[i];
           if (candidate && typeof candidate === "object" && typeof candidate.WebVfsStoreIo === "function") {
@@ -420,6 +445,7 @@
     canonicalUnsigned,
     isSafeAddonPath,
     parseBlocksIndex,
+    validateMaskRecords,
     intersectingSpans,
     maskReadSpan,
     maskWebVfsStoreIo,
@@ -443,7 +469,11 @@
       "var RESPONSE_SIGNAL = " + JSON.stringify(RESPONSE_SIGNAL) + ";\n" +
       "var FAILURE_SIGNAL = " + JSON.stringify(FAILURE_SIGNAL) + ";\n" +
       "var MASK_SIGNAL = " + JSON.stringify(MASK_SIGNAL) + ";\n" +
+      "var MASK_DIAGNOSTIC_SIGNAL = " + JSON.stringify(MASK_DIAGNOSTIC_SIGNAL) + ";\n" +
       "var ADDON_PREFIX = " + JSON.stringify(ADDON_PREFIX) + ";\n" +
+      "var FOLDER_PATTERN = /^[A-Za-z0-9_-]{1,128}$/;\n" +
+      "var UNSIGNED_PATTERN = /^[0-9]+$/;\n" +
+      "var MAX_INDEX_FIELD_CHARS = " + MAX_INDEX_FIELD_CHARS + ";\n" +
       "var CONTROL_CHARS_PATTERN = /[\\u0000-\\u001f\\u007f-\\u009f]/;\n" +
       "var FILL_ZERO = " + FILL_ZERO + ";\n" +
       "var FILL_HASH = " + FILL_HASH + ";\n" +
@@ -460,6 +490,12 @@
       "var booted = false;\n" +
       "var failed = false;\n" +
       "var maskRecords = null;\n" +
+      "var maskDiagnosticReported = false;\n" +
+      "function reportMaskDiagnostic(stage) {\n" +
+      "  if (maskDiagnosticReported) { return; }\n" +
+      "  maskDiagnosticReported = true;\n" +
+      "  try { if (port) { port.postMessage({ type: MASK_DIAGNOSTIC_SIGNAL, stage: String(stage).slice(0, 32) }); } } catch (error) {}\n" +
+      "}\n" +
       "var xhrResponseHandler = null;\n" +
       "var queue = [];\n" +
       "function reportFailure(stage) {\n" +
@@ -683,13 +719,17 @@
       "    if (ports.length !== 1) { reportFailure('boot-port'); return; }\n" +
       "    port = ports[0];\n" +
       "    booted = true;\n" +
+      "    var validatedMasks = validateMaskRecords(data.maskRecords, data.indexSize, data.enabledFolders);\n" +
+      "    if (validatedMasks.ok) { maskRecords = validatedMasks.records; }\n" +
+      "    else { reportMaskDiagnostic('mask-records-invalid'); }\n" +
+      "    if (typeof data.maskError === 'string' && data.maskError.length <= 32) { reportMaskDiagnostic(data.maskError); }\n" +
       "    port.addEventListener('message', function (event) {\n" +
       "      var data = event.data;\n" +
       "      if (!data || typeof data !== 'object') { return; }\n" +
       "      if (data.type === MASK_SIGNAL) {\n" +
-      "        if (Array.isArray(data.records) && data.records.length <= MAX_INDEX_RECORDS) {\n" +
-      "          maskRecords = data.records;\n" +
-      "        }\n" +
+      "        var update = validateMaskRecords(data.records, data.indexSize, data.enabledFolders);\n" +
+      "        if (update.ok) { maskRecords = update.records; }\n" +
+      "        else { reportMaskDiagnostic('mask-records-invalid'); }\n" +
       "        return;\n" +
       "      }\n" +
       "      if (data.type === RESPONSE_SIGNAL && typeof xhrResponseHandler === 'function') {\n" +
@@ -880,6 +920,7 @@
     maskReadSpan: maskReadSpan,
     maskWebVfsStoreIo: maskWebVfsStoreIo,
     wrapAssignWasmImports: wrapAssignWasmImports,
+    validateMaskRecords: validateMaskRecords,
     base64ToBytes: base64ToBytes,
     resolveBundleEntry: resolveBundleEntry,
     serveWorkerFileRequest: serveWorkerFileRequest,
@@ -946,6 +987,43 @@
     }
   }
 
+  function readMaskBootstrapData(global, core) {
+    const failed = (stage, enabledFolders) => ({ records: [], indexSize: 0, enabledFolders: enabledFolders || [], error: stage });
+    let payload = null;
+    try {
+      const bridge = global[BRIDGE_KEY];
+      payload = bridge && typeof bridge.getBundle === "function" ? bridge.getBundle() : null;
+    } catch (error) { return failed("bundle-unavailable"); }
+    if (!payload || !Array.isArray(payload.addons) || payload.addons.length > 128) return failed("bundle-unavailable");
+    const enabledFolders = [];
+    const seen = new Set();
+    for (let i = 0; i < payload.addons.length; i += 1) {
+      const folder = payload.addons[i] && payload.addons[i].folder;
+      if (typeof folder !== "string" || !FOLDER_PATTERN.test(folder) ||
+          folder.toLowerCase().startsWith("blizzard_") || seen.has(folder.toLowerCase())) return failed("bundle-folders");
+      seen.add(folder.toLowerCase());
+      enabledFolders.push(folder);
+    }
+    if (enabledFolders.length === 0) return { records: [], indexSize: 0, enabledFolders: [], error: null };
+    if (!global.navigator || !global.navigator.storage || typeof global.navigator.storage.getDirectory !== "function") {
+      return failed("opfs-unavailable", enabledFolders);
+    }
+    return Promise.resolve()
+      .then(() => global.navigator.storage.getDirectory())
+      .then((root) => root.getFileHandle("blocks.idx"))
+      .then((handle) => handle.getFile())
+      .then((file) => {
+        if (!file || !Number.isSafeInteger(file.size) || file.size < 0 ||
+            file.size > core.MAX_INDEX_FILE_BYTES || typeof file.arrayBuffer !== "function") return failed("index-size", enabledFolders);
+        return file.arrayBuffer().then((buffer) => {
+          const parsed = core.parseBlocksIndex(new Uint8Array(buffer), enabledFolders);
+          if (!parsed.ok) return failed(parsed.stage || "index-parse", enabledFolders);
+          return { records: parsed.records, indexSize: parsed.indexSize, enabledFolders, error: null };
+        });
+      })
+      .catch(() => failed("opfs-read", enabledFolders));
+  }
+
   function interceptWorker(rawUrl, options, decision) {
     const bootstrapSource = core.buildBootstrapSource(decision.href);
     const blob = new global.Blob([bootstrapSource], { type: "text/javascript" });
@@ -958,7 +1036,8 @@
       timer: null,
       onMessage: null,
       onError: null,
-      tornDown: false
+      tornDown: false,
+      bootSent: false
     };
     entry.onMessage = function (event) {
       const data = event.data;
@@ -976,6 +1055,10 @@
           /* already revoked */
         }
         entry.blobUrl = null;
+        return;
+      }
+      if (data.type === MASK_DIAGNOSTIC_SIGNAL) {
+        try { if (global.console && typeof global.console.warn === "function") { global.console.warn("Addon worker masking disabled: " + String(data.stage).slice(0, 32)); } } catch (error) {}
         return;
       }
       if (data.type === FAILURE_SIGNAL) {
@@ -1025,14 +1108,28 @@
     entry.timer = global.setTimeout(function () {
       teardownEntry(entry, "boot-timeout");
     }, BOOT_TIMEOUT_MS);
+    const sendBoot = function (maskData) {
+      if (entry.tornDown || entry.bootSent) return;
+      entry.bootSent = true;
+      const bootData = Object.assign({}, {
+        maskRecords: maskData.records,
+        indexSize: maskData.indexSize,
+        enabledFolders: maskData.enabledFolders,
+        maskError: maskData.error
+      });
+      Object.defineProperty(bootData, BOOT_KEY, { value: true, enumerable: true });
+      try { instance.postMessage(bootData, [channel.port2]); }
+      catch (error) { teardownEntry(entry, "worker-error"); }
+    };
     try {
-      instance.postMessage(
-        Object.defineProperty({}, BOOT_KEY, { value: true, enumerable: true }),
-        [channel.port2]
-      );
+      const maskData = readMaskBootstrapData(global, core);
+      if (maskData && typeof maskData.then === "function") {
+        maskData.then(sendBoot).catch(() => sendBoot({ records: [], indexSize: 0, enabledFolders: [], error: "opfs-read" }));
+      } else {
+        sendBoot(maskData);
+      }
     } catch (error) {
-      teardownEntry(entry, "worker-error");
-      throw error;
+      sendBoot({ records: [], indexSize: 0, enabledFolders: [], error: "mask-unavailable" });
     }
     const nativeTerminate = instance.terminate.bind(instance);
     instance.terminate = function () {
