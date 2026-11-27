@@ -6,6 +6,9 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 
 /**
+ * New launcher copy intentionally lives in the default resource set; untranslated locales use
+ * Android's normal fallback rather than duplicated English values.
+ *
  * Lightweight resource-resolution verification for the launcher-owned string extraction
  * (issue #149): every `R.string` reference in launcher UI code must resolve to a declared resource,
  * and the declared resources must be well-formed with unique names and valid positional format
