@@ -1,6 +1,6 @@
 # Third-party notices
 
-This inventory is based on the resolved releaseRuntimeClasspath dependency report for this branch. It is a notice summary, not a relicensing statement. Each component remains under its own license or terms. The exact APK contents must be checked against the CI-built unsigned APK before this inventory is treated as complete.
+This inventory is reconciled against the resolved GeckoView 161 releaseRuntimeClasspath report and the exact unsigned ARM64 APK built in CI. It is a notice summary, not a relicensing statement. Each component remains under its own license or terms.
 
 OPEN-SOURCE COMPONENTS
 
@@ -31,10 +31,17 @@ Other runtime libraries
 - License text: the applicable Apache-2.0 text is included in the repository and app as `app/src/main/res/raw/apache_2_0.txt`.
 
 Mozilla GeckoView
-- Component: org.mozilla.geckoview:geckoview-arm64-v8a:160.0.20261116130455.
+- Component: org.mozilla.geckoview:geckoview-arm64-v8a:161.0.20261118180411.
 - License: Mozilla Public License 2.0 (MPL-2.0).
 - Copyright: Mozilla Foundation and contributors.
 - The MPL-2.0 text is included in this application as mpl_2_0.txt. GeckoView also contains separately licensed third-party components; consult GeckoView's own about:license inventory and Mozilla's corresponding source notices. The project does not relicense GeckoView or its bundled components.
+
+
+GeckoView bundled license inventory (161 Stable)
+- The exact GeckoView 161 ARM64 APK includes Mozilla's `about:license` page at `assets/omni.ja` → `chrome/toolkit/content/global/license.html`.
+- Its complete 94-entry license-name/path inventory is included in this app as `app/src/main/res/raw/geckoview_about_license_inventory.txt` and is visible in Settings → Licenses & third-party notices.
+- Source HTML SHA-256: `036e7acd61cc5b7a4f88b6637d26269ffe20bb573a36b715bb98f31e7b70ccdf`. The inventory notes Mozilla's warning that some listed licenses may not apply to a particular product build/version; it does not claim every listed component is present in the launcher APK.
+- The full upstream license HTML remains embedded in GeckoView's `omni.ja`; the in-app viewer also displays the complete MPL-2.0 and Apache-2.0 texts separately.
 
 VENDOR SDK TERMS — NOT AN OPEN-SOURCE LICENSE
 
@@ -54,6 +61,6 @@ SCOPE AND VERIFICATION
 - Original LastHavenPlus code and documentation are All Rights Reserved; see the root `LICENSE` and `NOTICE`.
 - Third-party license texts are provided only for the corresponding third-party components.
 - The hosted LastHaven game and all third-party components/assets retain their own terms.
-- The resolved dependency graph is not proof that every listed module is packaged in the APK. CI uploads the unsigned PR APK for direct inspection; update this notice only from verified package contents.
+- The exact unsigned APK was inspected: native libraries are packaged only under `lib/arm64-v8a`; the rights, third-party, Apache, MPL and GeckoView inventory resources are checked by PR CI. The resolved dependency graph is not proof that every listed module is packaged in the APK.
 - No physical-device test or signed release verification is claimed.
 
