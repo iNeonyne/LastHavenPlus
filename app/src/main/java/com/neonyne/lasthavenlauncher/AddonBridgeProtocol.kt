@@ -9,7 +9,7 @@ import java.util.Base64
  * bounded addon summaries, manifest pages and base64 file chunks. The Android adapter converts to
  * and from `org.json`; this layer owns the schema and rejects unknown fields/types.
  */
-object AddonBridgeProtocol {
+internal object AddonBridgeProtocol {
   const val KEY_TYPE = "type"
   const val KEY_REQUEST_ID = "requestId"
   const val KEY_ERROR = "error"
