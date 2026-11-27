@@ -37,12 +37,7 @@ Site permissions are deny-by-default. Persistent storage and audible/inaudible a
 
 ## Build and test
 
-Use the committed Gradle Wrapper with the pinned toolchain:
-
-- JDK 25
-- Gradle 9.7.1
-- Android SDK Platform 37.2
-- Android Build Tools 37.0.0
+Use the committed [Gradle Wrapper](gradle/wrapper/gradle-wrapper.properties) and the environment pins in [the Android workflow](.github/workflows/android.yml). Dependency/plugin versions are recorded in [gradle/libs.versions.toml](gradle/libs.versions.toml). Read these files for the exact current toolchain; do not copy version numbers from historical work logs or audit snapshots.
 
 Common local checks:
 
