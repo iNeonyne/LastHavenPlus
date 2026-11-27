@@ -93,9 +93,22 @@ connect();
 
 setInterval(() => {
   const now = Date.now();
+  let expired = false;
   for (const [requestId, createdAt] of pending) {
     if (now - createdAt > REQUEST_TIMEOUT_MS) {
       pending.delete(requestId);
+      expired = true;
     }
+  }
+  if (expired && port) {
+    const stalePort = port;
+    port = null;
+    pending.clear();
+    try {
+      stalePort.disconnect();
+    } catch (_error) {
+      // The port is already gone; reconnect below.
+    }
+    scheduleReconnect();
   }
 }, REQUEST_TIMEOUT_MS);
