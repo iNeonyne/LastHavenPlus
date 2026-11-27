@@ -95,7 +95,9 @@ class AddonLibraryRepository(
     val count =
       properties.getProperty("count")?.toIntOrNull()
         ?: throw IllegalStateException("Addon library index is invalid.")
-    require(count in 0..MAX_ADDON_LIBRARY_ITEMS) { "Addon library index contains too many entries." }
+    require(count in 0..MAX_ADDON_LIBRARY_ITEMS) {
+      "Addon library index contains too many entries."
+    }
     val addons =
       (0 until count).map { index ->
         fun value(key: String): String =
