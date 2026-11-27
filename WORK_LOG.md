@@ -752,3 +752,9 @@ No branch was deleted. The available GitHub connector exposes no branch-delete o
 - Rechecked live GitHub labels and open PRs before finalizing the documentation PR. The previous top block still named #169 as Vibe's active work even though PR #195 was merged and #169 was closed.
 - Replaced the active AGENT_WORK.md block with a dated 2026-11-28 snapshot: #147 is Vibe's sole active assignment (draft PR #204); #167 remains Chaty-owned for runtime/device acceptance; #183 and #170 are blocked; #168/#169 are merged and closed; updater #4/#15 remain blocked; #205 is tracked by PR #206.
 - Verified beta HEAD remained `78a3d12eb018e112a3443377e34e234ee9d3da7d` at the time of this refresh. PR #195 merge commit is `3959d890f7a65f69e9eb78d5e3339b3a88746097`.
+
+
+### Markdown lint correction — 2026-11-28
+
+- The first exact-head Markdown quality run (#46069995791) failed on one Markdown parsing issue in AGENTS.md: unquoted wildcard branch patterns were interpreted as emphasis (MD037).
+- Wrapped `infra/*` and `beta-legacy-*` in inline code. No policy meaning changed. The correction is on the same PR branch; a fresh Markdown run is required for the new head.
