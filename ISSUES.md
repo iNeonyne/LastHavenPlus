@@ -904,3 +904,11 @@ Verify the current manifest and GeckoView delegates, then document the strict al
 - Verified current beta source: `MainActivity.setupGeckoDelegates` allows only persistent storage and audible/inaudible autoplay for `lasthavens.com` and subdomains; all other content permissions/origins are denied; Android runtime and media permission requests are rejected.
 - Manifest declares `INTERNET` and `REQUEST_INSTALL_PACKAGES`; no camera, microphone, geolocation or notification permissions are declared.
 - No runtime policy change is authorized. Exact-head Markdown validation passed on PR #158 head `e2ce22c44508a87f53fc4a57a03f82e0597550bc` (run #45889911748); internal links/anchors passed across all 15 Markdown files. Final review/merge remains pending.
+
+## 2026-11-27 — GameSessionController integration (#146)
+
+- PR [#173](https://github.com/iNeonyne/LastHavenPlus/pull/173) squash-merged to `beta` at `5ed6af635954c8f4e2673dab3c60334eff4a8ae0`; issue #146 closed as completed.
+- Exact-head Android validation #45921162358, unsigned APK reproducibility #45921162325 and Markdown #45921162310 passed. Post-merge Markdown #45923143716 passed; post-merge Android #45923143717 and reproducibility #45923143712 were still running at this checkpoint.
+- No physical ARM64 device testing is claimed.
+- #147's #146 dependency is satisfied. Chaty moved #147 from `agent:blocked` to `agent:queued`; it is not an active assignment and must not start until Chaty explicitly assigns it after checking Vibe's current #167 work.
+- #167 remains Vibe's active Phase B bridge assignment. #168/#169 remain blocked pending bridge implementation and contract review.
