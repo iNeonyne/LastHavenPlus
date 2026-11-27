@@ -189,7 +189,12 @@ class AddonBridgeController(
     if (!recordRequest(request.requestId, System.currentTimeMillis())) return null
     val response = buildResponse(request)
     completeRequest(request.requestId)
-    return response?.toFields()
+    val fields = response?.toFields() ?: return null
+    val encodedBytes = JSONObject(fields).toString().toByteArray(Charsets.UTF_8).size
+    if (!AddonBridgeProtocol.isResponseWithinByteLimit(encodedBytes)) {
+      return AddonBridgeProtocol.error(request.requestId, "tooManyAddons")?.toFields()
+    }
+    return fields
   }
 
   private fun senderAllowed(sender: WebExtension.MessageSender?): Boolean {
