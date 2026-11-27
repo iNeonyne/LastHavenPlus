@@ -41,8 +41,7 @@ object AddonRuntimePlanner {
       }
       require(
         (addon.dependencies + addon.optionalDependencies).all {
-          it.length <= AddonArchive.MAX_DEPENDENCY_NAME_CHARS &&
-            it.matches(Regex("[A-Za-z0-9_-]+"))
+          it.length <= AddonArchive.MAX_DEPENDENCY_NAME_CHARS && it.matches(Regex("[A-Za-z0-9_-]+"))
         }
       ) {
         "Addon contains an invalid dependency name."
@@ -151,7 +150,9 @@ object AddonRuntimePlanner {
       if (line.isEmpty() || line.startsWith("#")) continue
       val path = runCatching { AddonArchive.validateEntryPath(line) }.getOrNull() ?: continue
       if (seen.add(path.lowercase(Locale.ROOT))) {
-        require(files.size < AddonArchive.MAX_ENTRIES) { "Addon TOC contains too many load entries." }
+        require(files.size < AddonArchive.MAX_ENTRIES) {
+          "Addon TOC contains too many load entries."
+        }
         files += path
       }
     }
