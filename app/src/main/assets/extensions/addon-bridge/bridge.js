@@ -8,7 +8,7 @@
  * No page-forgeable window message is accepted and page code cannot mutate the isolated source.
  */
 (function installIsolatedAddonBridge() {
-  const GAME_ORIGIN = "https://lasthavens.com";
+  const GAME_ORIGINS = new Set(["https://lasthavens.com", "https://alt.lasthavens.com"]);
   const BRIDGE_KEY = "__LASTHAVEN_ADDON_BRIDGE__";
   const core = globalThis.__LHAddonRuntimeCore;
   const MAX_STARTUP_WAIT_MS = 20000;
@@ -30,7 +30,7 @@
     return;
   }
   if (
-    pageUrl.origin !== GAME_ORIGIN ||
+    !GAME_ORIGINS.has(pageUrl.origin) ||
       pageUrl.username !== "" ||
       pageUrl.password !== "" ||
       pageUrl.port !== "" ||

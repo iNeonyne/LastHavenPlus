@@ -27,14 +27,24 @@ test("manifest has the exact built-in identity, permissions and game route", () 
   assert.deepEqual(manifest.permissions, ["geckoViewAddons", "nativeMessaging"]);
   assert.deepEqual(manifest.content_scripts, [
     {
-      matches: ["https://lasthavens.com/play", "https://lasthavens.com/play/"],
+      matches: [
+        "https://lasthavens.com/play",
+        "https://lasthavens.com/play/",
+        "https://alt.lasthavens.com/play",
+        "https://alt.lasthavens.com/play/",
+      ],
       js: ["payload-validation.js", "bridge.js"],
       run_at: "document_start",
       all_frames: false,
       match_about_blank: false,
     },
     {
-      matches: ["https://lasthavens.com/play", "https://lasthavens.com/play/"],
+      matches: [
+        "https://lasthavens.com/play",
+        "https://lasthavens.com/play/",
+        "https://alt.lasthavens.com/play",
+        "https://alt.lasthavens.com/play/",
+      ],
       js: ["xhr-overlay.js"],
       run_at: "document_start",
       all_frames: false,
@@ -42,7 +52,12 @@ test("manifest has the exact built-in identity, permissions and game route", () 
       world: "MAIN",
     },
     {
-      matches: ["https://lasthavens.com/play", "https://lasthavens.com/play/"],
+      matches: [
+        "https://lasthavens.com/play",
+        "https://lasthavens.com/play/",
+        "https://alt.lasthavens.com/play",
+        "https://alt.lasthavens.com/play/",
+      ],
       js: ["worker-overlay.js"],
       run_at: "document_start",
       all_frames: false,

@@ -14,6 +14,7 @@
   const CORE_KEY = "__LHAddonXhrOverlayCore";
   const BRIDGE_KEY = "__LASTHAVEN_ADDON_BRIDGE__";
   const GAME_HOST = "lasthavens.com";
+  const GAME_HOSTS = new Set([GAME_HOST, "alt.lasthavens.com"]);
   const ADDON_PREFIX = "Interface/AddOns/";
   const BUNDLE_SEGMENT_PREFIX = "bundle-";
   const BLOCK_SEGMENT_PATTERN = /^(.+)\/(\d+)-(\d+)-(\d+)k\.bin$/;
@@ -115,13 +116,16 @@
 
   function resolveRoute(method, href, baseHref) {
     let url;
+    let base;
     try {
-      url = new URL(href, baseHref);
+      base = new URL(baseHref);
+      url = new URL(href, base.href);
     } catch (_error) {
       return { kind: "passthrough" };
     }
     if (url.protocol !== "https:" ||
-        url.host !== GAME_HOST ||
+        !GAME_HOSTS.has(url.hostname) ||
+        url.origin !== base.origin ||
         url.username !== "" ||
         url.password !== "" ||
         url.port !== "" ||
@@ -293,6 +297,7 @@
 
   const core = Object.freeze({
     GAME_HOST: GAME_HOST,
+    GAME_HOSTS: Object.freeze(Array.from(GAME_HOSTS)),
     ADDON_PREFIX: ADDON_PREFIX,
     MAX_PAYLOAD_BYTES: MAX_PAYLOAD_BYTES,
     MAX_FILE_BYTES: MAX_FILE_BYTES,

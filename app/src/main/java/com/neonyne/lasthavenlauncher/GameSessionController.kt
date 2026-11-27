@@ -94,6 +94,25 @@ class GameSessionController {
     }
   }
 
+  /** Navigate the existing GeckoSession to a newly selected game server without replacing it. */
+  fun loadGameUrl(context: Context, gameUrl: String) {
+    val gameSession = session ?: return
+    when (GameSessionActions.decideGameUrlChange(uiState)) {
+      GameSessionUrlChangeDecision.LoadInPlace -> {
+        transition(GameSessionActions::onReloadCleared)
+        gameSession.loadUri(gameUrl)
+        transition(GameSessionActions::onLoadRequested)
+      }
+      GameSessionUrlChangeDecision.ReopenAndLoad -> {
+        gameSession.open(obtainRuntime(context))
+        transition(GameSessionActions::onReloadCleared)
+        gameSession.loadUri(gameUrl)
+        transition(GameSessionActions::onLoadRequested)
+      }
+      GameSessionUrlChangeDecision.Noop -> Unit
+    }
+  }
+
   /**
    * Recovers from a content-process crash: a crashed session cannot be reloaded in place, so the
    * session is recreated while keeping the runtime (and therefore the game profile) intact. The
@@ -148,7 +167,7 @@ class GameSessionController {
             Diagnostics.warn(context, TAG, "GeckoView page load failed")
           }
         }
-      }
+      },
     )
     geckoSession.setContentDelegate(
       object : GeckoSession.ContentDelegate {
@@ -172,7 +191,7 @@ class GameSessionController {
         ) {
           Diagnostics.warn(context, TAG, "GeckoView external response not handled")
         }
-      }
+      },
     )
     geckoSession.setNavigationDelegate(
       object : GeckoSession.NavigationDelegate {
@@ -180,7 +199,7 @@ class GameSessionController {
           session: GeckoSession,
           request: GeckoSession.NavigationDelegate.LoadRequest,
         ): GeckoResult<org.mozilla.geckoview.AllowOrDeny> = GeckoResult.allow()
-      }
+      },
     )
     geckoSession.setPermissionDelegate(
       object : GeckoSession.PermissionDelegate {
@@ -222,7 +241,7 @@ class GameSessionController {
         ) {
           callback.reject()
         }
-      }
+      },
     )
   }
 }

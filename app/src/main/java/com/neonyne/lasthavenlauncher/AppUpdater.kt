@@ -100,24 +100,28 @@ object AppUpdater {
     ) {
       val result =
         try {
-          val releaseConnection = openConnection(RELEASE_API)
           val release =
-            try {
-              val responseCode = releaseConnection.responseCode
-              if (responseCode == HttpURLConnection.HTTP_NOT_FOUND) {
-                null
-              } else {
-                check(responseCode == HttpURLConnection.HTTP_OK) {
-                  "GitHub returned HTTP $responseCode"
+            withNetworkRetry(appContext) {
+              val releaseConnection = openConnection(RELEASE_API)
+              try {
+                val responseCode = releaseConnection.responseCode
+                if (responseCode == HttpURLConnection.HTTP_NOT_FOUND) {
+                  null
+                } else {
+                  UpdateNetworkPolicy.requireHttpSuccess(
+                    responseCode,
+                    HttpURLConnection.HTTP_OK,
+                    "GitHub release lookup",
+                  )
+                  JSONObject(
+                    releaseConnection.inputStream.use {
+                      UpdateNetworkPolicy.readLimitedText(it, MAX_RELEASE_JSON_BYTES)
+                    },
+                  )
                 }
-                JSONObject(
-                  releaseConnection.inputStream.use {
-                    UpdateNetworkPolicy.readLimitedText(it, MAX_RELEASE_JSON_BYTES)
-                  }
-                )
+              } finally {
+                releaseConnection.disconnect()
               }
-            } finally {
-              releaseConnection.disconnect()
             }
 
           if (release == null) {
@@ -150,13 +154,15 @@ object AppUpdater {
                   val manifestConnection = openConnection(manifestUrl)
                   try {
                     val responseCode = manifestConnection.responseCode
-                    check(responseCode == HttpURLConnection.HTTP_OK) {
-                      "Update manifest download failed (HTTP $responseCode)"
-                    }
+                    UpdateNetworkPolicy.requireHttpSuccess(
+                      responseCode,
+                      HttpURLConnection.HTTP_OK,
+                      "Update manifest download",
+                    )
                     JSONObject(
                       manifestConnection.inputStream.use {
                         UpdateNetworkPolicy.readLimitedText(it, MAX_MANIFEST_JSON_BYTES)
-                      }
+                      },
                     )
                   } finally {
                     manifestConnection.disconnect()
@@ -244,7 +250,7 @@ object AppUpdater {
                   sha256 = fullSha,
                   size = targetSize,
                   patch = patch,
-                )
+                ),
               )
             }
           }
@@ -431,7 +437,7 @@ object AppUpdater {
       "Installed app does not use the configured LastHaven release key"
     }
     check(
-      updateFingerprints == installedFingerprints && RELEASE_CERT_SHA256 in updateFingerprints
+      updateFingerprints == installedFingerprints && RELEASE_CERT_SHA256 in updateFingerprints,
     ) {
       "Update APK was not signed with the installed LastHaven release key"
     }
@@ -492,9 +498,11 @@ object AppUpdater {
     val connection = openConnection(url)
     try {
       val responseCode = connection.responseCode
-      check(responseCode == HttpURLConnection.HTTP_OK) {
-        "Update download failed (HTTP $responseCode)"
-      }
+      UpdateNetworkPolicy.requireHttpSuccess(
+        responseCode,
+        HttpURLConnection.HTTP_OK,
+        "Update download",
+      )
       val contentLength = connection.contentLengthLong
       check(contentLength <= maximumBytes) { "Update file is unexpectedly large" }
       if (expectedSize > 0 && contentLength >= 0) {

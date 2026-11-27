@@ -49,6 +49,18 @@ sealed interface GameSessionReloadDecision {
   data object Noop : GameSessionReloadDecision
 }
 
+/** What changing the configured game URL must do with the current session. */
+sealed interface GameSessionUrlChangeDecision {
+  /** Navigate the existing open session to the selected URL. */
+  data object LoadInPlace : GameSessionUrlChangeDecision
+
+  /** Re-open the existing closed session and navigate to the selected URL. */
+  data object ReopenAndLoad : GameSessionUrlChangeDecision
+
+  /** No session exists; the saved preference will be used when Play creates one. */
+  data object Noop : GameSessionUrlChangeDecision
+}
+
 /**
  * Pure decision and transition rules for the game session lifecycle. The controller applies these
  * rules; they carry no Android or GeckoView references so they can be tested on the JVM.
@@ -66,6 +78,13 @@ object GameSessionActions {
       !state.hasSession -> GameSessionReloadDecision.Noop
       state.sessionOpen -> GameSessionReloadDecision.ReloadInPlace
       else -> GameSessionReloadDecision.ReopenAndLoad
+    }
+
+  fun decideGameUrlChange(state: GameSessionUiState): GameSessionUrlChangeDecision =
+    when {
+      !state.hasSession -> GameSessionUrlChangeDecision.Noop
+      state.sessionOpen -> GameSessionUrlChangeDecision.LoadInPlace
+      else -> GameSessionUrlChangeDecision.ReopenAndLoad
     }
 
   /** Only an existing (possibly crashed) session is restored by recreating it. */

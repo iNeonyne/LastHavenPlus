@@ -246,6 +246,8 @@ test("manifest adds the MAIN-world overlay as a second exact-route content scrip
   assert.deepEqual(overlay.matches, [
     "https://lasthavens.com/play",
     "https://lasthavens.com/play/",
+    "https://alt.lasthavens.com/play",
+    "https://alt.lasthavens.com/play/",
   ]);
 });
 
@@ -272,6 +274,23 @@ test("core resolves exact game file routes and rejects everything else", () => {
   assert.equal(file.payloadPath, "Interface/AddOns/Foo/bar.lua");
   assert.equal(file.block, null);
   assert.equal(file.isHead, false);
+
+  const alternateFile = core.resolveRoute(
+    "GET",
+    "https://alt.lasthavens.com/game/Interface/AddOns/Foo/bar.lua",
+    "https://alt.lasthavens.com/play",
+  );
+  assert.equal(alternateFile.kind, "file");
+  assert.equal(alternateFile.payloadPath, "Interface/AddOns/Foo/bar.lua");
+  assert.equal(
+    core.resolveRoute(
+      "GET",
+      "https://lasthavens.com/game/Interface/AddOns/Foo/bar.lua",
+      "https://alt.lasthavens.com/play",
+    ).kind,
+    "passthrough",
+    "alternate-server pages must not intercept requests to the default origin",
+  );
 
   const head = core.resolveRoute(
     "head",

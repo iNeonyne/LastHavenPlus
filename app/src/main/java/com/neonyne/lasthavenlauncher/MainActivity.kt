@@ -37,7 +37,8 @@ import androidx.core.view.WindowInsetsControllerCompat
 import java.io.File
 import java.util.concurrent.Executors
 
-private const val DEFAULT_GAME_URL = "https://lasthavens.com/play"
+internal const val DEFAULT_GAME_URL = "https://lasthavens.com/play"
+internal const val ALTERNATE_GAME_URL = "https://alt.lasthavens.com/play"
 private const val PREFERENCES_NAME = UpdateFileCleanup.PREFERENCES_NAME
 private const val KEY_GAME_URL = "game_url"
 private const val KEY_PENDING_UPDATE_URI = UpdateFileCleanup.KEY_PENDING_UPDATE_URI
@@ -210,8 +211,8 @@ private fun LastHavenApp(
 ) {
   val context = LocalContext.current
   val usageMeter = remember { AppUsageMeter(context) }
-  val gameUrl = remember {
-    preferences.getString(KEY_GAME_URL, DEFAULT_GAME_URL) ?: DEFAULT_GAME_URL
+  var gameUrl by remember {
+    mutableStateOf(preferences.getString(KEY_GAME_URL, DEFAULT_GAME_URL) ?: DEFAULT_GAME_URL)
   }
 
   var navigation by remember { mutableStateOf(LauncherNavigationState()) }
@@ -258,6 +259,14 @@ private fun LastHavenApp(
     addonBridgeController.ensureInstalled(context) {
       addonBridgeController.refreshSnapshot {
         gameSessionController.reloadGame(context, gameUrl)
+      }
+    }
+  }
+
+  val loadGameUrl: (String) -> Unit = { selectedUrl ->
+    addonBridgeController.ensureInstalled(context) {
+      addonBridgeController.refreshSnapshot {
+        gameSessionController.loadGameUrl(context, selectedUrl)
       }
     }
   }
@@ -405,6 +414,15 @@ private fun LastHavenApp(
         SettingsScreen(
           context = context,
           usageMeter = usageMeter,
+          gameUrl = gameUrl,
+          onGameUrlChange = { selectedUrl ->
+            if (selectedUrl == DEFAULT_GAME_URL || selectedUrl == ALTERNATE_GAME_URL) {
+              if (preferences.edit().putString(KEY_GAME_URL, selectedUrl).commit()) {
+                gameUrl = selectedUrl
+                loadGameUrl(selectedUrl)
+              }
+            }
+          },
           isCheckingUpdate = isCheckingUpdate,
           onBack = { navigate(LauncherNavigationPolicy.popToReturn(navigation)) },
           onOpenDiagnostics = {

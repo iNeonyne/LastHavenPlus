@@ -106,13 +106,13 @@ class UpdateNetworkPolicyTest {
     assertEquals(
       "https://api.github.com/repos/iNeonyne/LastHavenPlus/releases/latest",
       UpdateNetworkPolicy.requireTrustedConnectionUrl(
-        "https://api.github.com/repos/iNeonyne/LastHavenPlus/releases/latest"
+        "https://api.github.com/repos/iNeonyne/LastHavenPlus/releases/latest",
       ),
     )
     assertEquals(
       "https://release-assets.githubusercontent.com/path/file.apk",
       UpdateNetworkPolicy.requireTrustedConnectionUrl(
-        "https://release-assets.githubusercontent.com/path/file.apk"
+        "https://release-assets.githubusercontent.com/path/file.apk",
       ),
     )
     listOf(
@@ -168,6 +168,37 @@ class UpdateNetworkPolicyTest {
           // Expected.
         }
       }
+  }
+
+  @Test
+  fun retriesTransientHttpStatusesButRejectsPermanentErrors() {
+    listOf(408, 429, 500, 502, 503, 504).forEach { status ->
+      var attempts = 0
+      val result =
+        UpdateNetworkPolicy.withIoRetry(maxAttempts = 3, pause = {}) {
+          attempts++
+          UpdateNetworkPolicy.requireHttpSuccess(
+            if (attempts == 1) status else 200,
+            200,
+            "release lookup",
+          )
+          "success"
+        }
+      assertEquals("success", result)
+      assertEquals("HTTP $status should trigger exactly one retry", 2, attempts)
+    }
+
+    var permanentAttempts = 0
+    try {
+      UpdateNetworkPolicy.withIoRetry(maxAttempts = 3, pause = {}) {
+        permanentAttempts++
+        UpdateNetworkPolicy.requireHttpSuccess(404, 200, "release lookup")
+      }
+      throw AssertionError("Expected 404 to be a permanent failure")
+    } catch (_: IllegalStateException) {
+      assertEquals("Permanent HTTP errors must not be retried", 1, permanentAttempts)
+    }
+    UpdateNetworkPolicy.requireHttpSuccess(200, 200, "release lookup")
   }
 
   @Test

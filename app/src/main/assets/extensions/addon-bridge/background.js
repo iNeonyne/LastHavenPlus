@@ -171,7 +171,7 @@ function isAllowedGameSender(sender) {
     return false;
   }
   return url.protocol === "https:" &&
-    url.hostname === "lasthavens.com" &&
+    (url.hostname === "lasthavens.com" || url.hostname === "alt.lasthavens.com") &&
     url.port === "" &&
     url.username === "" &&
     url.password === "" &&
