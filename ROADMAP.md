@@ -49,7 +49,7 @@ Update this file when strategic priorities, sequence or release direction change
 <!-- ROADMAP-LIVE-START -->
 ## Live issue and PR inventory
 
-Generated: 2026-11-27T22:57:46+00:00
+Generated: 2026-11-27T23:01:31+00:00
 Source of truth: live GitHub Issues, pull requests and labels. This section is generated automatically; do not edit it manually.
 
 Every open issue is listed below, grouped by its current priority. Opening a newer issue or PR does not supersede an older one. Duplicates and supersession must be explicitly reviewed and linked in GitHub.
@@ -140,4 +140,5 @@ Every open issue is listed below, grouped by its current priority. Opening a new
 - [#9 — Verify accessibility and navigation for the direct-launch overlay](https://github.com/iNeonyne/LastHavenPlus/issues/9)
 - [#8 — Superseded — Legacy addon manager removed; future scope waits for owner spec (#23)](https://github.com/iNeonyne/LastHavenPlus/issues/8)
 - [#5 — Owner feedback — LastHaven gameplay and update behavior after release](https://github.com/iNeonyne/LastHavenPlus/issues/5)
+
 <!-- ROADMAP-LIVE-END -->
