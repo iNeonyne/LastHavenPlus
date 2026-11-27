@@ -5,7 +5,7 @@ LastHavenPlus is an Android launcher for the existing LastHaven Wrath of the Lic
 This is an agent-operated repository. All code and documentation contributions must be made by agents explicitly authorized under [AGENTS.md](AGENTS.md).
 
 - **Game:** https://lasthavens.com/play
-- **Published releases:** [GitHub Releases](https://github.com/iNeonyne/LastHavenPlus/releases/latest) — this page is the live source for the latest stable version. At the time of this documentation update, the latest release is v2.4.0.
+- **Published releases:** [GitHub Releases](https://github.com/iNeonyne/LastHavenPlus/releases/latest) — this page is the live source for the latest stable version. As verified on 2026-11-28, the latest release is v2.4.0.
 - **Development/integration branch:** `beta`
 - **Stable branch:** `main`
 
