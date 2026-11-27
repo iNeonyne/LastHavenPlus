@@ -163,6 +163,11 @@ fun SettingsScreen(
         fontWeight = FontWeight.SemiBold,
       )
       Text(stringResource(R.string.settings_game_engine), color = DesignTokens.textSecondary)
+      Text(
+        stringResource(R.string.settings_passkeys_unavailable),
+        color = DesignTokens.textSecondary,
+        style = MaterialTheme.typography.bodySmall,
+      )
       OutlinedButton(
         onClick = onCheckUpdates,
         enabled = !isCheckingUpdate,
