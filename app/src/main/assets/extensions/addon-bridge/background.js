@@ -39,7 +39,16 @@ function send(requestId, type) {
   try {
     port.postMessage({ type: type, requestId: requestId });
   } catch (_error) {
-    pending.delete(requestId);
+    const failedPort = port;
+    port = null;
+    pending.clear();
+    try {
+      if (failedPort) {
+        failedPort.disconnect();
+      }
+    } catch (_disconnectError) {
+      // The port is already gone; the reconnect timer remains authoritative.
+    }
     scheduleReconnect();
   }
 }
