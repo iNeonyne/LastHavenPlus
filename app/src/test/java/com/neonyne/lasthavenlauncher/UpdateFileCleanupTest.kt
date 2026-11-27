@@ -123,7 +123,7 @@ class UpdateFileCleanupTest {
       val link = File(directory, apkName(12))
       Files.createSymbolicLink(link.toPath(), targetApk.toPath())
 
-      UpdateFileCleanup.removeObsoleteFiles(directory)
+      UpdateFileCleanup.removeObsoleteFiles(directory, setOf(targetApk.name))
 
       assertTrue(nestedApk.exists())
       assertTrue(targetApk.exists())
