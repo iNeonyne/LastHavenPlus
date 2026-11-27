@@ -35,6 +35,7 @@ class AddonBridgeAssetsTest {
     assertTrue(manifest.contains("\"bridge.js\""))
     assertFalse(manifest.contains("\"<all_urls>\""))
     assertFalse(manifest.contains("\"all_frames\": true"))
+    assertTrue(manifest.contains("\"content_scripts\""))
   }
 
   @Test
@@ -50,7 +51,7 @@ class AddonBridgeAssetsTest {
       .forEach {
         assertFalse("manifest must not request $it", manifest.contains("\"$it\""))
       }
-    assertFalse("manifest must not declare content scripts", manifest.contains("content_scripts"))
+    assertTrue("manifest must declare the exact-route content script", manifest.contains("content_scripts"))
   }
 
   @Test
@@ -69,11 +70,12 @@ class AddonBridgeAssetsTest {
     assertTrue(background.contains("function scheduleReconnect()"))
     assertTrue(background.contains("MAX_RECONNECT_DELAY_MS = 30000"))
     assertTrue(background.contains("nextPort.onDisconnect"))
-    assertTrue(background.contains("if (expired && port)"))
     assertTrue(background.contains("stalePort.disconnect()"))
-    assertTrue(background.contains("send(\"startup-\" + startupSequence, \"ping\")"))
+    assertTrue(background.contains('requestNative("ping")'))
+    assertTrue(background.contains("MAX_PENDING_REQUESTS = 8"))
+    assertTrue(background.contains("MAX_RUNTIME_BUNDLE_BYTES = 16 * 1024 * 1024"))
+    assertTrue(background.contains("getFileChunk"))
     assertFalse(background.contains("eval("))
     assertFalse(background.contains("XMLHttpRequest"))
-    assertNotNull(background)
   }
 }
