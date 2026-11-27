@@ -27,13 +27,13 @@ A whole-file hash mismatch fails the workflow after the report is generated and 
 
 ## Latest verified result
 
-- Source commit: `78a3d12eb018e112a3443377e34e234ee9d3da7d` (GeckoView 161 Stable and refreshed dependency pins).
-- Workflow run: [#46063532417](https://github.com/iNeonyne/LastHavenPlus/actions/runs/46063532417).
+- Source commit: `cfcc19d863aff828ad3db42a628cd5f95569a962` (PR #203: GeckoView 161 Google Play services exclusion, project-rights/third-party notice packaging and release-build validation).
+- Workflow run: [#46071208839](https://github.com/iNeonyne/LastHavenPlus/actions/runs/46071208839).
 - Result: **byte-identical** unsigned APKs from two independent clean runners.
-- APK size: 98,226,200 bytes each.
-- SHA-256: `e4847d2d048527a12e316b6444fdafa877af9750d87c03d1ba55fde5250a7110`.
-- ZIP entries: 860 in each build; no missing/extra entries, duplicate entries or metadata/content differences.
-- Both clean build jobs and the comparison job passed. The source commit is the latest beta application/build change; later beta commits through `ce13c2968c67fe680dc38c35ad13a5c7bb78ab73` changed documentation only.
+- APK size: 97,637,264 bytes each.
+- SHA-256: `38de17fead60507567b1641643b97edbfbd96064bce3e6880a3de2822dd5c719`.
+- ZIP entries: 818 in each build; no missing/extra entries, duplicate entries or metadata/content differences.
+- Both clean build jobs and the comparison job passed. This is the latest beta application/build commit verified as of 2026-11-28; later changes on beta are documentation-only.
 
 This result applies to the exact source commit and recorded environments only. Repeat the check after relevant application, toolchain, or build-configuration changes.
 ## F-Droid
