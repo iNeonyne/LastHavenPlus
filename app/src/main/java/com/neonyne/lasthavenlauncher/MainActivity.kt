@@ -34,6 +34,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
+import java.io.File
+import java.util.concurrent.Executors
 
 private const val DEFAULT_GAME_URL = "https://lasthavens.com/play"
 private const val PREFERENCES_NAME = UpdateFileCleanup.PREFERENCES_NAME
@@ -224,6 +226,27 @@ private fun LastHavenApp(
   var isCheckingUpdate by remember { mutableStateOf(false) }
 
   val gameSessionController = remember { GameSessionController() }
+  val addonLibraryRepository =
+    remember(context) { AddonLibraryRepository(File(context.filesDir, "addons")) }
+  val addonBridgeExecutor = remember { Executors.newSingleThreadExecutor() }
+  val addonBridgeController =
+    remember(addonLibraryRepository, addonBridgeExecutor) {
+      AddonBridgeController(
+        snapshotProvider = { addonLibraryRepository.readLibrary() },
+        payloadProvider = AddonRuntimePayloadProvider(addonLibraryRepository),
+        worker = addonBridgeExecutor,
+      )
+    }
+
+  // Install the built-in extension before loading the game URL, then bind the exact session
+  // before its first navigation so document_start scripts and native sender checks are ready.
+  // The bridge reuses the process-scoped runtime and never creates a second GeckoSession.
+  DisposableEffect(addonBridgeController, addonBridgeExecutor) {
+    onDispose {
+      addonBridgeController.teardown()
+      addonBridgeExecutor.shutdown()
+    }
+  }
 
   // Session keep-alive invariant: visiting Settings, Diagnostics, Update or the Addon Manager
   // detaches the GeckoView (GameScreen releases its view binding) but must not close the live
@@ -234,15 +257,33 @@ private fun LastHavenApp(
     onDispose { sessionToClose?.close() }
   }
 
-  val reloadGame: () -> Unit = { gameSessionController.reloadGame(context, gameUrl) }
-
-  val startGame: () -> Unit = {
-    gameSessionController.startGame(context, gameUrl)
-    menuVisible = false
-    currentScreen = Screen.Game
+  val reloadGame: () -> Unit = {
+    addonBridgeController.ensureInstalled(context) {
+      addonBridgeController.refreshSnapshot {
+        gameSessionController.reloadGame(context, gameUrl)
+      }
+    }
   }
 
-  val restoreGame: () -> Unit = { gameSessionController.restoreGame(context, gameUrl) }
+  val startGame: () -> Unit = {
+    addonBridgeController.ensureInstalled(context) {
+      gameSessionController.startGame(context, gameUrl) { session ->
+        addonBridgeController.setGameSession(session)
+      }
+      menuVisible = false
+      currentScreen = Screen.Game
+    }
+  }
+
+  val restoreGame: () -> Unit = {
+    addonBridgeController.ensureInstalled(context) {
+      addonBridgeController.refreshSnapshot {
+        gameSessionController.restoreGame(context, gameUrl) { session ->
+          addonBridgeController.setGameSession(session)
+        }
+      }
+    }
+  }
 
   val checkForUpdates: (Boolean) -> Unit = { showResult ->
     isCheckingUpdate = true

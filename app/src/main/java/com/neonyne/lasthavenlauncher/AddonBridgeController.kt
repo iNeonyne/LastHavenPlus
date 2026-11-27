@@ -17,8 +17,9 @@ import org.mozilla.geckoview.WebExtension
  *
  * The controller installs only the launcher-owned built-in extension, validates every native sender
  * through [AddonBridgePolicy], and serves read-only metadata/file chunks from the Phase A
- * app-private library. It never enables addons, writes library files or activates runtime
- * interception. Issue #170 owns production session/navigation wiring.
+ * app-private library. The composition root binds it to the live game session before navigation. It
+ * never enables addons, writes library files or activates runtime interception. Issue #170 owns
+ * same-session Addon Manager navigation and page-world refresh.
  *
  * Snapshot and file reads run on [worker]. Native responses are bounded; large payloads are exposed
  * only through revision-bound manifest pages and one bounded file chunk at a time.
@@ -39,8 +40,11 @@ internal class AddonBridgeController(
   private var runtime: GeckoRuntime? = null
   private var bridgeExtension: WebExtension? = null
   private var installInFlight = false
+  private val installationCallbacks = mutableListOf<(Boolean) -> Unit>()
   private var installationGeneration = 0L
   private var snapshotGeneration = 0L
+  private var snapshotInFlight = false
+  private val snapshotCallbacks = mutableListOf<(Boolean) -> Unit>()
   private var requestGeneration = 0L
   private var gameSession: GeckoSession? = null
   private val pendingRequests = LinkedHashMap<String, PendingPortRequest>()
@@ -50,8 +54,12 @@ internal class AddonBridgeController(
   @Volatile private var cachedPayloadManifest: AddonRuntimePayloadProvider.Manifest? = null
   @Volatile private var payloadErrorCode: String? = null
 
-  /** Refreshes the library snapshot and validated payload manifest off the main thread. */
-  fun refreshSnapshot() {
+  /** Refreshes the validated payload before a new game navigation can request it. */
+  fun refreshSnapshot(onComplete: (Boolean) -> Unit = {}) {
+    snapshotCallbacks += onComplete
+    if (snapshotInFlight) return
+
+    snapshotInFlight = true
     val generation = ++snapshotGeneration
     try {
       worker.execute {
@@ -77,6 +85,7 @@ internal class AddonBridgeController(
                 (manifestResult?.exceptionOrNull() as? AddonRuntimePayloadException)?.code
                   ?: "unavailable"
             }
+          completeSnapshot(manifest != null)
         }
       }
     } catch (_: Exception) {
@@ -87,8 +96,16 @@ internal class AddonBridgeController(
         cachedSnapshot = null
         cachedPayloadManifest = null
         payloadErrorCode = "unavailable"
+        completeSnapshot(false)
       }
     }
+  }
+
+  private fun completeSnapshot(available: Boolean) {
+    snapshotInFlight = false
+    val callbacks = snapshotCallbacks.toList()
+    snapshotCallbacks.clear()
+    callbacks.forEach { callback -> callback(available) }
   }
 
   /** Records the live game session for sender identity checks; drops pending chunk reads. */
@@ -98,21 +115,27 @@ internal class AddonBridgeController(
     clearPendingRequests()
   }
 
-  /** Installs the bundled extension once per runtime and registers the message delegate. */
-  fun ensureInstalled(context: Context) {
-    if (bridgeExtension != null || installInFlight) return
+  /** Installs the bundled extension before game navigation and reports completion on main. */
+  fun ensureInstalled(context: Context, onComplete: (Boolean) -> Unit = {}) {
+    if (bridgeExtension != null) {
+      onComplete(true)
+      return
+    }
+    installationCallbacks += onComplete
+    if (installInFlight) return
+
     installInFlight = true
     val generation = installationGeneration
     val currentRuntime =
       try {
         runtime ?: GeckoRuntimeProvider.get(context).also { runtime = it }
       } catch (error: Exception) {
-        installInFlight = false
         Diagnostics.error(
           context,
           TAG,
           "Addon bridge runtime initialization failed: ${error.message}",
         )
+        completeInstallation(false)
         return
       }
     val installation =
@@ -122,20 +145,20 @@ internal class AddonBridgeController(
           AddonBridgePolicy.BRIDGE_EXTENSION_ID,
         )
       } catch (error: Exception) {
-        if (generation == installationGeneration) installInFlight = false
         Diagnostics.error(context, TAG, "Addon bridge extension install failed: ${error.message}")
+        completeInstallation(false)
         return
       }
-    refreshSnapshot()
     installation.accept(
       { extension ->
         mainHandler.post {
           if (generation != installationGeneration) return@post
-          installInFlight = false
+          var installed = bridgeExtension != null
           if (extension != null && bridgeExtension == null) {
             try {
               extension.setMessageDelegate(messageDelegate, AddonBridgePolicy.NATIVE_MESSAGING_NAME)
               bridgeExtension = extension
+              installed = true
             } catch (error: Exception) {
               Diagnostics.error(
                 context,
@@ -150,28 +173,43 @@ internal class AddonBridgeController(
               "Addon bridge extension install returned no extension",
             )
           }
+          if (installed) {
+            refreshSnapshot { completeInstallation(true) }
+          } else {
+            completeInstallation(false)
+          }
         }
       },
       { error ->
         mainHandler.post {
           if (generation != installationGeneration) return@post
-          installInFlight = false
           Diagnostics.error(
             context,
             TAG,
             "Addon bridge extension install failed: ${error?.message ?: "unknown"}",
           )
+          completeInstallation(false)
         }
       },
     )
+  }
+
+  private fun completeInstallation(installed: Boolean) {
+    installInFlight = false
+    val callbacks = installationCallbacks.toList()
+    installationCallbacks.clear()
+    callbacks.forEach { callback -> callback(installed) }
   }
 
   /** Detaches the delegate and drops all session/port/pending state. */
   fun teardown() {
     installationGeneration += 1
     snapshotGeneration += 1
+    snapshotInFlight = false
+    snapshotCallbacks.clear()
     requestGeneration += 1
     installInFlight = false
+    installationCallbacks.clear()
     cachedSnapshot = null
     cachedPayloadManifest = null
     payloadErrorCode = "unavailable"
