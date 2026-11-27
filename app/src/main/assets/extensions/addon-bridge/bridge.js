@@ -23,8 +23,19 @@
   if (!core || typeof core.validatePayload !== "function") {
     return;
   }
-  if (location.origin !== GAME_ORIGIN ||
-      (location.pathname !== "/play" && location.pathname !== "/play/")) {
+  let pageUrl;
+  try {
+    pageUrl = new URL(location.href);
+  } catch (_error) {
+    return;
+  }
+  if (
+    pageUrl.origin !== GAME_ORIGIN ||
+      pageUrl.username !== "" ||
+      pageUrl.password !== "" ||
+      pageUrl.port !== "" ||
+      (pageUrl.pathname !== "/play" && pageUrl.pathname !== "/play/")
+  ) {
     return;
   }
 
@@ -209,27 +220,20 @@
     try {
       const targetWindow = window;
       const pageGlobal = window.wrappedJSObject || window;
-      const pageBridge = cloneInto({}, targetWindow);
-      const getBundle = exportFunction(
-        () => currentBundle === null ? null : cloneInto(currentBundle, targetWindow),
+      const pageBridge = cloneInto(
+        {
+          getBundle: exportFunction(
+            () => currentBundle === null ? null : cloneInto(currentBundle, targetWindow),
+            targetWindow,
+          ),
+          getState: exportFunction(
+            () => cloneInto({ ready: ready, error: errorCode }, targetWindow),
+            targetWindow,
+          ),
+        },
         targetWindow,
+        { cloneFunctions: true },
       );
-      const getState = exportFunction(
-        () => cloneInto({ ready: ready, error: errorCode }, targetWindow),
-        targetWindow,
-      );
-      Object.defineProperty(pageBridge, "getBundle", {
-        value: getBundle,
-        configurable: false,
-        enumerable: true,
-        writable: false
-      });
-      Object.defineProperty(pageBridge, "getState", {
-        value: getState,
-        configurable: false,
-        enumerable: true,
-        writable: false
-      });
       Object.defineProperty(pageGlobal, BRIDGE_KEY, {
         value: pageBridge,
         configurable: false,
