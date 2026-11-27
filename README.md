@@ -1,43 +1,47 @@
 # LastHavenPlus
 
-LastHavenPlus is an Android launcher for the existing [LastHaven Wrath of the Lich King game](https://lasthavens.com/play). It hosts the game and does not recreate or modify the game client.
+LastHavenPlus is an Android launcher for the existing [LastHaven Wrath of the Lich King game](https://lasthavens.com/play). It provides a native launcher around the hosted game; it does not recreate or modify the game client.
 
-**Latest stable release:** [LastHavenPlus v2.4.0](https://github.com/iNeonyne/LastHavenPlus/releases/tag/v2.4.0)
+- **Latest stable release:** [v2.4.0](https://github.com/iNeonyne/LastHavenPlus/releases/tag/v2.4.0)
+- **Download:** [Latest Android release](https://github.com/iNeonyne/LastHavenPlus/releases/latest)
+- **Game:** [lasthavens.com/play](https://lasthavens.com/play)
 
 ## Compatibility
 
-| Item | Stable release |
+| Item | Stable v2.4.0 |
 |---|---|
 | Android | Android 10 (API 29) and later |
-| CPU architecture | ARM64 only (`arm64-v8a`) |
-| Embedded browser | Mozilla GeckoView 160 |
+| CPU architecture | ARM64 only (arm64-v8a) |
+| Browser engine | Mozilla GeckoView 160 Stable |
 | UI | Kotlin and Jetpack Compose |
-| Application ID | `com.neonyne.lasthavenlauncher` |
+| Application ID | com.neonyne.lasthavenlauncher |
 
-The application ID and established signing identity are preserved for in-place updates.
+The application ID and established release-signing identity are preserved so existing installations can receive compatible updates.
 
-## Features in v2.4.0
+## Features
 
-- **Direct gameplay:** Launches the game directly. Android Back opens the in-game menu with Reload, Settings and Return to game.
-- **Session-aware navigation:** Settings, diagnostics and update screens retain the existing game session while the game view is detached.
-- **Recovery:** Provides explicit loading, retryable page-load failure and renderer/process recovery states.
-- **Accessible interface:** Uses a consistent visual theme, readable typography, clear touch targets, accessible pane/heading semantics and reduced-motion-aware transitions.
-- **Diagnostics:** Keeps bounded diagnostic logs on the device and supports viewing, clearing and user-initiated sharing.
-- **Manual updater:** Validates release metadata, download size and SHA-256 digests. Differential-update failures retain a verified full-APK fallback. The user chooses when to check, download and install; Android's package installer controls installation.
-- **Addon Manager — local library:** Imports and exports addon ZIPs, stores packages in app-private storage and displays metadata and dependency information. The enabled state is local metadata only; this release does not load or activate addons in the game.
+- Native launcher and in-game settings menu.
+- GeckoView-based game hosting with a separate app-private browser profile.
+- Local addon ZIP import, export and library management. Addons are not activated inside the game in v2.4.0.
+- User-initiated update checks, verified full APK downloads and optional differential updates.
+- Local diagnostics and basic storage/network usage information.
 
-## Browser profile
+GeckoView uses its own browser profile. A fresh game login may be required after moving from the former browser engine. No supported Cefrium-to-GeckoView profile migration is provided.
 
-GeckoView uses its own browser profile. A supported migration from the former Cefrium profile has not been established, so a fresh game login may be required. Do not delete or copy old browser-profile data as part of an update.
+## Installation and updates
 
-## Privacy and data
+Download the ARM64 APK from the [latest release](https://github.com/iNeonyne/LastHavenPlus/releases/latest). Android may ask you to allow this launcher to install updates from this source. The launcher checks for updates only when you request it; Android's package installer controls installation.
 
-Diagnostics and usage information remain local unless the user explicitly shares a diagnostic export. The launcher does not add analytics or automatic telemetry. App network counters include launcher and updater traffic; they are not game-only measurements.
+## Privacy and compatibility notes
 
-## Updates
+- The launcher does not include Google Play services modules. GeckoView passkey/WebAuthn integration is therefore unavailable; use another sign-in method.
+- The game and browser profile are stored in app-private data. Do not clear app data if you want to preserve the local profile.
+- The hosted game and third-party components remain subject to their own terms and licenses.
 
-Download updates from the [GitHub Releases page](https://github.com/iNeonyne/LastHavenPlus/releases). Checks, downloads and installation are user-initiated. Preserve the existing application installation and signing identity; never install an APK from an untrusted source.
+## Project roadmap
 
-## Project direction
+The [roadmap](ROADMAP.md) is generated from live GitHub Issues and pull requests. It updates automatically as issues and PRs are opened, changed, labelled, closed or reopened. GitHub remains the source of truth for detailed scope and implementation status.
 
-The strategic plan is maintained in the [LastHavenPlus roadmap](ROADMAP.md). The roadmap links to GitHub Issues for current implementation detail.
+## Third-party notices
+
+Original LastHavenPlus material is reserved to its copyright holder. Third-party components retain their own license terms and required notices. See [LICENSE](LICENSE), [NOTICE](NOTICE) and [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md). These notices do not grant rights to the hosted game or third-party assets.
