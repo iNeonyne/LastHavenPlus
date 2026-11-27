@@ -682,6 +682,13 @@ No branch was deleted. The available GitHub connector exposes no branch-delete o
 - **Next safe action:** Vibe implements only #168 from the recorded beta SHA and submits a draft PR to beta. Chaty reviews/merges; #169 remains blocked until #168 integration.
 
 
+### 2026-11-27 — Integrate GeckoView session wiring and continue XHR overlay
+
+- PR #190 / issue #167 source-integration slice reviewed in full and merged to beta at `1d5f55d0dcfdf37d1fa49c7f795adfdc3244cf5d`; the controller installs the bundled extension before navigation, binds the exact live GeckoSession before `loadUri`, refreshes payload on explicit reload/restore and tears down with composition.
+- Exact-head PR #190 Android run #45950285046, independent unsigned APK reproducibility #45950285094 and Markdown #45950285026 all passed. Issue #167 remains open for physical ARM64 runtime verification and remaining Phase B gates.
+- PR #191 / issue #168 exact-head Android #45950055468, reproducibility #45950055462 and Markdown #45950055420 all passed on `984dfca7dd9563c68d611fa849b8f77d7932cbb5`. The branch now needs synchronization with #190's merge commit and fresh exact-head checks before integration.
+- No physical ARM64 device test, in-game addon activation, release, tag or `main` promotion is claimed.
+
 ## 2026-11-27 — PR #192 updater APK cleanup integrated
 
 - PR [#192](https://github.com/iNeonyne/LastHavenPlus/pull/192) squash-merged to `beta` at `a2f943bf23e6b607ab3104c86798bec9130391a1` from exact PR head `b526efc59e4e7b06ef9ebc5b1bb368be44c2544c`. Issue #181 is completed and closed.

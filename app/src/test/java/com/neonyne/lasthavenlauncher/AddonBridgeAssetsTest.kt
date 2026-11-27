@@ -19,6 +19,7 @@ class AddonBridgeAssetsTest {
     assertTrue(File(dir, "background.js").isFile)
     assertTrue(File(dir, "payload-validation.js").isFile)
     assertTrue(File(dir, "bridge.js").isFile)
+    assertTrue(File(dir, "xhr-overlay.js").isFile)
   }
 
   @Test
@@ -32,12 +33,14 @@ class AddonBridgeAssetsTest {
     assertTrue(manifest.contains("\"https://lasthavens.com/play/\""))
     assertTrue(manifest.contains("\"payload-validation.js\""))
     assertTrue(manifest.contains("\"bridge.js\""))
+    assertTrue(manifest.contains("\"xhr-overlay.js\""))
+    assertTrue(manifest.contains("\"world\": \"MAIN\""))
     assertFalse(manifest.contains("\"<all_urls>\""))
     assertFalse(manifest.contains("\"all_frames\": true"))
     assertEquals(1, Regex("\"content_scripts\"").findAll(manifest).count())
-    assertEquals(1, Regex("\"matches\"").findAll(manifest).count())
-    assertEquals(1, Regex("\"run_at\"").findAll(manifest).count())
-    assertEquals(1, Regex("\"all_frames\"").findAll(manifest).count())
+    assertEquals(2, Regex("\"matches\"").findAll(manifest).count())
+    assertEquals(2, Regex("\"run_at\"").findAll(manifest).count())
+    assertEquals(2, Regex("\"all_frames\"").findAll(manifest).count())
     assertTrue(manifest.contains("\"all_frames\": false"))
   }
 
@@ -75,6 +78,20 @@ class AddonBridgeAssetsTest {
   }
 
   @Test
+  fun `xhr overlay serves local payload without page-forgeable channels`() {
+    val overlay = File(assetsDir, "extensions/addon-bridge/xhr-overlay.js").readText()
+    assertTrue(overlay.contains("__LASTHAVEN_ADDON_BRIDGE__"))
+    assertTrue(overlay.contains("getBundle"))
+    assertTrue(overlay.contains("XMLHttpRequest"))
+    assertTrue(overlay.contains("Interface/AddOns/"))
+    assertFalse(overlay.contains("window.postMessage"))
+    assertFalse(overlay.contains("eval("))
+    assertFalse(overlay.contains("browser.storage"))
+    assertFalse(overlay.contains("browser.runtime.sendMessage"))
+    assertFalse(overlay.contains("indexedDB"))
+  }
+
+  @Test
   fun `payload validator checks the ZIP payload without page-controlled inputs`() {
     val core = File(assetsDir, "extensions/addon-bridge/payload-validation.js").readText()
     assertTrue(core.contains("function validatePayload(payload)"))
@@ -90,7 +107,7 @@ class AddonBridgeAssetsTest {
     val files = dir.walkTopDown().filter { it.isFile }.toList()
     assertTrue(files.size in 2..8)
     files.forEach { assertTrue("${it.name} too large", it.length() <= 64 * 1024) }
-    assertEquals(4, files.size)
+    assertEquals(5, files.size)
   }
 
   @Test

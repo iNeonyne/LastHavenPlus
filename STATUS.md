@@ -1,3 +1,9 @@
+## 2026-11-27 — PR #190 merged; PR #191 exact-head checks passed
+
+- PR #190 merged to `beta` at `1d5f55d0dcfdf37d1fa49c7f795adfdc3244cf5d`. Exact-head Android validation #45950285046, independent unsigned APK reproducibility #45950285094 and Markdown #45950285026 passed.
+- PR #191 / issue #168 current head `984dfca7dd9563c68d611fa849b8f77d7932cbb5`: Android #45950055468, independent unsigned APK reproducibility #45950055462 and Markdown #45950055420 passed.
+- PR #191 must be synchronized with the new beta bridge/session integration and rerun exact-head checks before merge. No physical ARM64 test or in-game addon activation is claimed.
+
 # Project status — LastHavenPlus
 
 ## 2026-11-27 — PR #180 integrated; Vibe assigned XHR overlay

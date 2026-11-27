@@ -15,6 +15,8 @@
 
 ## Current state — 2026-11-27
 
+- PR #190 merged to beta at `1d5f55d0`; physical ARM64 runtime verification remains outstanding.
+
 - **Latest stable:** v2.3.0; no new release is authorized.
 - **Development:** beta HEAD `892494aa8f0333f907b2e730f6b754ba2dabe2a1`.
 - **Integrated:** PR #177 native-messaging foundation and PR #180 bounded ZIP 0.5.1 payload transport. Exact-head Android PR validation #45938326655 and unsigned reproducibility #45938326638 passed; no post-merge CI result is claimed.

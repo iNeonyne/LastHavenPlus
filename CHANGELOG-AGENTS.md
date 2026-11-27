@@ -1,3 +1,9 @@
+## 2026-11-27 — PR #190 integrated; exact-head XHR overlay verification (#168)
+
+- PR #190 merged to `beta` at `1d5f55d0dcfdf37d1fa49c7f795adfdc3244cf5d`; exact-head Android #45950285046, independent unsigned APK reproducibility #45950285094 and Markdown #45950285026 passed.
+- PR #191 (#168) current head `984dfca7dd9563c68d611fa849b8f77d7932cbb5`; exact-head Android #45950055468, independent unsigned APK reproducibility #45950055462 and Markdown #45950055420 passed. The bounded MAIN-world XHR overlay includes asynchronous rejection, bounded lazy decode, Range handling, and regression coverage.
+- PR #191 requires synchronization with the newly merged #190 session wiring and fresh exact-head CI before merge. No physical ARM64 device test or in-game addon initialization is claimed.
+
 ## 2026-11-27 — Integrate GeckoView addon payload bridge and assign XHR overlay (#167/#168)
 
 - **Priority:** Addon Manager Phase B (#23) remains P0; Chaty owns coordination and integration.
