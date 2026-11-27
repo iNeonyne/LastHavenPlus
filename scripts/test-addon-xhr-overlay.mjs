@@ -409,6 +409,19 @@ test("core fails closed on traversal, escapes and unsafe decoded paths", () => {
   );
 });
 
+test("encoded spellings of the addon prefix fail closed instead of reaching the network", () => {
+  const core = loadCore();
+  for (const url of [
+    "https://lasthavens.com/game/%49nterface/AddOns/Foo/bar.lua",
+    "https://lasthavens.com/game/Interface%2FAddOns%2FFoo%2Fbar.lua",
+    "https://lasthavens.com/blocks/%49nterface/AddOns/Foo/data.bin",
+    "https://lasthavens.com/game/%49nterface/AddOns/Foo/%2e%2e/escape.lua",
+    "https://lasthavens.com/game/Interface%2FAddOns%2FFoo%2F%2e%2e%2Fescape.lua",
+  ]) {
+    assert.equal(core.resolveRoute("GET", url, BASE_HREF).kind, "notFound", url);
+  }
+});
+
 test("URL-normalized dot segments that leave the addon prefix pass through untouched", () => {
   const core = loadCore();
   for (const url of [
@@ -932,6 +945,114 @@ test("pass-through requests delegate entirely to the native XHR", () => {
   })();
   assert.equal(nativeInstance.responseText, "mock-body");
   assert.deepEqual(events, ["rsc:2", "rsc:3", "rsc:4", "load"]);
+});
+
+test("pass-through events target the wrapper and invoke listeners with the wrapper as this", () => {
+  const { context } = loadWrapper();
+  const xhr = new context.XMLHttpRequest();
+  let observed = null;
+  xhr.addEventListener("load", function (event) {
+    observed = { thisValue: this, target: event.target, currentTarget: event.currentTarget };
+  });
+  xhr.open("GET", "https://lasthavens.com/api/status");
+  xhr.send();
+  assert.equal(observed.thisValue, xhr);
+  assert.equal(observed.target, xhr);
+  assert.equal(observed.currentTarget, xhr);
+});
+
+test("pass-through upload events target the upload facade and preserve progress fields", () => {
+  let native;
+  class UploadNativeXHR extends MockNativeXHR {
+    constructor() {
+      super();
+      native = this;
+    }
+    send(body) {
+      this.upload.dispatchEvent({
+        type: "progress",
+        loaded: 3,
+        total: 7,
+        lengthComputable: true,
+      });
+      super.send(body);
+    }
+  }
+  const { context } = loadWrapper({ nativeXhr: UploadNativeXHR });
+  const xhr = new context.XMLHttpRequest();
+  const upload = xhr.upload;
+  let observed = null;
+  upload.addEventListener("progress", function (event) {
+    observed = { thisValue: this, target: event.target, currentTarget: event.currentTarget,
+      loaded: event.loaded, total: event.total, lengthComputable: event.lengthComputable };
+  });
+  xhr.open("POST", "https://lasthavens.com/api/upload");
+  xhr.send("payload");
+  assert.equal(native._sent, true);
+  assert.equal(observed.thisValue, upload);
+  assert.equal(observed.target, upload);
+  assert.equal(observed.currentTarget, upload);
+  assert.equal(observed.loaded, 3);
+  assert.equal(observed.total, 7);
+  assert.equal(observed.lengthComputable, true);
+});
+
+test("opening a new pass-through request aborts the previous native request", () => {
+  let native;
+  class DeferredNativeXHR extends MockNativeXHR {
+    constructor() {
+      super();
+      this.abortCount = 0;
+      native = this;
+    }
+    send(body) {
+      this._sent = true;
+      this._body = body === undefined ? null : body;
+    }
+    abort() {
+      this.abortCount += 1;
+      super.abort();
+    }
+  }
+  const { context } = loadWrapper({ nativeXhr: DeferredNativeXHR });
+  const xhr = new context.XMLHttpRequest();
+  xhr.open("GET", "https://lasthavens.com/api/first");
+  xhr.send();
+  assert.equal(native.readyState, 1);
+  xhr.open("GET", "https://lasthavens.com/api/second");
+  assert.equal(native.abortCount, 1);
+  assert.equal(xhr.readyState, 1);
+});
+
+test("aborting a pass-through request resets the facade before XHR reuse", () => {
+  let native;
+  class DeferredNativeXHR extends MockNativeXHR {
+    constructor() {
+      super();
+      this.abortCount = 0;
+      native = this;
+    }
+    send(body) {
+      this._sent = true;
+      this._body = body === undefined ? null : body;
+    }
+    abort() {
+      this.abortCount += 1;
+      super.abort();
+    }
+  }
+  const { context } = loadWrapper({ nativeXhr: DeferredNativeXHR });
+  const xhr = new context.XMLHttpRequest();
+  xhr.open("GET", "https://lasthavens.com/api/first");
+  xhr.send();
+  xhr.abort();
+  assert.equal(xhr.readyState, 0);
+  assert.equal(xhr.status, 0);
+  assert.equal(native.abortCount, 1);
+  xhr.open("GET", "https://lasthavens.com/api/second");
+  assert.equal(native.abortCount, 1);
+  xhr.send();
+  assert.equal(native._openArgs.url, "https://lasthavens.com/api/second");
 });
 
 test("pass-through never opens the native XHR for intercepted URLs", async () => {

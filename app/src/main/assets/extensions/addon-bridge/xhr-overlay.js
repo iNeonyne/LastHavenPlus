@@ -140,8 +140,28 @@
     } else {
       return { kind: "passthrough" };
     }
-    if (!raw.startsWith(ADDON_PREFIX)) {
+    let addonCandidate = raw.startsWith(ADDON_PREFIX);
+    if (!addonCandidate) {
+      // Decode only the prefix segments first so unsafe suffixes cannot hide an encoded
+      // addon route and fall through to the network.
+      let decodedPrefix = "";
+      for (const segment of raw.split("/").slice(0, 3)) {
+        try {
+          decodedPrefix += decodeURIComponent(segment) + "/";
+        } catch (_error) {
+          break;
+        }
+        if (decodedPrefix.startsWith(ADDON_PREFIX)) {
+          addonCandidate = true;
+          break;
+        }
+      }
+    }
+    if (!addonCandidate) {
       return { kind: "passthrough" };
+    }
+    if (!raw.startsWith(ADDON_PREFIX)) {
+      return { kind: "notFound" };
     }
     if (upper !== "GET" && upper !== "HEAD") {
       return { kind: "methodNotAllowed", isHead: false };
@@ -583,7 +603,7 @@
     };
   }
 
-  function createEvent(target, type) {
+  function createEvent(target, type, sourceEvent) {
     return {
       type: type,
       target: target,
@@ -594,8 +614,9 @@
       defaultPrevented: false,
       isTrusted: false,
       timeStamp: Date.now(),
-      loaded: 0,
-      total: 0,
+      lengthComputable: Boolean(sourceEvent && sourceEvent.lengthComputable),
+      loaded: sourceEvent && Number.isFinite(sourceEvent.loaded) ? sourceEvent.loaded : 0,
+      total: sourceEvent && Number.isFinite(sourceEvent.total) ? sourceEvent.total : 0,
       preventDefault: function () {},
       stopPropagation: function () {},
       stopImmediatePropagation: function () {
@@ -604,8 +625,8 @@
     };
   }
 
-  function dispatchEventOn(target, listeners, handlers, type) {
-    const event = createEvent(target, type);
+  function dispatchEventOn(target, listeners, handlers, type, sourceEvent) {
+    const event = createEvent(target, type, sourceEvent);
     const entries = [];
     for (const entry of listeners) {
       if (entry.type === type) {
@@ -686,9 +707,27 @@
       native: native,
       requestId: 0,
       counted: false,
-      pendingBody: null
+      pendingBody: null,
+      suppressNativeOpenEvent: false
     };
     states.set(this, state);
+    for (const type of HANDLER_TYPES) {
+      native.addEventListener(type, (event) => {
+        if (!state.nativeActive ||
+            (type === "readystatechange" && state.suppressNativeOpenEvent)) {
+          return;
+        }
+        dispatchEventOn(this, state.listeners, state.handlers, type, event);
+      });
+    }
+    for (const type of ["loadstart", "progress", "abort", "error", "load", "timeout", "loadend"]) {
+      native.upload.addEventListener(type, (event) => {
+        if (!state.nativeActive || !state.uploadFlag) {
+          return;
+        }
+        dispatchEventOn(this.upload, state.uploadListeners, state.uploadHandlers, type, event);
+      });
+    }
   }
 
   const prototype = OverlayXMLHttpRequestConstructor.prototype;
@@ -714,7 +753,12 @@
     state.intercepted = false;
     state.nativeActive = true;
     const native = state.native;
-    native.open(state.method, state.url, state.async, state.user, state.password);
+    state.suppressNativeOpenEvent = true;
+    try {
+      native.open(state.method, state.url, state.async, state.user, state.password);
+    } finally {
+      state.suppressNativeOpenEvent = false;
+    }
     for (const header of state.requestHeaders) {
       native.setRequestHeader(header[0], header[1]);
     }
@@ -724,19 +768,6 @@
     native.responseType = state.responseType;
     native.timeout = state.timeout;
     native.withCredentials = state.withCredentials;
-    for (const type of HANDLER_TYPES) {
-      if (typeof state.handlers["on" + type] === "function") {
-        native["on" + type] = state.handlers["on" + type];
-      }
-    }
-    for (const entry of state.listeners) {
-      if (!entry.isHandler) {
-        native.addEventListener(entry.type, entry.callback, entry.options);
-      }
-    }
-    for (const entry of state.uploadListeners) {
-      native.upload.addEventListener(entry.type, entry.callback, entry.options);
-    }
     native.send(body === undefined ? null : body);
   }
 
@@ -866,7 +897,15 @@
       throw new SyntaxError("unsupported method");
     }
     clearTimers(state);
+    if (state.nativeActive && state.native.readyState !== DONE) {
+      try {
+        state.native.abort();
+      } catch (_error) {
+        // Continue opening the new request even if the previous native request cannot abort.
+      }
+    }
     releaseOutstanding(state);
+    state.nativeActive = false;
     state.requestId += 1;
     state.method = upper;
     state.url = String(url);
@@ -969,6 +1008,14 @@
     if (state.nativeActive) {
       state.native.abort();
       state.readyState = state.native.readyState;
+      if (state.readyState === UNSENT) {
+        state.status = 0;
+        state.statusText = "";
+        state.responseHeaders = [];
+        state.responseBytes = null;
+        state.responseURL = "";
+        state.nativeActive = false;
+      }
       return;
     }
     if (!state.intercepted || !state.sent) {
@@ -1047,9 +1094,6 @@
       callback: callback,
       options: options || undefined
     });
-    if (state.nativeActive) {
-      state.native.addEventListener(type, callback, options);
-    }
   };
 
   prototype.removeEventListener = function (type, callback, options) {
@@ -1060,17 +1104,11 @@
     if (position !== -1) {
       state.listeners.splice(position, 1);
     }
-    if (state.nativeActive) {
-      state.native.removeEventListener(type, callback, options);
-    }
   };
 
   prototype.dispatchEvent = function (event) {
     const state = states.get(this);
-    if (state.nativeActive) {
-      return state.native.dispatchEvent(event);
-    }
-    dispatchEventOn(this, state.listeners, state.handlers, String(event.type));
+    dispatchEventOn(this, state.listeners, state.handlers, String(event.type), event);
     return true;
   };
 
@@ -1235,9 +1273,6 @@
     enumerable: true,
     get: function () {
       const state = states.get(this);
-      if (state.nativeActive) {
-        return state.native.upload;
-      }
       if (!state.uploadProxy) {
         const target = this;
         state.uploadProxy = {
@@ -1248,9 +1283,6 @@
               callback: callback,
               options: options || undefined
             });
-            if (state.nativeActive) {
-              state.native.upload.addEventListener(type, callback, options);
-            }
           },
           removeEventListener: (type, callback) => {
             const position = state.uploadListeners.findIndex(
@@ -1259,16 +1291,14 @@
             if (position !== -1) {
               state.uploadListeners.splice(position, 1);
             }
-            if (state.nativeActive) {
-              state.native.upload.removeEventListener(type, callback);
-            }
           },
           dispatchEvent: (event) => {
             dispatchEventOn(
-              target,
+              state.uploadProxy,
               state.uploadListeners,
               state.uploadHandlers,
-              String(event.type)
+              String(event.type),
+              event
             );
             return true;
           }
@@ -1300,9 +1330,6 @@
         const state = states.get(this);
         registerHandler(state.listeners, type, callback);
         state.handlers["on" + type] = callback;
-        if (state.nativeActive) {
-          state.native["on" + type] = callback;
-        }
       }
     });
   }
