@@ -5,7 +5,8 @@ package com.neonyne.lasthavenlauncher
  *
  * Requests are flat JSON objects with scalar values; bounded responses may contain nested addon
  * summaries and lists. The Android adapter converts to/from `org.json` and rejects nested request
- * values. This layer owns the schema: unknown fields, unknown types and out-of-bounds values fail closed.
+ * values. This layer owns the schema: unknown fields, unknown types and out-of-bounds values fail
+ * closed.
  */
 object AddonBridgeProtocol {
   const val KEY_TYPE = "type"
