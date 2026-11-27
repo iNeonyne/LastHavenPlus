@@ -70,7 +70,11 @@ class AddonBridgeController(
         runtime ?: GeckoRuntimeProvider.get(context).also { runtime = it }
       } catch (error: Exception) {
         installInFlight = false
-        Diagnostics.error(context, TAG, "Addon bridge runtime initialization failed: ${error.message}")
+        Diagnostics.error(
+          context,
+          TAG,
+          "Addon bridge runtime initialization failed: ${error.message}",
+        )
         return
       }
     val installation =
