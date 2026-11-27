@@ -987,6 +987,8 @@
     }
   }
 
+  let maskBootstrapCache = null;
+
   function readMaskBootstrapData(global, core) {
     const failed = (stage, enabledFolders) => ({ records: [], indexSize: 0, enabledFolders: enabledFolders || [], error: stage });
     let payload = null;
