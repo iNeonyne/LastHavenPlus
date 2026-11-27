@@ -1063,8 +1063,8 @@ test("OPFS blocks.idx is read bounded and its spans are sent in the worker boot 
   assert.equal(boot.indexSize, bytes.length);
   assert.equal(boot.maskError, null);
   const spans = Array.from(new Uint32Array(boot.maskBuffer));
-  const digitStart = new TextEncoder().encode("file\\t").length;
-  const pathStart = new TextEncoder().encode("file\\t123\\tkind\\tmeta\\t").length;
+  const digitStart = new TextEncoder().encode("file\t").length;
+  const pathStart = new TextEncoder().encode("file\t123\tkind\tmeta\t").length;
   assert.deepEqual(spans, [digitStart, digitStart + 3, 48, 0, pathStart, pathStart + 1, 35, 0]);
   assert.deepEqual(Array.from(bytes), snapshot);
 });
