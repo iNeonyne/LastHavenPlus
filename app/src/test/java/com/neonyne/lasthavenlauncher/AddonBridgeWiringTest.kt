@@ -17,7 +17,9 @@ class AddonBridgeWiringTest {
 
     assertTrue(source.contains("AddonBridgeController("))
     assertTrue(source.contains("LaunchedEffect(gameSessionController.session)"))
-    assertTrue(source.contains("addonBridgeController.setGameSession(gameSession)"))
+    assertTrue(
+      source.contains("addonBridgeController.setGameSession(gameSessionController.session)")
+    )
     assertTrue(source.contains("addonBridgeController.ensureInstalled(context)"))
     assertTrue(source.contains("AddonRuntimePayloadProvider(addonLibraryRepository)"))
   }
@@ -42,7 +44,6 @@ class AddonBridgeWiringTest {
     assertTrue(
       source.contains("addonBridgeController.setGameSession(gameSessionController.session)")
     )
-    assertTrue(source.contains("addonBridgeController.setGameSession(gameSession)"))
     assertTrue(source.contains("addonBridgeController.ensureInstalled(context)"))
     assertTrue(source.contains("gameSessionController.startGame(context, gameUrl)"))
   }
