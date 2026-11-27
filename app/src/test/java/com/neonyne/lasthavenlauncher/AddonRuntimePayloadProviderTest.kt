@@ -63,7 +63,8 @@ class AddonRuntimePayloadProviderTest {
           "Textures/portrait.png" to imageBytes,
         ),
       )
-    val snapshot = AddonLibrarySnapshot("library-revision", listOf(item("UnitFrame", directory)))
+    val snapshot =
+      AddonLibrarySnapshot("library-revision", listOf(item("UnitFrame", directory)))
     val provider = AddonRuntimePayloadProvider(AddonLibraryRepository(root))
     val manifest = provider.buildManifest(snapshot)
 
@@ -95,8 +96,10 @@ class AddonRuntimePayloadProviderTest {
 
   @Test
   fun disabledAndDependencyBlockedAddonsAreNotIncluded() = withRoot { root ->
-    val disabledDirectory = writeAddon(root, "Disabled", mapOf("Disabled.toc" to byteArrayOf(1)))
-    val missingDirectory = writeAddon(root, "MissingDep", mapOf("MissingDep.toc" to byteArrayOf(2)))
+    val disabledDirectory =
+      writeAddon(root, "Disabled", mapOf("Disabled.toc" to byteArrayOf(1)))
+    val missingDirectory =
+      writeAddon(root, "MissingDep", mapOf("MissingDep.toc" to byteArrayOf(2)))
     val snapshot =
       AddonLibrarySnapshot(
         "revision",
@@ -105,7 +108,8 @@ class AddonRuntimePayloadProviderTest {
           item("MissingDep", missingDirectory).copy(dependencies = listOf("NotInstalled")),
         ),
       )
-    val manifest = AddonRuntimePayloadProvider(AddonLibraryRepository(root)).buildManifest(snapshot)
+    val manifest =
+      AddonRuntimePayloadProvider(AddonLibraryRepository(root)).buildManifest(snapshot)
     assertTrue(manifest.addonFolders.isEmpty())
     assertTrue(manifest.files.isEmpty())
     assertEquals(0L, manifest.totalBytes)
