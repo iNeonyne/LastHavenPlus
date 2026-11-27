@@ -2,7 +2,7 @@
 
 **Current branch:** `beta`  
 **Current engine:** Mozilla GeckoView 160, ARM64 artifact  
-**Last reviewed:** 2026-11-25
+**Last reviewed:** 2026-11-27 (GeckoView 160 artifact/POM evidence re-verified 2026-11-26; current beta resolved runtime graph captured from beta baseline `56161494dd9b2448d9e53140f9280a0038f9ecbb` on 2026-11-27)
 
 This document records the GeckoView integration as it exists in beta. It supplements, but does not replace, Mozilla's documentation.
 
@@ -23,17 +23,15 @@ Use the API matching the pinned GeckoView artifact. Do not assume moving mozilla
 
 Beta uses `org.mozilla.geckoview:geckoview-arm64-v8a:160.0.20261116130455`, a process-scoped `GeckoRuntime`, a `GeckoSession` and a `GeckoView` host. Runtime/session initialization is deferred until Play. The game URL is `https://lasthavens.com/play`.
 
-The app opens on a launcher Home screen. Settings does not initialize the game. Android Back from gameplay opens a full-screen menu containing Reload, Settings and Return to game. Settings, diagnostics and update details are full-screen destinations. PR #43 also adds responsive Home/settings layouts and adaptive launcher icon resources.
+The app launches directly into the game. Android Back opens a responsive in-game overlay with Reload, Settings and Return to game while keeping the existing game session mounted. Settings, diagnostics and update details are launcher-owned full-screen destinations. Settings navigation detaches and later restores the existing GeckoView rather than creating a second game session.
 
-The existing GeckoSession is retained when its view is detached for launcher navigation. Source and JVM layout-policy tests are integrated; physical session retention and UI behavior still require device verification.
+The Addon Manager's native Phase A library/import and bridge groundwork is present in beta, but verified in-game addon activation remains incomplete. Phase B is the top project priority and remains gated by navigation/back-stack consolidation (#147), bridge-port work (#183), and physical ARM64 acceptance (#167). This GeckoView 160 audit does not claim that addon runtime behavior is complete.
 
-## Planned UX redesign — issue #56
-
-The Home-screen-first flow described above is the **current v2.1.0 beta/stable baseline**, not the next UX target. The owner has requested a direct-launch experience with a responsive in-game overlay; implementation is being developed by Chaty under issue #56 on `chaty/issue-56-direct-launch-overlay`; it is not yet integrated into beta. Until that work is reviewed and merged, do not describe the overlay as implemented. The new flow must preserve the existing GeckoSession and profile, support Settings in portrait and landscape, restore landscape gameplay, and keep Addon Manager out of scope while #23 remains on hold.
+Automated source/JVM tests cover selected navigation, bridge and GeckoView API contracts. They do not prove physical-device session retention, gameplay rendering, or addon activation. No physical ARM64 device verification is claimed.
 
 ## Build configuration and identity
 
-The current beta build uses JDK 25, Gradle 9.7.1, AGP 9.4.0 and Android SDK Platform 37.2. GeckoView's AAR metadata requires compile SDK 37.2. Keep the pinned toolchain unless a reproducible compatibility issue and validated change justify otherwise.
+The current beta build uses JDK 25, Gradle 9.7.1, Android Gradle Plugin 9.5.3 and Android SDK Platform 37.2 with Build Tools 37.0.0. GeckoView's AAR metadata requires compile SDK 37.2. Keep the pinned toolchain unless a reproducible compatibility issue and validated change justify otherwise.
 
 Preserve:
 - ARM64 only (`arm64-v8a`)
@@ -42,7 +40,7 @@ Preserve:
 - User-confirmed update download and Android installer handoff
 - Full APK fallback when a differential patch is ineligible or fails validation
 
-## Pinned artifact and dependency audit (issue #20)
+## Pinned GeckoView 160 artifact and dependency audit
 
 ### Artifact identity
 
@@ -51,15 +49,17 @@ Preserve:
 - Upstream revision: `mozilla-release` `b1145b0710192f716be5f59f5b2dfeed650d5294` (recorded in the artifact POM's SCM block).
 - License declared in the POM: [Mozilla Public License 2.0](http://mozilla.org/MPL/2.0/).
 
-### Gradle module metadata dependency inventory (reviewed 2026-11-25)
+### Gradle module metadata dependency inventory (reviewed 2026-11-25; re-verified 2026-11-26)
+
+Verification refresh (2026-11-26, against beta `eec16ff`): the POM and Gradle module metadata for `160.0.20261116130455` were re-fetched from [Mozilla Maven](https://maven.mozilla.org/maven2/org/mozilla/geckoview/geckoview-arm64-v8a/160.0.20261116130455/) and re-checked against this table. The module metadata lists exactly the dependencies below (`kotlin-stdlib` alone is API-scope; every other entry plus `kotlin-stdlib` is runtime-scope). The metadata additionally records the AAR itself at 91,504,240 bytes (SHA-256 `c05916660c0b0125dada536f01570606227202137ff73feeea8ce7b8595dd443`) and was published by Gradle 9.8.1. The catalog now pins Kotlin 2.4.21 (post-PR #98), matching this requirement.
 
 | Group:artifact | Version | Project-side note |
 |---|---|---|
-| `org.jetbrains.kotlin:kotlin-stdlib` | 2.4.21 | Catalog (#99) pins Kotlin 2.4.10; Gradle resolves the higher runtime version |
+| `org.jetbrains.kotlin:kotlin-stdlib` | 2.4.21 | Catalog (#99) pins Kotlin 2.4.21 after PR #98, matching the artifact requirement |
 | `androidx.annotation:annotation` | 1.11.0 | |
 | `androidx.annotation:annotation-experimental` | 1.6.0 | |
 | `androidx.collection:collection` | 1.7.0 | |
-| `androidx.core:core` | 1.19.1 | Catalog (#99) pins `androidxCore` 1.16.0; Gradle resolves 1.19.1 |
+| `androidx.core:core` | 1.19.1 | Catalog (#99) pins `androidxCore` 1.16.0; Gradle conflict resolution is expected to select ≥1.19.1 — verify with the dependency report below |
 | `androidx.lifecycle:lifecycle-common` | 2.11.0 | |
 | `androidx.lifecycle:lifecycle-process` | 2.11.0 | |
 | `com.google.android.gms:play-services-fido` | 21.3.1 | Google Play Services SDK terms apply |
@@ -70,41 +70,52 @@ Preserve:
 | `androidx.media3:media3-exoplayer` | 1.11.1 | |
 | `androidx.media3:media3-exoplayer-hls` | 1.11.1 | |
 
-Resolution caveat: this inventory is based on the artifact's Gradle module metadata; the POM itself defers dependency declarations to that metadata. It is not a resolved-by-Gradle dump (the audit environment has no JDK/Android SDK). Issue #20 remains incomplete until `./gradlew app:dependencies --configuration releaseRuntimeClasspath` is captured as the authoritative resolved set and reconciled against the #99 version catalog, so consumer pins are never lowered below GeckoView's runtime requirements.
+Resolution caveat (updated 2026-11-26, third pass — resolved classpath snapshot captured on beta `eec16ff`; not a full dependency report for later beta commits): this inventory is based on the artifact's POM and module metadata, both re-fetched from the authoritative Mozilla Maven repository. The earlier environment limitations have been progressively closed: Google Maven and Maven Central became reachable on 2026-11-26 (enabling the transitive POM license verification below), and an Android SDK (platform `android-37.2`, build-tools `37.0.0` installed from Google's repository via `cmdline-tools`) with JDK 21.0.13.1 made a Gradle-capable environment possible. The current beta resolved set was captured from the exact PR #203 source tree using `./gradlew :app:dependencies --configuration releaseRuntimeClasspath` (Gradle wrapper 9.7.1, JDK 25). A 145-coordinate selected-version inventory is committed as [docs/reports/releaseRuntimeClasspath-beta-56161494.txt](reports/releaseRuntimeClasspath-beta-56161494.txt). The full 62,602-byte Gradle output is retained as Actions artifact `pr-unit-test-reports-203` (artifact ID `15228835619`) in [workflow run #46059917752](https://github.com/iNeonyne/LastHavenPlus/actions/runs/46059917752); its SHA-256 is `18650f030f6ece9829ca002d5c585326dec8b819552e2e685c29e2dc65c5855a`. The dependency-report step succeeded; a later Spotless check failed on the PR's SettingsDialogs formatting, so this report is evidence of dependency resolution, not a successful build or APK inspection.
+
+Reconciliation of the resolved classpath against the POM/module-metadata inventory (all confirmed, none contradictory):
+- Every GeckoView-required artifact resolves at exactly the required version or higher: `kotlin-stdlib 2.4.21`, `annotation 1.11.0`, `annotation-experimental 1.6.0`, `collection 1.7.0`, `core 1.19.1`, `lifecycle-common 2.11.0`, `lifecycle-process 2.11.0`, `play-services-fido 21.3.1`, `snakeyaml 2.2`, all five `media3` artifacts `1.11.1`.
+- The catalog's `androidxCore` 1.16.0 pin is raised to **1.19.1 by Gradle conflict resolution**, as predicted by the cross-check; the pin must not be lowered below 1.19.1.
+- The 9 POM version-range/managed references now have authoritative resolutions: `lifecycle-runtime [2.11.0]` → 2.11.0, `lifecycle-common [2.10.0]` → 2.11.0, `lifecycle-common-jvm` → 2.11.0 line, `core-common [2.2.0]` → 2.2.0, unversioned `kotlin-stdlib` → 2.4.21. `com.google.code.findbugs:jsr305`, `org.checkerframework:checker-qual`, `com.google.errorprone:error_prone_annotations` and `com.google.j2objc:j2objc-annotations` (guava's POM-only compile dependencies) **do not appear in the resolved runtime classpath at all** — Gradle resolves guava via its Gradle Module Metadata, which excludes them.
+- `com.google.guava:listenablefuture:1.0` (a POM closure member) resolves to `9999.0-empty-to-avoid-conflict-with-guava` in the runtime classpath; `guava:33.3.1-android` and `failureaccess:1.0.2` are present as resolved.
+- PR #200 adds a manual workflow-dispatch job for recurring `releaseRuntimeClasspath` report generation. The committed report below remains a dated GeckoView 160 snapshot; refresh it from the exact current beta/PR build before using it as a complete current-beta dependency inventory.
 
 ### License and notice obligations
 
-- GeckoView is MPL 2.0. For executable-form distribution, MPL 2.0 §3.2 requires the corresponding Source Code Form also be made available as described in §3.1, and recipients must be told how to obtain it by reasonable means and in a timely manner. Verify the exact GeckoView 160 source revision/archive and provide an accessible recipient-facing route before distributing the APK.
+- GeckoView is MPL 2.0 (declared in the artifact POM re-fetched from Mozilla Maven). For executable-form distribution, MPL 2.0 §3.2 requires the corresponding Source Code Form also be made available as described in §3.1, and recipients must be told how to obtain it by reasonable means and in a timely manner. Verify the exact GeckoView 160 source revision/archive and provide an accessible recipient-facing route before distributing the APK.
 - MPL 2.0 §3.4 preserves license and other notices contained in the Source Code Form; it does not independently require bundling the full license text or a source location in the APK. Do not remove or alter the existing notices.
 - This is separate from choosing a license for LastHavenPlus under #67; resolving #67 does not replace GeckoView's MPL obligations.
-- Transitive dependencies are licensed independently (Apache 2.0 for androidx media3/annotation/collection/core/lifecycle and kotlin-stdlib; snakeyaml Apache 2.0; play-services-fido under Google's Play Services SDK terms). Verify each artifact's own POM before making any redistribution claim; none of this changes our apps' runtime behavior.
+- Per-artifact transitive license verification status (updated 2026-11-26, second pass; no redistribution claims are made for unverified items). Method: the full Maven POM transitive closure of `geckoview-arm64-v8a:160.0.20261116130455` was walked live — 111 POMs fetched (Mozilla Maven, Google Maven, Maven Central; 0 not-found), each POM's `<licenses>` block recorded. This verifies POM-declared licenses only; it does not inspect artifact contents or replace the MPL 2.0 source obligations above:
+  - **Verified from published POMs (gap closed 2026-11-26):** every `androidx.*` POM in the closure (81 artifacts, including all direct dependencies `annotation:1.11.0`, `annotation-experimental:1.6.0`, `collection:1.7.0`, `core:1.19.1`, `lifecycle-common:2.11.0`, `lifecycle-process:2.11.0`, `media3-*:1.11.1` and their transitives) declares **The Apache Software License, Version 2.0**; `org.jetbrains.kotlin:kotlin-stdlib:2.4.21` and `org.yaml:snakeyaml:2.2` declare Apache-2.0 (previous pass).
+  - **POM-declared terms confirmed (proprietary):** the `com.google.android.gms` Play-services POMs in the closure (`play-services-fido:21.3.1`, `play-services-base:18.7.2`, `play-services-basement:18.9.0`/`18.7.1`, `play-services-tasks:18.3.2`) declare the **Android Software Development Kit License** — confirming the earlier caution that Play Services SDK terms (not an open-source license) govern these artifacts.
+  - **Verified from upstream source tree despite missing Maven license metadata:** `guava:33.3.1-android` and `failureaccess:1.0.2` are part of `google/guava` source tag `v33.3.1`; its root `LICENSE` is Apache-2.0, and `futures/failureaccess/pom.xml` declares `failureaccess` version `1.0.2`. The published Maven POMs themselves have no `<licenses>` block, so this is source-tree evidence rather than repository metadata. The `listenablefuture` 1.0/synthetic conflict-placeholder coordinates have no POM license declaration and are recorded separately; do not infer a license for them from the other Guava modules.
+  - **RESOLVED (was "not pinnable from POMs alone"):** the 9 closure references with version ranges or Gradle-managed versions are now pinned by the captured resolved classpath (see the reconciliation above): `lifecycle-runtime` → 2.11.0, `lifecycle-common` → 2.11.0, `lifecycle-common-jvm` → 2.11.0, `core-common` → 2.2.0, `kotlin-stdlib` → 2.4.21; `jsr305`, `checker-qual`, `error_prone_annotations` and `j2objc-annotations` are absent from the resolved runtime classpath (Gradle Module Metadata excludes them).
 
 ### Used-API cross-check against official documentation
 
-Verification methods, in order of authority for this audit:
-1. **Compile-time proof:** every symbol below is compiled against the pinned AAR in CI (PR validation and signed beta runs compile `assembleRelease`); a missing symbol would fail the build.
-2. **Reflection guards:** `GeckoViewWebExtensionApiTest` (`testDebugUnitTest` in the same CI runs) reflects `WebExtensionController.installBuiltIn(String)`, `ensureBuiltIn(String, String)` returning `GeckoResult`, `WebExtension$TabDelegate` (`setTabDelegate`, `onNewTab`, `onOpenOptionsPage`), `WebExtension$MetaData` fields (`baseUrl`, `optionsPageUrl`, `openOptionsPageInTab`) and `MessageDelegate` wiring against the pinned artifact binaries.
-3. **Official Javadocs:** the mozilla-central snapshot (geckoview 163.0.20261125035921, the nearest currently published; release-specific 160 docs are not served) confirms all used symbols.
+Verification methods, in order of authority for this audit. Each symbol is labeled below with exactly which methods covered it:
+1. **Compile-time proof against the pinned 160 AAR:** every symbol below is compiled against `160.0.20261116130455` in CI (PR validation and signed beta runs compile `assembleRelease`); a missing symbol would fail the build. This is authoritative for symbol existence in the pinned artifact.
+2. **Reflection guards against the pinned 160 AAR binaries:** `GeckoViewWebExtensionApiTest` (`testDebugUnitTest` in the same CI runs) reflects `WebExtensionController.installBuiltIn(String)`, `ensureBuiltIn(String, String)` returning `GeckoResult`, `WebExtension$TabDelegate` (`setTabDelegate`, `onNewTab`, `onOpenOptionsPage`), `WebExtension$MetaData` fields (`baseUrl`, `optionsPageUrl`, `openOptionsPageInTab`) and `MessageDelegate` wiring.
+3. **Official documentation confirmation — 163 mozilla-central snapshot only, not release-160 documentation:** no release-specific 160 Javadoc is published at the referenced hosts, so documentation links below describe the moving mozilla-central snapshot (geckoview 163.0.20261125035921 at last check); they are corroboration, not release-160 confirmation. Where a used symbol's behavior is version-sensitive, only compile evidence is release-160-specific.
 
-Used surface and status:
+Used surface and status ("basis" states exactly what verified it):
 
-| Symbol | Verified in docs | Notes |
+| Symbol | Basis | Exact reference |
 |---|---|---|
-| `GeckoRuntime.create(context, settings)` | yes | |
-| `GeckoRuntimeSettings.Builder().remoteDebuggingEnabled(boolean).build()` | yes | enabled only for debuggable builds |
-| `GeckoSession.open(GeckoRuntime)`, `close()`, `reload()`, `loadUri(String)` | yes | |
-| `GeckoSession.ProgressDelegate.onPageStart` / `onPageStop` | yes | |
-| `GeckoSession.ContentDelegate.onCrash`, `onKill`, `onFullScreen`, `onExternalResponse` + `WebResponse` | yes | crash/kill handlers keep the load-state flags; external responses are deliberately unhandled |
-| `GeckoSession.NavigationDelegate.onLoadRequest` -> `GeckoResult<AllowOrDeny>` + `LoadRequest` | yes | always returns `allow()` |
-| `GeckoSession.PermissionDelegate` (onContentPermissionRequest -> `GeckoResult<Integer>`; `ContentPermission.uri`/`.permission`; constants `PERMISSION_PERSISTENT_STORAGE`, `PERMISSION_AUTOPLAY_AUDIBLE`, `PERMISSION_AUTOPLAY_INAUDIBLE`, `VALUE_ALLOW`, `VALUE_DENY`; `onAndroidPermissionsRequest` + `Callback.reject()`; `onMediaPermissionRequest` + `MediaSource`, `MediaCallback.reject()`) | yes | game-origin-scoped allow, everything else denied |
-| `GeckoView` (Compose host), `GeckoResult.allow()` / `fromValue()` | yes | |
-| `WebExtensionController` / `WebExtension` reflection surface | reflection-guarded | used by tests only; addon manager itself stays on hold (#23) |
+| `GeckoRuntime.create(context, settings)` | compile (160 AAR) + docs (163 snapshot) | [GeckoRuntime Javadoc](https://mozilla.github.io/geckoview/javadoc/mozilla-central/org/mozilla/geckoview/GeckoRuntime.html) |
+| `GeckoRuntimeSettings.Builder().remoteDebuggingEnabled(boolean).build()` | compile (160 AAR) + docs (163 snapshot) | [GeckoRuntimeSettings.Builder Javadoc](https://mozilla.github.io/geckoview/javadoc/mozilla-central/org/mozilla/geckoview/GeckoRuntimeSettings.Builder.html); enabled only for debuggable builds |
+| `GeckoSession.open(GeckoRuntime)`, `close()`, `reload()`, `loadUri(String)` | compile (160 AAR) + docs (163 snapshot) | [GeckoSession Javadoc](https://mozilla.github.io/geckoview/javadoc/mozilla-central/org/mozilla/geckoview/GeckoSession.html) |
+| `GeckoSession.ProgressDelegate.onPageStart` / `onPageStop` | compile (160 AAR) + docs (163 snapshot) | [ProgressDelegate Javadoc](https://mozilla.github.io/geckoview/javadoc/mozilla-central/org/mozilla/geckoview/GeckoSession.ProgressDelegate.html) |
+| `GeckoSession.ContentDelegate.onCrash`, `onKill`, `onFullScreen`, `onExternalResponse` + `WebResponse` | compile (160 AAR) + docs (163 snapshot) | [ContentDelegate Javadoc](https://mozilla.github.io/geckoview/javadoc/mozilla-central/org/mozilla/geckoview/GeckoSession.ContentDelegate.html); crash/kill handlers keep the load-state flags; external responses are deliberately unhandled |
+| `GeckoSession.NavigationDelegate.onLoadRequest` -> `GeckoResult<AllowOrDeny>` + `LoadRequest` | compile (160 AAR) + docs (163 snapshot) | [NavigationDelegate Javadoc](https://mozilla.github.io/geckoview/javadoc/mozilla-central/org/mozilla/geckoview/GeckoSession.NavigationDelegate.html); always returns `allow()` |
+| `GeckoSession.PermissionDelegate` (onContentPermissionRequest -> `GeckoResult<Integer>`; `ContentPermission.uri`/`.permission`; constants `PERMISSION_PERSISTENT_STORAGE`, `PERMISSION_AUTOPLAY_AUDIBLE`, `PERMISSION_AUTOPLAY_INAUDIBLE`, `VALUE_ALLOW`, `VALUE_DENY`; `onAndroidPermissionsRequest` + `Callback.reject()`; `onMediaPermissionRequest` + `MediaSource`, `MediaCallback.reject()`) | compile (160 AAR) + docs (163 snapshot) | [PermissionDelegate Javadoc](https://mozilla.github.io/geckoview/javadoc/mozilla-central/org/mozilla/geckoview/GeckoSession.PermissionDelegate.html) + [site-permissions guide](https://firefox-source-docs.mozilla.org/mobile/android/geckoview/consumer/permissions.html); game-origin-scoped allow, everything else denied |
+| `GeckoView` (Compose host), `GeckoResult.allow()` / `fromValue()` | compile (160 AAR) + docs (163 snapshot) | [GeckoView Javadoc](https://mozilla.github.io/geckoview/javadoc/mozilla-central/org/mozilla/geckoview/GeckoView.html), [GeckoResult Javadoc](https://mozilla.github.io/geckoview/javadoc/mozilla-central/org/mozilla/geckoview/GeckoResult.html), [quick start](https://firefox-source-docs.mozilla.org/mobile/android/geckoview/consumer/geckoview-quick-start.html) |
+| `WebExtensionController` / `WebExtension` reflection surface | compile (160 AAR) + reflection guards only; NOT confirmed against any official documentation | [WebExtensionController Javadoc](https://mozilla.github.io/geckoview/javadoc/mozilla-central/org/mozilla/geckoview/WebExtensionController.html), [WebExtensions consumer guide](https://firefox-source-docs.mozilla.org/mobile/android/geckoview/consumer/web-extensions.html); used by tests only; addon manager itself stays on hold (#23) |
 
-Javadoc caveat: the snapshot is 163, not 160. No behavioral differences were observed for the used subset, and compile evidence against the 160 AAR is authoritative for symbol existence; behavior-specific differences remain a what-to-watch item during device verification.
+Javadoc caveat: all documentation links describe the 163 mozilla-central snapshot, not 160. No behavioral differences were observed for the used subset, and compile evidence against the 160 AAR is authoritative for symbol existence; behavior-specific differences remain a what-to-watch item during device verification.
 
 ### Measured APK-size impact
 
-Sizes from GitHub release asset metadata (`assets[].size`), fetched 2026-11-25:
+Sizes from GitHub release asset metadata (`assets[].size`), fetched 2026-11-27 (including v2.3.0):
 
 | Release | Engine | APK bytes | MiB |
 |---|---|---:|---:|
@@ -112,8 +123,9 @@ Sizes from GitHub release asset metadata (`assets[].size`), fetched 2026-11-25:
 | v2.0.0 | GeckoView 160 | 96,334,724 | 91.9 |
 | v2.1.0 | GeckoView 160 | 96,444,836 | 92.0 |
 | v2.2.0 | GeckoView 160 | 96,451,277 | 92.0 |
+| v2.3.0 | GeckoView 160 | 96,502,073 | 92.0 |
 
-The v1.0.0 -> v2.0.0 change of `24,046,841` bytes (-20.0%) is not a pure engine delta: that changeset also contains the launcher Home redesign and updater hardening. The GeckoView 160 releases since then are stable (within ~0.13 MiB across three builds). A dedicated engine-only size comparison between comparable verified builds is unavailable without rebuilding a Cefrium-based APK, and is not worth producing given the Cefrium code is removed.
+The v1.0.0 -> v2.0.0 change of `24,046,841` bytes (-20.0%) is not a pure engine delta: that changeset also contains the launcher Home redesign and updater hardening. The GeckoView 160 releases since then are stable (within ~0.16 MiB across four builds). A dedicated engine-only size comparison between comparable verified builds is unavailable without rebuilding a Cefrium-based APK, and is not worth producing given the Cefrium code is removed.
 
 ## Runtime, session and UI lifecycle
 
@@ -161,7 +173,7 @@ The owner has reported that the app and GeckoView work on an ARM64 device. No de
 
 ## Addon boundary
 
-Issue #23 and all addon-manager work are on hold by owner instruction (2026-11-25). The previous XPI specification and audit remain historical reference only; do not investigate, assign or implement the manager until the owner explicitly approves resuming it. A WoW 3.3.5a addon ZIP/`.toc` package is not a Firefox WebExtension; GeckoView WebExtension support does not itself load game addons. Do not claim game addon injection.
+Addon Manager Phase B is a separate P0 project milestone and remains gated by #147, #183 and #167. This issue is restricted to the GeckoView 160 artifact/dependency documentation audit; it must not block or overlap addon runtime implementation. A WoW 3.3.5a addon ZIP/`.toc` package is not a Firefox WebExtension; GeckoView WebExtension support does not itself load game addons. Do not claim game addon injection.
 
 ## CI evidence and remaining work
 
@@ -171,8 +183,13 @@ Issue #23 and all addon-manager work are on hold by owner instruction (2026-11-2
 - Published v2.1.0 tag run [#45603533787](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45603533787) built versionName 2.1.0 / versionCode 2001000; signature, established certificate, ARM64-only ABI, differential generation and asset upload/publish steps passed. The final draft-by-tag lookup failed HTTP 404; PR #54 later changed cleanup and verification to use the release ID output from the release action. PR #54 exact-head validation passed in run #45610110307; post-merge signed beta run [#45610518305](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45610518305) passed build, unit tests, established signing-certificate verification and ARM64-only ABI checks.
 - Physical ARM64 game/profile/UI/update verification remains unverified; CI does not replace the device matrix.
 
-Remaining work:
-1. Complete physical ARM64 game, profile, permission, media, navigation and updater tests.
-2. Inspect the adaptive launcher icon in the built APK.
-3. Reconcile the resolved `releaseRuntimeClasspath` (via `./gradlew app:dependencies`) with the POM inventory and the #99 catalog once a Gradle-capable environment is available, and package the MPL 2.0 notice text with the APK before any external distribution.
-4. Exercise the release-ID draft cleanup/verification path and optional differential fallback failure cases on a future owner-authorized versioned release run; do not republish v2.1.0 for testing.
+## GeckoView 160 audit scope completion
+
+The documentation/research deliverables for issue #20 are now recorded:
+
+1. **Artifact and transitive dependency inventory:** exact GeckoView 160 ARM64 coordinates, POM/module metadata and the resolved runtime graph are documented. The current beta snapshot records 145 selected module coordinates; the original Gradle output is retained as a CI artifact.
+2. **License and notice obligations:** the 111-POM transitive closure and declared license status are recorded. Guava and failureaccess are verified against the upstream source tag; the listenablefuture conflict-placeholder POMs have no license declaration and remain explicitly unclassified. GeckoView's MPL-2.0 source-code obligations are documented.
+3. **Used API cross-check:** the integration surface is listed with compile/reflection evidence against the pinned 160 AAR and the limitation that published Javadocs are for the moving 163 snapshot.
+4. **APK-size impact:** release asset metadata through v2.3.0 is recorded. The available Cefrium-to-GeckoView comparison is not engine-only because other launcher/updater changes shipped at the same time; a reliable engine-only delta cannot be produced without rebuilding the removed Cefrium implementation.
+
+Separate gates remain outside issue #20: physical ARM64 gameplay/profile/UI verification; inspecting GeckoView's embedded `about:license` inventory and the packaged APK before any external distribution; and making an accessible GeckoView 160 source-code route available to recipients if executable distribution is undertaken. No physical-device compatibility claim is made by this audit.
