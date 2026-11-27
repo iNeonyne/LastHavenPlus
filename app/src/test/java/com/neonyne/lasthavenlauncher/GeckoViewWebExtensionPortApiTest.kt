@@ -11,8 +11,8 @@ class GeckoViewWebExtensionPortApiTest {
     val delegate = Class.forName("org.mozilla.geckoview.WebExtension\$PortDelegate")
 
     assertTrue(hasMethod(port, "setDelegate", delegate))
-    assertTrue(hasMethod(port, "postMessage", Any::class.java))
-    assertTrue(hasMethod(delegate, "onPortMessage", Any::class.java, port))
+    assertTrue(hasMethod(port, "postMessage", org.json.JSONObject::class.java))
+    assertTrue(hasMethod(delegate, "onPortMessage", org.json.JSONObject::class.java, port))
     assertTrue(hasMethod(delegate, "onDisconnect", port))
   }
 
