@@ -911,3 +911,10 @@ Entry format:
 - PR #165 / issue #149: Chaty took over after Vibe handoff. UpdateScreen user-facing labels/actions were resource-backed; untranslated English locale duplicates were removed; a CI-reported Spotless formatting issue was corrected. Exact-head Android and unsigned reproducibility checks are running; no merge yet.
 - PR #166 / issue #23 Phase B groundwork: corrected the pinned GeckoView 160 `WebExtension.Port.postMessage(JSONObject)` and delegate API assertion, added optional-dependency ordering, case-insensitive required dependency, deep-chain and bounds tests, and enforced validated addon/TOC limits at the planner boundary. Exact-head Android and unsigned reproducibility checks are running; no runtime activation or physical-device test is claimed.
 - No release, tag, publication, beta-to-main promotion or physical ARM64 testing.
+
+
+## 2026-11-27 — Keep Vibe implementation moving during PR integration
+
+- The repository owner clarified that Vibe must not wait idle for Chaty's PR integration. After handing off a PR, Vibe immediately starts the next explicitly assigned, independent issue while Chaty integrates earlier PRs in parallel.
+- Chaty checked file ownership and assigned #146 GameSessionController to Vibe while integrating #149/#165 and #23/#166. Current open PR scopes do not overlap #146's MainActivity/GeckoSession ownership work.
+- Vibe still works on only one active implementation issue at a time, never changes ownership labels, never merges, and never pushes directly to beta/main. Chaty remains the sole beta integrator.
