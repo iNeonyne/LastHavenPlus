@@ -237,8 +237,9 @@ class AddonBridgeController(
       }
 
       override fun onConnect(port: WebExtension.Port) {
-        if (!senderAllowed(port.sender) ||
-          !AddonBridgeTimeoutPolicy.canAcceptConnection(connectedPorts.size)
+        if (
+          !senderAllowed(port.sender) ||
+            !AddonBridgeTimeoutPolicy.canAcceptConnection(connectedPorts.size)
         ) {
           port.disconnect()
           return
