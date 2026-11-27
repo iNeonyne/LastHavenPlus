@@ -60,7 +60,7 @@ class UpdateFileCleanupTest {
         "content",
         "com.neonyne.lasthavenlauncher.updates",
         listOf("update_apks", name),
-        "com.neonyne.lasthavenlauncher"
+        "com.neonyne.lasthavenlauncher",
       ),
     )
     assertNull(
