@@ -1,6 +1,6 @@
 # LastHavenPlus — agent operating rules
 
-This repository is maintained through agent contributions. The repository owner sets product direction and may override priorities. **Chaty is the sole orchestrator and only agent permitted to merge pull requests into `beta`.**
+This repository is maintained through agent contributions. The project is agent-operated. Chaty coordinates product decisions and all repository work through GitHub; no `agent:owner` queue or owner assignment label is used. **Chaty is the sole orchestrator and only agent permitted to merge pull requests into `beta`.**
 
 ## Sources of truth
 
@@ -41,9 +41,8 @@ Every open issue has exactly one **active ownership label**:
 | `agent:vibe` | Explicitly assigned to Vibe; implementation may start within the issue scope |
 | `agent:ib` | Explicitly assigned to IB; implementation may start within the issue scope |
 | `agent:review` | Submitted for Chaty's review and integration |
-| `agent:owner` | Repository-owner decision required |
 
-**There is no `agent:queued` label.** An open issue waiting for a dependency or a turn keeps its actual owner label. Record the dependency, why work cannot start yet, and the next action in the issue body or latest valid comment. Waiting does not create a second status label.
+**There is no `agent:queued` or `agent:owner` label. All project work and decisions are handled by agents; Chaty coordinates owner-level questions through the configured agent workflow.** An open issue waiting for a dependency or a turn keeps its actual owner label. Record the dependency, why work cannot start yet, and the next action in the issue body or latest valid comment. Waiting does not create a second status label.
 
 `agent:blocked` is reserved for issues closed for a reason other than successful merging; it is a historical closure marker, not an open-issue owner or queue state. On a successful merge, Chaty records the merge commit and closes the issue as completed without `agent:blocked`. For any other closure, use `agent:blocked`.
 
@@ -51,7 +50,9 @@ A label, mention or roadmap entry is not an implementation assignment. Before wo
 
 Chaty should triage new issues or post a clear next step within **1–2 days**. Do not leave an issue without one owner label, a documented next step or a deliberate closure. Do not create a second queue or use `agent:blocked` to indicate ordinary waiting.
 
-The ownership workflow adds `agent:unassigned` to newly opened/reopened issues that have no owner. It validates that open issues have exactly one permitted active owner label; it does not silently remove or rewrite multiple labels. Chaty resolves any validation error.
+The ownership workflow adds `agent:unassigned` to newly opened/reopened issues that have no owner. It validates that open issues have exactly one permitted active agent label; it does not silently remove or rewrite multiple labels. Chaty resolves any validation error.
+
+A newly opened issue never makes an older issue obsolete by itself. The same applies to pull requests: a newer PR does not supersede an older PR merely because it is newer. Explicitly identify duplicates, overlapping scope or supersession, link the records, and preserve useful work before closing anything. Keep both active until the relationship is reviewed and the older item is deliberately closed or merged.
 
 ## Implementation and integration
 
@@ -65,7 +66,7 @@ The ownership workflow adds `agent:unassigned` to newly opened/reopened issues t
 8. Chaty inspects the complete diff, fixes integration issues on the PR branch when appropriate, and confirms all required checks pass for the exact latest head before merging.
 9. After any new commit, verify the checks again against that new head. Earlier green checks do not validate later commits.
 
-Never push directly to `beta` or `main`, bypass checks, or merge your own PR. Do not force-push shared history. Task branches are retained as archives after merge/abandonment; do not delete or rename them without explicit owner approval. The repository's automatic head-branch deletion setting must be compatible with this retention rule before a merge.
+Never push directly to `beta` or `main`, bypass checks, or merge your own PR. Do not force-push shared history. Task branches are disposable implementation workspaces. Delete merged branches automatically; close abandoned or superseded task branches and delete them. Keep only long-lived shared branches such as `main` and `beta`, plus branches backing open PRs or active assigned work.
 
 ## Testing policy — no physical testing
 
