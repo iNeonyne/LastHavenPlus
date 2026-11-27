@@ -287,52 +287,57 @@
       return { ok: true, stage: null, records: Object.freeze(records), indexSize: bytes.length };
     }
   
-    function validateMaskRecords(records, indexSize, enabledFolders) {
-      if (!Array.isArray(records) || records.length > MAX_INDEX_RECORDS * 2 ||
-          !Number.isSafeInteger(indexSize) || indexSize < 0 || indexSize > MAX_INDEX_FILE_BYTES ||
-          !Array.isArray(enabledFolders) || enabledFolders.length > 128) return { ok: false, records: null };
-      const enabled = new Set();
-      for (let i = 0; i < enabledFolders.length; i += 1) {
-        const folder = enabledFolders[i];
-        if (typeof folder !== "string" || !FOLDER_PATTERN.test(folder) ||
-            folder.toLowerCase().startsWith("blizzard_") || enabled.has(folder.toLowerCase())) return { ok: false, records: null };
-        enabled.add(folder.toLowerCase());
-      }
-      const validated = [];
-      for (let i = 0; i < records.length; i += 1) {
-        const record = records[i];
-        if (!record || typeof record !== "object" || Array.isArray(record) ||
-            Object.keys(record).length !== 4 || typeof record.path !== "string" ||
-            !isSafeAddonPath(record.path) || !Number.isSafeInteger(record.start) ||
-            !Number.isSafeInteger(record.end) || record.start < 0 || record.end <= record.start ||
-            record.end > indexSize || (record.value !== FILL_ZERO && record.value !== FILL_HASH)) return { ok: false, records: null };
-        const folder = record.path.slice(ADDON_PREFIX.length).split("/")[0];
-        if (!enabled.has(folder.toLowerCase())) return { ok: false, records: null };
-        validated.push(Object.freeze({ path: record.path, start: record.start, end: record.end, value: record.value }));
-      }
-      validated.sort((a, b) => a.start - b.start);
-      for (let i = 1; i < validated.length; i += 1) {
-        if (validated[i].start < validated[i - 1].end) return { ok: false, records: null };
-      }
-      return { ok: true, records: Object.freeze(validated) };
+    function validateMaskRecords(maskBuffer, indexSize, enabledFolders) {
+    const maxMaskBytes = MAX_INDEX_RECORDS * 2 * 16;
+    if (!(maskBuffer instanceof ArrayBuffer) || maskBuffer.byteLength > maxMaskBytes ||
+        maskBuffer.byteLength % 16 !== 0 || !Number.isSafeInteger(indexSize) ||
+        indexSize < 0 || indexSize > MAX_INDEX_FILE_BYTES ||
+        !Array.isArray(enabledFolders) || enabledFolders.length > 128) {
+      return { ok: false, records: null };
     }
+    const enabled = new Set();
+    for (let i = 0; i < enabledFolders.length; i += 1) {
+      const folder = enabledFolders[i];
+      if (typeof folder !== "string" || !FOLDER_PATTERN.test(folder) ||
+          folder.toLowerCase().startsWith("blizzard_") || enabled.has(folder.toLowerCase())) {
+        return { ok: false, records: null };
+      }
+      enabled.add(folder.toLowerCase());
+    }
+    const records = new Uint32Array(maskBuffer);
+    let previousEnd = 0;
+    for (let i = 0; i < records.length; i += 4) {
+      const start = records[i];
+      const end = records[i + 1];
+      const value = records[i + 2];
+      const folderIndex = records[i + 3];
+      if (!Number.isSafeInteger(start) || !Number.isSafeInteger(end) ||
+          end <= start || end > indexSize ||
+          (value !== FILL_ZERO && value !== FILL_HASH) ||
+          !Number.isSafeInteger(folderIndex) || folderIndex >= enabledFolders.length ||
+          (i > 0 && start < previousEnd)) {
+        return { ok: false, records: null };
+      }
+      const folder = enabledFolders[folderIndex];
+      if (typeof folder !== "string" || !FOLDER_PATTERN.test(folder) ||
+          folder.toLowerCase().startsWith("blizzard_")) {
+        return { ok: false, records: null };
+      }
+      previousEnd = end;
+    }
+    return { ok: true, records: records };
+  }
   function intersectingSpans(records, readStart, readEnd) {
-    if (!Array.isArray(records) || !Number.isSafeInteger(readStart) || !Number.isSafeInteger(readEnd)) {
+    if (!(records instanceof Uint32Array) || records.length % 4 !== 0 ||
+        !Number.isSafeInteger(readStart) || !Number.isSafeInteger(readEnd)) {
       return [];
     }
     const spans = [];
-    for (let i = 0; i < records.length; i += 1) {
-      const record = records[i];
-      if (!record) {
-        continue;
-      }
-      if (!isSafeAddonPath(record.path) || (record.value !== FILL_ZERO && record.value !== FILL_HASH)) {
-        continue;
-      }
-      const start = Math.max(record.start, readStart);
-      const end = Math.min(record.end, readEnd);
+    for (let i = 0; i < records.length; i += 4) {
+      const start = Math.max(records[i], readStart);
+      const end = Math.min(records[i + 1], readEnd);
       if (end > start) {
-        spans.push(Object.freeze({ start: start, end: end, value: record.value }));
+        spans.push(Object.freeze({ start: start, end: end, value: records[i + 2] }));
       }
     }
     return spans;
@@ -372,7 +377,7 @@
     const masked = function (file, write, offset, count) {
       const result = original.apply(this, arguments);
       try {
-        if (file === 1 && !write && Array.isArray(records) && records.length > 0) {
+        if (file === 1 && !write && records instanceof Uint32Array && records.length > 0) {
           const heap = wasmImports.HEAPU8;
           if (heap instanceof Uint8Array) {
             maskReadSpan(heap, offset, count, records);
@@ -719,7 +724,7 @@
       "    if (ports.length !== 1) { reportFailure('boot-port'); return; }\n" +
       "    port = ports[0];\n" +
       "    booted = true;\n" +
-      "    var validatedMasks = validateMaskRecords(data.maskRecords, data.indexSize, data.enabledFolders);\n" +
+      "    var validatedMasks = validateMaskRecords(data.maskBuffer, data.indexSize, data.enabledFolders);\n" +
       "    if (validatedMasks.ok) { maskRecords = validatedMasks.records; }\n" +
       "    else { reportMaskDiagnostic('mask-records-invalid'); }\n" +
       "    if (typeof data.maskError === 'string' && data.maskError.length <= 32) { reportMaskDiagnostic(data.maskError); }\n" +
@@ -727,7 +732,7 @@
       "      var data = event.data;\n" +
       "      if (!data || typeof data !== 'object') { return; }\n" +
       "      if (data.type === MASK_SIGNAL) {\n" +
-      "        var update = validateMaskRecords(data.records, data.indexSize, data.enabledFolders);\n" +
+      "        var update = validateMaskRecords(data.maskBuffer, data.indexSize, data.enabledFolders);\n" +
       "        if (update.ok) { maskRecords = update.records; }\n" +
       "        else { reportMaskDiagnostic('mask-records-invalid'); }\n" +
       "        return;\n" +
@@ -990,7 +995,7 @@
   let maskBootstrapCache = null;
 
   function readMaskBootstrapData(global, core) {
-    const failed = (stage, enabledFolders) => ({ records: [], indexSize: 0, enabledFolders: enabledFolders || [], error: stage });
+    const failed = (stage, enabledFolders) => ({ maskBuffer: new ArrayBuffer(0), indexSize: 0, enabledFolders: enabledFolders || [], error: stage });
     let payload = null;
     try {
       const bridge = global[BRIDGE_KEY];
@@ -1006,7 +1011,7 @@
       seen.add(folder.toLowerCase());
       enabledFolders.push(folder);
     }
-    if (enabledFolders.length === 0) return { records: [], indexSize: 0, enabledFolders: [], error: null };
+    if (enabledFolders.length === 0) return { maskBuffer: new ArrayBuffer(0), indexSize: 0, enabledFolders: [], error: null };
     if (!global.navigator || !global.navigator.storage || typeof global.navigator.storage.getDirectory !== "function") {
       return failed("opfs-unavailable", enabledFolders);
     }
@@ -1020,7 +1025,15 @@
         return file.arrayBuffer().then((buffer) => {
           const parsed = core.parseBlocksIndex(new Uint8Array(buffer), enabledFolders);
           if (!parsed.ok) return failed(parsed.stage || "index-parse", enabledFolders);
-          return { records: parsed.records, indexSize: parsed.indexSize, enabledFolders, error: null };
+          const compact = new Uint32Array(parsed.records.length * 4);
+          for (let i = 0; i < parsed.records.length; i += 1) {
+            const record = parsed.records[i];
+            const folder = record.path.slice(ADDON_PREFIX.length).split("/")[0].toLowerCase();
+            const folderIndex = enabledFolders.findIndex((value) => value.toLowerCase() === folder);
+            if (folderIndex < 0) return failed("folder-index", enabledFolders);
+            compact.set([record.start, record.end, record.value, folderIndex], i * 4);
+          }
+          return { maskBuffer: compact.buffer, indexSize: parsed.indexSize, enabledFolders, error: null };
         });
       })
       .catch(() => failed("opfs-read", enabledFolders));
@@ -1114,13 +1127,13 @@
       if (entry.tornDown || entry.bootSent) return;
       entry.bootSent = true;
       const bootData = Object.assign({}, {
-        maskRecords: maskData.records,
+        maskBuffer: maskData.maskBuffer.slice(0),
         indexSize: maskData.indexSize,
         enabledFolders: maskData.enabledFolders,
         maskError: maskData.error
       });
       Object.defineProperty(bootData, BOOT_KEY, { value: true, enumerable: true });
-      try { instance.postMessage(bootData, [channel.port2]); }
+      try { instance.postMessage(bootData, [channel.port2, bootData.maskBuffer]); }
       catch (error) { teardownEntry(entry, "worker-error"); }
     };
     try {
@@ -1140,12 +1153,12 @@
         }
       }
       if (maskData && typeof maskData.then === "function") {
-        maskData.then(sendBoot).catch(() => sendBoot({ records: [], indexSize: 0, enabledFolders: [], error: "opfs-read" }));
+        maskData.then(sendBoot).catch(() => sendBoot({ maskBuffer: new ArrayBuffer(0), indexSize: 0, enabledFolders: [], error: "opfs-read" }));
       } else {
-        sendBoot(maskData || { records: [], indexSize: 0, enabledFolders: [], error: "mask-unavailable" });
+        sendBoot(maskData || { maskBuffer: new ArrayBuffer(0), indexSize: 0, enabledFolders: [], error: "mask-unavailable" });
       }
     } catch (error) {
-      sendBoot({ records: [], indexSize: 0, enabledFolders: [], error: "mask-unavailable" });
+      sendBoot({ maskBuffer: new ArrayBuffer(0), indexSize: 0, enabledFolders: [], error: "mask-unavailable" });
     }
     const nativeTerminate = instance.terminate.bind(instance);
     instance.terminate = function () {
