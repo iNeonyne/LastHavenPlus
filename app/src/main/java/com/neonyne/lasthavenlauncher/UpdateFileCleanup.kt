@@ -14,7 +14,7 @@ internal object UpdateFileCleanup {
   private const val FILE_PROVIDER_ROOT = "update_apks"
   private const val MAX_ENTRIES_PER_CLEANUP = 256
   private val managedApkName =
-    Regex("""^LastHavenPlus-update-\\d+-[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}\\.apk$""")
+    Regex("""^LastHavenPlus-update-\d+-[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}\.apk$""")
 
   /** Returns only a validated APK filename from this app's expected FileProvider URI. */
   fun managedApkName(uri: Uri, packageName: String): String? {
