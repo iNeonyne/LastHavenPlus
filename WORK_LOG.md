@@ -767,3 +767,16 @@ No branch was deleted. The available GitHub connector exposes no branch-delete o
 - Verified beta HEAD and the merged README, AGENTS.md, AGENT_PROTOCOL.md, CONTRIBUTING.md, and AGENT_WORK.md content. Issue #205 closed after successful merge; no `agent:blocked` label was applied.
 - Updated the live AGENT_WORK.md snapshot to replace the pre-merge #205 state with its completed merge SHA and CI evidence.
 - Documentation-only change. No application source/runtime, dependencies, CI configuration, signing, release, tag, or main promotion changed.
+
+
+## 2026-11-28 — Outdated information audit and live queue redesign (#208)
+
+- **Beta baseline:** `ce13c2968c67fe680dc38c35ad13a5c7bb78ab73` (current when the audit branch was created).
+- **Verified releases:** GitHub's latest published release is v2.4.0 (published 2026-11-26, tag commit `e9c2b53d1ec84e27722da4b54fa4ddcbad65f891`, also the live main head). v2.4.0 release metadata says GeckoView 160; beta's `gradle/libs.versions.toml` pins GeckoView 161.0.20261118180411.
+- **Stale data found:** README and AGENT_WORK identified v2.3.0 as stable; STATUS.md/ISSUES.md and the current AGENT_WORK block carried superseded #168/#169 assignments; #167 title/body named GeckoView 160 despite the current beta pin; #4/#15 issue text contradicted their `agent:blocked` labels; docs/CI_ACTIONS.md referenced the removed quality.yml; docs/BRANCH_LIFECYCLE.md presented a Nov 26 inventory without clearly marking its age; CHANGELOG.md omitted published v2.2.0–v2.4.0 entries; docs/REPRODUCIBLE_BUILDS.md pointed to an older result.
+- **Policy change:** live assignments, dependencies, blocked/queued state, PR integration, and check results are now read directly from GitHub. AGENT_WORK.md is an archive; STATUS.md is a source pointer; ISSUES.md is a retired backlog mirror. AGENTS.md and AGENT_PROTOCOL.md prohibit maintaining a second volatile Markdown queue and define precedence for current labels/latest assignment comments over dated historical snapshots.
+- **Corrections:** updated README, CONTRIBUTING, AGENT_WORK, STATUS, ISSUES, AGENTS, AGENT_PROTOCOL, CHANGELOG, docs/CI_ACTIONS, docs/BRANCH_LIFECYCLE, docs/GECKOVIEW_MIGRATION, docs/REPRODUCIBLE_BUILDS; updated live issue descriptions #4, #15, #23 and title/body #167.
+- **Latest beta reproducibility evidence found:** run [#46063532417](https://github.com/iNeonyne/LastHavenPlus/actions/runs/46063532417) passed for application-source commit `78a3d12eb018e112a3443377e34e234ee9d3da7d`; two clean unsigned APK builds were byte-identical at 98,226,200 bytes, SHA-256 `e4847d2d048527a12e316b6444fdafa877af9750d87c03d1ba55fde5250a7110`, 860 ZIP entries.
+- **Latest stable GeckoView check:** Maven metadata search still showed 161.0.20261118180411 as latest Stable on 2026-11-28. Beta remains on that artifact; newer 162 entries were Beta/Nightly, not Stable.
+- **Open integration consideration:** PR #203 is an open draft and modifies overlapping README.md, AGENTS.md, STATUS.md, and docs/GECKOVIEW_MIGRATION.md. This audit PR is based on beta; integrate it before syncing/rechecking the unmerged #203 branch to avoid overwriting the cleanup.
+- **Validation:** Markdown exact-head and post-merge gates remain to be run for this audit PR. No application source, binary, dependency, CI workflow, signing, release, or branch setting was changed.
