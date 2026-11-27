@@ -140,18 +140,33 @@
     } else {
       return { kind: "passthrough" };
     }
-    const decoded = decodePath(raw);
-    if (!raw.startsWith(ADDON_PREFIX)) {
-      // Encoded spellings of the addon prefix are non-canonical. Do not let them bypass
-      // interception and reach the server as an equivalent decoded addon resource.
-      if (decoded !== null && decoded.startsWith(ADDON_PREFIX)) {
-        return { kind: "notFound" };
+    let addonCandidate = raw.startsWith(ADDON_PREFIX);
+    if (!addonCandidate) {
+      // Decode only the prefix segments first so unsafe suffixes cannot hide an encoded
+      // addon route and fall through to the network.
+      let decodedPrefix = "";
+      for (const segment of raw.split("/").slice(0, 3)) {
+        try {
+          decodedPrefix += decodeURIComponent(segment) + "/";
+        } catch (_error) {
+          break;
+        }
+        if (decodedPrefix.startsWith(ADDON_PREFIX)) {
+          addonCandidate = true;
+          break;
+        }
       }
+    }
+    if (!addonCandidate) {
       return { kind: "passthrough" };
+    }
+    if (!raw.startsWith(ADDON_PREFIX)) {
+      return { kind: "notFound" };
     }
     if (upper !== "GET" && upper !== "HEAD") {
       return { kind: "methodNotAllowed", isHead: false };
     }
+    const decoded = decodePath(raw);
     if (decoded === null || !decoded.startsWith(ADDON_PREFIX)) {
       return { kind: "notFound" };
     }
