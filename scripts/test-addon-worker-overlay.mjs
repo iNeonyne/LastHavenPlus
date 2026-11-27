@@ -816,47 +816,50 @@ test("worker XHR forwarder bounds concurrent inflight requests", () => {
   assert.equal(workerPort.posted.filter((data) => data && data.type === "lhAddonRequest").length, 4);
 });
 
-test("bootstrap wraps assignWasmImports and masks only guarded file reads", () => {
+test("bootstrap wraps the loader's global wasmImports assignment and masks only guarded reads", () => {
   const { core } = createPageContext();
-  const { scope, context, workerPort, dispatchBoot } = bootWorkerScope(core, {
+  const { scope, context, dispatchBoot } = bootWorkerScope(core, {
     importScriptsImpl: (url) => {
       scope.imported.push(url);
       scope.assignCalls = 0;
       scope.reads = [];
       scope.assignWasmImports = function () {
         scope.assignCalls += 1;
-        scope.lastImports = {
+        scope.wasmImports = {
           WebVfsStoreIo: function (file, write, offset, count) {
             scope.reads.push({ file: file, write: write, offset: offset, count: count });
           },
           HEAPU8: scope.heap || (scope.heap = new Uint8Array(16)),
         };
-        return scope.lastImports;
       };
     },
   });
-  dispatchBoot();
-  workerPort.dispatch({
-    type: "lhMaskRecords",
-    records: [{ path: "Interface/AddOns/Foo/main", start: 2, end: 6, masked: true }],
+  dispatchBoot(undefined, {
+    indexSize: 16,
+    enabledFolders: ["Foo"],
+    maskRecords: [
+      { path: "Interface/AddOns/Foo/main", start: 2, end: 4, value: 48 },
+      { path: "Interface/AddOns/Foo/main", start: 8, end: 9, value: 35 },
+    ],
   });
   vm.runInContext(`
     (function () {
-      var imports = self.assignWasmImports();
-      imports.WebVfsStoreIo(1, false, 0, 8);
-      imports.WebVfsStoreIo(1, true, 0, 8);
-      imports.WebVfsStoreIo(2, false, 0, 8);
+      self.assignWasmImports();
+      var imports = self.wasmImports;
+      imports.WebVfsStoreIo(1, false, 0, 12);
+      imports.WebVfsStoreIo(1, true, 0, 12);
+      imports.WebVfsStoreIo(2, false, 0, 12);
     })()
   `, context);
   assert.equal(vm.runInContext("self.assignCalls", context), 1);
   assert.equal(vm.runInContext("self.reads.length", context), 3);
   const heap = vm.runInContext("Array.from(self.heap)", context);
   assert.equal(heap[2], 48);
-  assert.equal(heap[3], 35);
-  assert.equal(heap[5], 35);
+  assert.equal(heap[3], 48);
+  assert.equal(heap[8], 35);
   assert.equal(heap[0], 0);
-  assert.equal(heap[6], 0);
-  assert.equal(vm.runInContext("self.lastImports.WebVfsStoreIo.__lhMasked", context), true);
+  assert.equal(heap[4], 0);
+  assert.equal(vm.runInContext("self.wasmImports.WebVfsStoreIo.__lhMasked", context), true);
 });
 
 test("wrapAssignWasmImports rejects non-function or already-wrapped targets", () => {
@@ -876,14 +879,14 @@ test("maskWebVfsStoreIo guards types, ranges and heap bounds", () => {
   assert.equal(core.maskWebVfsStoreIo({ WebVfsStoreIo: 42 }, []), false);
   const heap = new Uint8Array(16);
   const imports = { WebVfsStoreIo: function () {}, HEAPU8: heap };
-  const records = [{ path: "Interface/AddOns/Foo/main", start: 2, end: 6, masked: true }];
+  const records = [{ path: "Interface/AddOns/Foo/main", start: 2, end: 6, value: 48 }];
   assert.equal(core.maskWebVfsStoreIo(imports, records), true);
   assert.equal(imports.WebVfsStoreIo.__lhMasked, true);
   imports.WebVfsStoreIo(1, false, 0, 8);
   assert.equal(heap[2], 48);
-  assert.equal(heap[3], 35);
+  assert.equal(heap[3], 48);
   assert.equal(heap[4], 48);
-  assert.equal(heap[5], 35);
+  assert.equal(heap[5], 48);
   assert.equal(heap[0], 0);
   assert.equal(heap[6], 0);
   assert.equal(core.maskWebVfsStoreIo(imports, records), false);
@@ -893,7 +896,7 @@ test("maskWebVfsStoreIo skips writes, other files and out-of-bounds reads", () =
   const { core } = createPageContext();
   const heap = new Uint8Array(16);
   const imports = { WebVfsStoreIo: function () {}, HEAPU8: heap };
-  const records = [{ path: "Interface/AddOns/Foo/main", start: 0, end: 16, masked: true }];
+  const records = [{ path: "Interface/AddOns/Foo/main", start: 0, end: 16, value: 48 }];
   core.maskWebVfsStoreIo(imports, records);
   imports.WebVfsStoreIo(1, true, 0, 16);
   assert.ok(heap.every((byte) => byte === 0));
@@ -912,14 +915,14 @@ test("maskReadSpan preserves byte positions and only fills intersections", () =>
   const heap = new Uint8Array(20);
   for (let i = 0; i < heap.length; i += 1) heap[i] = 0xAA;
   const records = [
-    { path: "Interface/AddOns/Foo/a", start: 2, end: 6, masked: true },
-    { path: "game/other", start: 10, end: 18, masked: false },
+    { path: "Interface/AddOns/Foo/a", start: 2, end: 6, value: 48 },
+    { path: "Interface/AddOns/Foo/a", start: 10, end: 18, value: 35 },
   ];
   const written = core.maskReadSpan(heap, 0, 20, records);
   assert.equal(written, 4);
   for (let i = 0; i < heap.length; i += 1) {
     if (i >= 2 && i < 6) {
-      assert.equal(heap[i], i % 2 === 0 ? 48 : 35, "position " + i);
+      assert.equal(heap[i], 48, "position " + i);
     } else {
       assert.equal(heap[i], 0xAA, "position " + i);
     }
@@ -929,7 +932,7 @@ test("maskReadSpan preserves byte positions and only fills intersections", () =>
 test("maskReadSpan rejects invalid heaps, offsets and counts", () => {
   const { core } = createPageContext();
   const heap = new Uint8Array(8);
-  const records = [{ path: "Interface/AddOns/Foo/a", start: 0, end: 4, masked: true }];
+  const records = [{ path: "Interface/AddOns/Foo/a", start: 0, end: 4, value: 48 }];
   assert.equal(core.maskReadSpan(null, 0, 4, records), -1);
   assert.equal(core.maskReadSpan("nope", 0, 4, records), -1);
   assert.equal(core.maskReadSpan(heap, -1, 4, records), -1);
@@ -943,12 +946,12 @@ test("maskReadSpan fills overlapping masked records", () => {
   const { core } = createPageContext();
   const heap = new Uint8Array(10);
   const records = [
-    { path: "Interface/AddOns/Foo/a", start: 0, end: 4, masked: true },
-    { path: "Interface/AddOns/Foo/b", start: 4, end: 8, masked: true },
+    { path: "Interface/AddOns/Foo/a", start: 0, end: 4, value: 48 },
+    { path: "Interface/AddOns/Foo/b", start: 4, end: 8, value: 35 },
   ];
   const written = core.maskReadSpan(heap, 2, 4, records);
   assert.equal(written, 4);
-  assert.deepEqual(Array.from(heap.subarray(0, 8)), [0, 0, 48, 35, 48, 35, 0, 0]);
+  assert.deepEqual(Array.from(heap.subarray(0, 8)), [0, 0, 48, 48, 35, 35, 0, 0]);
 });
 
 
