@@ -1,7 +1,7 @@
 # Agent work assignments — LastHavenPlus
 
 **Last verified:** 2026-11-27  
-**Verified beta base for PR #171:** `0cc21b471fce646d03dad449b91acbe67a90df7d`  
+**Verified beta HEAD after PR #165:** `7e39d2553a11332d44326c1704e0d7647cc6aa40`  
 **Stable release:** v2.3.0 (tag commit ebc5b424e83ae66c2b0accc2bec6f050b8dc0d88).
 
 ## Roles and integration
@@ -36,30 +36,24 @@
 
 ## Vibe work queue
 
-Vibe has exactly one active implementation issue. A queued issue is not an assignment; it becomes startable only when Chaty changes its label to `agent:vibe` and posts a scope/acceptance comment.
+Vibe has exactly one active implementation issue at a time. After handing off a PR, Vibe immediately starts the next explicitly assigned independent issue while Chaty integrates earlier PRs. A queued issue is not an assignment; Chaty must change its label to `agent:vibe` and post a complete scope/acceptance comment.
 
-### Chaty integration — #149 launcher-owned string resources
-- **GitHub ownership:** `agent:chaty`; PR #165 has been handed off and Chaty owns integration.
-- **Current PR:** #165, last recorded head `515c91366bf90c1b6232f459743e95a161cc8296`; re-fetch before editing and do not assume this SHA is current.
-- **Chaty actions:** inspect the exact diff and PR discussion, correct the PR directly, run exact-head lint/format/unsigned release build/JVM tests, verify CI, then merge only when the full issue scope and all gates pass.
-- **Known scope gaps to resolve:** PR #165 leaves UpdateScreen strings hardcoded despite #149's launcher-wide inventory scope; it also copied English source strings into locale-specific resources despite the assignment requiring default `values/strings.xml` only and no untranslated locale duplication. Inspect current beta/resource conventions and fix these directly, or document a technically justified narrower boundary before merging.
-- Preserve wording and punctuation. Exclude game content, diagnostics payloads, developer logs and protocol values. No updater behavior changes, GeckoView/session lifecycle, Addon Manager or game/client changes.
-- **Vibe:** no active implementation issue while Chaty integrates #149. Do not start #146 or any later item yet. #146 remains next in queue, pending successful #149 integration and a fresh file-overlap/dependency check.
+### Chaty integration — #146 GameSessionController (PR #173)
+- **GitHub ownership:** `agent:chaty`; Vibe handed off PR #173 and Chaty owns all integration fixes and merge.
+- **PR:** #173, branch `vibe/game-session-controller-146`, head `eb9f64b672eced9143bc5689106223c3e7af3d16`, based on beta `d83e2df`.
+- **Validation:** Markdown #45920691560 passed; Android #45920691633 and unsigned reproducibility #45920691607 were still running. PR is draft and conflicts with beta documentation changed by PR #165. Chaty must reconcile docs, resolve mergeability, rerun exact-head checks and merge only after code review and all gates pass.
+- **Code scope:** controller/state extraction from MainActivity; no physical ARM64 device test. See PR #173 for full handoff and limitations.
 
-### Vibe handed off — #146 GameSessionController
-- **GitHub ownership:** `agent:vibe`; Chaty assigned #146 with an explicit start confirmation and Vibe implemented it from beta `d83e2df` without waiting for PR #165 or #166.
-- **Branch:** `vibe/game-session-controller-146`; draft PR targeting `beta` handed off to Chaty for direct integration.
-- **Implementation:** `GameSessionController` owns lazy runtime acquisition, session creation/open, reload, crash restore and GeckoView delegate wiring; pure decisions/transitions (`GameSessionUiState`, `GameSessionActions`) live in `GameSessionState.kt` with 17 JVM tests in `GameSessionStateTest.kt`; `MainActivity`/`LastHavenApp` become a thinner composition root and the keep-alive/close invariant is documented at the enforcing effect.
-- **Validation:** Spotless (ratchet `origin/beta`), 181/181 JVM tests, `lintDebug` and `assembleDebug` passed at the implementation commit; exact-head CI run IDs are recorded in the PR description and the issue #146 handoff comment.
-- **Exclusions upheld:** no game/client, updater, Addon Manager (#23), navigation redesign (#147), gameplay window state (#148), profile migration, toolchain, signing, ABI or application-ID changes. No physical ARM64 device test was performed.
+### Active — #167 GeckoView 160 extension bridge
+- **GitHub ownership:** `agent:vibe`; explicitly assigned by Chaty on 2026-11-27 after PR #146 handoff. Vibe may work while Chaty integrates #146 because the initial adapter/asset work is separate.
+- **Scope:** audit pinned GeckoView 160 APIs; deterministic APK-bundled extension assets; isolated bridge/adapter classes; exact-origin/path policy, sender/session validation, bounded payload schema and focused fail-closed tests.
+- **Hard exclusions:** do not edit MainActivity, GameSessionController, GameSessionState, GameScreen, navigation/session ownership or shared project docs while PR #173 is being integrated. If an integration point needs an excluded file, stop and record the blocker. No Chrome MV3 service worker/APIs, external unsigned XPI, toolchain/dependency changes, game/profile changes, auto-updates or runtime-activation claims.
+- **Handoff:** PR targeting beta with exact SHA, tests, CI evidence, limitations and device status. Chaty alone fixes, verifies and merges.
 
-### Later — Addon Manager Phase B child work (queued)
-- **#167:** GeckoView 160 extension bridge port.
-- **#168:** bounded XHR resource overlay; wait for #167 and Chaty's explicit assignment.
-- **#169:** Worker interception and blocks.idx read masking; wait for #167 and Chaty's explicit assignment.
-- **#170:** same-session navigation integration; blocked until #146 and the required navigation/runtime prerequisites are complete.
-- **#12 — Actionable GeckoView load-error details:** now ready and queued because #11's test work merged. Schedule after higher-priority #146 and Phase B child work; do not start until Chaty explicitly assigns it.
-- Owner authorization for Phase B does not grant blanket permission to Vibe. Chaty assigns each child issue separately, checks overlapping files, and supplies issue-specific security boundaries/tests. Never start from queue status alone.
+### Later Vibe work
+- **#147:** navigation/back-stack consolidation; remains blocked until #146 is integrated.
+- **#168–#169:** Addon Manager XHR/Worker runtime tasks; remain blocked until #167 and their security/runtime prerequisites are integrated.
+- **#170:** same-session navigation; remains blocked pending #146/navigation and runtime prerequisites.
 
 ## Owner-controlled work
 
@@ -96,11 +90,11 @@ Every open issue has exactly one `agent:*` label. The label distinguishes active
 | #149 | `agent:chaty` | Chaty integrating PR #165 directly; no routine review/return-to-Vibe cycle |
 | #67 | `agent:owner` | Rights and third-party notice decision |
 | #81 | `agent:queued` | Chaty documentation/evidence task; not started |
-| #12 | `agent:queued` | #11 test prerequisite merged; waiting for a Vibe turn and explicit assignment |
-| #146 | `agent:vibe` | Vibe implementation handed off; draft PR awaiting Chaty integration |
-| #167 | `agent:queued` | Phase B bridge port; waiting Vibe turn and Chaty assignment |
-| #168 | `agent:queued` | XHR overlay; wait for #167 and explicit assignment |
-| #169 | `agent:queued` | Worker/read masking; wait for #167 and explicit assignment |
+| #12 | `agent:queued` | #11 prerequisite merged; after #146/#147 and Phase B bridge work, explicit assignment required |
+| #146 | `agent:vibe` | Active Vibe assignment; proceed independently while Chaty integrates prior PRs |
+| #167 | `agent:queued` | PR #166 merged; wait for #146 integration and explicit Chaty assignment |
+| #168 | `agent:blocked` | Waits for #167 bridge integration and contract verification |
+| #169 | `agent:blocked` | Waits for #167 and #168 contracts to be integrated |
 | #6 | `agent:blocked` | Waits for #28 |
 | #7 | `agent:blocked` | Requires comparable measured baseline and scoped authorization |
 | #10 | `agent:blocked` | Waits for #16 |
