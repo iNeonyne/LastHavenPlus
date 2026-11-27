@@ -74,7 +74,7 @@ class AddonBridgeProtocolTest {
       AddonBridgeProtocol.addonList(
         "r-1",
         "rev1",
-        listOf(AddonBridgeProtocol.AddonSummary("unit-frame", "bad\\nversion", true)),
+        listOf(AddonBridgeProtocol.AddonSummary("unit-frame", "bad\nversion", true)),
       )
     )
     assertNull(
