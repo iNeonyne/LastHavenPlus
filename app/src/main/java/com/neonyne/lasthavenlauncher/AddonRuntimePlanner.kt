@@ -1,6 +1,7 @@
 package com.neonyne.lasthavenlauncher
 
 import java.security.MessageDigest
+import java.util.PriorityQueue
 import java.util.Locale
 
 sealed class AddonBlockedReason {
@@ -29,7 +30,7 @@ object AddonRuntimePlanner {
    * limits here as a defensive boundary before a future runtime consumes the plan.
    */
   fun plan(snapshot: AddonLibrarySnapshot): AddonLoadPlan {
-    require(snapshot.addons.size <= AddonArchive.MAX_ADDONS_PER_ARCHIVE) {
+    require(snapshot.addons.size <= MAX_ADDON_LIBRARY_ITEMS) {
       "Addon snapshot exceeds the validated library item limit."
     }
     snapshot.addons.forEach { addon ->
@@ -99,24 +100,18 @@ object AddonRuntimePlanner {
       }
     }
 
-    val ready = inDegree.filterValues { it == 0 }.keys.toMutableSet()
-    val emitted = mutableSetOf<String>()
+    // Static optional-dependency preference keeps the ready queue deterministic and bounded
+    // to O((V + E) log V), even for the full validated library limit.
+    val optionalPriority =
+      byLower.mapValues { (_, addon) ->
+        addon.optionalDependencies.count { it.lowercase(Locale.ROOT) in byLower }
+      }
+    val ready =
+      PriorityQueue<String>(compareBy({ optionalPriority.getValue(it) }, { it }))
+    inDegree.filterValues { it == 0 }.keys.forEach(ready::add)
     val ordered = mutableListOf<AddonLibraryItem>()
     while (ready.isNotEmpty()) {
-      val next =
-        ready.minWith(
-          compareBy<String>(
-            { key ->
-              byLower.getValue(key).optionalDependencies.count { optional ->
-                val lower = optional.lowercase(Locale.ROOT)
-                lower in byLower && lower !in emitted
-              }
-            },
-            { it },
-          )
-        )
-      ready.remove(next)
-      emitted += next
+      val next = ready.remove()
       ordered += byLower.getValue(next)
       for (dependent in dependents.getValue(next)) {
         val degree = inDegree.getValue(dependent) - 1
