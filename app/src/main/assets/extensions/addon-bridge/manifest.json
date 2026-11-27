@@ -23,7 +23,9 @@
     {
       "matches": [
         "https://lasthavens.com/play",
-        "https://lasthavens.com/play/"
+        "https://lasthavens.com/play/",
+        "https://alt.lasthavens.com/play",
+        "https://alt.lasthavens.com/play/"
       ],
       "js": [
         "payload-validation.js",
@@ -36,7 +38,9 @@
     {
       "matches": [
         "https://lasthavens.com/play",
-        "https://lasthavens.com/play/"
+        "https://lasthavens.com/play/",
+        "https://alt.lasthavens.com/play",
+        "https://alt.lasthavens.com/play/"
       ],
       "js": [
         "xhr-overlay.js"
@@ -49,7 +53,9 @@
     {
       "matches": [
         "https://lasthavens.com/play",
-        "https://lasthavens.com/play/"
+        "https://lasthavens.com/play/",
+        "https://alt.lasthavens.com/play",
+        "https://alt.lasthavens.com/play/"
       ],
       "js": [
         "worker-overlay.js"
