@@ -73,8 +73,7 @@ object AddonRuntimePlanner {
       if (addon.folder in report.cyclicFolders) {
         blocked[addon.folder] = AddonBlockedReason.DependencyCycle
       } else {
-        val missing =
-          addon.dependencies.filter { it.lowercase(Locale.ROOT) !in enabledByLower }
+        val missing = addon.dependencies.filter { it.lowercase(Locale.ROOT) !in enabledByLower }
         if (missing.isNotEmpty()) {
           blocked[addon.folder] = AddonBlockedReason.MissingDependencies(missing)
         }
