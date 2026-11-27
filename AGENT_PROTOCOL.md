@@ -10,7 +10,7 @@ This file is a bootstrap guide, not a second policy manual.
 2. Read [AGENTS.md](AGENTS.md) in full.
 3. Fetch the live `beta` head. Search GitHub Issues for the exact identity label: `is:open label:agent:vibe`, `is:open label:agent:chaty`, or the label matching your assigned identity. Also inspect `is:open label:agent:blocked` for dependencies and `is:open is:pr base:beta` for open integration work.
 4. Read the selected issue and its latest comments, linked parent/dependency issues, related PRs, and relevant technical documents. Confirm the issue is still open, its label still matches your identity, and Chaty has explicitly assigned it.
-5. Check current branch heads, file ownership, dependencies, and CI for the exact latest PR head. Do not rely on AGENT_WORK.md, STATUS.md, ISSUES.md, chat history, or historical comments as proof of current assignment or state.
+5. Check current branch heads, file ownership, dependencies, and CI for the exact latest PR head. Treat the current `agent:*` label as the live owner/state and the latest valid assignment comment as the task scope. Issue bodies and older comments may contain dated historical status blocks; ignore them when superseded by later comments or labels.
 6. Record assignments, progress, blockers, decisions, handoffs, and test evidence directly on GitHub Issues/PRs. Do not maintain a second queue or assignment snapshot in Markdown.
 
 A queue label, mention, old assignment comment, or suggested task is not authorization to start. Follow the latest valid issue assignment and ask Chaty on GitHub when anything conflicts.
