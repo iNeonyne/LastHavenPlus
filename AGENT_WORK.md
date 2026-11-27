@@ -1,5 +1,13 @@
 # Agent work assignments — LastHavenPlus
 
+## Owner priority — 2026-11-27
+
+- **P0:** Addon Manager Phase B (#23) is the top project priority. Chaty owns coordination; Vibe's sole active implementation assignment is #167, the GeckoView 160 bridge.
+- **Sequence:** #167 first; then #168 XHR, #169 Worker/index masking, and #170 same-session navigation only after their documented dependencies and security contracts are satisfied.
+- **Paused:** #4/#15 updater work is queued, not cancelled. Do not resume until Chaty explicitly reassigns it after a safe Addon Manager milestone handoff.
+- Keep one active Vibe implementation issue; do not assign #168/#169 concurrently or overlap #170 navigation/session files with other work.
+
+
 **Last verified:** 2026-11-27  
 **Verified beta HEAD after PR #175:** `022b4e2c4880d13b23e4e8c22cbd3dd5be679623` (documentation-only follow-up; latest app-code merge remains PR #173 at `5ed6af635954c8f4e2673dab3c60334eff4a8ae0`).  
 **Stable release:** v2.3.0 (tag commit ebc5b424e83ae66c2b0accc2bec6f050b8dc0d88).
@@ -14,8 +22,8 @@
 
 ## Active work
 
-### Chaty — #4 / #15 updater reliability and recovery
-- **Owner:** Chaty (agent:chaty); one coordinated updater owner; do not parallelize #4/#15/#31.
+### Chaty — #4 / #15 updater reliability and recovery (paused)
+- **Owner/state:** agent:queued; paused by the 2026-11-27 owner priority decision. Not cancelled; do not resume until explicitly reassigned after Addon Manager P0 handoff. Keep #4/#15/#31 coordinated and do not parallelize.
 - **Current beta:** 7451b940dc0adfa1ea14234fe6d489bba688b12c.
 - **Candidate:** partial-open BSDIFF cleanup exists only on chaty/updater-patch-stream-cleanup-4-beta; PRs #157/#159/#160 closed unmerged. No candidate code is integrated.
 - **Latest exact-head evidence:** PR #160 head d0cb2f5144257a2270ae0ed42f649833ad688207; Markdown #45891807077 passed. Reproducibility build A failed resolving org.jetbrains.kotlin.plugin.compose:2.4.21; build B and Android PR validation were incomplete when closed. No overall pass claimed.
@@ -82,9 +90,9 @@ Every open issue has exactly one `agent:*` label. The label distinguishes active
 
 | Issue | Label | State / next gate |
 |---|---|---|
-| #4 | `agent:chaty` | Chaty updater reliability; coordinated with #15 |
-| #15 | `agent:chaty` | Chaty updater recovery; sequenced behind #4 |
-| #23 | `agent:chaty` | Chaty owns Addon Manager Phase B coordination |
+| #4 | `agent:queued` | Updater reliability paused pending Addon Manager P0 handoff |
+| #15 | `agent:queued` | Updater recovery paused with #4 pending Addon Manager P0 handoff |
+| #23 | `agent:chaty` | P0 top priority; Chaty coordinates Addon Manager Phase B |
 | #18 | `agent:chaty` | Roadmap coordination |
 | #142 | `agent:chaty` | Assignment/queue coordination record |
 | #149 | `agent:chaty` | Chaty integrating PR #165 directly; no routine review/return-to-Vibe cycle |
