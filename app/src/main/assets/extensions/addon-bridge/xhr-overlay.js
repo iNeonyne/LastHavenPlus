@@ -417,13 +417,23 @@
       return cached;
     }
     const encoded = entry.encoded;
-    if (
-      encoded.length % 4 !== 0 ||
-      !/^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$/.test(encoded)
-    ) {
+    if (encoded.length % 4 !== 0) {
       return null;
     }
     const padding = encoded.endsWith("==") ? 2 : encoded.endsWith("=") ? 1 : 0;
+    const contentLength = encoded.length - padding;
+    for (let offset = 0; offset < contentLength; offset += 1) {
+      const code = encoded.charCodeAt(offset);
+      const valid =
+        (code >= 65 && code <= 90) ||
+        (code >= 97 && code <= 122) ||
+        (code >= 48 && code <= 57) ||
+        code === 43 ||
+        code === 47;
+      if (!valid) {
+        return null;
+      }
+    }
     const expectedBytes = (encoded.length / 4) * 3 - padding;
     if (
       expectedBytes < 0 ||
