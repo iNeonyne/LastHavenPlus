@@ -1053,3 +1053,10 @@ Entry format:
 - Removed the static issue-number-to-owner/state map from `.github/workflows/agent-ownership.yml`. Existing unlabeled issues are now backfilled only as `agent:unassigned`; Chaty performs live triage before assigning any worker.
 - Ensured an `agent:ib` label is provisioned for explicit IB assignments. No build, test, signing, or release workflow logic changed.
 - Clarified that current GitHub issue labels and latest valid assignment comments override all dated/older Markdown and issue-body snapshots.
+
+
+### Merge-conflict reconciliation with PR #203 — 2026-11-28
+
+- Reconciled the #208 audit branch with PR #203's merge to beta (`cfcc19d863aff828ad3db42a628cd5f95569a962`). Preserved its project rights, third-party notices, Google Play services exclusion, passkey limitation, build checks, Dependabot and branch-retention policy while reapplying the single-live-queue documentation.
+- Added the missing published v2.4.0 release entry to CHANGELOG.md while retaining PR #203's richer v2.2.0/v2.3.0 history and Unreleased dependency/rights notes.
+- The branch now contains merge commit `3c1dd70f7f234406df3f8caf26db85827e68a22e`; exact-head CI must be rerun after conflict resolution.
