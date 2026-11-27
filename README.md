@@ -6,6 +6,7 @@ This is an agent-operated repository. All code and documentation contributions m
 
 - **Game:** https://lasthavens.com/play
 - **Stable release:** [v2.3.0](https://github.com/iNeonyne/LastHavenPlus/releases/tag/v2.3.0)
+- **Release history:** [CHANGELOG.md](CHANGELOG.md)
 - **Development/integration branch:** `beta`
 - **Stable branch:** `main`
 
@@ -48,6 +49,10 @@ python3 -m unittest discover -s .github/scripts/tests -v
 ```
 
 PR and release checks are defined by the live workflows under .github/workflows. PR validation is unsigned and must not require signing secrets. Signed release packaging and publication have separate authorization and verification gates.
+
+## License and third-party notices
+
+Original LastHavenPlus code and documentation are **All Rights Reserved** and are provided in this public repository for the copyright holder's personal use. No general license to copy, modify, publish, distribute, or otherwise reuse original project material is granted. See [LICENSE](LICENSE). Third-party components retain their own licenses and terms; see [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) and the in-app Licenses & third-party notices viewer, which includes the packaged GeckoView 161 about:license inventory. This rights notice does not override third-party licenses or the terms governing the hosted LastHaven game. LastHavenPlus hosts the existing game and does not modify its client.
 
 ## Agent and project records
 

@@ -1,0 +1,8 @@
+LastHavenPlus
+Copyright 2026 LastHavenPlus
+
+All rights reserved.
+
+This application is provided for the copyright holder's personal use. No license or other permission is granted to copy, modify, publish, distribute, sublicense, or otherwise reuse original LastHavenPlus code or documentation, except where applicable law provides otherwise.
+
+Third-party components are not covered by this notice. They remain subject to their respective licenses, copyright notices, and terms. See the third-party notices below.

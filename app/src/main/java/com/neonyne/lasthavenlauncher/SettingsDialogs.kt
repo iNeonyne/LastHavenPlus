@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -56,6 +57,9 @@ fun SettingsScreen(
   var refreshing by remember { mutableStateOf(false) }
   var showNotices by remember { mutableStateOf(false) }
   var noticeText by remember { mutableStateOf<String?>(null) }
+  var showLicenses by remember { mutableStateOf(false) }
+  var licenseSections by remember { mutableStateOf<List<Pair<String, String>>?>(null) }
+  var loadingLicenses by remember { mutableStateOf(false) }
 
   LaunchedEffect(refreshKey) {
     refreshing = true
@@ -66,6 +70,31 @@ fun SettingsScreen(
   LaunchedEffect(showNotices) {
     if (showNotices && noticeText == null) {
       noticeText = withContext(Dispatchers.IO) { ThirdPartyNotices.readAddonManagerNotice(context) }
+    }
+  }
+
+  LaunchedEffect(showLicenses) {
+    if (showLicenses && licenseSections == null) {
+      loadingLicenses = true
+      licenseSections =
+        runCatching {
+          withContext(Dispatchers.IO) {
+            listOf(
+              context.getString(R.string.settings_project_rights_heading) to
+                readRawText(context, R.raw.project_rights_notice),
+              context.getString(R.string.settings_third_party_heading) to
+                readRawText(context, R.raw.third_party_notices),
+              context.getString(R.string.settings_apache_license_heading) to
+                readRawText(context, R.raw.apache_2_0),
+              context.getString(R.string.settings_mpl_license_heading) to
+                readRawText(context, R.raw.mpl_2_0),
+              context.getString(R.string.settings_geckoview_inventory_heading) to
+                readRawText(context, R.raw.geckoview_about_license_inventory),
+            )
+          }
+        }
+          .getOrNull()
+      loadingLicenses = false
     }
   }
 
@@ -94,7 +123,7 @@ fun SettingsScreen(
       TextButton(onClick = { refreshKey++ }, enabled = !refreshing) {
         Text(
           if (refreshing) stringResource(R.string.settings_refreshing)
-          else stringResource(R.string.settings_refresh_storage)
+          else stringResource(R.string.settings_refresh_storage),
         )
       }
     }
@@ -134,6 +163,11 @@ fun SettingsScreen(
         fontWeight = FontWeight.SemiBold,
       )
       Text(stringResource(R.string.settings_game_engine), color = DesignTokens.textSecondary)
+      Text(
+        stringResource(R.string.settings_passkeys_unavailable),
+        color = DesignTokens.textSecondary,
+        style = MaterialTheme.typography.bodySmall,
+      )
       OutlinedButton(
         onClick = onCheckUpdates,
         enabled = !isCheckingUpdate,
@@ -141,17 +175,20 @@ fun SettingsScreen(
       ) {
         Text(
           if (isCheckingUpdate) stringResource(R.string.settings_checking_updates)
-          else stringResource(R.string.settings_check_updates)
+          else stringResource(R.string.settings_check_updates),
         )
       }
       TextButton(onClick = onOpenUpdates) { Text(stringResource(R.string.settings_update_details)) }
       TextButton(onClick = onOpenDiagnostics) {
         Text(stringResource(R.string.settings_open_diagnostics))
       }
+      TextButton(onClick = { showLicenses = true }) {
+        Text(stringResource(R.string.settings_show_licenses))
+      }
       TextButton(onClick = { showNotices = !showNotices }) {
         Text(
           if (showNotices) stringResource(R.string.settings_hide_notices)
-          else stringResource(R.string.settings_show_notices)
+          else stringResource(R.string.settings_show_notices),
         )
       }
       if (showNotices) {
@@ -169,6 +206,39 @@ fun SettingsScreen(
         }
       }
     }
+  }
+
+  if (showLicenses) {
+    AlertDialog(
+      onDismissRequest = { showLicenses = false },
+      title = { Text(stringResource(R.string.settings_show_licenses)) },
+      text = {
+        when {
+          loadingLicenses -> Text(stringResource(R.string.settings_licenses_loading))
+          licenseSections.isNullOrEmpty() ->
+            Text(stringResource(R.string.settings_notices_load_failed))
+          else ->
+            Column(
+              modifier = Modifier.heightIn(max = 520.dp).verticalScroll(rememberScrollState()),
+              verticalArrangement = Arrangement.spacedBy(12.dp),
+            ) {
+              licenseSections.orEmpty().forEach { (heading, content) ->
+                Text(heading, color = DesignTokens.frost, fontWeight = FontWeight.SemiBold)
+                Text(
+                  content,
+                  color = DesignTokens.textBody,
+                  style = MaterialTheme.typography.bodySmall,
+                )
+              }
+            }
+        }
+      },
+      confirmButton = {
+        TextButton(onClick = { showLicenses = false }) {
+          Text(stringResource(R.string.settings_licenses_close))
+        }
+      },
+    )
   }
 }
 
@@ -206,7 +276,7 @@ fun DiagnosticsScreen(
           onClick = {
             Diagnostics.clear(context)
             content = clearedMessage
-          }
+          },
         ) {
           Text(stringResource(R.string.diagnostics_clear))
         }
@@ -220,7 +290,7 @@ fun DiagnosticsScreen(
               putExtra(Intent.EXTRA_TEXT, content)
             }
           context.startActivity(
-            Intent.createChooser(share, context.getString(R.string.diagnostics_share_chooser))
+            Intent.createChooser(share, context.getString(R.string.diagnostics_share_chooser)),
           )
         },
         modifier = Modifier.fillMaxWidth(),
@@ -286,7 +356,7 @@ fun UpdateScreen(
             ) {
               Text(
                 if (update.patch != null) stringResource(R.string.updates_download_smaller)
-                else stringResource(R.string.updates_download_full)
+                else stringResource(R.string.updates_download_full),
               )
             }
             if (update.patch != null) {
@@ -392,6 +462,9 @@ private fun InfoLine(label: String, value: String) {
     Text(value, color = DesignTokens.textPrimary, fontWeight = FontWeight.SemiBold)
   }
 }
+
+private fun readRawText(context: Context, resourceId: Int): String =
+  context.resources.openRawResource(resourceId).bufferedReader().use { it.readText() }
 
 private fun formatBytes(value: Long): String {
   if (value < 1024L) return "$value B"

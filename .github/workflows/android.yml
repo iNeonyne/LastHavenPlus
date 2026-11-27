@@ -91,6 +91,43 @@ jobs:
       - name: Run lint, formatting, unsigned release build and unit tests
         run: ./gradlew lintDebug spotlessCheck assembleRelease testDebugUnitTest --stacktrace -PspotlessRatchetFrom=origin/beta
 
+      - name: Verify project rights, third-party notices and GeckoView about:license inventory in unsigned APK
+        run: |
+          apk="$(find app/build/outputs/apk/release -maxdepth 1 -type f -name '*unsigned.apk' -print -quit)"
+          test -n "$apk"
+          python3 - "$apk" <<'PY'
+          import sys
+          import zipfile
+
+          checks = {
+              "project_rights_notice": (b"All rights reserved.", b"personal use"),
+              "third_party_notices": (b"geckoview-arm64-v8a:161.0.20261118180411", b"passkey sign-in is unavailable"),
+              "apache_2_0": (b"Apache License", b"Version 2.0"),
+              "mpl_2_0": (b"Mozilla Public License", b"Version 2.0"),
+              "geckoview_about_license_inventory": (
+                  b"GeckoView 161 about:license",
+                  b"Entries: 94",
+                  b"Source HTML SHA-256: 036e7acd61cc5b7a4f88b6637d26269ffe20bb573a36b715bb98f31e7b70ccdf",
+              ),
+          }
+          with zipfile.ZipFile(sys.argv[1]) as archive:
+              table = archive.read("resources.arsc")
+              resource_files = [name for name in archive.namelist() if name.startswith("res/")]
+              for resource, markers in checks.items():
+                  if resource.encode() not in table:
+                      raise SystemExit(f"Missing resource-table entry: {resource}")
+                  matches = [
+                      name for name in resource_files
+                      if all(marker in archive.read(name) for marker in markers)
+                  ]
+                  if not matches:
+                      raise SystemExit(f"Missing packaged resource content: {resource}")
+                  print(f"{resource}: {matches[0]}")
+              omni = archive.read("assets/omni.ja")
+              if b"chrome/toolkit/content/global/license.html" not in omni:
+                  raise SystemExit("GeckoView about:license HTML is missing from assets/omni.ja")
+          PY
+
       - name: Verify Addon Manager MIT notice in unsigned APK
         if: github.event_name == 'pull_request'
         run: |
@@ -109,6 +146,7 @@ jobs:
             app/build/reports/lint-results-debug.html
             app/build/reports/lint-results-debug.sarif
             app/build/reports/runtime-dependencies.txt
+            app/build/outputs/apk/release/*.apk
           if-no-files-found: ignore
           retention-days: 14
 

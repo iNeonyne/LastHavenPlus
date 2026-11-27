@@ -11,3 +11,8 @@
 # streams are explicitly rejected before any codec implementation can be used.
 -dontwarn org.tukaani.xz.**
 -dontwarn com.github.luben.zstd.**
+
+# GeckoView references Google FIDO2 types only in its optional WebAuthn/passkey path.
+# The com.google.android.gms artifacts are intentionally excluded; suppress R8's
+# missing-type warnings without keeping or packaging any Google Play services code.
+-dontwarn com.google.android.gms.**

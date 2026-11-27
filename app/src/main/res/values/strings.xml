@@ -68,9 +68,9 @@
     <string tools:ignore="MissingTranslation" name="game_menu_return_to_game">Return to game</string>
 
     <string tools:ignore="MissingTranslation" name="game_preparing_content_description">Preparing LastHaven</string>
-    <string tools:ignore="MissingTranslation" name="game_preparing">Preparing game\u2026</string>
+    <string tools:ignore="MissingTranslation" name="game_preparing">Preparing game…</string>
     <string tools:ignore="MissingTranslation" name="game_loading_content_description">LastHaven is loading</string>
-    <string tools:ignore="MissingTranslation" name="game_loading">Loading LastHaven\u2026</string>
+    <string tools:ignore="MissingTranslation" name="game_loading">Loading LastHaven…</string>
     <string tools:ignore="MissingTranslation" name="game_load_failed_content_description">LastHaven could not load</string>
     <string tools:ignore="MissingTranslation" name="game_load_failed_title">Unable to load LastHaven</string>
     <string tools:ignore="MissingTranslation" name="game_load_failed_hint">Check your connection and try again.</string>
@@ -85,9 +85,9 @@
     <string tools:ignore="MissingTranslation" name="settings_persistent_data">Persistent app data</string>
     <string tools:ignore="MissingTranslation" name="settings_storage_hint">Includes app-private files and GeckoView data; it is not a profile-only measurement.</string>
     <string tools:ignore="MissingTranslation" name="settings_app_cache">App cache</string>
-    <string tools:ignore="MissingTranslation" name="settings_refreshing">Refreshing\u2026</string>
+    <string tools:ignore="MissingTranslation" name="settings_refreshing">Refreshing…</string>
     <string tools:ignore="MissingTranslation" name="settings_refresh_storage">Refresh storage</string>
-    <string tools:ignore="MissingTranslation" name="settings_value_measuring">Measuring\u2026</string>
+    <string tools:ignore="MissingTranslation" name="settings_value_measuring">Measuring…</string>
     <string tools:ignore="MissingTranslation" name="settings_network_section">Network usage</string>
     <string tools:ignore="MissingTranslation" name="settings_received_since_boot">Received since device boot</string>
     <string tools:ignore="MissingTranslation" name="settings_sent_since_boot">Sent since device boot</string>
@@ -98,13 +98,22 @@
     <string tools:ignore="MissingTranslation" name="settings_network_hint">Per-app totals include game and updater traffic. They are stored locally and reset on device reboot.</string>
     <string tools:ignore="MissingTranslation" name="settings_application_section">Application</string>
     <string tools:ignore="MissingTranslation" name="settings_game_engine">Game engine: Mozilla GeckoView 161 Stable</string>
-    <string tools:ignore="MissingTranslation" name="settings_checking_updates">Checking for updates\u2026</string>
+    <string tools:ignore="MissingTranslation" name="settings_passkeys_unavailable">Passkey sign-in is unavailable in this build. Use another sign-in method.</string>
+    <string tools:ignore="MissingTranslation" name="settings_checking_updates">Checking for updates…</string>
     <string tools:ignore="MissingTranslation" name="settings_check_updates">Check for updates</string>
     <string tools:ignore="MissingTranslation" name="settings_update_details">Update details</string>
     <string tools:ignore="MissingTranslation" name="settings_open_diagnostics">App diagnostics</string>
     <string tools:ignore="MissingTranslation" name="settings_hide_notices">Hide third-party notices</string>
     <string tools:ignore="MissingTranslation" name="settings_show_notices">Third-party notices</string>
     <string tools:ignore="MissingTranslation" name="settings_notices_load_failed">Third-party notice could not be loaded.</string>
+    <string tools:ignore="MissingTranslation" name="settings_show_licenses">Licenses &amp; third-party notices</string>
+    <string tools:ignore="MissingTranslation" name="settings_project_rights_heading">Project copyright and rights</string>
+    <string tools:ignore="MissingTranslation" name="settings_third_party_heading">Third-party components</string>
+    <string tools:ignore="MissingTranslation" name="settings_apache_license_heading">Apache License, Version 2.0 (third-party components)</string>
+    <string tools:ignore="MissingTranslation" name="settings_mpl_license_heading">Mozilla Public License, Version 2.0</string>
+    <string tools:ignore="MissingTranslation" name="settings_geckoview_inventory_heading">GeckoView 161 bundled license inventory</string>
+    <string tools:ignore="MissingTranslation" name="settings_licenses_loading">Loading license notices…</string>
+    <string tools:ignore="MissingTranslation" name="settings_licenses_close">Close</string>
 
     <string tools:ignore="MissingTranslation" name="diagnostics_title">App diagnostics</string>
     <string tools:ignore="MissingTranslation" name="diagnostics_log_section">Local diagnostic log</string>

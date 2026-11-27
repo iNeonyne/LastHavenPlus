@@ -244,7 +244,9 @@ When work changes verified state, update the appropriate operational records. Cl
 - Do not merge `infra/*` branches wholesale into beta. Preserve `beta-legacy-*` snapshots unless the repository owner explicitly authorizes disposal; never wholesale-merge them.
 - No agent except Chaty may merge PRs into beta.
 - No agent may promote beta to main, create a release tag, or publish a release without explicit repository-owner approval. Releases must come from an accepted main commit and pass the current release gates.
-- Never force-push shared branches, bypass required checks, or delete a branch without the explicit approval and record required by docs/BRANCH_LIFECYCLE.md.
+- Never force-push shared branches or bypass required checks.
+- Do not delete or rename task branches as routine cleanup. Retain merged/abandoned task branches as archives and stop pushing to them.
+- Any branch deletion requires explicit owner approval recorded in the disposal log of docs/BRANCH_LIFECYCLE.md; no scheduled branch-deletion automation is permitted.
 
 ## 11. When instructions are unclear
 

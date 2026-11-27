@@ -1,12 +1,21 @@
-## Owner-directed Vibe assignments — 2026-11-27
+## Current project snapshot — 2026-11-27
 
-The repository owner explicitly assigned Vibe three related Addon Manager Phase B issues; the prior one-active-issue-only instruction is superseded.
+- **Verified beta baseline before PR #203 synchronization:** `ce13c2968c67fe680dc38c35ad13a5c7bb78ab73`.
+- **Browser engine:** Mozilla GeckoView 161 Stable, ARM64 only; AndroidX Core 1.19.1; ktfmt 0.65.
+- **Integrated:** PR #199 (GeckoView 160 audit), PR #200 (manual dependency-report workflow), and PR #201 (GeckoView 161/dependency audit). Issues #20 and #188 are closed after successful integration.
+- **PR #203 / issue #67:** current-beta rights and third-party notice work. The owner has directed that Google Play services must not be used. The entire `com.google.android.gms` group is excluded from GeckoView 161; release CI verifies the resolved dependency graph and DEX class definitions. GeckoView WebAuthn/passkey sign-in is unavailable in this build. The Settings viewer includes the project-rights notice, third-party notices, Apache-2.0/MPL-2.0 texts and the 94-entry GeckoView 161 about:license inventory.
+- **PR #203 exact-head verification:** see the live pull request for current check runs. Checks on any pre-synchronization head do not validate a later branch merge; rerun the full required suite after synchronizing with beta.
+- **Addon Manager Phase B remains the top project priority**, gated by navigation/back-stack #147, bridge-port work #183, and physical ARM64 acceptance #167.
+- No physical ARM64 device test of GeckoView 161 has been performed. No release, tag, or `main` promotion is authorized by this snapshot.
+- Dated sections below are historical records; their branch heads and task statuses must not override this current snapshot.
 
-- **#169 (P0, primary implementation):** bounded Worker interception and read-only `blocks.idx` masking.
-- **#167 (P0):** audit the already-merged bridge against acceptance, close source-level gaps, and perform/coordinate physical ARM64 runtime verification. Do not duplicate PRs #177, #180 or #190.
-- **#170 (P1):** inspect #147 and prepare/implement same-session Addon Manager navigation, with strict shared-file ownership coordination.
+## Current owner-directed assignments — 2026-11-27
 
-Sequence #169 first. #167 may audit/test merged bridge code in parallel. #170 begins with #147 and an affected-file/state-transition plan; do not overlap #169 or #147 ownership. End-to-end #170 acceptance still depends on #169 and verified runtime behavior.
+- **#147 (P1):** Vibe is the sole active implementation owner for launcher navigation/back-stack consolidation. Dedicated branch and PR to `beta`; Chaty owns review, fixes, exact-head CI, merge and closure.
+- **#167 (P0):** Chaty owns physical ARM64 runtime acceptance for the already-integrated GeckoView bridge; do not claim device behavior without direct observation.
+- **#183:** remains `agent:blocked` until Vibe hands off #147 and Chaty confirms the next assignment.
+- **#170 (P1):** remains `agent:blocked` behind #147, #183 and #167's runtime acceptance gates. Do not start overlapping manager-navigation implementation early.
+- **#169:** closed; no active Vibe assignment.
 
 Chaty remains sole reviewer, fixer, exact-head CI verifier and merger into beta. Do not claim physical device testing or actual in-game addon/Lua initialization unless observed. No release, tag, publication or main promotion is authorized.
 
