@@ -175,10 +175,7 @@ class AddonRuntimePlannerTest {
   @Test
   fun tocLoadOrderRejectsOversizedInput() {
     org.junit.Assert.assertThrows(IllegalArgumentException::class.java) {
-      AddonRuntimePlanner.parseTocLoadFiles(
-        "x".repeat(AddonArchive.MAX_TOC_BYTES.toInt() + 1)
-      )
+      AddonRuntimePlanner.parseTocLoadFiles("x".repeat(AddonArchive.MAX_TOC_BYTES.toInt() + 1))
     }
   }
-
 }
