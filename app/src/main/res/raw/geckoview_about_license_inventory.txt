@@ -1,0 +1,290 @@
+GeckoView 161 about:license — complete license inventory
+
+Extracted from the exact GeckoView 161 ARM64 unsigned APK built by the independent reproducibility workflow.
+APK: 98,226,200 bytes; SHA-256: fc9b01973aef690a227893f497531a8e3066043aee68ca834c87d65f8b4e457b
+Source entry: assets/omni.ja → chrome/toolkit/content/global/license.html
+Source HTML SHA-256: 036e7acd61cc5b7a4f88b6637d26269ffe20bb573a36b715bb98f31e7b70ccdf
+Entries: 94. This mirrors the Name and Paths columns of GeckoView’s packaged about:license table. Full license texts remain in the same packaged license.html page; the app’s viewer also displays the complete MPL-2.0 and Apache-2.0 texts separately.
+Important: Mozilla notes that some listed licenses may not apply to a particular product build/version. This inventory does not claim that every listed component is present in the launcher APK.
+
+## Mozilla Public License 2.0
+Paths: N/A
+
+## GNU Lesser General Public License 2.1
+Paths: This product contains code from the following LGPLed libraries: libsoundtouch Libav FFmpeg This license also applies to the following files or to files in the following directories: gfx/graphite2
+
+## GNU Lesser General Public License 3.0
+Paths: Some versions of this product contains code from the following LGPLed libraries: Swedish dictionary
+
+## acorn License
+Paths: This license applies to part of the devtools/shared/jsbeautify/src/beautify-js.js file.
+
+## Android Open Source License
+Paths: This license applies to various files in the Mozilla codebase, including those in the directory gfx/skia/ .
+
+## ANGLE License
+Paths: This license applies to files in the directory gfx/angle/ .
+
+## Apache License 2.0
+Paths: This license applies to various files in the Mozilla codebase including, but not limited to: third_party/cups/include third_party/rust/calendrical_calculations toolkit/components/ml/vendor/openai/dist/openai.mjs toolkit/components/ml/vendor/transformers.js
+
+## Apple License
+Paths: This license applies to parts of the code in: dom/media/webaudio/blink xpcom/base/DarwinObjectPtr.h
+
+## Apple Password Rules Parser License
+Paths: This license applies to the file toolkit/components/passwordmgr/shared/PasswordRulesParser.sys.mjs .
+
+## ARM License
+Paths: This license applies to files in the directory js/src/jit/arm64/vixl/ .
+
+## boost License
+Paths: This license applies to files in the following directories, whose copyright owners are named in the individual LICENSE files: third_party/function2 third_party/msgpack
+
+## BSD 2-Clause License
+Paths: This license applies to files in the following directories, whose copyright owners are named in the individual LICENSE files: third_party/dav1d third_party/rust/arrayref third_party/rust/mach2 third_party/rust/qlog
+
+## BSD 3-Clause License
+Paths: This license applies to portions of WHATWG specification incorporated into source code and to files in the following directories, whose copyright owners are named in the individual LICENSE files: third_party/node/node_modules/react-transition-group/ third_party/rust/bindgen/ third_party/rust/jxl third_party/rust/jxl_macros third_party/rust/jxl_simd third_party/rust/jxl_transforms third_party/rust/subtle/ third_party/rust/uritemplate-next/ third_party/xsimd/ third_party/zstd toolkit/content/vendor/react/react-transition-group.js
+
+## bspatch License
+Paths: This license applies to the following files:
+
+## Cairo Component Licenses
+Paths: This license, with different copyright holders, applies to certain files of cairo. The copyright holders and the applicable ranges of dates are as follows: 2000 Keith Packard 2000 SuSE, Inc. 2004 David Reveman 2005, 2006 Red Hat, Inc. 2006 Mozilla Corporation 2006, 2010 Joonas Pihlaja 2007 Netlabs 2011 Andrea Canciani This license applies to the following paths: gfx/cairo/cairo/src/cairo-freelist-private.h gfx/cairo/cairo/src/cairo-freelist-type-private.h gfx/cairo/cairo/src/cairo-freelist.c gfx/cairo/cairo/src/cairo-pattern.c gfx/cairo/cairo/src/cairo-time-private.h gfx/cairo/cairo/src/cairo-time.c gfx/cairo/cairo/src/cairo-xcb-resources.c gfx/cairo/cairo/src/cairo-xlib-screen.c gfx/cairo/cairo/src/cairo-xlib-xrender-private.h
+
+## Chromium License
+Paths: This license applies to parts of the code in: dom/plugins editor/libeditor/EditorEventListener.cpp gfx/ots gfx/ycbcr ipc/chromium toolkit/components/formautofill/shared/FormAutofillHeuristics.sys.mjs toolkit/components/formautofill/shared/FormAutofillNameUtils.sys.mjs toolkit/components/passwordmgr/shared/PasswordGenerator.sys.mjs toolkit/components/reputationservice toolkit/components/url-classifier/chromium tools/profiler
+
+## CodeMirror License
+Paths: This license applies to all files in devtools/client/shared/sourceeditor/codemirror
+
+## CRYPTOGAMS License
+Paths: This license applies all files in security/nss/lib/freebl/scripts/ and to the file security/nss/lib/freebl/sha512-p8.s .
+
+## cubic-bezier License
+Paths: This license applies to the file devtools/client/shared/widgets/CubicBezierWidget.js .
+
+## D3 License
+Paths: This license applies to the file third_party/js/d3/d3.js .
+
+## Dagre-D3 License
+Paths: This license applies to the file devtools/client/shared/vendor/dagre-d3.js .
+
+## diff License
+Paths: This license applies to the file devtools/client/inspector/markup/test/events/helper_diff.js .
+
+## Disconnect.Me License - Creative Commons BY-NC-SA-4.0
+Paths: This license does not apply to any of the code shipped with Firefox, but may apply to blocklists downloaded after installation for use with the tracking protection feature. Our blocklist is based on one originally written by Disconnect.me that is provided to the Mozilla Corporation for use in Firefox pursuant to a contract between Mozilla and Disconnect.me. For use outside Firefox, the blocklist is licensed under the Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License.
+
+## dtoa License
+Paths: This license applies to the file nsprpub/pr/src/misc/dtoa.c .
+
+## Dutch Spellchecking Dictionary License
+Paths: This license applies to the Dutch Spellchecking Dictionary. (This code only ships in some localized versions of this product.)
+
+## English Spellchecking Dictionary Licenses
+Paths: These licenses apply to certain files in the directory extensions/spellcheck/locales/en-US/hunspell/ , and the Canadian English dictionary. (This code only ships in some localized versions of this product.)
+
+## Estonian Spellchecking Dictionary License
+Paths: This license applies to precursor works to certain files which are part of the Estonian Spellchecking Dictionary. The shipped versions are under the GNU Lesser General Public License. (This code only ships in some localized versions of this product.)
+
+## Expat License
+Paths: This license applies to certain files in the directory parser/expat/ .
+
+## Firebug License
+Paths: This license applies to the code devtools/shared/network-observer/NetworkHelper.sys.mjs .
+
+## FreeType License
+Paths: This license applies to the following paths: modules/freetype2
+
+## gfxFontList License
+Paths: This license applies to the following files: gfx/thebes/gfxMacPlatformFontList.mm gfx/thebes/gfxPlatformFontList.cpp
+
+## Google BSD License
+Paths: This license applies to files in the following directories: toolkit/components/protobuf toolkit/crashreporter/google-breakpad
+
+## Google Gears/iStumbler License
+Paths: This license applies to the file netwerk/wifi/mac/Wifi.h .
+
+## Google VP8 License
+Paths: This license applies to certain files in the directory media/libvpx .
+
+## gyp License
+Paths: This license applies to certain files in the directory third_party/python/gyp .
+
+## HarfBuzz License
+Paths: This license applies to the following paths: gfx/harfbuzz
+
+## ICU License
+Paths: This license applies to some code in the gfx/thebes directory.
+
+## Immutable.js License
+Paths: N/A
+
+## Japan Network Information Center License
+Paths: This license applies to certain files in the directory netwerk/dns/ .
+
+## jemalloc License
+Paths: This license applies to portions of the files in the directory memory/build/ .
+
+## jQuery License
+Paths: This license applies to all copies of jQuery in the code.
+
+## k_exp License
+Paths: This license applies to the file modules/fdlibm/src/k_exp.cpp .
+
+## libcubeb License
+Paths: This license applies to files in the directory media/libcubeb .
+
+## libevent License
+Paths: This license applies to files in the directory ipc/chromium/src/third_party/libevent/ .
+
+## libffi License
+Paths: This license applies to files in the directory js/src/ctypes/libffi/ .
+
+## libjingle License
+Paths: This license applies to the following files: dom/media/webrtc/transport/sigslot.h dom/media/webrtc/transport/test/gtest_utils.h
+
+## libjpeg-turbo License
+Paths: This license applies to the following paths: media/libjpeg
+
+## libnestegg License
+Paths: This license applies to certain files in the directory media/libnestegg .
+
+## libogg License
+Paths: This license applies to the following paths: media/libogg
+
+## libpng License
+Paths: This license applies to the following paths: media/libpng
+
+## libsoundtouch License
+Paths: This license applies to certain files in the directory media/libsoundtouch/src/ .
+
+## libvorbis License
+Paths: This license applies to the following paths: media/libvorbis
+
+## libyuv License
+Paths: This license applies to files in the directory media/libyuv .
+
+## Lithuanian Spellchecking Dictionary License
+Paths: This license applies to the Lithuanian Spellchecking Dictionary. (This code only ships in some localized versions of this product.)
+
+## lodash License
+Paths: This license applies to some of the code in node_modules/lodash/lodash.js .
+
+## LZ4 License
+Paths: This license applies to the following paths: mozglue/static/lz4
+
+## MIT License
+Paths: This license applies to the following files or to files in the following directories, whose copyright owners are named in the individual LICENSE files or headers: devtools/shared/natural-sort.js devtools/shared/node-properties/node-properties.js gfx/cairo/cairo/src/cairo-clip-tor-scan-converter.c gfx/cairo/cairo/src/cairo-mono-scan-converter.c gfx/cairo/cairo/src/cairo-spans-private.h gfx/cairo/cairo/src/cairo-spans.c gfx/cairo/cairo/src/cairo-tor-scan-converter.c gfx/cairo/cairo/src/cairo-tor22-scan-converter.c gfx/pixman/pixman js/src/vm/Float16.h js/src/xsum mfbt/Span.h mfbt/tests/gtest/TestSpan.cpp modules/woff2 security/nss/lib/freebl/ecl/curve25519_32.c security/nss/lib/freebl/ecl/ecp_secp384r1.c security/nss/lib/freebl/ecl/ecp_secp521r1.c third_party/js/cfworker/json-schema.js third_party/node/node_modules/@babel/runtime third_party/node/node_modules/dom-helpers third_party/node/node_modules/js-tokens third_party/node/node_modules/loose-envify third_party/node/node_modules/object-assign third_party/node/node_modules/prop-types third_party/node/node_modules/react third_party/node/node_modules/react-dom third_party/node/node_modules/react-is third_party/node/node_modules/scheduler third_party/node/node_modules/use-sync-external-store third_party/node/node_modules/webpack third_party/node/node_modules/webpack-cli third_party/rlbox third_party/rust/array-init third_party/rust/bincode third_party/rust/byteorder third_party/rust/lazy_static third_party/rust/libm third_party/rust/ordered-float third_party/rust/phf third_party/rust/phf_codegen third_party/rust/phf_generator third_party/rust/phf_shared third_party/rust/precomputed-hash third_party/rust/proc-macro2 third_party/rust/synstructure third_party/rust/void toolkit/components/jsoncpp toolkit/components/resistfingerprinting/content/gl-matrix.js toolkit/components/resistfingerprinting/content/ssdeep.js toolkit/content/vendor/react/prop-types* toolkit/content/vendor/react/react*
+
+## nICEr License
+Paths: This license applies to certain files in the directory dom/media/webrtc/transport/third_party/nICEr .
+
+## nom License
+Paths: This license applies to files in the directory third_party/rust/nom .
+
+## nrappkit License
+Paths: This license applies to certain files in the directory dom/media/webrtc/transport/third_party/nrappkit .
+
+## nrappkit License (cont.)
+Paths: This license applies to certain files in the directory dom/media/webrtc/transport/third_party/nrappkit .
+
+## nrappkit License (cont.)
+Paths: This license applies to the file dom/media/webrtc/transport/third_party/nrappkit/src/port/generic/include/sys/queue.h .
+
+## nrappkit License (cont.)
+Paths: This license applies to the file: dom/media/webrtc/transport/third_party/nrappkit/src/util/util.cpp .
+
+## OpenVision License
+Paths: This license applies to the file extensions/auth/gssapi.h .
+
+## praton and inet_ntop License
+Paths: This license applies to the files nsprpub/pr/src/misc/praton.c and dom/media/webrtc/transport/third_party/nrappkit/src/util/util.cpp .
+
+## praton License
+Paths: This license applies to the file nsprpub/pr/src/misc/praton.c .
+
+## ProseMirror Licenses
+Paths: This entry applies to all files in third_party/js/prosemirror/ and its subdirectories. The ProseMirror packages are licensed under the MIT license, except for third_party/js/prosemirror/prosemirror-suggestions , which is licensed under the Apache License 2.0. This license applies to the following paths: third_party/js/prosemirror/prosemirror-commands third_party/js/prosemirror/prosemirror-history third_party/js/prosemirror/prosemirror-keymap third_party/js/prosemirror/prosemirror-model third_party/js/prosemirror/prosemirror-schema-basic third_party/js/prosemirror/prosemirror-state third_party/js/prosemirror/prosemirror-suggestions third_party/js/prosemirror/prosemirror-transform third_party/js/prosemirror/prosemirror-view
+
+## qcms License
+Paths: This license applies to certain files in the directory gfx/qcms/ .
+
+## QR Code Generator License
+Paths: This license applies to certain files in the directory third_party/js/qrcode/ .
+
+## React License
+Paths: This license applies to various files in the Mozilla codebase.
+
+## React-Redux License
+Paths: This license applies to the following files: third_party/node/node_modules/react-redux toolkit/content/vendor/react/react-redux.js
+
+## Red Hat xdg_user_dir_lookup License
+Paths: This license applies to the xdg_user_dir_lookup function in xpcom/io/SpecialSystemDirectory.cpp .
+
+## Redux License
+Paths: This license applies to the following files: third_party/node/node_modules/redux toolkit/content/vendor/react/Redux.sys.mjs
+
+## Russian Spellchecking Dictionary License
+Paths: This license applies to the Russian Spellchecking Dictionary. (This code only ships in some localized versions of this product.)
+
+## SCTP Licenses
+Paths: These licenses apply to certain files in the directory netwerk/sctp/src/ .
+
+## Skia License
+Paths: This license applies to certain files in the directory gfx/skia/ .
+
+## Snappy License
+Paths: This license applies to certain files in the directory other-licenses/snappy/ .
+
+## Speex Resampler License
+Paths: This license applies to the following paths: media/libspeex_resampler
+
+## sprintf.js License
+Paths: This license applies to devtools/shared/sprintfjs/sprintf.js .
+
+## SQLite Public Domain Dedication
+Paths: This license applies to the following paths: third_party/sqlite3/src
+
+## SunSoft License
+Paths: This license applies to the ICC_H block in gfx/qcms/qcms.h .
+
+## SuperFastHash License
+Paths: This license applies to files in the directory security/sandbox/chromium/base/third_party/superfasthash/ .
+
+## Twemoji License
+Paths: This license applies to the emoji art contained within the bundled emoji font file.
+
+## unicase License
+Paths: This license applies to files in the directory third_party/rust/unicase .
+
+## Unicode License
+Paths: This license applies to the following files or, in the case of directories, certain files in those directories: and to parts of the code in: intl/components/src/calendar/ICU4XChineseBasedCalendar.cpp intl/icu intl/tzdata js/src/util
+
+## Unicode License V3
+Paths: This license applies to the following files or, in the case of directories, certain files in those directories: build/pgo/js-input/collator_bench.html build/pgo/js-input/normalizer_bench.html gfx/harfbuzz_glue intl/icu_capi intl/icu_segmenter_data third_party/rust/icu_calendar third_party/rust/icu_calendar_data third_party/rust/icu_casemap third_party/rust/icu_casemap_data third_party/rust/icu_collections third_party/rust/icu_locale third_party/rust/icu_locale_core third_party/rust/icu_locale_data third_party/rust/icu_normalizer third_party/rust/icu_normalizer_data third_party/rust/icu_provider third_party/rust/icu_provider_adapters third_party/rust/icu_segmenter third_party/rust/icu_time third_party/rust/litemap third_party/rust/tinystr third_party/rust/writeable third_party/rust/yoke third_party/rust/yoke-derive third_party/rust/zerofrom third_party/rust/zerofrom-derive third_party/rust/zerovec third_party/rust/zerovec-derive
+
+## University of California License
+Paths: This license applies to the following files or, in the case of directories, certain files in those directories: dom/media/webrtc/transport/third_party/nICEr/src/stun/addrs.cpp nsprpub/pr/src/misc/praton.c security/nss/lib/dbm
+
+## V8 License
+Paths: This license applies to certain files in the following directories: js/src/builtin js/src/irregexp js/src/jit/arm js/src/jit/mips* js/src/jit/riscv64
+
+## Validator License
+Paths: This license applies to certain files in the directory devtools/shared/storage/vendor/stringvalidator/
+
+## VTune License
+Paths: This license applies to certain files in the following directories: mozglue/baseprofiler/core/vtune tools/profiler/core/vtune
+
+## WebRTC License
+Paths: This license applies to certain files in the directory third_party/libwebrtc/ and dom/media/systemservices/android_video_capture/ .
+
+## x264 License
+Paths: This license applies to the file third_party/aom/third_party/x86inc/x86inc.asm .
+
+## xxHash License
+Paths: This license applies to the following paths: mozglue/static/xxhash
+
+## zlib License
+Paths: This license applies to the following paths: modules/zlib
