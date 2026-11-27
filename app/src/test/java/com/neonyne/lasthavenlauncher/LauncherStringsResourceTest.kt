@@ -127,7 +127,6 @@ class LauncherStringsResourceTest {
           "Per-app totals include game and updater traffic. " +
             "They are stored locally and reset on device reboot.",
         "diagnostics_privacy_hint" to "Logs are stored on this device. Review them before sharing.",
-        "settings_show_notices" to "Third-party notices",
         "action_back" to "Back",
         "settings_brand_mark" to "LASTHAVENPLUS",
         "updates_title" to "App updates",
