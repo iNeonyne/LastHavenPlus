@@ -214,11 +214,8 @@ private fun LastHavenApp(
     preferences.getString(KEY_GAME_URL, DEFAULT_GAME_URL) ?: DEFAULT_GAME_URL
   }
 
-  var currentScreen by remember { mutableStateOf(Screen.Game) }
-  var menuVisible by remember { mutableStateOf(false) }
-  var settingsReturnScreen by remember { mutableStateOf(Screen.Game) }
-  var diagnosticsReturnScreen by remember { mutableStateOf(Screen.Settings) }
-  var updateReturnScreen by remember { mutableStateOf(Screen.Game) }
+  var navigation by remember { mutableStateOf(LauncherNavigationState()) }
+  val navigate: (LauncherNavigationState) -> Unit = { navigation = it }
   var availableUpdate by remember { mutableStateOf<AppUpdateInfo?>(null) }
   var updateMessage by remember { mutableStateOf<String?>(null) }
   var isDownloadingUpdate by remember { mutableStateOf(false) }
@@ -270,8 +267,7 @@ private fun LastHavenApp(
       gameSessionController.startGame(context, gameUrl) { session ->
         addonBridgeController.setGameSession(session)
       }
-      menuVisible = false
-      currentScreen = Screen.Game
+      navigate(LauncherNavigationPolicy.startGame(navigation))
     }
   }
 
@@ -307,19 +303,16 @@ private fun LastHavenApp(
   }
 
   val openUpdate: (Screen) -> Unit = { returnTo ->
-    updateReturnScreen = returnTo
-    currentScreen = Screen.Update
+    navigate(LauncherNavigationPolicy.openUpdate(navigation, returnTo))
   }
 
   val openSettings: (Screen) -> Unit = { returnTo ->
-    settingsReturnScreen = returnTo
-    val target = LauncherNavigationPolicy.openSettings()
-    currentScreen = target.screen
-    menuVisible = target.menuVisible
+    navigate(LauncherNavigationPolicy.openSettings(navigation, returnTo))
   }
 
-  val gameplayActive = LauncherNavigationPolicy.isGameplay(currentScreen)
-  val immersiveGameplay = LauncherNavigationPolicy.isImmersiveGameplay(currentScreen, menuVisible)
+  val gameplayActive = LauncherNavigationPolicy.isGameplay(navigation.screen)
+  val immersiveGameplay =
+    LauncherNavigationPolicy.isImmersiveGameplay(navigation.screen, navigation.menuVisible)
   SideEffect { onGameplayUiChanged(gameplayActive, immersiveGameplay) }
   DisposableEffect(Unit) {
     onDispose { onGameplayUiChanged(false, false) }
@@ -330,17 +323,8 @@ private fun LastHavenApp(
     startGame()
   }
 
-  BackHandler(enabled = currentScreen != Screen.Home || menuVisible) {
-    val target =
-      LauncherNavigationPolicy.onBack(
-        currentScreen = currentScreen,
-        menuVisible = menuVisible,
-        settingsReturnScreen = settingsReturnScreen,
-        diagnosticsReturnScreen = diagnosticsReturnScreen,
-        updateReturnScreen = updateReturnScreen,
-      )
-    currentScreen = target.screen
-    menuVisible = target.menuVisible
+  BackHandler(enabled = navigation.screen != Screen.Home || navigation.menuVisible) {
+    navigate(LauncherNavigationPolicy.onBack(navigation))
   }
 
   MaterialTheme(
@@ -348,7 +332,7 @@ private fun LastHavenApp(
     shapes = DesignTokens.shapes,
     typography = DesignTokens.typography(),
   ) {
-    when (currentScreen) {
+    when (navigation.screen) {
       Screen.Home ->
         HomeScreen(
           updateVersion = availableUpdate?.version,
@@ -388,7 +372,7 @@ private fun LastHavenApp(
             onRestore = restoreGame,
           )
           AnimatedVisibility(
-            visible = menuVisible,
+            visible = navigation.menuVisible,
             enter =
               fadeIn(
                 animationSpec =
@@ -403,20 +387,14 @@ private fun LastHavenApp(
             GameMenuScreen(
               onReload = {
                 reloadGame()
-                val target = LauncherNavigationPolicy.afterReload()
-                currentScreen = target.screen
-                menuVisible = target.menuVisible
+                navigate(LauncherNavigationPolicy.afterReload(navigation))
               },
               onSettings = { openSettings(Screen.Game) },
               onAddonManager = {
-                val target = LauncherNavigationPolicy.openAddonManager()
-                currentScreen = target.screen
-                menuVisible = target.menuVisible
+                navigate(LauncherNavigationPolicy.openAddonManager(navigation))
               },
               onReturnToGame = {
-                val target = LauncherNavigationPolicy.returnToGame()
-                currentScreen = target.screen
-                menuVisible = target.menuVisible
+                navigate(LauncherNavigationPolicy.returnToGame(navigation))
               },
             )
           }
@@ -428,30 +406,24 @@ private fun LastHavenApp(
           context = context,
           usageMeter = usageMeter,
           isCheckingUpdate = isCheckingUpdate,
-          onBack = { currentScreen = settingsReturnScreen },
+          onBack = { navigate(LauncherNavigationPolicy.popToReturn(navigation)) },
           onOpenDiagnostics = {
-            diagnosticsReturnScreen = Screen.Settings
-            currentScreen = Screen.Diagnostics
+            navigate(LauncherNavigationPolicy.openDiagnostics(navigation))
           },
           onOpenUpdates = { openUpdate(Screen.Settings) },
           onCheckUpdates = {
-            updateReturnScreen = Screen.Settings
-            currentScreen = Screen.Update
+            openUpdate(Screen.Settings)
             checkForUpdates(true)
           },
         )
 
       Screen.AddonManager ->
-        AddonManagerHost(
-          onBack = {
-            currentScreen = LauncherNavigationPolicy.returnToGame().screen
-          }
-        )
+        AddonManagerHost(onBack = { navigate(LauncherNavigationPolicy.returnToGame(navigation)) })
 
       Screen.Diagnostics ->
         DiagnosticsScreen(
           context = context,
-          onBack = { currentScreen = diagnosticsReturnScreen },
+          onBack = { navigate(LauncherNavigationPolicy.popToReturn(navigation)) },
         )
 
       Screen.Update ->
@@ -461,7 +433,7 @@ private fun LastHavenApp(
           isChecking = isCheckingUpdate,
           isDownloading = isDownloadingUpdate,
           downloadingDelta = downloadingDelta,
-          onBack = { currentScreen = updateReturnScreen },
+          onBack = { navigate(LauncherNavigationPolicy.popToReturn(navigation)) },
           onDownload = { preferDelta ->
             val update = availableUpdate
             if (update != null) {
