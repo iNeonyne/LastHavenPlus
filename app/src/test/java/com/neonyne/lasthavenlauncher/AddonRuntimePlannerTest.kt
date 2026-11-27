@@ -165,7 +165,6 @@ class AddonRuntimePlannerTest {
     )
   }
 
-
   @Test
   fun plannerAcceptsMoreAddonsThanOneImportArchiveCanContain() {
     val addons = (0..AddonArchive.MAX_ADDONS_PER_ARCHIVE).map { item("Addon$it") }
