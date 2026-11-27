@@ -1,3 +1,5 @@
+import java.util.zip.ZipFile
+
 plugins {
   alias(libs.plugins.android.application)
   alias(libs.plugins.kotlin.compose)
@@ -89,7 +91,7 @@ dependencies {
 }
 
 
-val verifyNoGooglePlayServices by tasks.registering {
+val verifyNoGooglePlayServices = tasks.register("verifyNoGooglePlayServices") {
   doLast {
     val googleArtifacts =
       configurations
@@ -104,7 +106,7 @@ val verifyNoGooglePlayServices by tasks.registering {
   }
 }
 
-val verifyNoGooglePlayServicesInApk by tasks.registering {
+val verifyNoGooglePlayServicesInApk = tasks.register("verifyNoGooglePlayServicesInApk") {
   doLast {
     val apk =
       listOf(
@@ -114,7 +116,7 @@ val verifyNoGooglePlayServicesInApk by tasks.registering {
         .firstOrNull { it.isFile }
     check(apk != null) { "Release APK was not found for Google Play services verification." }
 
-    java.util.zip.ZipFile(apk).use { archive ->
+    ZipFile(apk).use { archive ->
       val dexEntries =
         archive.entries().asSequence().filter { it.name.matches(Regex("classes(\\d*)?\\.dex")) }
       val containsGooglePlayServices =
