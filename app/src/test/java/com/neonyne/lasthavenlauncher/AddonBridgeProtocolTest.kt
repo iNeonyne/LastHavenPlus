@@ -47,15 +47,19 @@ class AddonBridgeProtocolTest {
   @Test
   fun `parses chunked payload requests with exact fields`() {
     val revision = "a".repeat(64)
+    val infoFields = mapOf("type" to "getBundleInfo", "requestId" to "bundle-1")
     assertEquals(
-      AddonBridgeProtocol.AddonBridgeRequest(
-        "getBundleInfo",
-        "bundle-1",
-      ),
-      AddonBridgeProtocol.parse(
-        mapOf("type" to "getBundleInfo", "requestId" to "bundle-1")
-      ),
+      AddonBridgeProtocol.AddonBridgeRequest("getBundleInfo", "bundle-1"),
+      AddonBridgeProtocol.parse(infoFields),
     )
+
+    val pageFields =
+      mapOf(
+        "type" to "getBundleManifestPage",
+        "requestId" to "page-1",
+        "revision" to revision,
+        "page" to "31",
+      )
     assertEquals(
       AddonBridgeProtocol.AddonBridgeRequest(
         "getBundleManifestPage",
@@ -63,15 +67,20 @@ class AddonBridgeProtocolTest {
         revision = revision,
         page = 31,
       ),
-      AddonBridgeProtocol.parse(
-        mapOf(
-          "type" to "getBundleManifestPage",
-          "requestId" to "page-1",
-          "revision" to revision,
-          "page" to "31",
-        )
-      ),
+      AddonBridgeProtocol.parse(pageFields),
     )
+    assertNull(AddonBridgeProtocol.parse(pageFields + ("page" to "32")))
+    assertNull(AddonBridgeProtocol.parse(pageFields + ("page" to "00")))
+
+    val chunkFields =
+      mapOf(
+        "type" to "getFileChunk",
+        "requestId" to "chunk-1",
+        "revision" to revision,
+        "folder" to "unit-frame",
+        "path" to "Textures/portrait.png",
+        "offset" to "32768",
+      )
     assertEquals(
       AddonBridgeProtocol.AddonBridgeRequest(
         "getFileChunk",
@@ -81,73 +90,11 @@ class AddonBridgeProtocolTest {
         path = "Textures/portrait.png",
         offset = 32768L,
       ),
-      AddonBridgeProtocol.parse(
-        mapOf(
-          "type" to "getFileChunk",
-          "requestId" to "chunk-1",
-          "revision" to revision,
-          "folder" to "unit-frame",
-          "path" to "Textures/portrait.png",
-          "offset" to "32768",
-        )
-      ),
+      AddonBridgeProtocol.parse(chunkFields),
     )
-    assertNull(
-      AddonBridgeProtocol.parse(
-        mapOf(
-          "type" to "getBundleManifestPage",
-          "requestId" to "page-1",
-          "revision" to revision,
-          "page" to "32",
-        )
-      )
-    )
-    assertNull(
-      AddonBridgeProtocol.parse(
-        mapOf(
-          "type" to "getBundleManifestPage",
-          "requestId" to "page-1",
-          "revision" to revision,
-          "page" to "00",
-        )
-      )
-    )
-    assertNull(
-      AddonBridgeProtocol.parse(
-        mapOf(
-          "type" to "getFileChunk",
-          "requestId" to "chunk-1",
-          "revision" to revision,
-          "folder" to "unit-frame",
-          "path" to "../escape.lua",
-          "offset" to "0",
-        )
-      )
-    )
-    assertNull(
-      AddonBridgeProtocol.parse(
-        mapOf(
-          "type" to "getFileChunk",
-          "requestId" to "chunk-1",
-          "revision" to revision,
-          "folder" to "unit.frame",
-          "path" to "init.lua",
-          "offset" to "0",
-        )
-      )
-    )
-    assertNull(
-      AddonBridgeProtocol.parse(
-        mapOf(
-          "type" to "getFileChunk",
-          "requestId" to "chunk-1",
-          "revision" to revision,
-          "folder" to "unit-frame",
-          "path" to "init.lua",
-          "offset" to "-1",
-        )
-      )
-    )
+    assertNull(AddonBridgeProtocol.parse(chunkFields + ("path" to "../escape.lua")))
+    assertNull(AddonBridgeProtocol.parse(chunkFields + ("folder" to "unit.frame")))
+    assertNull(AddonBridgeProtocol.parse(chunkFields + ("offset" to "-1")))
   }
 
   @Test
