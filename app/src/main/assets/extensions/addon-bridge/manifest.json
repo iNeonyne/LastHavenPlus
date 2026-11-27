@@ -1,0 +1,17 @@
+{
+  "manifest_version": 2,
+  "name": "LastHaven Addon Bridge",
+  "version": "0.5.1",
+  "description": "Launcher-owned, read-only bridge between the LastHaven game session and the local launcher addon library.",
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "lasthaven-addon-bridge@neonyne",
+      "strict_min_version": "160.0"
+    }
+  },
+  "background": {
+    "scripts": ["background.js"],
+    "persistent": true
+  },
+  "permissions": ["nativeMessaging"]
+}
