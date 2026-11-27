@@ -212,7 +212,11 @@ private fun LastHavenApp(
     onDispose { sessionToClose?.close() }
   }
 
-  val reloadGame: () -> Unit = { gameSessionController.reloadGame(context, gameUrl) }
+  val reloadGame: () -> Unit = {
+    addonBridgeController.ensureInstalled(context) {
+      gameSessionController.reloadGame(context, gameUrl)
+    }
+  }
 
   val startGame: () -> Unit = {
     addonBridgeController.ensureInstalled(context) {
