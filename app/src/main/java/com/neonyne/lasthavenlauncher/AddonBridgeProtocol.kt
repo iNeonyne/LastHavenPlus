@@ -227,7 +227,10 @@ object AddonBridgeProtocol {
     if (!isRequestIdValid(requestId)) return null
 
     return when (type) {
-      "ping", "listAddons", "getLoadOrder", "getBundleInfo" -> {
+      "ping",
+      "listAddons",
+      "getLoadOrder",
+      "getBundleInfo" -> {
         if (fields.keys != setOf(KEY_TYPE, KEY_REQUEST_ID)) return null
         AddonBridgeRequest(type, requestId)
       }
