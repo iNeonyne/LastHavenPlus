@@ -114,7 +114,7 @@ function indexBytes(text) {
   return new TextEncoder().encode(text);
 }
 
-function createPageContext({ allowlist = [WORKER_URL], withXhrCore = true } = {}) {
+function createPageContext({ allowlist = [WORKER_URL], withXhrCore = true, opfsBytes = new Uint8Array(0) } = {}) {
   const state = {
     timers: [],
     timerId: 0,
@@ -167,6 +167,19 @@ function createPageContext({ allowlist = [WORKER_URL], withXhrCore = true } = {}
     Error,
     Uint8Array,
     __bridge: bridge,
+    navigator: {
+      storage: {
+        getDirectory: async () => ({
+          getFileHandle: async (name) => {
+            assert.equal(name, "blocks.idx");
+            return { getFile: async () => ({
+              size: opfsBytes.length,
+              arrayBuffer: async () => opfsBytes.slice().buffer,
+            }) };
+          },
+        }),
+      },
+    },
   });
   vm.runInContext("globalThis.__LASTHAVEN_ADDON_BRIDGE__ = __bridge;", context);
   if (withXhrCore) {
@@ -260,10 +273,12 @@ function bootWorkerScope(core, { url = WORKER_URL, importScriptsImpl, nativeXHR 
   const bootstrapSource = core.buildBootstrapSource(url);
   vm.runInContext(bootstrapSource, context, { filename: "bootstrap.js" });
   const channel = new FakeMessageChannel();
-  function dispatchBoot(ports) {
+  function dispatchBoot(ports, mask = {}) {
+    const bootData = Object.assign({ maskRecords: [], indexSize: 0, enabledFolders: [], maskError: null }, mask);
+    Object.defineProperty(bootData, "__lhBoot", { value: true, enumerable: true });
     scope.receive({
       type: "message",
-      data: Object.defineProperty({}, "__lhBoot", { value: true, enumerable: true }),
+      data: bootData,
       ports: ports === undefined ? [channel.port2] : ports,
     });
   }
@@ -936,82 +951,126 @@ test("maskReadSpan fills overlapping masked records", () => {
   assert.deepEqual(Array.from(heap.subarray(0, 8)), [0, 0, 48, 35, 48, 35, 0, 0]);
 });
 
-test("blocks.idx parser accepts valid five-column records", () => {
+
+test("blocks.idx parser masks column two digits and first byte of enabled addon path", () => {
   const { core } = createPageContext();
-  const result = core.parseBlocksIndex(indexBytes(
-    "Interface/AddOns/Foo/main\t0\t10\thash1\t1\n" +
-    "game/world/blocks.idx\t10\t5\thash2\t0\n",
-  ));
+  const row = "fïle\t12345\tkind\tmeta\tInterface/AddOns/Foo/main.lua\r\n";
+  const other = "file\t9\tkind\tmeta\tInterface/AddOns/Other/main.lua\n";
+  const bytes = indexBytes(row + other);
+  const snapshot = Array.from(bytes);
+  const result = core.parseBlocksIndex(bytes, ["Foo"]);
   assert.equal(result.ok, true);
   assert.equal(result.records.length, 2);
-  assert.equal(result.records[0].masked, true);
-  assert.equal(result.records[1].masked, false);
-  assert.equal(result.records[0].start, 0);
-  assert.equal(result.records[0].end, 10);
-  assert.ok(Object.isFrozen(result.records));
+  const digitStart = new TextEncoder().encode("fïle\t").length;
+  const pathStart = new TextEncoder().encode("fïle\t12345\tkind\tmeta\t").length;
+  assert.deepEqual(result.records.map(({ start, end, value }) => ({ start, end, value })), [
+    { start: digitStart, end: digitStart + 5, value: 48 },
+    { start: pathStart, end: pathStart + 1, value: 35 },
+  ]);
+  assert.equal(result.indexSize, bytes.length);
+  assert.deepEqual(Array.from(bytes), snapshot, "the persistent index input is never mutated");
 });
 
-test("blocks.idx parser tolerates CRLF and trailing newline", () => {
+test("blocks.idx parser computes UTF-8 offsets and handles CRLF", () => {
   const { core } = createPageContext();
-  const result = core.parseBlocksIndex(indexBytes("Interface/AddOns/Foo/main\t0\t10\ta\tb\r\n"));
+  const row = "ïle\t7\tkind\tmeta\tInterface/AddOns/Foo/é.lua\r\n";
+  const bytes = indexBytes(row);
+  const result = core.parseBlocksIndex(bytes, ["Foo"]);
   assert.equal(result.ok, true);
-  assert.equal(result.records.length, 1);
-  assert.equal(result.records[0].end, 10);
+  assert.equal(result.records[0].start, new TextEncoder().encode("ïle\t").length);
+  assert.equal(result.records[1].start, new TextEncoder().encode("ïle\t7\tkind\tmeta\t").length);
 });
 
-test("blocks.idx parser rejects wrong column counts", () => {
+test("blocks.idx parser ignores non-enabled addon folders and non-addon rows", () => {
   const { core } = createPageContext();
-  assert.equal(core.parseBlocksIndex(indexBytes("a\t1\t2\t3\n")).stage, "record-columns");
-  assert.equal(core.parseBlocksIndex(indexBytes("a\t1\t2\t3\t4\t5\n")).stage, "record-columns");
+  const bytes = indexBytes(
+    "file\t12\tkind\tmeta\tInterface/AddOns/Other/main.lua\n" +
+    "file\t34\tkind\tmeta\tInterface/Other/Foo/main.lua\n",
+  );
+  const result = core.parseBlocksIndex(bytes, ["Foo"]);
+  assert.equal(result.ok, true);
+  assert.deepEqual(result.records, []);
 });
 
-test("blocks.idx parser rejects negative, non-numeric and overflowing offsets", () => {
+test("blocks.idx parser rejects malformed rows and invalid numeric mask fields", () => {
   const { core } = createPageContext();
-  assert.equal(core.parseBlocksIndex(indexBytes("a\t-1\t2\tc\td\n")).stage, "record-numbers");
-  assert.equal(core.parseBlocksIndex(indexBytes("a\tx\t2\tc\td\n")).stage, "record-numbers");
-  assert.equal(core.parseBlocksIndex(indexBytes("a\t01\t2\tc\td\n")).stage, "record-numbers");
-  assert.equal(core.parseBlocksIndex(indexBytes("a\t99999999999999999999\t2\tc\td\n")).stage, "record-numbers");
-  assert.equal(core.parseBlocksIndex(indexBytes("a\t\t2\tc\td\n")).stage, "record-field");
+  assert.equal(core.parseBlocksIndex(indexBytes("a\t1\t2\t3\n"), ["Foo"]).stage, "record-columns");
+  assert.equal(core.parseBlocksIndex(indexBytes("a\t-1\tc\td\tInterface/AddOns/Foo/a\n"), ["Foo"]).stage, "record-numbers");
+  assert.equal(core.parseBlocksIndex(indexBytes("a\t1.5\tc\td\tInterface/AddOns/Foo/a\n"), ["Foo"]).stage, "record-numbers");
+  assert.equal(core.parseBlocksIndex(indexBytes("a\t1\tc\td\tInterface/AddOns/Foo/../a\n"), ["Foo"]).stage, "record-path");
 });
 
-test("blocks.idx parser rejects out-of-file spans", () => {
+test("blocks.idx parser enforces file, line, field, record and UTF-8 ceilings", () => {
   const { core } = createPageContext();
-  const body = "Interface/AddOns/Foo/main\t20\t9999\ta\tb\n";
-  assert.equal(core.parseBlocksIndex(indexBytes(body)).stage, "record-span");
+  assert.equal(core.parseBlocksIndex(new Uint8Array(3 * 1024 * 1024), ["Foo"]).stage, "file-size");
+  const manyLines = Array.from({ length: 70000 }, () => "a\t1\tb\tc\td").join("\n");
+  assert.equal(core.parseBlocksIndex(indexBytes(manyLines), ["Foo"]).stage, "line-count");
+  const longLine = "a".repeat(5000) + "\t1\tb\tc\td";
+  assert.equal(core.parseBlocksIndex(indexBytes(longLine), ["Foo"]).stage, "line-length");
+  const manyRecords = Array.from({ length: 40000 }, () => "a\t1\tb\tc\td").join("\n");
+  assert.equal(core.parseBlocksIndex(indexBytes(manyRecords), ["Foo"]).stage, "record-count");
+  assert.equal(core.parseBlocksIndex(new Uint8Array([0x49, 0xff, 0xfe, 0x0a]), ["Foo"]).stage, "utf-8");
 });
 
-test("blocks.idx parser enforces file size, line count, line length and record ceilings", () => {
+test("blocks.idx parser rejects invalid enabled folder lists and bad limits", () => {
   const { core } = createPageContext();
-  assert.equal(core.parseBlocksIndex(new Uint8Array(3 * 1024 * 1024)).stage, "file-size");
-  const manyLines = Array.from({ length: 70000 }, () => "a\t0\t0\tb\tc").join("\n");
-  assert.equal(core.parseBlocksIndex(indexBytes(manyLines)).stage, "line-count");
-  const longLine = "a".repeat(5000) + "\t0\t0\tb\tc";
-  assert.equal(core.parseBlocksIndex(indexBytes(longLine)).stage, "line-length");
-  const manyRecords = Array.from(
-    { length: 40000 },
-    (_, i) => "Interface/AddOns/Foo/f" + i + "\t0\t0\tb\tc",
-  ).join("\n");
-  assert.equal(core.parseBlocksIndex(indexBytes(manyRecords)).stage, "record-count");
+  assert.equal(core.parseBlocksIndex(indexBytes("a\t1\tb\tc\td\n"), ["blizzard_ui"]).stage, "folders");
+  assert.equal(core.parseBlocksIndex(indexBytes("a\t1\tb\tc\td\n"), ["Foo"], { maxLines: "-5" }).stage, "limits");
+  assert.equal(core.parseBlocksIndex("text", ["Foo"]).stage, "input-type");
 });
 
-test("blocks.idx parser rejects invalid UTF-8", () => {
+test("serialized worker bootstrap can parse index rows and validate paths", () => {
   const { core } = createPageContext();
-  const bytes = new Uint8Array([0x49, 0xff, 0xfe, 0x0a]);
-  assert.equal(core.parseBlocksIndex(bytes).stage, "utf-8");
+  const { scope, context } = createWorkerScopeContext();
+  const source = core.buildBootstrapSource(WORKER_URL).replace(
+    /\}\)\(\);\s*$/,
+    "self.__maskTest = { parseBlocksIndex: parseBlocksIndex, isSafeAddonPath: isSafeAddonPath };\n})();",
+  );
+  vm.runInContext(source, context, { filename: "bootstrap-mask-test.js" });
+  const result = vm.runInContext(
+    "self.__maskTest.parseBlocksIndex(new TextEncoder().encode('f\\t12\\tk\\tm\\tInterface/AddOns/Foo/a\\n'), ['Foo'])",
+    context,
+  );
+  assert.equal(result.ok, true);
+  assert.equal(result.records.length, 2);
+  assert.equal(vm.runInContext("self.__maskTest.isSafeAddonPath('Interface/AddOns/Foo/a')", context), true);
+  assert.equal(scope.closed, false);
 });
 
-test("blocks.idx parser rejects non-Uint8Array input and bad limits", () => {
-  const { core } = createPageContext();
-  assert.equal(core.parseBlocksIndex("text").stage, "input-type");
-  assert.equal(core.parseBlocksIndex(indexBytes("a\t0\t0\tb\tc\n"), { maxLines: "-5" }).stage, "limits");
-});
-
-test("blocks.idx parser never mutates the input bytes", () => {
-  const { core } = createPageContext();
-  const bytes = indexBytes("Interface/AddOns/Foo/main\t0\t10\ta\tb\n");
+test("OPFS blocks.idx is read bounded and its spans are sent in the worker boot message", async () => {
+  const bytes = indexBytes("file\t123\tkind\tmeta\tInterface/AddOns/Foo/a.lua\n");
   const snapshot = Array.from(bytes);
-  core.parseBlocksIndex(bytes);
+  const page = createPageContext({ opfsBytes: bytes });
+  page.setPayload({ revision: "a".repeat(64), addons: [{ folder: "Foo", files: {} }] });
+  vm.runInContext('new Worker("' + WORKER_URL + '", { name: "em-pthread" })', page.context);
+  await new Promise((resolve) => setTimeout(resolve, 0));
+  const boot = page.constructed[0].posted[0].data;
+  assert.equal(boot.__lhBoot, true);
+  assert.deepEqual(boot.enabledFolders, ["Foo"]);
+  assert.equal(boot.indexSize, bytes.length);
+  assert.equal(boot.maskError, null);
+  assert.equal(boot.maskRecords.length, 2);
   assert.deepEqual(Array.from(bytes), snapshot);
+});
+
+test("worker rejects malformed mask records as a whole", () => {
+  const { core } = createPageContext();
+  const { scope, context, dispatchBoot } = bootWorkerScope(core, {
+    importScriptsImpl: () => {
+      scope.wasmImports = { HEAPU8: new Uint8Array(16), WebVfsStoreIo: function () {} };
+      scope.assignWasmImports = function () {};
+    },
+  });
+  dispatchBoot(undefined, {
+    indexSize: 16,
+    enabledFolders: ["Foo"],
+    maskRecords: [
+      { path: "Interface/AddOns/Foo/a", start: 2, end: 4, value: 48 },
+      { path: "Interface/AddOns/Other/a", start: 4, end: 5, value: 35 },
+    ],
+  });
+  vm.runInContext("self.assignWasmImports(); self.wasmImports.WebVfsStoreIo(1, false, 0, 16)", context);
+  assert.ok(vm.runInContext("Array.from(self.wasmImports.HEAPU8).every((value) => value === 0)", context));
 });
 
 test("canonicalUnsigned accepts canonical decimal only", () => {
