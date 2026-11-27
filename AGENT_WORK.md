@@ -56,7 +56,7 @@ Vibe has exactly one active implementation issue at a time. After handing off a 
 - Centralize Game, Settings, Diagnostics and Update navigation/back-stack state while preserving the current Back overlay and same-session behavior. Do not take over GeckoSession ownership from #146 or add Compose Navigation without evidence.
 
 ### Blocked — Addon Manager Phase B child work (dependency gates)
-- **#167:** `agent:blocked`; waits for PR #166 planner groundwork to be reviewed and merged, then requires a separate explicit Chaty assignment.
+- **#167:** `agent:queued`; PR #166 is merged. Wait for #146 handoff/integration and a separate explicit Chaty assignment.
 - **#168:** `agent:blocked`; waits for #167 bridge integration and contract verification, then explicit assignment.
 - **#169:** `agent:blocked`; waits for #167 and #168 contracts to be integrated, then explicit assignment.
 - **#170:** same-session navigation integration; blocked until #146 and the required navigation/runtime prerequisites are complete.
@@ -100,7 +100,7 @@ Every open issue has exactly one `agent:*` label. The label distinguishes active
 | #81 | `agent:queued` | Chaty documentation/evidence task; not started |
 | #12 | `agent:queued` | #11 prerequisite merged; after #146/#147 and Phase B bridge work, explicit assignment required |
 | #146 | `agent:vibe` | Active Vibe assignment; proceed independently while Chaty integrates prior PRs |
-| #167 | `agent:blocked` | Waits for PR #166 planner groundwork to merge, then explicit Chaty assignment |
+| #167 | `agent:queued` | PR #166 merged; wait for #146 integration and explicit Chaty assignment |
 | #168 | `agent:blocked` | Waits for #167 bridge integration and contract verification |
 | #169 | `agent:blocked` | Waits for #167 and #168 contracts to be integrated |
 | #6 | `agent:blocked` | Waits for #28 |
