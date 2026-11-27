@@ -242,6 +242,7 @@ When work changes verified behavior or a durable engineering contract, update th
 ## 10. Branch lifecycle and release authority
 
 - Follow docs/BRANCH_LIFECYCLE.md for task branch naming, reuse, synchronization, retirement, and disposal. Refresh live branch/PR evidence before a cleanup decision; a point-in-time audit is not current proof.
+- **Branch-retention precondition:** the live GitHub setting `delete_branch_on_merge` was verified `true` on 2026-11-28, which overrides the repository's instruction to retain merged task branches. If retention is required, the owner must disable GitHub's automatic head-branch deletion before further PR merges; do not claim merged branches will be preserved until the live setting is false.
 - Start task branches from beta and target routine implementation PRs to beta. Never develop routinely on main.
 - Do not merge `infra/*` branches wholesale into beta. Preserve `beta-legacy-*` snapshots unless the repository owner explicitly authorizes disposal; never wholesale-merge them.
 - No agent except Chaty may merge PRs into beta.
