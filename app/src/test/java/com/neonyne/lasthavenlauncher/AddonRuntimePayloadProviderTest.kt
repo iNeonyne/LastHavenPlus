@@ -63,8 +63,7 @@ class AddonRuntimePayloadProviderTest {
           "Textures/portrait.png" to imageBytes,
         ),
       )
-    val snapshot =
-      AddonLibrarySnapshot("library-revision", listOf(item("UnitFrame", directory)))
+    val snapshot = AddonLibrarySnapshot("library-revision", listOf(item("UnitFrame", directory)))
     val provider = AddonRuntimePayloadProvider(AddonLibraryRepository(root))
     val manifest = provider.buildManifest(snapshot)
 
@@ -73,10 +72,7 @@ class AddonRuntimePayloadProviderTest {
       listOf("Textures/portrait.png", "UnitFrame.toc", "init.lua"),
       manifest.files.map { it.path },
     )
-    val expectedImageBytes =
-      manifest.totalBytes -
-        "## Interface: 30300\ninit.lua\n".length -
-        "print('ready')".length
+    val expectedImageBytes = manifest.totalBytes - "## Interface: 30300\ninit.lua\n".length - "print('ready')".length
     assertEquals(imageBytes.size.toLong(), expectedImageBytes)
     assertEquals(1, manifest.pageCount)
     assertEquals(3, provider.page(manifest, 0).size)
@@ -96,10 +92,8 @@ class AddonRuntimePayloadProviderTest {
 
   @Test
   fun disabledAndDependencyBlockedAddonsAreNotIncluded() = withRoot { root ->
-    val disabledDirectory =
-      writeAddon(root, "Disabled", mapOf("Disabled.toc" to byteArrayOf(1)))
-    val missingDirectory =
-      writeAddon(root, "MissingDep", mapOf("MissingDep.toc" to byteArrayOf(2)))
+    val disabledDirectory = writeAddon(root, "Disabled", mapOf("Disabled.toc" to byteArrayOf(1)))
+    val missingDirectory = writeAddon(root, "MissingDep", mapOf("MissingDep.toc" to byteArrayOf(2)))
     val snapshot =
       AddonLibrarySnapshot(
         "revision",
@@ -108,8 +102,7 @@ class AddonRuntimePayloadProviderTest {
           item("MissingDep", missingDirectory).copy(dependencies = listOf("NotInstalled")),
         ),
       )
-    val manifest =
-      AddonRuntimePayloadProvider(AddonLibraryRepository(root)).buildManifest(snapshot)
+    val manifest = AddonRuntimePayloadProvider(AddonLibraryRepository(root)).buildManifest(snapshot)
     assertTrue(manifest.addonFolders.isEmpty())
     assertTrue(manifest.files.isEmpty())
     assertEquals(0L, manifest.totalBytes)
@@ -250,17 +243,19 @@ class AddonRuntimePayloadProviderTest {
   fun revisionChangesWhenTheResourceInventoryChanges() = withRoot { root ->
     val directory = writeAddon(root, "UnitFrame", mapOf("init.lua" to byteArrayOf(1)))
     val provider = AddonRuntimePayloadProvider(AddonLibraryRepository(root))
-    val first = provider.buildManifest(
-      AddonLibrarySnapshot("same-index-revision", listOf(item("UnitFrame", directory)))
-    )
+    val first =
+      provider.buildManifest(
+        AddonLibrarySnapshot("same-index-revision", listOf(item("UnitFrame", directory)))
+      )
 
     File(directory, "Textures/icon.blp").apply {
       parentFile?.mkdirs()
       writeBytes(byteArrayOf(2))
     }
-    val second = provider.buildManifest(
-      AddonLibrarySnapshot("same-index-revision", listOf(item("UnitFrame", directory)))
-    )
+    val second =
+      provider.buildManifest(
+        AddonLibrarySnapshot("same-index-revision", listOf(item("UnitFrame", directory)))
+      )
 
     assertEquals(first.sourceRevision, second.sourceRevision)
     assertNotEquals(first.revision, second.revision)
