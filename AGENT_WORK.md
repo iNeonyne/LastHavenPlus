@@ -1,13 +1,13 @@
 # Agent work assignments — LastHavenPlus
 
-**Last verified:** 2026-11-26  
-**Verified beta base before PR #162:** a0e5271793c9bb7754b7ac41429065e5602df569  
+**Last verified:** 2026-11-27  
+**Verified beta base for PR #171:** `0cc21b471fce646d03dad449b91acbe67a90df7d`  
 **Stable release:** v2.3.0 (tag commit ebc5b424e83ae66c2b0accc2bec6f050b8dc0d88).
 
 ## Roles and integration
 
-- **Chaty:** main orchestrator, issue triage/assignment, reviewer, documentation and CI coordinator, sole integrator into beta.
-- **Vibe:** implementation contributor; works only on the current active issue explicitly assigned by Chaty through GitHub.
+- **Chaty:** main orchestrator, issue triage/assignment, integration fixer, verification and CI coordinator, sole integrator into beta.
+- **Vibe:** implementation contributor; works only on the current active issue explicitly assigned by Chaty through GitHub. After PR handoff, Chaty owns branch fixes and integration.
 - **Repository owner:** final product, priority, Phase B and release authority.
 - GitHub Issues, comments, PRs, commits and Actions are the only agent-to-agent communication channel.
 - All implementation PRs target beta. No direct contributor push to beta/main. Chaty alone merges. No release/tag/publication or beta-to-main promotion without explicit owner approval.
@@ -36,35 +36,37 @@
 
 ## Vibe work queue
 
-Vibe has one active implementation task at a time. Queued tasks must not start until Chaty confirms the prior handoff and checks file overlap.
+Vibe has exactly one active implementation issue. A queued issue is not an assignment; it becomes startable only when Chaty changes its label to `agent:vibe` and posts a scope/acceptance comment.
 
-### 1. #11 — diagnostics tests (active, agent:vibe)
-- Recreate the bounded diagnostics test work attempted in stale PR #154, which was closed without merge.
-- Cover redaction variants, log rotation/size bounds and failure-path logging.
-- Do not add GeckoView runtime-version startup logging; explicitly deferred.
-- Preserve local-only diagnostics and avoid credentials, cookies, tokens, authorization headers, session IDs and sensitive URL parameters.
-- Require focused JVM tests, exact-head Android PR validation, Markdown and independent unsigned APK reproducibility. Update project tracking docs with exact evidence.
-- No updater, Addon Manager or unrelated MainActivity work.
-- **Status:** recreated from current beta on branch `vibe/diagnostics-tests-11-refresh`; `Diagnostics.kt` limited to the internal directory-scoped testability seam (public `Context` API unchanged), 9 focused tests added to `DiagnosticsTest.kt`. Local validation passed (Spotless, lint, JVM suite); fresh exact-head CI run IDs are recorded in the PR description and the issue #11 handoff comment. GeckoView startup-version logging remains excluded.
+### Chaty integration — #149 launcher-owned string resources
+- **GitHub ownership:** `agent:chaty`; PR #165 has been handed off and Chaty owns integration.
+- **Current PR:** #165, last recorded head `515c91366bf90c1b6232f459743e95a161cc8296`; re-fetch before editing and do not assume this SHA is current.
+- **Chaty actions:** inspect the exact diff and PR discussion, correct the PR directly, run exact-head lint/format/unsigned release build/JVM tests, verify CI, then merge only when the full issue scope and all gates pass.
+- **Known scope gaps to resolve:** PR #165 leaves UpdateScreen strings hardcoded despite #149's launcher-wide inventory scope; it also copied English source strings into locale-specific resources despite the assignment requiring default `values/strings.xml` only and no untranslated locale duplication. Inspect current beta/resource conventions and fix these directly, or document a technically justified narrower boundary before merging.
+- Preserve wording and punctuation. Exclude game content, diagnostics payloads, developer logs and protocol values. No updater behavior changes, GeckoView/session lifecycle, Addon Manager or game/client changes.
+- **Vibe:** no active implementation issue while Chaty integrates #149. Do not start #146 or any later item yet. #146 remains next in queue, pending successful #149 integration and a fresh file-overlap/dependency check.
 
-### 2. #149 — launcher-owned string resources (queued, agent:vibe)
-- Move launcher-owned user-visible text to Android resources without changing wording/punctuation.
-- Exclude game content, diagnostic payloads, developer logs and protocol values. No translations or copy redesign.
-- Require resource-resolution review, exact-head lint/format/unsigned build/JVM tests and docs updates.
+### Next — #146 GameSessionController (queued)
+- **Label:** `agent:queued`; do not start until #149 is handed off and Chaty explicitly assigns #146 after checking file overlap.
+- Extract GeckoSession lifecycle and load/crash state into a focused controller/ViewModel. Preserve lazy process-scoped GeckoRuntimeProvider and the same live GeckoSession while detaching for Settings/Diagnostics/Update.
+- No navigation refactor (#147), gameplay window state (#148), updater, profile migration or unrelated MainActivity cleanup. Add focused state tests and exact-head Android validation.
 
-### 3. #146 — GameSessionController (queued, agent:vibe)
-- Extract GeckoSession lifecycle and load/crash UI state into a focused controller/ViewModel.
-- Preserve lazy process-scoped GeckoRuntimeProvider behavior and live-session retention while detaching for Settings/Diagnostics/Update.
-- Do not overlap navigation (#147), gameplay window state (#148), updater or profile migration. Require focused state tests and exact-head Android validation.
+### Later — Addon Manager Phase B child work (queued)
+- **#167:** GeckoView 160 extension bridge port.
+- **#168:** bounded XHR resource overlay; wait for #167 and Chaty's explicit assignment.
+- **#169:** Worker interception and blocks.idx read masking; wait for #167 and Chaty's explicit assignment.
+- **#170:** same-session navigation integration; blocked until #146 and the required navigation/runtime prerequisites are complete.
+- **#12 — Actionable GeckoView load-error details:** now ready and queued because #11's test work merged. Schedule after higher-priority #146 and Phase B child work; do not start until Chaty explicitly assigns it.
+- Owner authorization for Phase B does not grant blanket permission to Vibe. Chaty assigns each child issue separately, checks overlapping files, and supplies issue-specific security boundaries/tests. Never start from queue status alone.
 
 ## Owner-controlled work
 
-- **#23 — Addon Manager:** Phase A is integrated by PR #152 at 103bb979c98589a8704459d28d13861eccca39d6. It provides native local ZIP/library management; enablement is metadata only and does not activate addons in-game. Phase B/runtime injection is not implemented and awaits separate owner authorization. Issue label: agent:owner.
+- **#23 — Addon Manager:** Phase A is integrated by PR #152 at 103bb979c98589a8704459d28d13861eccca39d6. The repository owner has authorized Phase B investigation/implementation under Chaty's coordination. Runtime injection is not yet implemented or verified. Chaty owns #23; Vibe may work only on a separately assigned child issue (#167–#170).
 - **#67 — rights and third-party notices:** original project material follows the owner's All Rights Reserved decision. Third-party notice completeness and distribution-rights review remain unresolved. Issue label: agent:owner.
 
 ## Blocked dependency/authorization queue
 
-These issues are assigned, not unassigned. Neither agent starts until the stated gate is cleared:
+These are genuinely blocked by prerequisites or owner decisions. They use `agent:blocked`; neither agent starts until the stated gate is cleared. Ready work waiting for an agent turn uses `agent:queued` instead:
 
 - #20 GeckoView artifact audit — owner-deferred; PR #122 closed unmerged; notice/distribution/device evidence incomplete.
 - #31 release fallback runtime verification — requires explicit owner authorization; never run a release for testing.
@@ -78,37 +80,41 @@ These issues are assigned, not unassigned. Neither agent starts until the stated
 - #7 performance/size optimization — requires comparable measured baseline and explicit scope.
 - #86 deferred feature coordination index — not an implementation assignment until owner scope is confirmed.
 
-## Current ownership inventory
+## Current ownership inventory — 2026-11-27
 
-Every open issue has exactly one agent:* label. No open issue is agent:unassigned. There are 25 open issues; #128 is closed.
+Every open issue has exactly one `agent:*` label. The label distinguishes active ownership from queue and blocker state.
 
-| Issue | Owner | State |
+| Issue | Label | State / next gate |
 |---|---|---|
-| #4 | agent:chaty | Active |
-| #7 | agent:blocked | Measurement prerequisite |
-| #86 | agent:blocked | Deferred coordination |
-| #17 | agent:blocked | Waits for #6 |
-| #6 | agent:blocked | Waits for #28 |
-| #28 | agent:blocked | Waits for #10 |
-| #10 | agent:blocked | Waits for #16 |
-| #14 | agent:blocked | Waits for #12 |
-| #12 | agent:blocked | Waits for #11 |
-| #111 | agent:blocked | v2.5.0 release/owner hold |
-| #31 | agent:blocked | Owner authorization |
-| #20 | agent:blocked | Owner-deferred |
-| #16 | agent:blocked | Waits for #56 and #14 |
-| #148 | agent:blocked | Waits for #146/#16 |
-| #147 | agent:blocked | Waits for #146 |
-| #146 | agent:vibe | Queued third |
-| #149 | agent:vibe | Queued second |
-| #11 | agent:vibe | Active |
-| #142 | agent:chaty | Queue coordination |
-| #67 | agent:owner | Owner decision |
-| #15 | agent:chaty | Active/queued behind #4 |
-| #23 | agent:owner | Phase B decision |
-| #18 | agent:chaty | Roadmap coordination |
-| #81 | agent:chaty | Evidence/docs queued |
-| #19 | agent:blocked | Waits for #4/#6 |
+| #4 | `agent:chaty` | Chaty updater reliability; coordinated with #15 |
+| #15 | `agent:chaty` | Chaty updater recovery; sequenced behind #4 |
+| #23 | `agent:chaty` | Chaty owns Addon Manager Phase B coordination |
+| #18 | `agent:chaty` | Roadmap coordination |
+| #142 | `agent:chaty` | Assignment/queue coordination record |
+| #149 | `agent:chaty` | Chaty integrating PR #165 directly; no routine review/return-to-Vibe cycle |
+| #67 | `agent:owner` | Rights and third-party notice decision |
+| #81 | `agent:queued` | Chaty documentation/evidence task; not started |
+| #12 | `agent:queued` | #11 test prerequisite merged; waiting for a Vibe turn and explicit assignment |
+| #146 | `agent:queued` | Vibe next after #149 handoff and file-overlap check |
+| #167 | `agent:queued` | Phase B bridge port; waiting Vibe turn and Chaty assignment |
+| #168 | `agent:queued` | XHR overlay; wait for #167 and explicit assignment |
+| #169 | `agent:queued` | Worker/read masking; wait for #167 and explicit assignment |
+| #6 | `agent:blocked` | Waits for #28 |
+| #7 | `agent:blocked` | Requires comparable measured baseline and scoped authorization |
+| #10 | `agent:blocked` | Waits for #16 |
+| #11 | `agent:blocked` | Remaining runtime-version reporting is deferred pending reprioritization |
+| #14 | `agent:blocked` | Waits for #12 |
+| #16 | `agent:blocked` | Waits for #56 and #14 |
+| #17 | `agent:blocked` | Waits for #6 |
+| #19 | `agent:blocked` | Waits for #4 and #6 |
+| #20 | `agent:blocked` | Owner-deferred GeckoView artifact/distribution audit |
+| #28 | `agent:blocked` | Waits for #10 |
+| #31 | `agent:blocked` | Release-tag/runtime verification requires explicit owner authorization |
+| #86 | `agent:blocked` | Deferred coordination scope requires owner confirmation |
+| #111 | `agent:blocked` | v2.5.0 hold: v2.4.0 release and explicit owner authorization |
+| #147 | `agent:blocked` | Waits for #146 |
+| #148 | `agent:blocked` | Waits for #146 and coordination with #16 |
+| #170 | `agent:blocked` | Waits for #146/navigation and Phase B runtime prerequisites |
 
 ## Safety constraints
 
