@@ -25,8 +25,8 @@ data class AddonLoadPlan(
  */
 object AddonRuntimePlanner {
   /**
-   * Input contract: snapshots must come from the validated local library. Enforce the same
-   * archive limits here as a defensive boundary before a future runtime consumes the plan.
+   * Input contract: snapshots must come from the validated local library. Enforce the same archive
+   * limits here as a defensive boundary before a future runtime consumes the plan.
    */
   fun plan(snapshot: AddonLibrarySnapshot): AddonLoadPlan {
     require(snapshot.addons.size <= AddonArchive.MAX_ADDONS_PER_ARCHIVE) {
