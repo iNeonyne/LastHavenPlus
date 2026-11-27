@@ -17,7 +17,7 @@ class AddonBridgeAssetsTest {
     assertTrue(dir.isDirectory)
     assertTrue(File(dir, "manifest.json").isFile)
     assertTrue(File(dir, "background.js").isFile)
-    assertTrue(File(dir, "runtime-core.js").isFile)
+    assertTrue(File(dir, "payload-validation.js").isFile)
     assertTrue(File(dir, "bridge.js").isFile)
   }
 
