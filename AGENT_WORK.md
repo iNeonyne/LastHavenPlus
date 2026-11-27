@@ -1,6 +1,6 @@
 # Agent work assignments — LastHavenPlus
 
-> **Live snapshot verified 2026-11-28 against GitHub and beta HEAD `78a3d12eb018e112a3443377e34e234ee9d3da7d`.** This section is the current assignment/priority summary. Everything under “Historical snapshots and work records” is retained for audit context only and must not be used as live assignment state. Recheck GitHub before acting. [AGENTS.md](AGENTS.md) is the only policy source.
+> **Live snapshot verified 2026-11-28 against GitHub and beta HEAD `298b9fdaaa5b131d4442f5b40a22284584171ede`.** This section is the current assignment/priority summary. Everything under “Historical snapshots and work records” is retained for audit context only and must not be used as live assignment state. Recheck GitHub before acting. [AGENTS.md](AGENTS.md) is the only policy source.
 
 ## Current priority and ownership — 2026-11-28
 
@@ -12,7 +12,7 @@
 - **#168:** completed and closed after PR [#191](https://github.com/iNeonyne/LastHavenPlus/pull/191) merged.
 - **#169:** completed and closed after PR [#195](https://github.com/iNeonyne/LastHavenPlus/pull/195) merged at `3959d890f7a65f69e9eb78d5e3339b3a88746097`. The Worker URL allowlist remains empty pending physical ARM64 observation; no in-game addon/Lua initialization is claimed.
 - **Updater #4 and #15:** open, `agent:blocked`; paused behind the Addon Manager P0 milestone. Do not resume until Chaty explicitly reopens this workstream.
-- **#205 — documentation consolidation:** open, `agent:chaty`; PR [#206](https://github.com/iNeonyne/LastHavenPlus/pull/206) is open and awaiting its Markdown quality gate.
+- **#205 — documentation consolidation:** completed; PR [#206](https://github.com/iNeonyne/LastHavenPlus/pull/206) merged to beta at `298b9fdaaa5b131d4442f5b40a22284584171ede`. Exact-head Markdown gate #46070052764 and post-merge beta Markdown gate #46070108200 passed.
 
 **Stable release:** v2.3.0 (tag commit `ebc5b424e83ae66c2b0accc2bec6f050b8dc0d88`).  
 **No release, tag, publication, or beta-to-main promotion is authorized by this snapshot.**
