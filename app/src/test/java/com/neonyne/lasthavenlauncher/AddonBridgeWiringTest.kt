@@ -4,7 +4,9 @@ import java.io.File
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
-/** Guards the composition-root wiring that makes the bundled bridge part of the live game session. */
+/**
+ * Guards the composition-root wiring that makes the bundled bridge part of the live game session.
+ */
 class AddonBridgeWiringTest {
   private val sourceRoot =
     File("src/main/java").takeIf { it.isDirectory } ?: File("app/src/main/java")
@@ -37,7 +39,9 @@ class AddonBridgeWiringTest {
 
     assertTrue(source.contains("File(context.filesDir, \"addons\")"))
     assertTrue(source.contains("snapshotProvider = { addonLibraryRepository.readLibrary() }"))
-    assertTrue(source.contains("addonBridgeController.setGameSession(gameSessionController.session)"))
+    assertTrue(
+      source.contains("addonBridgeController.setGameSession(gameSessionController.session)")
+    )
     assertTrue(source.contains("addonBridgeController.setGameSession(gameSession)"))
     assertTrue(source.contains("addonBridgeController.ensureInstalled(context)"))
     assertTrue(source.contains("gameSessionController.startGame(context, gameUrl)"))
