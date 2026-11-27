@@ -22,6 +22,7 @@ object AddonBridgeProtocol {
   const val MAX_REQUEST_ID_CHARS = 64
   const val MAX_MESSAGE_FIELDS = 6
   const val MAX_RESPONSE_ITEMS = 256
+  const val MAX_RESPONSE_BYTES = 64 * 1024
   const val MAX_ITEM_CHARS = 128
   const val MAX_ERROR_CODE_CHARS = 32
 
@@ -126,7 +127,7 @@ object AddonBridgeProtocol {
     blocked: List<String>,
   ): LoadOrderResponse? {
     if (!isRequestIdValid(requestId) || !isRevisionValid(revision)) return null
-    if (loadOrder.size > MAX_RESPONSE_ITEMS || blocked.size > MAX_RESPONSE_ITEMS) return null
+    if (loadOrder.size + blocked.size > MAX_RESPONSE_ITEMS) return null
     if ((loadOrder + blocked).any { !isItemText(it) || it.length > MAX_ITEM_CHARS }) return null
     return LoadOrderResponse(requestId, revision, loadOrder, blocked)
   }
@@ -138,5 +139,5 @@ object AddonBridgeProtocol {
     revision.length in 1..MAX_ITEM_CHARS && revision.matches(ITEM_PATTERN)
 
   private fun isItemText(value: String): Boolean =
-    value.length in 1..MAX_ITEM_CHARS && value.matches(ITEM_PATTERN)
+    value.length in 1..MAX_ITEM_CHARS && value != "." && value != ".." && value.matches(ITEM_PATTERN)
 }
