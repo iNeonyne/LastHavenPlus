@@ -1,24 +1,22 @@
 "use strict";
 
 /**
- * Launcher-owned addon bridge background script (issue #167).
+ * Launcher-owned background relay for the ZIP 0.5.1 addon payload.
  *
- * This is the only extension context allowed to connect to native messaging. It relays a validated,
- * bounded ZIP 0.5.1 addon payload to the exact game content script. It never writes extension
- * storage, enables addons, downloads packages or changes the app-private library.
+ * Only this extension context opens the GeckoView native port. Content scripts can request only
+ * bounded bundle metadata, manifest pages and file chunks from the exact game route. Requests are
+ * forwarded one at a time by the content script; this background never assembles a second library
+ * copy and never writes extension storage.
  */
 const NATIVE_APP = "neonyneAddonBridge";
 const REQUEST_TIMEOUT_MS = 15000;
 const INITIAL_RECONNECT_DELAY_MS = 250;
 const MAX_RECONNECT_DELAY_MS = 30000;
 const MAX_PENDING_REQUESTS = 8;
+const MAX_PORT_WAITERS = 8;
 const MAX_RUNTIME_BUNDLE_BYTES = 16 * 1024 * 1024;
-const MAX_RUNTIME_FILE_BYTES = 8 * 1024 * 1024;
-const MAX_RUNTIME_FILES = 1024;
-const MAX_RUNTIME_ADDONS = 128;
 const MAX_RUNTIME_PATH_CHARS = 512;
-const MAX_MANIFEST_PAGE_ITEMS = 32;
-const MAX_FILE_CHUNK_BYTES = 32 * 1024;
+const MAX_MANIFEST_PAGES = 32;
 
 const pending = new Map();
 const portWaiters = [];
@@ -72,6 +70,9 @@ function resolvePortWaiters() {
 function waitForPort() {
   if (port) {
     return Promise.resolve(port);
+  }
+  if (portWaiters.length >= MAX_PORT_WAITERS) {
+    return Promise.reject(new Error("native_unavailable"));
   }
   return new Promise((resolve, reject) => {
     const waiter = { resolve: resolve, reject: reject, timeout: null };
@@ -189,161 +190,69 @@ function isSafeRelativePath(path) {
   if (typeof path !== "string" || path.length === 0 || path.length > MAX_RUNTIME_PATH_CHARS) {
     return false;
   }
-  if (path.startsWith("/") || path.includes("\\") || /[\u0000-\u001f\u007f:]/.test(path)) {
+  if (path.startsWith("/") || path.includes("\\") || /[\u0000-\u001f\u007f-\u009f:]/.test(path)) {
     return false;
   }
-  const segments = path.split("/");
-  return segments.every((segment) => segment.length > 0 && segment !== "." && segment !== "..");
+  return path.split("/").every((part) => part.length > 0 && part !== "." && part !== "..");
 }
 
-function requireNativeResponse(response, expectedType) {
-  if (response && response.type === "error" && typeof response.error === "string") {
-    throw new Error(response.error);
+function validateContentRequest(message) {
+  if (!message || typeof message !== "object" || Array.isArray(message)) {
+    return null;
   }
-  if (!response || response.type !== expectedType) {
-    throw new Error("invalid_response");
+  if (message.type === "getBundleInfo") {
+    return Object.keys(message).length === 1 ? { type: message.type, fields: {} } : null;
   }
-  return response;
-}
-
-function decodeBase64Chunk(encoded, expectedLength) {
-  if (typeof encoded !== "string" || encoded.length > 4 * Math.ceil(MAX_FILE_CHUNK_BYTES / 3) + 4) {
-    throw new Error("invalid_response");
-  }
-  let binary;
-  try {
-    binary = atob(encoded);
-  } catch (_error) {
-    throw new Error("invalid_response");
-  }
-  if (binary.length !== expectedLength) {
-    throw new Error("invalid_response");
-  }
-  const bytes = new Uint8Array(binary.length);
-  for (let index = 0; index < binary.length; index += 1) {
-    bytes[index] = binary.charCodeAt(index);
-  }
-  return bytes;
-}
-
-function encodeBase64(bytes) {
-  let binary = "";
-  for (let offset = 0; offset < bytes.length; offset += 0x4000) {
-    binary += String.fromCharCode(...bytes.subarray(offset, offset + 0x4000));
-  }
-  return btoa(binary);
-}
-
-async function readAddonFile(revision, descriptor) {
-  const bytes = new Uint8Array(descriptor.sizeBytes);
-  let offset = 0;
-  while (offset < descriptor.sizeBytes) {
-    const response = await requestNative("getFileChunk", {
-      revision: revision,
-      folder: descriptor.folder,
-      path: descriptor.path,
-      offset: String(offset)
-    });
-    requireNativeResponse(response, "fileChunk");
-    if (response.revision !== revision ||
-        response.folder !== descriptor.folder ||
-        response.path !== descriptor.path ||
-        response.offset !== offset ||
-        response.totalBytes !== descriptor.sizeBytes) {
-      throw new Error("invalid_response");
+  if (message.type === "getBundleManifestPage") {
+    if (Object.keys(message).length !== 3 ||
+        !/^[a-f0-9]{64}$/.test(message.revision) ||
+        typeof message.page !== "string" ||
+        !/^(0|[1-9][0-9]*)$/.test(message.page)) {
+      return null;
     }
-    const expectedLength = Math.min(MAX_FILE_CHUNK_BYTES, descriptor.sizeBytes - offset);
-    const chunk = decodeBase64Chunk(response.data, expectedLength);
-    if (response.done !== (offset + chunk.length === descriptor.sizeBytes)) {
-      throw new Error("invalid_response");
+    const page = Number(message.page);
+    if (!Number.isSafeInteger(page) || page < 0 || page >= MAX_MANIFEST_PAGES) {
+      return null;
     }
-    bytes.set(chunk, offset);
-    offset += chunk.length;
+    return { type: message.type, fields: { revision: message.revision, page: message.page } };
   }
-  return encodeBase64(bytes);
-}
-
-async function getAddonBundle() {
-  const info = await requestNative("getBundleInfo");
-  requireNativeResponse(info, "bundleInfo");
-  if (typeof info.revision !== "string" || !/^[a-f0-9]{64}$/.test(info.revision) ||
-      !Array.isArray(info.addons) || info.addons.length > MAX_RUNTIME_ADDONS ||
-      !Number.isSafeInteger(info.fileCount) || info.fileCount < 0 || info.fileCount > MAX_RUNTIME_FILES ||
-      !Number.isSafeInteger(info.totalBytes) || info.totalBytes < 0 || info.totalBytes > MAX_RUNTIME_BUNDLE_BYTES ||
-      !Number.isSafeInteger(info.pageCount) ||
-      info.pageCount !== Math.ceil(info.fileCount / MAX_MANIFEST_PAGE_ITEMS) ||
-      info.pageSize !== MAX_MANIFEST_PAGE_ITEMS ||
-      info.chunkBytes !== MAX_FILE_CHUNK_BYTES) {
-    throw new Error("invalid_response");
-  }
-
-  const addonMap = new Map();
-  for (const folder of info.addons) {
-    if (!isSafeFolder(folder) || addonMap.has(folder)) {
-      throw new Error("invalid_response");
+  if (message.type === "getFileChunk") {
+    if (Object.keys(message).length !== 5 ||
+        !/^[a-f0-9]{64}$/.test(message.revision) ||
+        !isSafeFolder(message.folder) ||
+        !isSafeRelativePath(message.path) ||
+        typeof message.offset !== "string" ||
+        !/^(0|[1-9][0-9]*)$/.test(message.offset)) {
+      return null;
     }
-    addonMap.set(folder, { folder: folder, files: Object.create(null) });
-  }
-
-  const seenFiles = new Set();
-  let listedFiles = 0;
-  let listedBytes = 0;
-  for (let page = 0; page < info.pageCount; page += 1) {
-    const response = await requestNative("getBundleManifestPage", {
-      revision: info.revision,
-      page: String(page)
-    });
-    requireNativeResponse(response, "bundleManifestPage");
-    if (response.revision !== info.revision ||
-        response.page !== page ||
-        !Array.isArray(response.files) ||
-        response.files.length > MAX_MANIFEST_PAGE_ITEMS) {
-      throw new Error("invalid_response");
+    const offset = Number(message.offset);
+    if (!Number.isSafeInteger(offset) || offset < 0 || offset >= MAX_RUNTIME_BUNDLE_BYTES) {
+      return null;
     }
-    for (const descriptor of response.files) {
-      if (!descriptor || !isSafeFolder(descriptor.folder) ||
-          !isSafeRelativePath(descriptor.path) ||
-          !Number.isSafeInteger(descriptor.sizeBytes) ||
-          descriptor.sizeBytes < 0 || descriptor.sizeBytes > MAX_RUNTIME_FILE_BYTES ||
-          !addonMap.has(descriptor.folder)) {
-        throw new Error("invalid_response");
+    return {
+      type: message.type,
+      fields: {
+        revision: message.revision,
+        folder: message.folder,
+        path: message.path,
+        offset: message.offset
       }
-      const key = descriptor.folder + "/" + descriptor.path;
-      if (seenFiles.has(key)) {
-        throw new Error("invalid_response");
-      }
-      seenFiles.add(key);
-      listedFiles += 1;
-      listedBytes += descriptor.sizeBytes;
-      if (listedFiles > MAX_RUNTIME_FILES || listedBytes > MAX_RUNTIME_BUNDLE_BYTES) {
-        throw new Error("payload_too_large");
-      }
-      const encoded = descriptor.sizeBytes === 0
-        ? ""
-        : await readAddonFile(info.revision, descriptor);
-      addonMap.get(descriptor.folder).files[descriptor.path] = encoded;
-    }
+    };
   }
-
-  if (listedFiles !== info.fileCount || listedBytes !== info.totalBytes) {
-    throw new Error("invalid_response");
-  }
-  return {
-    revision: info.revision,
-    addons: Array.from(addonMap.values())
-  };
+  return null;
 }
 
 browser.runtime.onMessage.addListener((message, sender) => {
-  if (!isAllowedGameSender(sender) ||
-      !message || typeof message !== "object" ||
-      Object.keys(message).length !== 1 ||
-      message.type !== "getAddonBundle") {
+  if (!isAllowedGameSender(sender)) {
     return undefined;
   }
-  return getAddonBundle().catch((error) => ({
+  const request = validateContentRequest(message);
+  if (!request) {
+    return Promise.resolve({ type: "error", error: "invalidRequest" });
+  }
+  return requestNative(request.type, request.fields).catch((error) => ({
     type: "error",
-    code: typeof error?.message === "string" ? error.message.slice(0, 32) : "unavailable"
+    error: typeof error?.message === "string" ? error.message.slice(0, 32) : "unavailable"
   }));
 });
 
