@@ -83,6 +83,11 @@ jobs:
           node --test scripts/test-addon-xhr-overlay.mjs
           node --test scripts/test-addon-worker-overlay.mjs
 
+      - name: Generate resolved runtime dependency report
+        run: |
+          mkdir -p app/build/reports
+          ./gradlew :app:dependencies --configuration releaseRuntimeClasspath --stacktrace > app/build/reports/runtime-dependencies.txt
+
       - name: Run lint, formatting, unsigned release build and unit tests
         run: ./gradlew lintDebug spotlessCheck assembleRelease testDebugUnitTest --stacktrace -PspotlessRatchetFrom=origin/beta
 
@@ -103,6 +108,7 @@ jobs:
             app/build/reports/tests/testDebugUnitTest/
             app/build/reports/lint-results-debug.html
             app/build/reports/lint-results-debug.sarif
+            app/build/reports/runtime-dependencies.txt
           if-no-files-found: ignore
           retention-days: 14
 

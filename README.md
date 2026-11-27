@@ -12,7 +12,7 @@ LastHavenPlus is an Android launcher for the existing LastHaven Wrath of the Lic
 |---|---|
 | Android | Android 10 (API 29) and later |
 | CPU architecture | ARM64 only (`arm64-v8a`) |
-| Browser engine | Mozilla GeckoView 160 |
+| Browser engine | Mozilla GeckoView 161 Stable |
 | UI | Kotlin and Jetpack Compose |
 | Application ID | `com.neonyne.lasthavenlauncher` |
 | Game URL | `https://lasthavens.com/play` |
@@ -31,7 +31,7 @@ These are features integrated into beta and covered by the repository's automate
 - **Network usage:** Android per-UID counters report app traffic, including both game and updater traffic; they are not game-only totals.
 - **Diagnostics:** Bounded local diagnostic logs support viewing, clearing and explicit user-initiated sharing. Review logs before sharing.
 - **Updater:** Stable release checks and downloads remain user-initiated. Manifest, version, URL, payload and digest validation are applied; differential patch failures retain a verified full-APK fallback. Obsolete generated APKs and abandoned partials are cleaned safely while pending installer/handoff files are protected. Android's package installer controls installation.
-- **Addon manager:** Native Phase A local ZIP/library management, planner/origin-policy groundwork, GeckoView 160 built-in extension/native-messaging foundation (PR #177), bounded revision-bound ZIP 0.5.1 payload transport (PR #180), and production bridge wiring to the existing game session before navigation/restore (PR #190) are integrated. The bounded same-origin MAIN-world XHR overlay (#168) is merged in PR #191. Worker/OPFS `blocks.idx` masking (#169) has a draft implementation in PR #195 awaiting exact-head validation and integration; its Worker URL allowlist remains empty pending physical-device verification; same-session manager navigation/page-world refresh (#170) remains blocked pending runtime and navigation prerequisites. Verified in-game addon initialization remains incomplete. Imported addons remain library data; local enablement is metadata only and does not by itself establish activation in the game. No physical ARM64 runtime test has been performed. Imported addons remain library data; local enablement is metadata only and does not activate addons in the game. No physical ARM64 runtime test has been performed.
+- **Addon manager:** Native Phase A local ZIP/library management, planner/origin-policy groundwork, GeckoView 161 built-in extension/native-messaging foundation (PR #177), bounded revision-bound ZIP 0.5.1 payload transport (PR #180), and production bridge wiring to the existing game session before navigation/restore (PR #190) are integrated. The bounded same-origin MAIN-world XHR overlay (#168) is merged in PR #191. Worker/OPFS `blocks.idx` masking (#169) has a draft implementation in PR #195 awaiting exact-head validation and integration; its Worker URL allowlist remains empty pending physical-device verification; same-session manager navigation/page-world refresh (#170) remains blocked pending runtime and navigation prerequisites. Verified in-game addon initialization remains incomplete. Imported addons remain library data; local enablement is metadata only and does not by itself establish activation in the game. No physical ARM64 runtime test has been performed. Imported addons remain library data; local enablement is metadata only and does not activate addons in the game. No physical ARM64 runtime test has been performed.
 
 ## Site permissions
 

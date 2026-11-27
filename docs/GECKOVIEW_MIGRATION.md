@@ -1,8 +1,8 @@
 # GeckoView integration notes
 
 **Current branch:** `beta`  
-**Current engine:** Mozilla GeckoView 160, ARM64 artifact  
-**Last reviewed:** 2026-11-27 (GeckoView 160 artifact/POM evidence re-verified 2026-11-26; current beta resolved runtime graph captured from beta baseline `56161494dd9b2448d9e53140f9280a0038f9ecbb` on 2026-11-27)
+**Current engine:** Mozilla GeckoView 161 Stable, ARM64 artifact  
+**Last reviewed:** 2026-11-27 (GeckoView 161 Stable candidate reviewed against Mozilla Maven metadata/POM; exact-head Android build and 236 JVM tests passed; independent APK reproducibility pending)
 
 This document records the GeckoView integration as it exists in beta. It supplements, but does not replace, Mozilla's documentation.
 
@@ -21,7 +21,7 @@ Use the API matching the pinned GeckoView artifact. Do not assume moving mozilla
 
 ## Current implementation
 
-Beta uses `org.mozilla.geckoview:geckoview-arm64-v8a:160.0.20261116130455`, a process-scoped `GeckoRuntime`, a `GeckoSession` and a `GeckoView` host. Runtime/session initialization is deferred until Play. The game URL is `https://lasthavens.com/play`.
+Beta uses `org.mozilla.geckoview:geckoview-arm64-v8a:161.0.20261118180411`, a process-scoped `GeckoRuntime`, a `GeckoSession` and a `GeckoView` host. Runtime/session initialization is deferred until Play. The game URL is `https://lasthavens.com/play`.
 
 The app launches directly into the game. Android Back opens a responsive in-game overlay with Reload, Settings and Return to game while keeping the existing game session mounted. Settings, diagnostics and update details are launcher-owned full-screen destinations. Settings navigation detaches and later restores the existing GeckoView rather than creating a second game session.
 
@@ -40,7 +40,32 @@ Preserve:
 - User-confirmed update download and Android installer handoff
 - Full APK fallback when a differential patch is ineligible or fails validation
 
-## Pinned GeckoView 160 artifact and dependency audit
+## Current pinned artifact and dependency audit (GeckoView 161)
+
+### Artifact identity
+
+- Coordinates: `org.mozilla.geckoview:geckoview-arm64-v8a:161.0.20261118180411`, ARM64 Stable AAR.
+- Mozilla Maven metadata identifies this as the current Stable release at the time of the #188 audit; no Beta or Nightly artifact is selected.
+- Published POM: [GeckoView 161.0.20261118180411](https://maven.mozilla.org/maven2/org/mozilla/geckoview/geckoview-arm64-v8a/161.0.20261118180411/geckoview-arm64-v8a-161.0.20261118180411.pom).
+- License declared by the artifact: Mozilla Public License 2.0 (MPL-2.0).
+- The published POM requires AndroidX Core 1.19.1 at runtime; the #188 catalog aligns the direct pin to 1.19.1.
+
+### API and compatibility evidence
+
+- The GeckoView 161 API changelog lists additive credit-card-autofill and R8 mapping UUID APIs; the #188 audit found no used API removal in the published changelog.
+- Exact-head Android PR validation passed on `0663710818e41c4e4077b3973cfe31707dfc4ae7`: dependency resolution, lint, Spotless, release assembly and 236 JVM tests passed with zero failures.
+- The resolved 161 runtime graph is recorded in [the 145-coordinate report](reports/releaseRuntimeClasspath-geckoview-161.0.20261118180411.txt); the original 62,593-byte report is in [Actions artifact 15228427800](https://github.com/iNeonyne/LastHavenPlus/actions/runs/46060543522), SHA-256 `7248ff273a33ed72b38cd6c20550f5bc6d5eb22c29be9ab59bf3e10519bb093f`.
+- Independent unsigned APK reproducibility is still running after one transient plugin-resolution failure on one worker; the other clean build passed.
+- Release-specific GeckoView 161 Javadocs are not published at the referenced hosts; moving mozilla-central documentation is corroboration only, not a substitute for compile/reflection checks against the pinned AAR.
+- No physical ARM64 device test has been performed. Build and JVM checks do not establish gameplay, rendering, session, or add-on runtime compatibility.
+
+### Licensing and dependency evidence
+
+- MPL-2.0 applies to GeckoView itself. Its executable-form source-code obligations remain separate from the LastHavenPlus project rights notice.
+- Review the resolved GeckoView 161 runtime graph and its per-artifact license/terms before distribution. The GeckoView 160 dependency/license inventory below is historical and must not be assumed to cover every 161 artifact without reconciliation.
+- Google Play services SDK terms and any dependency without an authoritative license declaration remain explicit review items; do not infer their terms from neighboring artifacts.
+
+## Previous baseline: GeckoView 160 artifact and dependency audit
 
 ### Artifact identity
 
@@ -109,7 +134,7 @@ Used surface and status ("basis" states exactly what verified it):
 | `GeckoSession.NavigationDelegate.onLoadRequest` -> `GeckoResult<AllowOrDeny>` + `LoadRequest` | compile (160 AAR) + docs (163 snapshot) | [NavigationDelegate Javadoc](https://mozilla.github.io/geckoview/javadoc/mozilla-central/org/mozilla/geckoview/GeckoSession.NavigationDelegate.html); always returns `allow()` |
 | `GeckoSession.PermissionDelegate` (onContentPermissionRequest -> `GeckoResult<Integer>`; `ContentPermission.uri`/`.permission`; constants `PERMISSION_PERSISTENT_STORAGE`, `PERMISSION_AUTOPLAY_AUDIBLE`, `PERMISSION_AUTOPLAY_INAUDIBLE`, `VALUE_ALLOW`, `VALUE_DENY`; `onAndroidPermissionsRequest` + `Callback.reject()`; `onMediaPermissionRequest` + `MediaSource`, `MediaCallback.reject()`) | compile (160 AAR) + docs (163 snapshot) | [PermissionDelegate Javadoc](https://mozilla.github.io/geckoview/javadoc/mozilla-central/org/mozilla/geckoview/GeckoSession.PermissionDelegate.html) + [site-permissions guide](https://firefox-source-docs.mozilla.org/mobile/android/geckoview/consumer/permissions.html); game-origin-scoped allow, everything else denied |
 | `GeckoView` (Compose host), `GeckoResult.allow()` / `fromValue()` | compile (160 AAR) + docs (163 snapshot) | [GeckoView Javadoc](https://mozilla.github.io/geckoview/javadoc/mozilla-central/org/mozilla/geckoview/GeckoView.html), [GeckoResult Javadoc](https://mozilla.github.io/geckoview/javadoc/mozilla-central/org/mozilla/geckoview/GeckoResult.html), [quick start](https://firefox-source-docs.mozilla.org/mobile/android/geckoview/consumer/geckoview-quick-start.html) |
-| `WebExtensionController` / `WebExtension` reflection surface | compile (160 AAR) + reflection guards only; NOT confirmed against any official documentation | [WebExtensionController Javadoc](https://mozilla.github.io/geckoview/javadoc/mozilla-central/org/mozilla/geckoview/WebExtensionController.html), [WebExtensions consumer guide](https://firefox-source-docs.mozilla.org/mobile/android/geckoview/consumer/web-extensions.html); used by tests only; addon manager itself stays on hold (#23) |
+| `WebExtensionController` / `WebExtension` reflection surface | compile (160 AAR) + reflection guards only; NOT confirmed against any official documentation | [WebExtensionController Javadoc](https://mozilla.github.io/geckoview/javadoc/mozilla-central/org/mozilla/geckoview/WebExtensionController.html), [WebExtensions consumer guide](https://firefox-source-docs.mozilla.org/mobile/android/geckoview/consumer/web-extensions.html); used by tests only; addon activation remains incomplete and Phase B is gated by #147/#183/#167 |
 
 Javadoc caveat: all documentation links describe the 163 mozilla-central snapshot, not 160. No behavioral differences were observed for the used subset, and compile evidence against the 160 AAR is authoritative for symbol existence; behavior-specific differences remain a what-to-watch item during device verification.
 

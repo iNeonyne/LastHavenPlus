@@ -97,7 +97,7 @@
     <string tools:ignore="MissingTranslation" name="settings_value_not_available">Not available</string>
     <string tools:ignore="MissingTranslation" name="settings_network_hint">Per-app totals include game and updater traffic. They are stored locally and reset on device reboot.</string>
     <string tools:ignore="MissingTranslation" name="settings_application_section">Application</string>
-    <string tools:ignore="MissingTranslation" name="settings_game_engine">Game engine: Mozilla GeckoView 160</string>
+    <string tools:ignore="MissingTranslation" name="settings_game_engine">Game engine: Mozilla GeckoView 161 Stable</string>
     <string tools:ignore="MissingTranslation" name="settings_checking_updates">Checking for updates\u2026</string>
     <string tools:ignore="MissingTranslation" name="settings_check_updates">Check for updates</string>
     <string tools:ignore="MissingTranslation" name="settings_update_details">Update details</string>
