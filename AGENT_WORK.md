@@ -1,4 +1,8 @@
-## Owner-directed Vibe assignments — 2026-11-27
+# Agent work assignments — LastHavenPlus
+
+> **Active snapshot:** The dated assignment block immediately below is the current operational snapshot. Everything under “Historical snapshots and work records” is retained for audit context and is not live assignment state. Verify GitHub before acting. This file records assignments and history; [AGENTS.md](AGENTS.md) is the only policy source.
+
+## Current owner-directed assignments — 2026-11-27
 
 The repository owner explicitly assigned Vibe three related Addon Manager Phase B issues; the prior one-active-issue-only instruction is superseded.
 
@@ -34,9 +38,9 @@ Chaty remains sole reviewer, fixer, exact-head CI verifier and merger into beta.
 **Verified beta HEAD:** `d160b052370bbcbae6925174ac2cb10ec609ff91`  
 **Stable release:** v2.3.0 (tag commit ebc5b424e83ae66c2b0accc2bec6f050b8dc0d88).
 
-# Agent work assignments — LastHavenPlus
+## Historical snapshots and work records (not live assignments)
 
-## Current owner priority — 2026-11-27
+## Historical owner-priority snapshot — 2026-11-27 (superseded)
 
 - **P0:** Addon Manager Phase B (#23) remains the top project priority. Chaty owns coordination, integration and verification.
 - **Vibe's sole active implementation assignment:** none; #168 implementation is complete and PR #191 is awaiting integration. Assigned from beta HEAD `892494aa8f0333f907b2e730f6b754ba2dabe2a1` after PR #180 integrated the GeckoView bridge payload transport.
@@ -49,13 +53,9 @@ Chaty remains sole reviewer, fixer, exact-head CI verifier and merger into beta.
 **Verified beta HEAD:** `892494aa8f0333f907b2e730f6b754ba2dabe2a1`  
 **Stable release:** v2.3.0 (tag commit ebc5b424e83ae66c2b0accc2bec6f050b8dc0d88).
 
-## Roles and integration
+## Policy reference
 
-- **Chaty:** main orchestrator, issue triage/assignment, integration fixer, verification and CI coordinator, sole integrator into beta.
-- **Vibe:** implementation contributor; works only on the current active issue explicitly assigned by Chaty through GitHub. After PR handoff, Chaty owns branch fixes and integration.
-- **Repository owner:** final product, priority, Phase B and release authority.
-- GitHub Issues, comments, PRs, commits and Actions are the only agent-to-agent communication channel.
-- All implementation PRs target beta. No direct contributor push to beta/main. Chaty alone merges. No release/tag/publication or beta-to-main promotion without explicit owner approval.
+Agent roles, permissions, assignment rules, handoffs, integration, and engineering constraints are defined only in [AGENTS.md](AGENTS.md). This historical snapshot intentionally does not repeat those rules.
 
 ## Active work
 
@@ -164,14 +164,9 @@ Every open issue has exactly one `agent:*` label. The label distinguishes active
 | #148 | `agent:blocked` | Waits for #146 and coordination with #16 |
 | #170 | `agent:blocked` | Waits for #168/#169 runtime contracts and navigation prerequisites |
 
-## Safety constraints
+## Policy reference
 
-- Kotlin + Jetpack Compose; Mozilla GeckoView 160; Android 10/API 29+; ARM64 only (arm64-v8a).
-- Preserve application ID com.neonyne.lasthavenlauncher and established release signing identity.
-- Game URL: https://lasthavens.com/play. Never modify the game.
-- No automatic update checks/downloads/installations; user action and Android installer confirmation remain required.
-- Validate compatibility before Gradle, SDK, Build Tools, GeckoView, signing or dependency/toolchain changes.
-- Never claim physical-device compatibility without real ARM64 hardware evidence.
+Current safety and technical invariants are maintained in [AGENTS.md](AGENTS.md) and the component-specific documentation. The duplicated snapshot rules were removed so this file remains an operational/history record.
 
 ## 2026-11-27 — Post-merge integration reconciliation (#146) and #167 handoff
 
