@@ -812,3 +812,10 @@ No branch was deleted. The available GitHub connector exposes no branch-delete o
 - Further audit of the live beta Actions history found a newer successful unsigned APK reproducibility run on the merged PR #203 commit `cfcc19d863aff828ad3db42a628cd5f95569a962`, replacing the earlier `78a3d12` result as the latest app/build-source baseline.
 - Run [#46071208839](https://github.com/iNeonyne/LastHavenPlus/actions/runs/46071208839): both clean unsigned APK builds and the comparison job passed. APKs were byte-identical: 97,637,264 bytes; SHA-256 `38de17fead60507567b1641643b97edbfbd96064bce3e6880a3de2822dd5c719`; 818 ZIP entries; no missing, duplicate, or content/metadata differences.
 - Updated docs/REPRODUCIBLE_BUILDS.md to identify the PR #203 commit as the latest verified app/build baseline. Later beta commits after cfcc are documentation-only as of this audit.
+
+
+### README toolchain source and Gradle drift audit — 2026-11-28
+
+- Removed duplicated JDK/Gradle/Android SDK version numbers from README build instructions. The README now directs agents to the Gradle wrapper properties, version catalog, and Android CI workflow as the sources of truth.
+- Checked upstream release information: Gradle 9.9.3 was released 2026-11-27; open Dependabot PR #210 proposes 9.9.2 and is already one patch behind. Beta remains pinned to Gradle 9.7.1. Kotlin 2.4.21 remains the latest stable 2.4 release; 2.5.0 RC is not stable.
+- Added a dated follow-up to docs/DEPENDENCY_AUDIT_188.md. No wrapper/toolchain change is made: the audited Kotlin/Gradle supported range requires compatibility review and exact CI before adopting 9.9.x.
