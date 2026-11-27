@@ -34,11 +34,11 @@ class AddonBridgeAssetsTest {
     assertTrue(manifest.contains("\"bridge.js\""))
     assertFalse(manifest.contains("\"<all_urls>\""))
     assertFalse(manifest.contains("\"all_frames\": true"))
-    assertEquals(1, Regex("\\"content_scripts\\"").findAll(manifest).count())
-    assertEquals(1, Regex("\\"matches\\"").findAll(manifest).count())
-    assertEquals(1, Regex("\\"run_at\\"").findAll(manifest).count())
-    assertEquals(1, Regex("\\"all_frames\\"").findAll(manifest).count())
-    assertTrue(manifest.contains("\\"all_frames\\": false"))
+    assertEquals(1, Regex("\"content_scripts\"").findAll(manifest).count())
+    assertEquals(1, Regex("\"matches\"").findAll(manifest).count())
+    assertEquals(1, Regex("\"run_at\"").findAll(manifest).count())
+    assertEquals(1, Regex("\"all_frames\"").findAll(manifest).count())
+    assertTrue(manifest.contains("\"all_frames\": false"))
   }
 
   @Test
