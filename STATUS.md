@@ -254,3 +254,11 @@ No code, CI, release, signing, dependency, ABI or device behavior changed in thi
 - Routine GitHub formal reviews and return-to-Vibe correction cycles are no longer the default. Chaty still performs full risk-based inspection, exact-head CI verification, conflict resolution, documentation checks and post-merge verification.
 - If Chaty cannot safely edit the branch (permissions, unclear ownership/scope, or a decision reserved for the owner), stop and document the specific blocker; do not bypass required checks or merge unverified code.
 - This changes the agent handoff process only. It does not authorize release publication, tags, or `beta`-to-`main` promotion.
+
+## 2026-11-27 — GameSessionController integrated (#146)
+
+- PR [#173](https://github.com/iNeonyne/LastHavenPlus/pull/173) squash-merged to `beta` at `5ed6af635954c8f4e2673dab3c60334eff4a8ae0` (PR head `6160ede68fb7073680feef2e35f4176bd08a433d`; Vibe implementation commit `eb9f64b672eced9143bc5689106223c3e7af3d16`).
+- Exact PR-head Android validation [#45921162358](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45921162358), independent unsigned APK reproducibility [#45921162325](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45921162325), and Markdown [#45921162310](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45921162310) passed.
+- Post-merge beta checks on the merge commit: Markdown [#45923143716](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45923143716) passed; Android/signing/ARM64 packaging [#45923143717](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45923143717) and independent unsigned APK reproducibility [#45923143712](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45923143712) were still in progress at this documentation checkpoint. Do not treat them as passed until their exact run conclusions are verified.
+- Scope: extracted GeckoSession lifecycle and load/crash state into `GameSessionController` and pure `GameSessionState` policies. Navigation and gameplay window-state follow-ups remain separate.
+- Issue #146 closed as completed. No physical ARM64 device test was performed; no release, tag, publication or `main` promotion occurred.
