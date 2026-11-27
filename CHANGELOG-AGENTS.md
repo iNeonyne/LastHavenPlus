@@ -918,3 +918,12 @@ Entry format:
 - The repository owner clarified that Vibe must not wait idle for Chaty's PR integration. After handing off a PR, Vibe immediately starts the next explicitly assigned, independent issue while Chaty integrates earlier PRs in parallel.
 - Chaty checked file ownership and assigned #146 GameSessionController to Vibe while integrating #149/#165 and #23/#166. Current open PR scopes do not overlap #146's MainActivity/GeckoSession ownership work.
 - Vibe still works on only one active implementation issue at a time, never changes ownership labels, never merges, and never pushes directly to beta/main. Chaty remains the sole beta integrator.
+
+
+## 2026-11-27 — Merge Addon Manager Phase B planner groundwork
+
+- PR #166 squash-merged to beta at `d83e2dfc89087f67f4dbbe71e85668d80303e3ef`.
+- Exact-head Android validation #45919219905 passed, including Spotless, unit tests, lint and unsigned release assembly. Independent unsigned APK reproducibility #45919219912 passed with both clean builds and archive comparison.
+- Integrated only the pure dependency planner, validated TOC path handling, bounded planner inputs, strict game-route policy and GeckoView 160 native-port API assertions. No extension installation, XHR/Worker interception, Lua initialization or actual addon activation is implemented.
+- #167 moved from agent:blocked to agent:queued because its PR #166 prerequisite is now satisfied; Vibe remains active on #146. #168/#169 remain dependency-blocked.
+- Post-merge beta Android and reproducibility checks #45919654642/#45919654675 were running at the checkpoint. No physical ARM64 runtime test, release, tag or main promotion.
