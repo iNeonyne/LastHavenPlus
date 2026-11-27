@@ -3,6 +3,7 @@
 - Captured: 2026-11-27
 - Repository: `iNeonyne/LastHavenPlus`
 - Beta baseline: `56161494dd9b2448d9e53140f9280a0038f9ecbb`
+- Latest beta at review: `6ce947fca0527f272fbdf22ae1b7fbd9030570b6` (the intervening commit only added automation definitions; no Android source or dependency files changed)
 - Capture PR head: `cec829fc048ac40bbe5c5e600aafe1654af1aaad` (PR #203; dependency-report step completed before Spotless stopped the later build step)
 - Workflow run: https://github.com/iNeonyne/LastHavenPlus/actions/runs/46059917752
 - Artifact: `pr-unit-test-reports-203`, artifact ID `15228835619` (contains the original 62,602-byte Gradle report)
