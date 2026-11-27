@@ -7,8 +7,7 @@ import org.mozilla.geckoview.WebExtension
  *
  * The contract is fail closed: a native message is accepted only when every sender attribute
  * matches the bundled, launcher-owned extension exactly. Content-script and content-page contexts
- * are rejected outright; a sender bound to a live game session must additionally present the exact
- * `https://lasthavens.com/play` origin/path (via [AddonRuntimeOriginPolicy], which already rejects
+ * are rejected outright; a sender bound to a live game session must additionally present one of the exact default or alternate game origin/paths (via [AddonRuntimeOriginPolicy], which already rejects
  * credentials, non-default ports and encoded-path tricks).
  */
 object AddonBridgePolicy {
