@@ -157,10 +157,10 @@ class AddonRuntimePlannerTest {
         )
       }
     val plan = AddonRuntimePlanner.plan(AddonLibrarySnapshot("deep-chain", addons))
-    assertEquals(MAX_ADDON_LIBRARY_ITEMS, plan.orderedAddons.size)
+    assertEquals(512, plan.orderedAddons.size)
     assertEquals("Addon0", plan.orderedAddons.first().folder)
     assertEquals(
-      "Addon${MAX_ADDON_LIBRARY_ITEMS - 1}",
+      "Addon511",
       plan.orderedAddons.last().folder,
     )
   }
