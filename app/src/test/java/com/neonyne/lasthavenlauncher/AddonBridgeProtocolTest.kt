@@ -85,6 +85,9 @@ class AddonBridgeProtocolTest {
   fun `load order enforces bounds and item text`() {
     assertNotNull(AddonBridgeProtocol.loadOrder("r-1", "rev1", listOf("a"), listOf("b")))
     assertNull(AddonBridgeProtocol.loadOrder("r-1", "rev1", List(257) { "addon$it" }, emptyList()))
+    assertNull(AddonBridgeProtocol.loadOrder("r-1", "rev1", List(129) { "addon$it" }, List(128) { "blocked$it" }))
+    assertNull(AddonBridgeProtocol.loadOrder("r-1", "rev1", listOf(".."), emptyList()))
+    assertNull(AddonBridgeProtocol.loadOrder("r-1", "rev1", listOf("."), emptyList()))
     assertNull(AddonBridgeProtocol.loadOrder("r-1", "rev1", listOf("../escape"), emptyList()))
     assertNull(
       AddonBridgeProtocol.loadOrder(
@@ -94,6 +97,14 @@ class AddonBridgeProtocolTest {
         emptyList(),
       )
     )
+  }
+
+  @Test
+  fun `response byte count is bounded`() {
+    assertTrue(AddonBridgeProtocol.isResponseWithinByteLimit(0))
+    assertTrue(AddonBridgeProtocol.isResponseWithinByteLimit(AddonBridgeProtocol.MAX_RESPONSE_BYTES))
+    assertFalse(AddonBridgeProtocol.isResponseWithinByteLimit(AddonBridgeProtocol.MAX_RESPONSE_BYTES + 1))
+    assertFalse(AddonBridgeProtocol.isResponseWithinByteLimit(-1))
   }
 
   @Test
