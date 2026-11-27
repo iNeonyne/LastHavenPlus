@@ -4,6 +4,7 @@ LastHavenPlus is an Android launcher for the existing LastHaven Wrath of the Lic
 
 - **Game:** [lasthavens.com/play](https://lasthavens.com/play)
 - **Latest stable release:** [v2.3.0 on GitHub Releases](https://github.com/iNeonyne/LastHavenPlus/releases/tag/v2.3.0)
+- **Release history:** [CHANGELOG.md](CHANGELOG.md)
 - **Development:** `beta`; stable releases: `main`
 
 ## Compatibility and identity
@@ -62,6 +63,10 @@ A signed release build requires the established project keystore and credentials
 - Never publish debug APKs or incomplete features.
 - Promote beta only after release gates pass and the owner explicitly approves.
 - The repository owner may test published releases and report findings on their own schedule. Pending feedback is not a release blocker.
+
+## License and third-party notices
+
+Original LastHavenPlus code and documentation are **All Rights Reserved** and are provided in this public repository for the copyright holder's personal use. No general license to copy, modify, publish, distribute, or otherwise reuse original project material is granted. See [LICENSE](LICENSE). Third-party components retain their own licenses and terms; see [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) and the in-app Licenses & third-party notices viewer, which includes the packaged GeckoView 161 about:license inventory. This rights notice does not override third-party licenses or the terms governing the hosted LastHaven game. LastHavenPlus hosts the existing game and does not modify its client.
 
 ## Project workflow and records
 
