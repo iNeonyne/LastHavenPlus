@@ -1046,3 +1046,10 @@ Entry format:
 - Refreshed CHANGELOG.md with missing published v2.2.0/v2.3.0/v2.4.0 entries, updated the reproducible-build record to run #46063532417 (98,226,200-byte byte-identical unsigned APKs), corrected the CI workflow reference from removed quality.yml to reproducible-build.yml, and marked the Nov 26 branch inventory historical.
 - Updated issue #167 to describe current GeckoView Stable runtime acceptance rather than a GeckoView 160 port. Corrected stale updater queue wording in #4/#15 and removed a stale beta SHA from the #23 milestone description.
 - GeckoView 161 remains the latest Stable artifact found in Maven metadata as of this audit; beta's exact pin remains defined by the version catalog.
+
+
+### Conservative agent-label backfill — 2026-11-28
+
+- Removed the static issue-number-to-owner/state map from `.github/workflows/agent-ownership.yml`. Existing unlabeled issues are now backfilled only as `agent:unassigned`; Chaty performs live triage before assigning any worker.
+- Ensured an `agent:ib` label is provisioned for explicit IB assignments. No build, test, signing, or release workflow logic changed.
+- Clarified that current GitHub issue labels and latest valid assignment comments override all dated/older Markdown and issue-body snapshots.
