@@ -12,7 +12,8 @@ internal object UpdateFileCleanup {
   internal const val PREFERENCES_NAME = "launcher_settings"
   internal const val KEY_PENDING_UPDATE_URI = "pending_update_uri"
   internal const val KEY_INSTALLER_HANDOFF_APK_NAME = "installer_handoff_apk_name"
-  internal const val KEY_INSTALLER_HANDOFF_CANDIDATE_APK_NAME = "installer_handoff_candidate_apk_name"
+  internal const val KEY_INSTALLER_HANDOFF_CANDIDATE_APK_NAME =
+    "installer_handoff_candidate_apk_name"
 
   private const val FILE_PROVIDER_ROOT = "update_apks"
   private const val MAX_ENTRIES_PER_CLEANUP = 256
