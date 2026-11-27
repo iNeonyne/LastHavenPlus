@@ -4,6 +4,7 @@ import android.content.Context
 import android.net.Uri
 import java.io.File
 import java.nio.file.Files
+import java.nio.file.LinkOption
 
 /**
  * Removes updater-owned temporary files and obsolete finalized APKs without touching user files.
@@ -71,16 +72,23 @@ internal object UpdateFileCleanup {
   fun removeObsoleteFiles(directory: File, protectedApkNames: Set<String> = emptySet()) {
     if (Files.isSymbolicLink(directory.toPath()) || !directory.isDirectory) return
     val canonicalDirectory = runCatching { directory.canonicalFile }.getOrNull() ?: return
-    val entries = directory.listFiles() ?: return
+    runCatching {
+      Files.newDirectoryStream(directory.toPath()).use { entries ->
+        var scanned = 0
+        for (path in entries) {
+          if (scanned >= MAX_ENTRIES_PER_CLEANUP) break
+          scanned += 1
 
-    entries.take(MAX_ENTRIES_PER_CLEANUP).forEach { file ->
-      if (Files.isSymbolicLink(file.toPath()) || !file.isFile) return@forEach
-      val canonicalFile = runCatching { file.canonicalFile }.getOrNull() ?: return@forEach
-      if (canonicalFile.parentFile != canonicalDirectory) return@forEach
+          if (!Files.isRegularFile(path, LinkOption.NOFOLLOW_LINKS)) continue
+          val file = path.toFile()
+          val canonicalFile = runCatching { file.canonicalFile }.getOrNull() ?: continue
+          if (canonicalFile.parentFile != canonicalDirectory) continue
 
-      when {
-        file.name.endsWith(".part") -> file.delete()
-        isManagedApkName(file.name) && file.name !in protectedApkNames -> file.delete()
+          when {
+            file.name.endsWith(".part") -> file.delete()
+            isManagedApkName(file.name) && file.name !in protectedApkNames -> file.delete()
+          }
+        }
       }
     }
   }
