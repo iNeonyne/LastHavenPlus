@@ -1,3 +1,18 @@
+# HISTORICAL BASELINE — PRE GOOGLE PLAY SERVICES EXCLUSION
+
+This 145-coordinate report was captured before LastHavenPlus excluded the
+`com.google.android.gms` group from GeckoView. It intentionally records the
+original upstream-resolved graph, including the FIDO2 client modules, and is
+retained for audit history only. It is NOT the current app runtime graph.
+
+The current release build enforces the exclusion in `app/build.gradle.kts`.
+The `assembleRelease` task fails if any `com.google.android.gms` module
+resolves or if Google Play services classes appear in the APK. A fresh
+post-exclusion dependency report will be captured by PR CI and should replace
+this historical snapshot as the current baseline after verification.
+
+---
+
 # Resolved GeckoView 161 releaseRuntimeClasspath snapshot
 
 - Captured: 2026-11-27
