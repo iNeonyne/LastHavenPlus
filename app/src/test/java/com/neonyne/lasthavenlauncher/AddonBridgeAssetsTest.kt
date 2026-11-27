@@ -33,7 +33,10 @@ class AddonBridgeAssetsTest {
     val manifest = File(assetsDir, "extensions/addon-bridge/manifest.json").readText()
     assertTrue(manifest.contains("\"geckoViewAddons\""))
     assertTrue(manifest.contains("\"nativeMessaging\""))
-    assertFalse("content-script native messaging is not needed", manifest.contains("nativeMessagingFromContent"))
+    assertFalse(
+      "content-script native messaging is not needed",
+      manifest.contains("nativeMessagingFromContent"),
+    )
     listOf("tabs", "cookies", "webRequest", "downloads", "history", "bookmarks", "<all_urls>")
       .forEach {
         assertFalse("manifest must not request $it", manifest.contains("\"$it\""))
