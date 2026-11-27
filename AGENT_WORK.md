@@ -1,42 +1,25 @@
-## Owner-directed Vibe assignments — 2026-11-27
-
-The repository owner explicitly assigned Vibe three related Addon Manager Phase B issues; the prior one-active-issue-only instruction is superseded.
-
-- **#169 (P0, primary implementation):** bounded Worker interception and read-only `blocks.idx` masking.
-- **#167 (P0):** audit the already-merged bridge against acceptance, close source-level gaps, and perform/coordinate physical ARM64 runtime verification. Do not duplicate PRs #177, #180 or #190.
-- **#170 (P1):** inspect #147 and prepare/implement same-session Addon Manager navigation, with strict shared-file ownership coordination.
-
-Sequence #169 first. #167 may audit/test merged bridge code in parallel. #170 begins with #147 and an affected-file/state-transition plan; do not overlap #169 or #147 ownership. End-to-end #170 acceptance still depends on #169 and verified runtime behavior.
-
-Chaty remains sole reviewer, fixer, exact-head CI verifier and merger into beta. Do not claim physical device testing or actual in-game addon/Lua initialization unless observed. No release, tag, publication or main promotion is authorized.
-
-## Vibe — #169 Worker interception and blocks.idx masking (implementation complete; integration by Chaty)
-
-- **Branch/start:** `vibe/worker-blocks-masking-169`, based on beta HEAD `837bfe9` (post-#194 reconciliation). PR targeting `beta` submitted; integration and exact-head verification remain with Chaty.
-- **Delivered:** `worker-overlay.js` MAIN-world content script with fail-closed exact-URL Worker allowlist gate (empty by default, so inert until hardware-verified), bounded `em-pthread` blob bootstrap (20 s boot timeout, 64-message queue cap, 8 concurrent intercepted workers, object-URL revocation on every path), idempotent `assignWasmImports` wrapping, bounded read-only `blocks.idx` TAB-record parser with strict limits and fail-closed stage diagnostics, masking based on bounded read-only OPFS `blocks.idx` spans: zero the digits in column 2 and hash the first byte of enabled-addon paths in column 5, and a worker-side XHR forwarder (GET/HEAD addon routes, inflight cap 4, sync fail-closed 404, non-addon passthrough) reusing `__LHAddonXhrOverlayCore` resolution page-side.
-- **Files:** `app/src/main/assets/extensions/addon-bridge/worker-overlay.js` (new), `manifest.json` (third content-script entry), `scripts/test-addon-worker-overlay.mjs` (new, 61 tests), `AddonBridgeAssetsTest.kt`, `.github/workflows/android.yml`, README/STATUS/ISSUES/CHANGELOG-AGENTS/AGENT_WORK updates.
-- **Executed:** `node --check` on all five extension assets; `node --test scripts/test-addon-worker-overlay.mjs` 61/61 pass; `node --test scripts/test-addon-xhr-overlay.mjs` and `scripts/test-addon-bridge.mjs` pass unchanged; JVM asset/manifest guard updates.
-- **Limitations:** no physical ARM64 device test, no in-game addon/Lua initialization, no physical ARM64 test or in-game addon/Lua initialization; the exact Worker URL allowlist remains empty until hardware observation. Sync worker XHR on addon routes fail-closes with 404 by design.
-- **Issue table:** #169 moves to implementation-complete awaiting review below.
-
-## Current owner priority — 2026-11-27 (verified after PR #191)
-
-- **P0:** Addon Manager Phase B (#23); Chaty owns coordination, integration and verification.
-- **Vibe's sole active implementation assignment:** #169 — bounded Worker interception and read-only `blocks.idx` masking, assigned from beta HEAD `d160b052370bbcbae6925174ac2cb10ec609ff91`.
-- **#168:** completed and closed after PR #191 merged. Exact-head Android #45951682137, unsigned reproducibility #45951682107 and Markdown #45951682194 passed.
-- **#167:** remains open and `agent:chaty` for physical ARM64 runtime verification and any bridge defects found. Source-level foundation, payload transport and production session wiring are integrated by PRs #177, #180 and #190.
-- **#169:** its bridge/XHR source-contract prerequisites are integrated; Vibe must implement only the worker/index scope defined in the issue.
-- **#170:** remains `agent:blocked` until #169 is integrated and same-session manager-navigation prerequisites are ready.
-- **Paused:** updater #4/#15 remain queued, not cancelled; do not resume until Chaty explicitly hands off after a safe Addon Manager milestone.
-- Keep exactly one active Vibe implementation issue. No overlapping Worker/navigation ownership.
-
-**Last verified:** 2026-11-27  
-**Verified beta HEAD:** `d160b052370bbcbae6925174ac2cb10ec609ff91`  
-**Stable release:** v2.3.0 (tag commit ebc5b424e83ae66c2b0accc2bec6f050b8dc0d88).
-
 # Agent work assignments — LastHavenPlus
 
-## Current owner priority — 2026-11-27
+> **Live snapshot verified 2026-11-28 against GitHub and beta HEAD `298b9fdaaa5b131d4442f5b40a22284584171ede`.** This section is the current assignment/priority summary. Everything under “Historical snapshots and work records” is retained for audit context only and must not be used as live assignment state. Recheck GitHub before acting. [AGENTS.md](AGENTS.md) is the only policy source.
+
+## Current priority and ownership — 2026-11-28
+
+- **P0 — Addon Manager Phase B (#23):** Chaty owns coordination, integration, and runtime acceptance.
+- **#167 — bridge runtime acceptance:** open, `agent:chaty`. Chaty owns the remaining source-level audit and physical ARM64 runtime verification of the integrated bridge. No physical-device verification or actual in-game addon/Lua initialization is claimed.
+- **#147 — launcher navigation/back stack:** open, `agent:vibe`. This is Vibe's sole active implementation assignment. Draft PR [#204](https://github.com/iNeonyne/LastHavenPlus/pull/204) targets beta; latest reported head is `6c4fcc7d014eac08868ac11441e929ab57778ca6`. Chaty owns integration and merge.
+- **#183 — stale GeckoSession bridge ports:** open, `agent:blocked`. Assign only after #147 is handed off; Chaty then coordinates the next bridge-safety fix.
+- **#170 — same-session Addon Manager navigation:** open, `agent:blocked`. Remains behind #147, #183, and #167's runtime-acceptance gates; do not start implementation early.
+- **#168:** completed and closed after PR [#191](https://github.com/iNeonyne/LastHavenPlus/pull/191) merged.
+- **#169:** completed and closed after PR [#195](https://github.com/iNeonyne/LastHavenPlus/pull/195) merged at `3959d890f7a65f69e9eb78d5e3339b3a88746097`. The Worker URL allowlist remains empty pending physical ARM64 observation; no in-game addon/Lua initialization is claimed.
+- **Updater #4 and #15:** open, `agent:blocked`; paused behind the Addon Manager P0 milestone. Do not resume until Chaty explicitly reopens this workstream.
+- **#205 — documentation consolidation:** completed; PR [#206](https://github.com/iNeonyne/LastHavenPlus/pull/206) merged to beta at `298b9fdaaa5b131d4442f5b40a22284584171ede`. Exact-head Markdown gate #46070052764 and post-merge beta Markdown gate #46070108200 passed.
+
+**Stable release:** v2.3.0 (tag commit `ebc5b424e83ae66c2b0accc2bec6f050b8dc0d88`).  
+**No release, tag, publication, or beta-to-main promotion is authorized by this snapshot.**
+
+## Historical snapshots and work records (not live assignments)
+
+## Historical owner-priority snapshot — 2026-11-27 (superseded)
 
 - **P0:** Addon Manager Phase B (#23) remains the top project priority. Chaty owns coordination, integration and verification.
 - **Vibe's sole active implementation assignment:** none; #168 implementation is complete and PR #191 is awaiting integration. Assigned from beta HEAD `892494aa8f0333f907b2e730f6b754ba2dabe2a1` after PR #180 integrated the GeckoView bridge payload transport.
@@ -49,13 +32,9 @@ Chaty remains sole reviewer, fixer, exact-head CI verifier and merger into beta.
 **Verified beta HEAD:** `892494aa8f0333f907b2e730f6b754ba2dabe2a1`  
 **Stable release:** v2.3.0 (tag commit ebc5b424e83ae66c2b0accc2bec6f050b8dc0d88).
 
-## Roles and integration
+## Policy reference
 
-- **Chaty:** main orchestrator, issue triage/assignment, integration fixer, verification and CI coordinator, sole integrator into beta.
-- **Vibe:** implementation contributor; works only on the current active issue explicitly assigned by Chaty through GitHub. After PR handoff, Chaty owns branch fixes and integration.
-- **Repository owner:** final product, priority, Phase B and release authority.
-- GitHub Issues, comments, PRs, commits and Actions are the only agent-to-agent communication channel.
-- All implementation PRs target beta. No direct contributor push to beta/main. Chaty alone merges. No release/tag/publication or beta-to-main promotion without explicit owner approval.
+Agent roles, permissions, assignment rules, handoffs, integration, and engineering constraints are defined only in [AGENTS.md](AGENTS.md). This historical snapshot intentionally does not repeat those rules.
 
 ## Active work
 
@@ -164,14 +143,9 @@ Every open issue has exactly one `agent:*` label. The label distinguishes active
 | #148 | `agent:blocked` | Waits for #146 and coordination with #16 |
 | #170 | `agent:blocked` | Waits for #168/#169 runtime contracts and navigation prerequisites |
 
-## Safety constraints
+## Policy reference
 
-- Kotlin + Jetpack Compose; Mozilla GeckoView 160; Android 10/API 29+; ARM64 only (arm64-v8a).
-- Preserve application ID com.neonyne.lasthavenlauncher and established release signing identity.
-- Game URL: https://lasthavens.com/play. Never modify the game.
-- No automatic update checks/downloads/installations; user action and Android installer confirmation remain required.
-- Validate compatibility before Gradle, SDK, Build Tools, GeckoView, signing or dependency/toolchain changes.
-- Never claim physical-device compatibility without real ARM64 hardware evidence.
+Current safety and technical invariants are maintained in [AGENTS.md](AGENTS.md) and the component-specific documentation. The duplicated snapshot rules were removed so this file remains an operational/history record.
 
 ## 2026-11-27 — Post-merge integration reconciliation (#146) and #167 handoff
 

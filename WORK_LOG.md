@@ -735,3 +735,35 @@ No branch was deleted. The available GitHub connector exposes no branch-delete o
 - The Worker validates the complete span set atomically (path/folder eligibility, exact record shape, safe integer spans, index bounds and allowed fill bytes). Any malformed entry rejects the whole set; OPFS/index failures apply no mask and emit only a bounded stage diagnostic. Persistent OPFS bytes are never written.
 - The generated bootstrap now includes parser/path-validator dependencies, and the WASM hook checks the actual `scope.wasmImports` object after `assignWasmImports()` runs.
 - The exact Worker URL allowlist remains empty pending physical ARM64 observation. No physical device test or in-game addon/Lua initialization is claimed. PR #195 remains unmerged pending exact-head CI and Chaty's integration acceptance.
+
+
+## 2026-11-28 — Agent documentation consolidation (#205)
+
+- **Base:** beta commit `78a3d12eb018e112a3443377e34e234ee9d3da7d`. Work branch: `chaty/agent-doc-consolidation-2026-11-28`.
+- **Inspection:** compared README.md, AGENTS.md, AGENT_PROTOCOL.md, AGENT_WORK.md, CONTRIBUTING.md, docs/BRANCH_LIFECYCLE.md, the pinned GeckoView catalog entry, and the GeckoView migration notes.
+- **Changes:** consolidated normative rules and roles in AGENTS.md; reduced AGENT_PROTOCOL.md to startup guidance; removed assignment, label, and merge-policy duplication from README.md; replaced CONTRIBUTING.md's repeated workflow with a policy pointer; marked AGENT_WORK.md's current snapshot and historical boundary, replacing repeated policy sections with references.
+- **Validation:** fetched the updated Markdown files from the task branch; checked headings and fenced-code balance. README.md has two balanced fences; the other updated entry-point docs have no fences. Manual local-link and full Markdown-lint validation remain to be confirmed by PR CI.
+- **Scope:** documentation only. No application source or runtime behavior changed. No branch deletion, release, tag, or promotion was performed.
+- **Next:** inspect exact PR diff and Markdown CI on the latest head; merge only after required checks pass, then verify the beta commit and close #205 as completed.
+
+
+## 2026-11-28 — Live assignment snapshot reconciled during #205
+
+- Rechecked live GitHub labels and open PRs before finalizing the documentation PR. The previous top block still named #169 as Vibe's active work even though PR #195 was merged and #169 was closed.
+- Replaced the active AGENT_WORK.md block with a dated 2026-11-28 snapshot: #147 is Vibe's sole active assignment (draft PR #204); #167 remains Chaty-owned for runtime/device acceptance; #183 and #170 are blocked; #168/#169 are merged and closed; updater #4/#15 remain blocked; #205 is tracked by PR #206.
+- Verified beta HEAD remained `78a3d12eb018e112a3443377e34e234ee9d3da7d` at the time of this refresh. PR #195 merge commit is `3959d890f7a65f69e9eb78d5e3339b3a88746097`.
+
+
+### Markdown lint correction — 2026-11-28
+
+- The first exact-head Markdown quality run (#46069995791) failed on one Markdown parsing issue in AGENTS.md: unquoted wildcard branch patterns were interpreted as emphasis (MD037).
+- Wrapped `infra/*` and `beta-legacy-*` in inline code. No policy meaning changed. The correction is on the same PR branch; a fresh Markdown run is required for the new head.
+
+
+## 2026-11-28 — Agent documentation consolidation merged (#205)
+
+- PR [#206](https://github.com/iNeonyne/LastHavenPlus/pull/206) merged to beta at `298b9fdaaa5b131d4442f5b40a22284584171ede`; source head was `0a3ff85d3ad4af1c54ede3f27d6f8a4de6ac48ad`.
+- Exact-head Markdown gate [#46070052764](https://github.com/iNeonyne/LastHavenPlus/actions/runs/46070052764) passed. Post-merge beta Markdown gate [#46070108200](https://github.com/iNeonyne/LastHavenPlus/actions/runs/46070108200) passed.
+- Verified beta HEAD and the merged README, AGENTS.md, AGENT_PROTOCOL.md, CONTRIBUTING.md, and AGENT_WORK.md content. Issue #205 closed after successful merge; no `agent:blocked` label was applied.
+- Updated the live AGENT_WORK.md snapshot to replace the pre-merge #205 state with its completed merge SHA and CI evidence.
+- Documentation-only change. No application source/runtime, dependencies, CI configuration, signing, release, tag, or main promotion changed.

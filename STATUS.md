@@ -1,10 +1,10 @@
 ## Current project snapshot — 2026-11-27
 
-- **Verified beta HEAD:** `78a3d12eb018e112a3443377e34e234ee9d3da7d` (PR #203 has not yet been merged).
+- **Verified beta baseline before PR #203 synchronization:** `ce13c2968c67fe680dc38c35ad13a5c7bb78ab73`.
 - **Browser engine:** Mozilla GeckoView 161 Stable, ARM64 only; AndroidX Core 1.19.1; ktfmt 0.65.
 - **Integrated:** PR #199 (GeckoView 160 audit), PR #200 (manual dependency-report workflow), and PR #201 (GeckoView 161/dependency audit). Issues #20 and #188 are closed after successful integration.
 - **PR #203 / issue #67:** current-beta rights and third-party notice work. The owner has directed that Google Play services must not be used. The entire `com.google.android.gms` group is excluded from GeckoView 161; release CI verifies the resolved dependency graph and DEX class definitions. GeckoView WebAuthn/passkey sign-in is unavailable in this build. The Settings viewer includes the project-rights notice, third-party notices, Apache-2.0/MPL-2.0 texts and the 94-entry GeckoView 161 about:license inventory.
-- **Exact-head verification for PR #203 head `062e3cc6726737af51229ef5605f59d1957e0572`:** Android build/unit tests, Markdown quality gate, packaged rights/notices/license-inventory checks, Google Play services dependency/DEX checks, and independent two-build APK reproducibility all passed (runs #46069113208, #46069113209 and #46069113215). The PR remains open pending Chaty's final integration/merge.
+- **PR #203 exact-head verification:** see the live pull request for current check runs. Checks on any pre-synchronization head do not validate a later branch merge; rerun the full required suite after synchronizing with beta.
 - **Addon Manager Phase B remains the top project priority**, gated by navigation/back-stack #147, bridge-port work #183, and physical ARM64 acceptance #167.
 - No physical ARM64 device test of GeckoView 161 has been performed. No release, tag, or `main` promotion is authorized by this snapshot.
 - Dated sections below are historical records; their branch heads and task statuses must not override this current snapshot.
