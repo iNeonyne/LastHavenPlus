@@ -38,6 +38,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -116,8 +117,8 @@ fun HomeScreen(
   if (showExitDialog) {
     AlertDialog(
       onDismissRequest = { showExitDialog = false },
-      title = { Text("Exit LastHavenPlus?") },
-      text = { Text("Your game data remains stored on this device.") },
+      title = { Text(stringResource(R.string.home_exit_title)) },
+      text = { Text(stringResource(R.string.home_exit_message)) },
       confirmButton = {
         Button(
           onClick = {
@@ -125,11 +126,13 @@ fun HomeScreen(
             onExit()
           }
         ) {
-          Text("Exit")
+          Text(stringResource(R.string.home_exit_confirm))
         }
       },
       dismissButton = {
-        TextButton(onClick = { showExitDialog = false }) { Text("Cancel") }
+        TextButton(onClick = { showExitDialog = false }) {
+          Text(stringResource(R.string.action_cancel))
+        }
       },
     )
   }
@@ -149,14 +152,14 @@ private fun HomeBranding(modifier: Modifier = Modifier, compact: Boolean) {
     ) {
       Image(
         painter = painterResource(R.drawable.ic_launcher_foreground),
-        contentDescription = "LastHavenPlus",
+        contentDescription = stringResource(R.string.app_name),
         contentScale = ContentScale.Fit,
         modifier = Modifier.padding(12.dp),
       )
     }
     Spacer(Modifier.height(24.dp))
     Text(
-      "LASTHAVEN",
+      stringResource(R.string.home_wordmark),
       color = DesignTokens.textPrimary,
       fontSize = if (compact) 34.sp else 46.sp,
       fontWeight = FontWeight.Black,
@@ -164,7 +167,7 @@ private fun HomeBranding(modifier: Modifier = Modifier, compact: Boolean) {
       textAlign = if (compact) TextAlign.Center else TextAlign.Start,
     )
     Text(
-      "PLUS",
+      stringResource(R.string.home_wordmark_suffix),
       color = DesignTokens.frost,
       fontSize = if (compact) 18.sp else 22.sp,
       fontWeight = FontWeight.Bold,
@@ -173,7 +176,7 @@ private fun HomeBranding(modifier: Modifier = Modifier, compact: Boolean) {
     )
     Spacer(Modifier.height(10.dp))
     Text(
-      "Return to Azeroth.",
+      stringResource(R.string.home_tagline),
       color = DesignTokens.textSecondary,
       fontSize = 16.sp,
       textAlign = if (compact) TextAlign.Center else TextAlign.Start,
@@ -202,20 +205,20 @@ private fun HomeActions(
         verticalArrangement = Arrangement.spacedBy(14.dp),
       ) {
         Text(
-          "READY TO PLAY",
+          stringResource(R.string.home_ready),
           color = DesignTokens.frost,
           fontSize = 12.sp,
           fontWeight = FontWeight.Bold,
           letterSpacing = 2.sp,
         )
         Text(
-          "Wrath of the Lich King",
+          stringResource(R.string.home_game_title),
           color = DesignTokens.textPrimary,
           style = MaterialTheme.typography.titleLarge,
           fontWeight = FontWeight.SemiBold,
         )
         Text(
-          "Your adventure continues where you left it.",
+          stringResource(R.string.home_game_subtitle),
           color = DesignTokens.textSecondary,
           style = MaterialTheme.typography.bodyMedium,
         )
@@ -230,14 +233,19 @@ private fun HomeActions(
           shape = RoundedCornerShape(DesignTokens.cornerCard),
           colors = DesignTokens.primaryButtonColors(),
         ) {
-          Text("PLAY", fontSize = 17.sp, fontWeight = FontWeight.Black, letterSpacing = 2.sp)
+          Text(
+            stringResource(R.string.home_play),
+            fontSize = 17.sp,
+            fontWeight = FontWeight.Black,
+            letterSpacing = 2.sp,
+          )
         }
         OutlinedButton(
           onClick = onOpenSettings,
           modifier = Modifier.fillMaxWidth().height(52.dp),
           shape = RoundedCornerShape(DesignTokens.cornerCard),
         ) {
-          Text("Settings & usage")
+          Text(stringResource(R.string.settings_title))
         }
       }
     }
@@ -252,10 +260,21 @@ private fun HomeActions(
           verticalAlignment = Alignment.CenterVertically,
         ) {
           Column(Modifier.weight(1f)) {
-            Text("Update available", color = DesignTokens.frost, fontWeight = FontWeight.Bold)
-            Text("LastHavenPlus $updateVersion", color = DesignTokens.textPrimary)
+            Text(
+              stringResource(R.string.home_update_badge),
+              color = DesignTokens.frost,
+              fontWeight = FontWeight.Bold,
+            )
+            Text(
+              stringResource(R.string.home_update_version, updateVersion),
+              color = DesignTokens.textPrimary,
+            )
           }
-          Text("View", color = DesignTokens.frost, fontWeight = FontWeight.Bold)
+          Text(
+            stringResource(R.string.action_view),
+            color = DesignTokens.frost,
+            fontWeight = FontWeight.Bold,
+          )
         }
       }
     }
