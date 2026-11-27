@@ -6,7 +6,7 @@
 
 - **Latest stable:** v2.3.0; no new release is authorized.
 - **Development:** beta HEAD `7e39d2553a11332d44326c1704e0d7647cc6aa40`.
-- **Integrated:** PR #166 Addon Manager planner groundwork at `d83e2dfc89087f67f7dbbe71e85668d80303e3ef`; PR #165 launcher strings at `7e39d2553a11332d44326c1704e0d7647cc6aa40`. PR #165 exact-head Android/unit tests, unsigned APK reproducibility and Markdown passed; #149 is closed.
+- **Integrated:** PR #166 Addon Manager planner groundwork at `d83e2dfc89087f67f4dbbe71e85668d80303e3ef`; PR #165 launcher strings at `7e39d2553a11332d44326c1704e0d7647cc6aa40`. PR #165 exact-head Android/unit tests, unsigned APK reproducibility and Markdown passed; #149 is closed.
 - **Open PR:** #173 GameSessionController (#146), draft at `eb9f64b672eced9143bc5689106223c3e7af3d16`. Markdown passed; Android and reproducibility are pending. Chaty is resolving documentation conflicts caused by the #165 merge and will rerun exact-head checks before merging.
 - **Vibe active:** #167 GeckoView 160 extension bridge (`agent:vibe`), explicitly assigned with strict file exclusions to avoid overlap with #173 integration. #146 is now `agent:chaty` for PR integration.
 - **Addon Manager:** Phase A and planner groundwork are integrated; extension installation, XHR/Worker interception and actual in-game activation are not implemented. #168/#169 remain blocked behind #167/runtime prerequisites.
