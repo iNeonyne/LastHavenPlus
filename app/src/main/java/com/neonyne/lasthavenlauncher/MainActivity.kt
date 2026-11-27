@@ -36,9 +36,13 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 
 private const val DEFAULT_GAME_URL = "https://lasthavens.com/play"
-private const val PREFERENCES_NAME = "launcher_settings"
+private const val PREFERENCES_NAME = UpdateFileCleanup.PREFERENCES_NAME
 private const val KEY_GAME_URL = "game_url"
-private const val KEY_PENDING_UPDATE_URI = "pending_update_uri"
+private const val KEY_PENDING_UPDATE_URI = UpdateFileCleanup.KEY_PENDING_UPDATE_URI
+private const val KEY_INSTALLER_HANDOFF_APK_NAME =
+  UpdateFileCleanup.KEY_INSTALLER_HANDOFF_APK_NAME
+private const val KEY_INSTALLER_HANDOFF_CANDIDATE_APK_NAME =
+  UpdateFileCleanup.KEY_INSTALLER_HANDOFF_CANDIDATE_APK_NAME
 
 enum class Screen {
   Home,
@@ -121,16 +125,53 @@ class MainActivity : ComponentActivity() {
       return
     }
 
-    startActivity(
-      Intent(Intent.ACTION_VIEW).apply {
-        setDataAndType(uri, "application/vnd.android.package-archive")
-        addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-      }
-    )
-    pendingUpdateUri = null
-    if (!preferences.edit().remove(KEY_PENDING_UPDATE_URI).commit()) {
-      Diagnostics.warn(this, "Updater", "Could not clear pending installer recovery state")
+    val handoffApkName =
+      UpdateFileCleanup.managedApkName(uri, packageName)
+        ?: error("Update installer URI does not reference a managed APK")
+    val previousHandoff = preferences.getString(KEY_INSTALLER_HANDOFF_APK_NAME, null)
+
+    // Persist a candidate before handing the URI to Android. If the process dies between the
+    // launch and promotion, cleanup protects both the previous handoff and this candidate.
+    check(
+      preferences.edit()
+        .putString(KEY_INSTALLER_HANDOFF_CANDIDATE_APK_NAME, handoffApkName)
+        .commit()
+    ) {
+      "Could not protect the APK before installer handoff"
     }
+
+    try {
+      startActivity(
+        Intent(Intent.ACTION_VIEW).apply {
+          setDataAndType(uri, "application/vnd.android.package-archive")
+          addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+        }
+      )
+    } catch (error: Exception) {
+      val rollback =
+        preferences.edit()
+          .remove(KEY_INSTALLER_HANDOFF_CANDIDATE_APK_NAME)
+          .putString(KEY_PENDING_UPDATE_URI, uri.toString())
+      if (previousHandoff == null) rollback.remove(KEY_INSTALLER_HANDOFF_APK_NAME)
+      else rollback.putString(KEY_INSTALLER_HANDOFF_APK_NAME, previousHandoff)
+      if (!rollback.commit()) {
+        Diagnostics.error(this, "Updater", "Could not restore installer handoff state")
+      }
+      pendingUpdateUri = uri
+      Diagnostics.error(this, "Updater", "Could not open Android package installer: ${error.message}")
+      return
+    }
+
+    val promote =
+      preferences.edit()
+        .putString(KEY_INSTALLER_HANDOFF_APK_NAME, handoffApkName)
+        .remove(KEY_INSTALLER_HANDOFF_CANDIDATE_APK_NAME)
+        .remove(KEY_PENDING_UPDATE_URI)
+    if (!promote.commit()) {
+      // The candidate was committed before launch and remains protected if promotion fails.
+      Diagnostics.warn(this, "Updater", "Installer opened, but handoff state promotion failed")
+    }
+    pendingUpdateUri = null
   }
 
   override fun onResume() {
