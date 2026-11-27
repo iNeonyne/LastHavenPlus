@@ -3,6 +3,7 @@ package com.neonyne.lasthavenlauncher
 import android.content.Context
 import android.os.Handler
 import android.os.Looper
+import android.os.SystemClock
 import androidx.annotation.MainThread
 import java.util.LinkedHashMap
 import java.util.concurrent.Executor
@@ -19,8 +20,7 @@ import org.mozilla.geckoview.WebExtension
  * through [AddonBridgePolicy], parses messages through [AddonBridgeProtocol] and serves read-only
  * answers from the Phase A local addon library snapshot, which remains the sole source of truth. It
  * never enables addons, touches the library, writes files or activates runtime injection. It is
- * intentionally unwired: session wiring happens after the GameSessionController boundary
- * integrates.
+ * intentionally unwired: issue #170 owns session/navigation wiring.
  *
  * All decision logic lives in the pure policy/protocol objects; this class only adapts GeckoView
  * types to them and fails closed on any mismatch. Library reads run on [worker]; the immutable
@@ -91,7 +91,8 @@ class AddonBridgeController(
         },
         { error ->
           mainHandler.post {
-            if (generation == installationGeneration) installInFlight = false
+            if (generation != installationGeneration) return@post
+            installInFlight = false
             Diagnostics.error(
               context,
               TAG,
@@ -105,7 +106,9 @@ class AddonBridgeController(
   /** Detaches the delegate and drops all session/port/pending state. */
   fun teardown() {
     installationGeneration += 1
+    snapshotGeneration += 1
     installInFlight = false
+    cachedSnapshot = null
     bridgeExtension?.setMessageDelegate(null, AddonBridgePolicy.NATIVE_MESSAGING_NAME)
     bridgeExtension = null
     val portsToDisconnect = connectedPorts.toList()
@@ -190,15 +193,19 @@ class AddonBridgeController(
 
   private fun respond(fields: Map<String, Any?>): Map<String, Any?>? {
     val request = AddonBridgeProtocol.parse(fields) ?: return null
-    if (!recordRequest(request.requestId, System.currentTimeMillis())) return null
-    val response = buildResponse(request)
-    completeRequest(request.requestId)
-    val fields = response?.toFields() ?: return null
-    val encodedBytes = JSONObject(fields).toString().toByteArray(Charsets.UTF_8).size
+    if (!recordRequest(request.requestId, SystemClock.elapsedRealtime())) return null
+    val response =
+      try {
+        buildResponse(request)
+      } finally {
+        completeRequest(request.requestId)
+      }
+    val responseFields = response?.toFields() ?: return null
+    val encodedBytes = JSONObject(responseFields).toString().toByteArray(Charsets.UTF_8).size
     if (!AddonBridgeProtocol.isResponseWithinByteLimit(encodedBytes)) {
       return AddonBridgeProtocol.error(request.requestId, "tooManyAddons")?.toFields()
     }
-    return fields
+    return responseFields
   }
 
   private fun senderAllowed(sender: WebExtension.MessageSender?): Boolean {
@@ -230,7 +237,9 @@ class AddonBridgeController(
       }
 
       override fun onConnect(port: WebExtension.Port) {
-        if (!senderAllowed(port.sender)) {
+        if (!senderAllowed(port.sender) ||
+          !AddonBridgeTimeoutPolicy.canAcceptConnection(connectedPorts.size)
+        ) {
           port.disconnect()
           return
         }
