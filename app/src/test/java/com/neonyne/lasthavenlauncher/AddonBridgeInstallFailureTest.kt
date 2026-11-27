@@ -27,18 +27,18 @@ class AddonBridgeInstallFailureTest {
     assertTrue(
       "runtime initialization failure must fail closed",
       ensureInstalled.contains(
-        "\"Addon bridge runtime initialization failed: ${error.message}\""
+        "\"Addon bridge runtime initialization failed: \${error.message}\""
       ) &&
         ensureInstalled
-          .substringAfter("\"Addon bridge runtime initialization failed: ${error.message}\"")
+          .substringAfter("\"Addon bridge runtime initialization failed: \${error.message}\"")
           .substringBefore("val installation =")
           .contains("completeInstallation(false)"),
     )
     assertTrue(
       "ensureBuiltIn failure must fail closed",
-      ensureInstalled.contains("\"Addon bridge extension install failed: ${error.message}\"") &&
+      ensureInstalled.contains("\"Addon bridge extension install failed: \${error.message}\"") &&
         ensureInstalled
-          .substringAfter("\"Addon bridge extension install failed: ${error.message}\"")
+          .substringAfter("\"Addon bridge extension install failed: \${error.message}\"")
           .substringBefore("installation.accept(")
           .contains("completeInstallation(false)"),
     )
@@ -56,7 +56,7 @@ class AddonBridgeInstallFailureTest {
     assertTrue(
       "delegate registration failure must fail closed",
       acceptBlock.contains(
-        "\"Addon bridge message delegate registration failed: ${error.message}\""
+        "\"Addon bridge message delegate registration failed: \${error.message}\""
       ),
     )
 
