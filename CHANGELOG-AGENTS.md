@@ -951,3 +951,11 @@ Entry format:
 - Independent unsigned APK reproducibility #45923143712 passed both clean builds and final APK hash/archive comparison.
 - Post-merge Markdown #45923143716 passed; documentation follow-up Markdown #45923558131 passed.
 - CI evidence is not physical-device evidence. No ARM64 hardware test, release, tag, publication or `main` promotion occurred.
+
+
+## 2026-11-27 — Addon Manager promoted to P0
+
+- Repository owner directed that Addon Manager Phase B become the project's top priority, superseding the previous updater-first scheduling decision.
+- Updated GitHub #23 to P0/Chaty-owned; #167 remains Vibe's sole active implementation assignment. #168/#169/#170 retain their documented dependency/security gates.
+- Paused updater #4/#15 by moving both from agent:chaty to agent:queued; work is paused, not cancelled, and may resume only after explicit Chaty reassignment.
+- Updated STATUS.md, ISSUES.md and AGENT_WORK.md to reflect the priority and queue. No application code, build configuration, signing, ABI, release or game files changed.
