@@ -88,6 +88,20 @@ class LauncherStringsResourceTest {
             "They are stored locally and reset on device reboot.",
         "diagnostics_privacy_hint" to "Logs are stored on this device. Review them before sharing.",
         "settings_show_notices" to "Third-party notices",
+        "action_back" to "Back",
+        "settings_brand_mark" to "LASTHAVENPLUS",
+        "updates_title" to "App updates",
+        "updates_status_section" to "Update status",
+        "updates_checking" to "Checking the stable release channel…",
+        "updates_available" to "LastHavenPlus %1$s is available.",
+        "updates_delta_available" to "A smaller differential package is available (%1$s MiB).",
+        "updates_downloading_delta" to "Downloading differential update…",
+        "updates_downloading_full" to "Downloading full APK…",
+        "updates_download_smaller" to "Download smaller update",
+        "updates_download_full" to "Download update",
+        "updates_download_full_instead" to "Download full APK instead",
+        "updates_no_info" to "No update information yet. Check for updates from Settings.",
+        "updates_download_status" to "Download status",
       )
     expected.forEach { (name, wording) ->
       assertTrue("Missing string resource: $name", name in declared)
