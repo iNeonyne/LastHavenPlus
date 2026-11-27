@@ -241,23 +241,23 @@ fun UpdateScreen(
   onBack: () -> Unit,
   onDownload: (preferDelta: Boolean) -> Unit,
 ) {
-  SettingsPageFrame(title = "App updates", onBack = onBack) {
-    PageSection(title = "Update status") {
+  SettingsPageFrame(title = stringResource(R.string.updates_title), onBack = onBack) {
+    PageSection(title = stringResource(R.string.updates_status_section)) {
       when {
         isChecking -> {
           LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
-          Text("Checking the stable release channel…", color = DesignTokens.textSecondary)
+          Text(stringResource(R.string.updates_checking), color = DesignTokens.textSecondary)
         }
         update != null -> {
           Text(
-            "LastHavenPlus ${update.version} is available.",
+            stringResource(R.string.updates_available, update.version),
             color = DesignTokens.textPrimary,
           )
           if (update.patch != null) {
             val patchMib =
               String.format(java.util.Locale.US, "%.1f", update.patch.size / 1024.0 / 1024.0)
             Text(
-              "A smaller differential package is available ($patchMib MiB).",
+              stringResource(R.string.updates_delta_available, patchMib),
               color = DesignTokens.textSecondary,
             )
           }
@@ -267,9 +267,9 @@ fun UpdateScreen(
           if (isDownloading) {
             val downloadLabel =
               if (downloadingDelta) {
-                "Downloading differential update…"
+                stringResource(R.string.updates_downloading_delta)
               } else {
-                "Downloading full APK…"
+                stringResource(R.string.updates_downloading_full)
               }
             LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
             Text(downloadLabel, color = DesignTokens.textSecondary)
@@ -283,7 +283,7 @@ fun UpdateScreen(
               },
               modifier = Modifier.fillMaxWidth(),
             ) {
-              Text(if (update.patch != null) "Download smaller update" else "Download update")
+              Text(if (update.patch != null) stringResource(R.string.updates_download_smaller) else stringResource(R.string.updates_download_full))
             }
             if (update.patch != null) {
               OutlinedButton(
@@ -293,20 +293,20 @@ fun UpdateScreen(
                 },
                 modifier = Modifier.fillMaxWidth(),
               ) {
-                Text("Download full APK instead")
+                Text(stringResource(R.string.updates_download_full_instead))
               }
             }
           }
         }
         else ->
           Text(
-            message ?: "No update information yet. Check for updates from Settings.",
+            message ?: stringResource(R.string.updates_no_info),
             color = DesignTokens.textSecondary,
           )
       }
     }
     if (message != null && update != null) {
-      PageSection(title = "Download status") { Text(message, color = DesignTokens.textSecondary) }
+      PageSection(title = stringResource(R.string.updates_download_status)) { Text(message, color = DesignTokens.textSecondary) }
     }
   }
 }
@@ -343,12 +343,12 @@ private fun SettingsPageFrame(
             style = MaterialTheme.typography.headlineSmall,
           )
           Text(
-            "LASTHAVENPLUS",
+            stringResource(R.string.settings_brand_mark),
             color = DesignTokens.frost,
             style = MaterialTheme.typography.labelSmall,
           )
         }
-        TextButton(onClick = onBack) { Text("Back") }
+        TextButton(onClick = onBack) { Text(stringResource(R.string.action_back)) }
       }
       content()
       Spacer(Modifier.height(12.dp))
