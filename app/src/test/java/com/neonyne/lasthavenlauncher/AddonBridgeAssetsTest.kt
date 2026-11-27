@@ -57,8 +57,10 @@ class AddonBridgeAssetsTest {
   fun `background script uses only the launcher native namespace`() {
     val background = File(assetsDir, "extensions/addon-bridge/background.js").readText()
     assertTrue(background.contains(AddonBridgePolicy.NATIVE_MESSAGING_NAME))
-    assertTrue(background.contains("""send("startup", "ping")"""))
-    assertTrue(background.contains("port.onDisconnect"))
+    assertTrue(background.contains("function scheduleReconnect()"))
+    assertTrue(background.contains("MAX_RECONNECT_DELAY_MS = 30000"))
+    assertTrue(background.contains("nextPort.onDisconnect"))
+    assertTrue(background.contains('send("startup-" + startupSequence, "ping")'))
     assertFalse(background.contains("eval("))
     assertFalse(background.contains("XMLHttpRequest"))
     assertNotNull(background)
