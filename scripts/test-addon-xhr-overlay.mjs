@@ -409,6 +409,17 @@ test("core fails closed on traversal, escapes and unsafe decoded paths", () => {
   );
 });
 
+test("encoded spellings of the addon prefix fail closed instead of reaching the network", () => {
+  const core = loadCore();
+  for (const url of [
+    "https://lasthavens.com/game/%49nterface/AddOns/Foo/bar.lua",
+    "https://lasthavens.com/game/Interface%2FAddOns%2FFoo%2Fbar.lua",
+    "https://lasthavens.com/blocks/%49nterface/AddOns/Foo/data.bin",
+  ]) {
+    assert.equal(core.resolveRoute("GET", url, BASE_HREF).kind, "notFound", url);
+  }
+});
+
 test("URL-normalized dot segments that leave the addon prefix pass through untouched", () => {
   const core = loadCore();
   for (const url of [
