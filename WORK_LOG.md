@@ -799,3 +799,9 @@ No branch was deleted. The available GitHub connector exposes no branch-delete o
 - Reconciled README.md and CHANGELOG.md with PR #203's rights/licensing changes and detailed v2.2/v2.3 release notes; inserted the published v2.4.0 release entry without losing the Unreleased GeckoView161/Play-services-exclusion notes.
 - Reapplied the live Addon Manager issue pointer in docs/GECKOVIEW_MIGRATION.md while preserving PR #203's Google Play/FIDO2 exclusion and pre-exclusion dependency-report caveats.
 - Exact-head Markdown and Android validation have not yet been confirmed for the merge-resolved PR head; no passing result is claimed until new Actions runs complete.
+
+
+### Markdown lint correction after beta merge — 2026-11-28
+
+- Exact PR validation on intermediate merge head `3c1dd70f7f234406df3f8caf26db85827e68a22e` found only MD047 trailing-newline violations in the retired pointer files `ISSUES.md` and `STATUS.md`.
+- Added the required single final newline to both files. The check was on an intermediate head and does not validate the final PR head; new exact-head Actions results are required.
