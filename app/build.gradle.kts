@@ -124,12 +124,11 @@ val verifyNoGooglePlayServicesInApk =
           archive.entries().asSequence().filter {
             it.name.matches(Regex("classes(\\d*)?\\.dex"))
           }
-        val containsGooglePlayServices =
-          dexEntries.any { entry ->
-            archive.getInputStream(entry).use { input ->
-              input.readBytes().toString(Charsets.ISO_8859_1).contains("com/google/android/gms")
-            }
+        val containsGooglePlayServices = dexEntries.any { entry ->
+          archive.getInputStream(entry).use { input ->
+            input.readBytes().toString(Charsets.ISO_8859_1).contains("com/google/android/gms")
           }
+        }
         check(!containsGooglePlayServices) {
           "Google Play services classes were found in the release APK."
         }
