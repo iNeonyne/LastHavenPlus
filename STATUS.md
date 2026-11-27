@@ -245,7 +245,7 @@ No code, CI, release, signing, dependency, ABI or device behavior changed in thi
 
 ## Agent PR integration workflow (2026-11-27)
 
-- **Verified policy change:** after Vibe submits a PR targeting `beta`, Chaty takes over integration, changes the linked issue ownership to `agent:chaty`, and makes required corrections directly on the PR head branch.
+- **Policy change recorded in PR #172:** after Vibe submits a PR targeting `beta`, Chaty takes over integration, changes the linked issue ownership to `agent:chaty`, and makes required corrections directly on the PR head branch. Exact-head Markdown validation passed; merge is pending.
 - Routine GitHub formal reviews and return-to-Vibe correction cycles are no longer the default. Chaty still performs full risk-based inspection, exact-head CI verification, conflict resolution, documentation checks and post-merge verification.
 - If Chaty cannot safely edit the branch (permissions, unclear ownership/scope, or a decision reserved for the owner), stop and document the specific blocker; do not bypass required checks or merge unverified code.
 - This changes the agent handoff process only. It does not authorize release publication, tags, or `beta`-to-`main` promotion.
