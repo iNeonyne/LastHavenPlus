@@ -63,7 +63,12 @@ android {
 }
 
 dependencies {
-  implementation(libs.geckoview.arm64)
+  // GeckoView's WebAuthn integration uses Google's proprietary FIDO2 client.
+  // This app deliberately ships without Google Play services; passkey sign-in
+  // is therefore unavailable, while other GeckoView/browser functionality remains.
+  implementation(libs.geckoview.arm64) {
+    exclude(group = "com.google.android.gms")
+  }
 
   implementation(libs.androidx.appcompat)
   implementation(libs.androidx.mediarouter)
