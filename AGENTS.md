@@ -241,7 +241,7 @@ When work changes verified state, update the appropriate operational records. Cl
 
 - Follow docs/BRANCH_LIFECYCLE.md for task branch naming, reuse, synchronization, retirement, and disposal. Refresh live branch/PR evidence before a cleanup decision; a point-in-time audit is not current proof.
 - Start task branches from beta and target routine implementation PRs to beta. Never develop routinely on main.
-- Do not merge infra/* branches wholesale into beta. Preserve beta-legacy-* snapshots unless the repository owner explicitly authorizes disposal; never wholesale-merge them.
+- Do not merge `infra/*` branches wholesale into beta. Preserve `beta-legacy-*` snapshots unless the repository owner explicitly authorizes disposal; never wholesale-merge them.
 - No agent except Chaty may merge PRs into beta.
 - No agent may promote beta to main, create a release tag, or publish a release without explicit repository-owner approval. Releases must come from an accepted main commit and pass the current release gates.
 - Never force-push shared branches, bypass required checks, or delete a branch without the explicit approval and record required by docs/BRANCH_LIFECYCLE.md.
