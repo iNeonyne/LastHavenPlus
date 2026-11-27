@@ -119,6 +119,34 @@ val verifyNoGooglePlayServicesInApk =
         "Release APK was not found for Google Play services verification."
       }
 
+      fun hasGooglePlayServicesClass(dex: ByteArray): Boolean {
+        fun readUInt(offset: Int): Int {
+          check(offset >= 0 && offset + 4 <= dex.size) { "Invalid DEX table offset." }
+          return (dex[offset].toInt() and 0xff) or
+            ((dex[offset + 1].toInt() and 0xff) shl 8) or
+            ((dex[offset + 2].toInt() and 0xff) shl 16) or
+            ((dex[offset + 3].toInt() and 0xff) shl 24)
+        }
+
+        val stringIdsOffset = readUInt(60)
+        val typeIdsOffset = readUInt(68)
+        val classDefsSize = readUInt(96)
+        val classDefsOffset = readUInt(100)
+
+        for (index in 0 until classDefsSize) {
+          val classIndex = readUInt(classDefsOffset + index * 32)
+          val descriptorIndex = readUInt(typeIdsOffset + classIndex * 4)
+          var cursor = readUInt(stringIdsOffset + descriptorIndex * 4)
+          while ((dex[cursor].toInt() and 0x80) != 0) cursor++
+          cursor++
+          val start = cursor
+          while (dex[cursor].toInt() != 0) cursor++
+          val descriptor = String(dex, start, cursor - start, Charsets.UTF_8)
+          if (descriptor.startsWith("Lcom/google/android/gms/")) return true
+        }
+        return false
+      }
+
       ZipFile(apk).use { archive ->
         val dexEntries =
           archive.entries().asSequence().filter {
@@ -126,11 +154,11 @@ val verifyNoGooglePlayServicesInApk =
           }
         val containsGooglePlayServices = dexEntries.any { entry ->
           archive.getInputStream(entry).use { input ->
-            input.readBytes().toString(Charsets.ISO_8859_1).contains("com/google/android/gms")
+            hasGooglePlayServicesClass(input.readBytes())
           }
         }
         check(!containsGooglePlayServices) {
-          "Google Play services classes were found in the release APK."
+          "Google Play services class definitions were found in the release APK."
         }
       }
     }
