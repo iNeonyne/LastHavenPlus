@@ -24,7 +24,8 @@ Apache Commons
 - License text: the applicable Apache-2.0 text is included in this app as apache_2_0.txt.
 
 Other runtime libraries
-- Guava / failureaccess: Apache License 2.0; Google and contributors.
+- Guava 33.3.1-android: Apache License 2.0, verified against the upstream `google/guava` source tag `v33.3.1` (`LICENSE` at that tag). The Maven POM does not declare a license; this source-tag evidence is recorded separately from Maven metadata.
+- `failureaccess:1.0.2`: license not yet independently verified from its exact source/artifact. Do not infer its license from Guava or list it under Apache-2.0 until that evidence is obtained.
 - SnakeYAML 2.2: Apache License 2.0; SnakeYAML contributors.
 - JetBrains annotations and JSpecify: Apache License 2.0; respective contributors.
 - License text: the applicable Apache-2.0 text is included in this app as apache_2_0.txt.
