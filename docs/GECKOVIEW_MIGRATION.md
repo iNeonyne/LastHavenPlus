@@ -183,8 +183,13 @@ Addon Manager Phase B is a separate P0 project milestone and remains gated by #1
 - Published v2.1.0 tag run [#45603533787](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45603533787) built versionName 2.1.0 / versionCode 2001000; signature, established certificate, ARM64-only ABI, differential generation and asset upload/publish steps passed. The final draft-by-tag lookup failed HTTP 404; PR #54 later changed cleanup and verification to use the release ID output from the release action. PR #54 exact-head validation passed in run #45610110307; post-merge signed beta run [#45610518305](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45610518305) passed build, unit tests, established signing-certificate verification and ARM64-only ABI checks.
 - Physical ARM64 game/profile/UI/update verification remains unverified; CI does not replace the device matrix.
 
-Remaining work:
-1. Complete physical ARM64 game, profile, permission, media, navigation and updater tests.
-2. Inspect the adaptive launcher icon in the built APK.
-3. Reconcile the resolved `releaseRuntimeClasspath` (via `./gradlew app:dependencies`) with the POM inventory and the #99 catalog once a Gradle-capable environment is available, and package the MPL 2.0 notice text with the APK before any external distribution.
-4. Exercise the release-ID draft cleanup/verification path and optional differential fallback failure cases on a future owner-authorized versioned release run; do not republish v2.1.0 for testing.
+## GeckoView 160 audit scope completion
+
+The documentation/research deliverables for issue #20 are now recorded:
+
+1. **Artifact and transitive dependency inventory:** exact GeckoView 160 ARM64 coordinates, POM/module metadata and the resolved runtime graph are documented. The current beta snapshot records 145 selected module coordinates; the original Gradle output is retained as a CI artifact.
+2. **License and notice obligations:** the 111-POM transitive closure and declared license status are recorded. Guava and failureaccess are verified against the upstream source tag; the listenablefuture conflict-placeholder POMs have no license declaration and remain explicitly unclassified. GeckoView's MPL-2.0 source-code obligations are documented.
+3. **Used API cross-check:** the integration surface is listed with compile/reflection evidence against the pinned 160 AAR and the limitation that published Javadocs are for the moving 163 snapshot.
+4. **APK-size impact:** release asset metadata through v2.3.0 is recorded. The available Cefrium-to-GeckoView comparison is not engine-only because other launcher/updater changes shipped at the same time; a reliable engine-only delta cannot be produced without rebuilding the removed Cefrium implementation.
+
+Separate gates remain outside issue #20: physical ARM64 gameplay/profile/UI verification; inspecting GeckoView's embedded `about:license` inventory and the packaged APK before any external distribution; and making an accessible GeckoView 160 source-code route available to recipients if executable distribution is undertaken. No physical-device compatibility claim is made by this audit.
