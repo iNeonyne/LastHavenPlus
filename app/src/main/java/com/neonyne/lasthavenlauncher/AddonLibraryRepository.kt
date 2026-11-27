@@ -15,6 +15,8 @@ import java.util.UUID
 import java.util.zip.ZipEntry
 import java.util.zip.ZipOutputStream
 
+internal const val MAX_ADDON_LIBRARY_ITEMS = 10_000
+
 data class AddonLibraryItem(
   val title: String,
   val folder: String,
@@ -47,7 +49,6 @@ class AddonLibraryRepository(
 ) {
   private companion object {
     const val MIN_FREE_SPACE_RESERVE_BYTES = 1024L * 1024L
-    const val MAX_LIBRARY_ITEMS = 10_000
     const val TXN_PREFIX = ".txn-"
     const val BACKUP_PREFIX = ".backup-"
     const val REMOVE_PREFIX = ".remove-"
@@ -94,7 +95,7 @@ class AddonLibraryRepository(
     val count =
       properties.getProperty("count")?.toIntOrNull()
         ?: throw IllegalStateException("Addon library index is invalid.")
-    require(count in 0..MAX_LIBRARY_ITEMS) { "Addon library index contains too many entries." }
+    require(count in 0..MAX_ADDON_LIBRARY_ITEMS) { "Addon library index contains too many entries." }
     val addons =
       (0 until count).map { index ->
         fun value(key: String): String =
@@ -194,7 +195,7 @@ class AddonLibraryRepository(
         }
         val projectedCount =
           current.addons.count { it.folder.lowercase(Locale.ROOT) !in replacing } + imported.size
-        require(projectedCount <= MAX_LIBRARY_ITEMS) {
+        require(projectedCount <= MAX_ADDON_LIBRARY_ITEMS) {
           "Addon library contains too many entries."
         }
 
@@ -250,7 +251,7 @@ class AddonLibraryRepository(
             )
         }
 
-        require(nextItems.size <= MAX_LIBRARY_ITEMS) {
+        require(nextItems.size <= MAX_ADDON_LIBRARY_ITEMS) {
           "Addon library contains too many entries."
         }
 
