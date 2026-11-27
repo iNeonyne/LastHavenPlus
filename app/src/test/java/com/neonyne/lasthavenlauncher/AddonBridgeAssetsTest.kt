@@ -60,6 +60,8 @@ class AddonBridgeAssetsTest {
     assertTrue(background.contains("function scheduleReconnect()"))
     assertTrue(background.contains("MAX_RECONNECT_DELAY_MS = 30000"))
     assertTrue(background.contains("nextPort.onDisconnect"))
+    assertTrue(background.contains("if (expired && port)"))
+    assertTrue(background.contains("stalePort.disconnect()"))
     assertTrue(background.contains('send("startup-" + startupSequence, "ping")'))
     assertFalse(background.contains("eval("))
     assertFalse(background.contains("XMLHttpRequest"))
