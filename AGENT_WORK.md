@@ -1,7 +1,7 @@
 # Agent work assignments — LastHavenPlus
 
 **Last verified:** 2026-11-27  
-**Verified beta HEAD after PR #165:** `7e39d2553a11332d44326c1704e0d7647cc6aa40`  
+**Verified beta HEAD after PR #175:** `022b4e2c4880d13b23e4e8c22cbd3dd5be679623` (documentation-only follow-up; latest app-code merge remains PR #173 at `5ed6af635954c8f4e2673dab3c60334eff4a8ae0`).  
 **Stable release:** v2.3.0 (tag commit ebc5b424e83ae66c2b0accc2bec6f050b8dc0d88).
 
 ## Roles and integration
