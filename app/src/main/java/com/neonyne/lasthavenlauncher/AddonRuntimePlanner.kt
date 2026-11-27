@@ -1,8 +1,8 @@
 package com.neonyne.lasthavenlauncher
 
 import java.security.MessageDigest
-import java.util.PriorityQueue
 import java.util.Locale
+import java.util.PriorityQueue
 
 sealed class AddonBlockedReason {
   data class MissingDependencies(val missing: List<String>) : AddonBlockedReason()
@@ -26,7 +26,7 @@ data class AddonLoadPlan(
  */
 object AddonRuntimePlanner {
   /**
-   * Input contract: snapshots must come from the validated local library. Enforce the same archive
+   * Input contract: snapshots must come from the validated local library. Enforce the validated library
    * limits here as a defensive boundary before a future runtime consumes the plan.
    */
   fun plan(snapshot: AddonLibrarySnapshot): AddonLoadPlan {
