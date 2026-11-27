@@ -18,6 +18,8 @@ class AddonBridgeAssetsTest {
     assertTrue(dir.isDirectory)
     assertTrue(File(dir, "manifest.json").isFile)
     assertTrue(File(dir, "background.js").isFile)
+    assertTrue(File(dir, "runtime-core.js").isFile)
+    assertTrue(File(dir, "bridge.js").isFile)
   }
 
   @Test
@@ -26,6 +28,13 @@ class AddonBridgeAssetsTest {
     assertTrue(manifest.contains("\"id\": \"${AddonBridgePolicy.BRIDGE_EXTENSION_ID}\""))
     assertTrue(manifest.contains("\"manifest_version\": 2"))
     assertTrue(manifest.contains("\"version\": \"0.5.1\""))
+    assertTrue(manifest.contains("\"run_at\": \"document_start\""))
+    assertTrue(manifest.contains("\"https://lasthavens.com/play\""))
+    assertTrue(manifest.contains("\"https://lasthavens.com/play/\""))
+    assertTrue(manifest.contains("\"runtime-core.js\""))
+    assertTrue(manifest.contains("\"bridge.js\""))
+    assertFalse(manifest.contains("\"<all_urls>\""))
+    assertFalse(manifest.contains("\"all_frames\": true"))
   }
 
   @Test
@@ -50,7 +59,7 @@ class AddonBridgeAssetsTest {
     val files = dir.walkTopDown().filter { it.isFile }.toList()
     assertTrue(files.size in 2..8)
     files.forEach { assertTrue("${it.name} too large", it.length() <= 64 * 1024) }
-    assertEquals(2, files.size)
+    assertEquals(4, files.size)
   }
 
   @Test
