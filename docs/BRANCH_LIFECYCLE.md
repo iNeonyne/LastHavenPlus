@@ -23,6 +23,9 @@ Goal: control branch growth without losing useful or unmerged work. This documen
 - Open-PR branches remain active. Stale branches are candidates for review, not automatic deletion.
 
 ### Retirement
+
+**Repository-setting conflict — verified live 2026-11-28:** GitHub currently reports `delete_branch_on_merge: true`, which automatically deletes a PR's head branch after merge. This conflicts with the branch-retention policy introduced in PR #203 (retain merged and abandoned branches as archives). Markdown cannot override this repository setting. If the owner wants task branches retained, disable **Automatically delete head branches** in GitHub **Settings → General → Pull Requests** before merging further PRs. Until it is disabled, agents must not claim merged task branches are retained, and Chaty must treat this setting as an integration precondition. Do not attempt manual workarounds or delete branches by hand.
+
 - A branch may be proposed for retirement after its PR is merged, closed with work superseded/abandoned, or the owner declares it obsolete.
 - **Repository setting (verified live 2026-11-26 via repository metadata): `delete_branch_on_merge` is enabled.** GitHub automatically deletes a PR's head branch when the PR is merged. Consequences:
   - Merged task branches disappear without a manual step; no separate disposal-log entry is required for an auto-deleted merged head branch.
