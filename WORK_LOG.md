@@ -758,3 +758,12 @@ No branch was deleted. The available GitHub connector exposes no branch-delete o
 
 - The first exact-head Markdown quality run (#46069995791) failed on one Markdown parsing issue in AGENTS.md: unquoted wildcard branch patterns were interpreted as emphasis (MD037).
 - Wrapped `infra/*` and `beta-legacy-*` in inline code. No policy meaning changed. The correction is on the same PR branch; a fresh Markdown run is required for the new head.
+
+
+## 2026-11-28 — Agent documentation consolidation merged (#205)
+
+- PR [#206](https://github.com/iNeonyne/LastHavenPlus/pull/206) merged to beta at `298b9fdaaa5b131d4442f5b40a22284584171ede`; source head was `0a3ff85d3ad4af1c54ede3f27d6f8a4de6ac48ad`.
+- Exact-head Markdown gate [#46070052764](https://github.com/iNeonyne/LastHavenPlus/actions/runs/46070052764) passed. Post-merge beta Markdown gate [#46070108200](https://github.com/iNeonyne/LastHavenPlus/actions/runs/46070108200) passed.
+- Verified beta HEAD and the merged README, AGENTS.md, AGENT_PROTOCOL.md, CONTRIBUTING.md, and AGENT_WORK.md content. Issue #205 closed after successful merge; no `agent:blocked` label was applied.
+- Updated the live AGENT_WORK.md snapshot to replace the pre-merge #205 state with its completed merge SHA and CI evidence.
+- Documentation-only change. No application source/runtime, dependencies, CI configuration, signing, release, tag, or main promotion changed.
