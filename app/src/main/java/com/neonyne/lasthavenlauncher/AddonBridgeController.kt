@@ -16,9 +16,9 @@ import org.mozilla.geckoview.WebExtension
  * Android boundary for the bundled addon-bridge WebExtension (issue #167).
  *
  * The controller installs only the launcher-owned built-in extension, validates every native sender
- * through [AddonBridgePolicy], and serves read-only metadata/file chunks from the Phase A app-private
- * library. It never enables addons, writes library files or activates runtime interception. Issue
- * #170 owns production session/navigation wiring.
+ * through [AddonBridgePolicy], and serves read-only metadata/file chunks from the Phase A
+ * app-private library. It never enables addons, writes library files or activates runtime
+ * interception. Issue #170 owns production session/navigation wiring.
  *
  * Snapshot and file reads run on [worker]. Native responses are bounded; large payloads are exposed
  * only through revision-bound manifest pages and one bounded file chunk at a time.
@@ -57,8 +57,9 @@ class AddonBridgeController(
       worker.execute {
         val snapshotResult = runCatching(snapshotProvider)
         val snapshot = snapshotResult.getOrNull()
-        val manifestResult =
-          snapshot?.let { value -> runCatching { payloadProvider.buildManifest(value) } }
+        val manifestResult = snapshot?.let { value ->
+          runCatching { payloadProvider.buildManifest(value) }
+        }
         mainHandler.post {
           if (generation != snapshotGeneration) return@post
           val manifest = manifestResult?.getOrNull()
@@ -197,18 +198,16 @@ class AddonBridgeController(
     if (!AddonBridgeTimeoutPolicy.canAcceptPendingRequest(pendingRequests.size)) return null
 
     lateinit var pending: PendingPortRequest
-    val timeout =
-      Runnable {
-        if (pendingRequests[requestId] !== pending) return@Runnable
-        pendingRequests.remove(requestId)
-        if (generation == requestGeneration && connectedPorts.contains(port)) {
-          postPortResponse(
-            port,
-            AddonBridgeProtocol.error(requestId, "timeout")
-              ?: return@Runnable,
-          )
-        }
+    val timeout = Runnable {
+      if (pendingRequests[requestId] !== pending) return@Runnable
+      pendingRequests.remove(requestId)
+      if (generation == requestGeneration && connectedPorts.contains(port)) {
+        postPortResponse(
+          port,
+          AddonBridgeProtocol.error(requestId, "timeout") ?: return@Runnable,
+        )
       }
+    }
     pending = PendingPortRequest(port, generation, timeout)
     pendingRequests[requestId] = pending
     mainHandler.postDelayed(timeout, AddonBridgeTimeoutPolicy.REQUEST_TIMEOUT_MS)
