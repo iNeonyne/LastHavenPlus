@@ -33,6 +33,11 @@ port.onMessage.addListener((message) => {
   // Responses are consumed by later launcher issues; nothing leaves the extension here.
 });
 
+port.onDisconnect.addListener(() => pending.clear());
+
+// Exercise the native messaging round-trip as soon as the bundled bridge connects.
+send("startup", "ping");
+
 setInterval(() => {
   const now = Date.now();
   for (const [requestId, createdAt] of pending) {
