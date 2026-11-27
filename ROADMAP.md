@@ -23,6 +23,7 @@ After the Addon Manager software integration is safely handed off, resume the co
 
 - [#4 — Build reproducibility and updater test coverage](https://github.com/iNeonyne/LastHavenPlus/issues/4).
 - [#15 — Updater recovery](https://github.com/iNeonyne/LastHavenPlus/issues/15).
+- [#111 — Update progress and retry feedback](https://github.com/iNeonyne/LastHavenPlus/issues/111), sequenced after the recovery work.
 
 Keep overlapping updater implementation under one owner. Preserve verified full-APK fallback, bounded downloads, digest/signature validation and explicit user-controlled installation. The live issue assignments determine when this work resumes.
 
