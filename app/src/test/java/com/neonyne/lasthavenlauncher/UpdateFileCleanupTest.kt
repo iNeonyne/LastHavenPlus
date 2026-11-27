@@ -69,7 +69,7 @@ class UpdateFileCleanupTest {
         "another.package.updates",
         listOf("update_apks", name),
         "com.neonyne.lasthavenlauncher"
-      ),
+      )
     )
     assertNull(
       UpdateFileCleanup.managedApkName(
@@ -77,7 +77,7 @@ class UpdateFileCleanupTest {
         "com.neonyne.lasthavenlauncher.updates",
         listOf("other_root", name),
         "com.neonyne.lasthavenlauncher"
-      ),
+      )
     )
     assertNull(
       UpdateFileCleanup.managedApkName(
@@ -85,7 +85,7 @@ class UpdateFileCleanupTest {
         "com.neonyne.lasthavenlauncher.updates",
         listOf("update_apks", name),
         "com.neonyne.lasthavenlauncher"
-      ),
+      )
     )
   }
 
