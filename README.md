@@ -1,76 +1,47 @@
 # LastHavenPlus
 
-LastHavenPlus is an Android launcher for the existing LastHaven Wrath of the Lich King browser game. It hosts the game; it does not recreate, modify or develop the game client.
+LastHavenPlus is an Android launcher for the existing [LastHaven Wrath of the Lich King game](https://lasthavens.com/play). It provides a native launcher around the hosted game; it does not recreate or modify the game client.
 
+- **Latest stable release:** [v2.4.0](https://github.com/iNeonyne/LastHavenPlus/releases/tag/v2.4.0)
+- **Download:** [Latest Android release](https://github.com/iNeonyne/LastHavenPlus/releases/latest)
 - **Game:** [lasthavens.com/play](https://lasthavens.com/play)
-- **Latest stable release:** [v2.3.0 on GitHub Releases](https://github.com/iNeonyne/LastHavenPlus/releases/tag/v2.3.0)
-- **Development:** `beta`; stable releases: `main`
 
-## Compatibility and identity
+## Compatibility
 
-| Item | Configuration |
+| Item | Stable v2.4.0 |
 |---|---|
 | Android | Android 10 (API 29) and later |
-| CPU architecture | ARM64 only (`arm64-v8a`) |
-| Browser engine | Mozilla GeckoView 160 |
+| CPU architecture | ARM64 only (arm64-v8a) |
+| Browser engine | Mozilla GeckoView 160 Stable |
 | UI | Kotlin and Jetpack Compose |
-| Application ID | `com.neonyne.lasthavenlauncher` |
-| Game URL | `https://lasthavens.com/play` |
+| Application ID | com.neonyne.lasthavenlauncher |
 
-Preserve the application ID and established release signing identity to maintain update compatibility.
+The application ID and established release-signing identity are preserved so existing installations can receive compatible updates.
 
 ## Features
 
-The stable release includes the following launcher features; automated checks cover JVM behavior where applicable:
+- Native launcher and in-game settings menu.
+- GeckoView-based game hosting with a separate app-private browser profile.
+- Local addon ZIP import, export and library management. Addons are not activated inside the game in v2.4.0.
+- User-initiated update checks, verified full APK downloads and optional differential updates.
+- Local diagnostics and basic storage/network usage information.
 
-- **Gameplay recovery:** Honest initial loading, retryable page-load failure and renderer/process recovery states.
-- **Visual consistency:** Shared dark-frost design tokens, icy-blue accents, improved typography and touch targets, restrained overlay transitions and haptics for explicit actions.
-- **Direct launch:** The app opens directly into the game. Android Back opens a responsive in-game menu with Reload, Settings and Return to game; Settings does not initialize a separate game session.
-- **Navigation:** Settings, diagnostics and update details are full-screen pages rather than stacked popup dialogs. The existing GeckoSession is retained when the game view is detached for launcher pages.
-- **Responsive layout:** The in-game menu adapts to available window space; settings pages cap content width on larger windows. The Activity is resizeable.
-- **Launcher icon:** Adaptive icy-blue pixel-castle artwork with standard, round and mask-aware launcher resources.
-- **Accessibility:** The gameplay overlay exposes pane/heading semantics, a Compose input-focus entry point and reduced-motion-aware transitions.
-- **Settings and storage:** Installed APK size, persistent app-private data size and cache size are reported separately. App-private data includes GeckoView data and is not a profile-only measurement.
-- **Network usage:** Android per-UID counters report app traffic, including both game and updater traffic; they are not game-only totals.
-- **Diagnostics:** Bounded local diagnostic logs support viewing, clearing and explicit user-initiated sharing. Review logs before sharing.
-- **Updater:** Stable release checks and downloads remain user-initiated. Manifest, version, URL, payload and digest validation are applied; differential patch failures retain a verified full-APK fallback. Android's package installer controls installation.
-- **Addon manager (Phase A):** Import/export local ZIPs, maintain an app-private library, inspect TOC/dependency metadata and recover interrupted library transactions. The enabled flag is local metadata only; addons are not loaded or activated in the game. GeckoView runtime injection (Phase B) is not included.
+GeckoView uses its own browser profile. A fresh game login may be required after moving from the former browser engine. No supported Cefrium-to-GeckoView profile migration is provided.
 
-## GeckoView profile transition
+## Installation and updates
 
-GeckoView uses its own browser profile. No supported, verified migration of Cefrium cookies or other browser data has been established. Do not copy or delete existing Cefrium profile data as part of this transition. A fresh game login may be required.
+Download the ARM64 APK from the [latest release](https://github.com/iNeonyne/LastHavenPlus/releases/latest). Android may ask you to allow this launcher to install updates from this source. The launcher checks for updates only when you request it; Android's package installer controls installation.
 
-No physical ARM64 device verification of v2.4.0 gameplay, TalkBack traversal, adaptive-icon rendering or Addon Manager document-picker/session behavior has been performed. CI success is not device testing.
+## Privacy and compatibility notes
 
-The repository owner evaluates releases on their own schedule and may report gameplay, profile, browser API, media and updater behavior. Feedback is recorded in GitHub Issues and used to prioritize follow-up fixes; pending feedback is not a publication prerequisite.
+- The launcher does not include Google Play services modules. GeckoView passkey/WebAuthn integration is therefore unavailable; use another sign-in method.
+- The game and browser profile are stored in app-private data. Do not clear app data if you want to preserve the local profile.
+- The hosted game and third-party components remain subject to their own terms and licenses.
 
-## Build and test
+## Project roadmap
 
-Requirements: JDK 25, Gradle 9.7.1 via the committed Gradle Wrapper, Android SDK Platform 37.2 and Android Build Tools 37.0.0.
+The [roadmap](ROADMAP.md) is generated from live GitHub Issues and pull requests. It updates automatically as issues and PRs are opened, changed, labelled, closed or reopened. GitHub remains the source of truth for detailed scope and implementation status.
 
-```bash
-./gradlew assembleRelease
-./gradlew testDebugUnitTest
-```
+## Third-party notices
 
-A signed release build requires the established project keystore and credentials. CI obtains these from repository secrets; never commit keystores or credentials.
-
-## Release policy
-
-- Package ARM64 only.
-- Preserve application ID and established signing identity.
-- Keep update checks, downloads and installation user-initiated.
-- Never publish debug APKs or incomplete features.
-- Promote beta only after release gates pass and the owner explicitly approves.
-- The repository owner may test published releases and report findings on their own schedule. Pending feedback is not a release blocker.
-
-## Project workflow and records
-
-- `beta` is the development, integration and testing branch; `main` is the stable release branch.
-- Task PRs target `beta`. Chaty alone reviews and merges into beta.
-- `ISSUES.md` and GitHub Issues are the task sources of truth.
-- `STATUS.md` records verified, unverified and incomplete work plus exact CI evidence.
-- `AGENTS.md` and `AGENT_WORK.md` define contributor workflow and active assignments.
-- `CHANGELOG-AGENTS.md` and `WORK_LOG.md` preserve project/work-session history.
-
-See [Mozilla GeckoView consumer documentation](https://firefox-source-docs.mozilla.org/mobile/android/geckoview/consumer/index.html), [quick start](https://firefox-source-docs.mozilla.org/mobile/android/geckoview/consumer/geckoview-quick-start.html) and [WebExtensions documentation](https://firefox-source-docs.mozilla.org/mobile/android/geckoview/consumer/web-extensions.html).
+Original LastHavenPlus material is reserved to its copyright holder. Third-party components retain their own license terms and required notices. See [LICENSE](LICENSE), [NOTICE](NOTICE) and [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md). These notices do not grant rights to the hosted game or third-party assets.
