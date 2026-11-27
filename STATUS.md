@@ -241,3 +241,11 @@ No code, CI, release, signing, dependency, ABI or device behavior changed in thi
 - **Manifest:** declares `INTERNET` and `REQUEST_INSTALL_PACKAGES` only. No camera, microphone, geolocation or notification permission is declared. Package-install permission supports the explicit Android installer flow.
 - **Limitations:** this is a source audit, not physical-device verification of permission prompts or game features. No manifest, delegate, GeckoView setting or runtime behavior was changed.
 - **Validation:** exact-head Markdown quality workflow passed on initial PR head `e2ce22c44508a87f53fc4a57a03f82e0597550bc` (run #45889911748); Android/device tests are not applicable to documentation-only changes.
+
+
+## Agent PR integration workflow (2026-11-27)
+
+- **Verified policy change:** after Vibe submits a PR targeting `beta`, Chaty takes over integration, changes the linked issue ownership to `agent:chaty`, and makes required corrections directly on the PR head branch.
+- Routine GitHub formal reviews and return-to-Vibe correction cycles are no longer the default. Chaty still performs full risk-based inspection, exact-head CI verification, conflict resolution, documentation checks and post-merge verification.
+- If Chaty cannot safely edit the branch (permissions, unclear ownership/scope, or a decision reserved for the owner), stop and document the specific blocker; do not bypass required checks or merge unverified code.
+- This changes the agent handoff process only. It does not authorize release publication, tags, or `beta`-to-`main` promotion.
