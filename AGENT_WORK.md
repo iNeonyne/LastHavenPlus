@@ -36,7 +36,7 @@
 
 ## Vibe work queue
 
-Vibe has exactly one active implementation issue. A queued issue is not an assignment; it becomes startable only when Chaty changes its label to `agent:vibe` and posts a scope/acceptance comment.
+Vibe has exactly one active implementation issue at a time. After handing off a PR, Vibe immediately proceeds to the next explicitly assigned, independent issue while Chaty integrates prior PRs in parallel. A queued issue is not an assignment; it becomes startable only when Chaty changes its label to `agent:vibe` and posts a scope/acceptance comment.
 
 ### Chaty integration — #149 launcher-owned string resources
 - **GitHub ownership:** `agent:chaty`; PR #165 has been handed off and Chaty owns integration.
@@ -44,10 +44,10 @@ Vibe has exactly one active implementation issue. A queued issue is not an assig
 - **Chaty actions:** direct corrections are committed; verify exact-head Android and unsigned reproducibility runs #45916573658 and #45916573644, sync/verify against current beta, update PR metadata, then merge only when all gates pass.
 - **Corrections made:** UpdateScreen labels/actions are now resource-backed in default `values/strings.xml`; untranslated English duplicates were removed from locale-specific resource files. `SettingsDialogs.kt` Spotless violations found by exact-head CI were corrected. Required project documentation updates are included in this PR branch.
 - Preserve wording and punctuation. Exclude game content, diagnostics payloads, developer logs and protocol values. No updater behavior changes, GeckoView/session lifecycle, Addon Manager or game/client changes.
-- **Vibe:** no active implementation issue while Chaty integrates #149. Do not start #146 or any later item yet. #146 remains next in queue, pending successful #149 integration and a fresh file-overlap/dependency check.
+- **Vibe:** #146 is now active. Vibe starts this independent task immediately while Chaty integrates #149/#165; do not wait for PR #165 to merge. Chaty checked current open PR scopes: #165 changes launcher UI/resources/docs and #166 changes Addon Manager planner/repository/tests; neither overlaps MainActivity or GeckoSession ownership. PR #145 is closed unmerged.
 
-### Next — #146 GameSessionController (queued)
-- **Label:** `agent:queued`; do not start until #149 is handed off and Chaty explicitly assigns #146 after checking file overlap.
+### Active — #146 GameSessionController
+- **Label:** `agent:vibe`; explicitly assigned by Chaty on 2026-11-27. Vibe may implement now while Chaty integrates prior PRs. Dedicated branch from current beta; no MainActivity/GeckoSession overlap with current open PRs #165/#166.
 - Extract GeckoSession lifecycle and load/crash state into a focused controller/ViewModel. Preserve lazy process-scoped GeckoRuntimeProvider and the same live GeckoSession while detaching for Settings/Diagnostics/Update.
 - No navigation refactor (#147), gameplay window state (#148), updater, profile migration or unrelated MainActivity cleanup. Add focused state tests and exact-head Android validation.
 
@@ -95,7 +95,7 @@ Every open issue has exactly one `agent:*` label. The label distinguishes active
 | #67 | `agent:owner` | Rights and third-party notice decision |
 | #81 | `agent:queued` | Chaty documentation/evidence task; not started |
 | #12 | `agent:queued` | #11 test prerequisite merged; waiting for a Vibe turn and explicit assignment |
-| #146 | `agent:queued` | Vibe next after #149 handoff and file-overlap check |
+| #146 | `agent:vibe` | Active Vibe assignment; proceed independently while Chaty integrates prior PRs |
 | #167 | `agent:queued` | Phase B bridge port; waiting Vibe turn and Chaty assignment |
 | #168 | `agent:queued` | XHR overlay; wait for #167 and explicit assignment |
 | #169 | `agent:queued` | Worker/read masking; wait for #167 and explicit assignment |
