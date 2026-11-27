@@ -155,7 +155,40 @@ class AddonRuntimePayloadProviderTest {
   }
 
   @Test
-  fun rejectsUnsafeFoldersAndFileCountOverflow() = withRoot { root ->
+  fun rejectsFileCountOverflow() = withRoot { root ->
+    val directory = File(root, "ManyFiles")
+    assertTrue(directory.mkdirs())
+    for (index in 0..AddonRuntimePayloadProvider.MAX_RUNTIME_FILES) {
+      File(directory, "file-$index.bin").writeBytes(byteArrayOf())
+    }
+    val snapshot =
+      AddonLibrarySnapshot(
+        "revision",
+        listOf(
+          AddonLibraryItem(
+            title = "ManyFiles",
+            folder = "ManyFiles",
+            version = "",
+            interfaceVersion = "",
+            notes = "",
+            dependencies = emptyList(),
+            sizeBytes = 0,
+            filesCount = AddonRuntimePayloadProvider.MAX_RUNTIME_FILES + 1,
+            enabled = true,
+            importedAt = 0,
+            warnings = emptyList(),
+          )
+        ),
+      )
+    val error =
+      assertThrows(AddonRuntimePayloadException::class.java) {
+        AddonRuntimePayloadProvider(AddonLibraryRepository(root)).buildManifest(snapshot)
+      }
+    assertEquals("payloadTooLarge", error.code)
+  }
+
+  @Test
+  fun rejectsUnsafeFolders() = withRoot { root ->
     val unsafeFolder = File(root, "unit.frame")
     assertTrue(unsafeFolder.mkdirs())
     assertThrows(IllegalArgumentException::class.java) {
