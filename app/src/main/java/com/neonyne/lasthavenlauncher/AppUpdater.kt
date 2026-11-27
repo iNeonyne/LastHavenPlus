@@ -281,7 +281,10 @@ object AppUpdater {
           File(appContext.filesDir, "updates").apply {
             check(isDirectory || mkdirs()) { "Could not create the update download directory" }
           }
-        UpdateFileCleanup.removeAbandonedPartialFiles(updateDirectory)
+        UpdateFileCleanup.removeObsoleteFiles(
+          updateDirectory,
+          UpdateFileCleanup.protectedApkNames(appContext),
+        )
         val temporaryApk =
           File.createTempFile(
             "update-${update.versionCode}-",
