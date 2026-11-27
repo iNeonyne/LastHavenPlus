@@ -283,7 +283,10 @@ fun UpdateScreen(
               },
               modifier = Modifier.fillMaxWidth(),
             ) {
-              Text(if (update.patch != null) stringResource(R.string.updates_download_smaller) else stringResource(R.string.updates_download_full))
+              Text(
+                if (update.patch != null) stringResource(R.string.updates_download_smaller)
+                else stringResource(R.string.updates_download_full)
+              )
             }
             if (update.patch != null) {
               OutlinedButton(
@@ -306,7 +309,9 @@ fun UpdateScreen(
       }
     }
     if (message != null && update != null) {
-      PageSection(title = stringResource(R.string.updates_download_status)) { Text(message, color = DesignTokens.textSecondary) }
+      PageSection(title = stringResource(R.string.updates_download_status)) {
+        Text(message, color = DesignTokens.textSecondary)
+      }
     }
   }
 }
