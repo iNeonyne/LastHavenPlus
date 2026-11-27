@@ -25,7 +25,7 @@ Beta uses `org.mozilla.geckoview:geckoview-arm64-v8a:160.0.20261116130455`, a pr
 
 The app launches directly into the game. Android Back opens a responsive in-game overlay with Reload, Settings and Return to game while keeping the existing game session mounted. Settings, diagnostics and update details are launcher-owned full-screen destinations. Settings navigation detaches and later restores the existing GeckoView rather than creating a second game session.
 
-The Addon Manager's native Phase A library/import and bridge groundwork is present in beta, but verified in-game addon activation remains incomplete. Addon Manager Phase B remains on hold by owner instruction; this document does not claim that addon runtime behavior is complete.
+The Addon Manager's native Phase A library/import and bridge groundwork is present in beta, but verified in-game addon activation remains incomplete. Phase B is the top project priority and remains gated by navigation/back-stack consolidation (#147), bridge-port work (#183), and physical ARM64 acceptance (#167). This GeckoView 160 audit does not claim that addon runtime behavior is complete.
 
 Automated source/JVM tests cover selected navigation, bridge and GeckoView API contracts. They do not prove physical-device session retention, gameplay rendering, or addon activation. No physical ARM64 device verification is claimed.
 
@@ -115,7 +115,7 @@ Javadoc caveat: all documentation links describe the 163 mozilla-central snapsho
 
 ### Measured APK-size impact
 
-Sizes from GitHub release asset metadata (`assets[].size`), fetched 2026-11-25:
+Sizes from GitHub release asset metadata (`assets[].size`), fetched 2026-11-27 (including v2.3.0):
 
 | Release | Engine | APK bytes | MiB |
 |---|---|---:|---:|
@@ -123,8 +123,9 @@ Sizes from GitHub release asset metadata (`assets[].size`), fetched 2026-11-25:
 | v2.0.0 | GeckoView 160 | 96,334,724 | 91.9 |
 | v2.1.0 | GeckoView 160 | 96,444,836 | 92.0 |
 | v2.2.0 | GeckoView 160 | 96,451,277 | 92.0 |
+| v2.3.0 | GeckoView 160 | 96,502,073 | 92.0 |
 
-The v1.0.0 -> v2.0.0 change of `24,046,841` bytes (-20.0%) is not a pure engine delta: that changeset also contains the launcher Home redesign and updater hardening. The GeckoView 160 releases since then are stable (within ~0.13 MiB across three builds). A dedicated engine-only size comparison between comparable verified builds is unavailable without rebuilding a Cefrium-based APK, and is not worth producing given the Cefrium code is removed.
+The v1.0.0 -> v2.0.0 change of `24,046,841` bytes (-20.0%) is not a pure engine delta: that changeset also contains the launcher Home redesign and updater hardening. The GeckoView 160 releases since then are stable (within ~0.16 MiB across four builds). A dedicated engine-only size comparison between comparable verified builds is unavailable without rebuilding a Cefrium-based APK, and is not worth producing given the Cefrium code is removed.
 
 ## Runtime, session and UI lifecycle
 
@@ -172,7 +173,7 @@ The owner has reported that the app and GeckoView work on an ARM64 device. No de
 
 ## Addon boundary
 
-Issue #23 and all addon-manager work are on hold by owner instruction (2026-11-25). The previous XPI specification and audit remain historical reference only; do not investigate, assign or implement the manager until the owner explicitly approves resuming it. A WoW 3.3.5a addon ZIP/`.toc` package is not a Firefox WebExtension; GeckoView WebExtension support does not itself load game addons. Do not claim game addon injection.
+Addon Manager Phase B is a separate P0 project milestone and remains gated by #147, #183 and #167. This issue is restricted to the GeckoView 160 artifact/dependency documentation audit; it must not block or overlap addon runtime implementation. A WoW 3.3.5a addon ZIP/`.toc` package is not a Firefox WebExtension; GeckoView WebExtension support does not itself load game addons. Do not claim game addon injection.
 
 ## CI evidence and remaining work
 
