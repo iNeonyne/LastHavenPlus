@@ -1,11 +1,8 @@
-## 2026-11-27 — Vibe implements bounded XHR overlay (#168)
+## 2026-11-27 — PR #190 integrated; exact-head XHR overlay verification (#168)
 
-- **Assignment:** Chaty comment #7210226239 (04:57:06Z) made #168 Vibe's sole active implementation issue.
-- **Branch/base:** `vibe/addon-xhr-overlay-168`, created from beta `a90d7ce6e7589f3ecba1dc477ffd23fe223a223f` (contains required base `892494aa8f0333f907b2e730f6b754ba2dabe2a1`).
-- **Implementation:** new MAIN-world content script `xhr-overlay.js` serving exact same-origin `https://lasthavens.com` GET/HEAD addon routes from the bridge payload or failing closed with 404; block-byte slicing in both documented URL forms; RFC 9110 Range handling (206/416/multipart); `bundle-*` masking for payload folders; bounded lazy decode cache capped by the validated 16 MiB bundle limit; 20 s bridge-readiness wait matching the bridge startup cap. Registered as a second `manifest.json` content-script entry with `world: "MAIN"`, after the ISOLATED-world entry. No native bridge/protocol files were modified.
-- **Tests:** `scripts/test-addon-xhr-overlay.mjs` added (37 Node tests, all passing); `scripts/test-addon-bridge.mjs` manifest test updated for two content-script entries (7/7 passing); `AddonBridgeAssetsTest.kt` extended for the fifth asset, MAIN-world manifest assertions and a source-security test (226/226 JVM tests passing); CI workflow validates and runs both Node suites.
-- **Local validation:** Spotless ratchet vs origin/beta passed; `testDebugUnitTest` 226/226 passed; `lintDebug assembleDebug` passed with all 5 extension assets in the APK and arm64-v8a-only libs. Local `assembleRelease` was killed by the sandbox memory cgroup (environmental; CI's unsigned release build covers it).
-- **Handoff:** implementation commit `5a3499ee0e6893662b60c3d92af3b87507fb2bed` pushed; draft PR targeting beta submitted with exact-head evidence, limitations (no in-game activation, no Worker masking, no physical ARM64 device testing) and interpretation decisions. Issue #168 moves to review via Chaty.
+- PR #190 merged to `beta` at `1d5f55d0dcfdf37d1fa49c7f795adfdc3244cf5d`; exact-head Android #45950285046, independent unsigned APK reproducibility #45950285094 and Markdown #45950285026 passed.
+- PR #191 (#168) current head `984dfca7dd9563c68d611fa849b8f77d7932cbb5`; exact-head Android #45950055468, independent unsigned APK reproducibility #45950055462 and Markdown #45950055420 passed. The bounded MAIN-world XHR overlay includes asynchronous rejection, bounded lazy decode, Range handling, and regression coverage.
+- PR #191 requires synchronization with the newly merged #190 session wiring and fresh exact-head CI before merge. No physical ARM64 device test or in-game addon initialization is claimed.
 
 ## 2026-11-27 — Integrate GeckoView addon payload bridge and assign XHR overlay (#167/#168)
 
@@ -986,3 +983,11 @@ Entry format:
 - Cleanup now scans a bounded number of direct updater-directory entries, deletes only generated finalized APK names and abandoned partial files, and never follows symlinks or descends into directories. Pending installer APKs, last handoff APKs and crash-recovery candidates remain protected. Installer handoff state is persisted before launch and rolled back if launch fails.
 - Exact-head Android validation [#45948554037](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45948554037) passed lint, Spotless, JVM tests, unsigned release assembly and bundled MIT notice verification. Independent unsigned APK reproducibility [#45948554046](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45948554046) passed both clean builds and APK archive/hash comparison.
 - This does not complete broader updater reliability issues #4/#15. No automatic installation, signing/ABI/toolchain changes, physical ARM64 update test, release, tag or `main` promotion occurred.
+
+
+## 2026-11-27 — PR #190 GeckoView bridge session integration (source candidate)
+
+- PR [#190](https://github.com/iNeonyne/LastHavenPlus/pull/190) wires the launcher-owned GeckoView 160 extension bridge to the exact live game GeckoSession before initial navigation and crash restoration. It reuses the process-scoped GeckoRuntime and app-private addon library; refreshes the bounded payload snapshot before explicit reload/restore; and tears down the bridge delegate, ports, pending requests and worker executor with the owning composition.
+- This is source-level integration only. It does not implement XHR interception (#168), Worker/OPFS `blocks.idx` masking (#169), same-session Addon Manager navigation/page-world refresh (#170), or addon activation. No physical ARM64 test or in-game addon initialization is claimed.
+- Exact PR-head Android validation [#45947192586](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45947192586) and independent unsigned APK reproducibility [#45947192520](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45947192520) passed on head `0a291ca0edd7ac7db03ffe126a02349cbd1b758a`. Documentation updates require fresh exact-head Markdown and Android/reproducibility checks before merge.
+- Issue #167 remains open until physical ARM64 runtime acceptance and the remaining Addon Manager workstream gates are satisfied; merging this source integration does not imply runtime compatibility.

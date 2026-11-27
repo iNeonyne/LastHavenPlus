@@ -5,7 +5,7 @@
 - **P0 — Addon Manager Phase B (#23):** Chaty coordinates and integrates; Vibe has exactly one active implementation assignment, #168 (XHR resource overlay).
 - **Merged bridge foundation:** PR #177 and payload transport PR #180 are integrated into beta. PR #180 merge commit / verified beta HEAD: `892494aa8f0333f907b2e730f6b754ba2dabe2a1`.
 - **#167:** remains open, `agent:chaty`; Chaty owns integration follow-up and physical ARM64 runtime verification. Do not infer actual addon initialization from bridge transport.
-- **#168:** `agent:vibe`; active assignment. Vibe must complete only the bounded XHR resource overlay and its security/test contract. Implementation complete: draft PR targeting beta submitted with local test evidence; awaiting Chaty review and integration.
+- **#168:** `agent:vibe`; active assignment. Vibe must complete only the bounded XHR resource overlay and its security/test contract.
 - **#169:** `agent:blocked`; waits for #168 review and integration before Worker/`blocks.idx` masking.
 - **#170:** `agent:blocked`; waits for runtime tasks and navigation/session prerequisites.
 - **Paused:** updater #4/#15 remain queued, not cancelled. Resume only after Chaty explicitly reassigns them following a safe Addon Manager milestone handoff.
@@ -15,16 +15,18 @@
 
 ## Current state — 2026-11-27
 
+- PR #190 merged to beta at `1d5f55d0`; physical ARM64 runtime verification remains outstanding.
+
 - **Latest stable:** v2.3.0; no new release is authorized.
 - **Development:** beta HEAD `892494aa8f0333f907b2e730f6b754ba2dabe2a1`.
 - **Integrated:** PR #177 native-messaging foundation and PR #180 bounded ZIP 0.5.1 payload transport. Exact-head Android PR validation #45938326655 and unsigned reproducibility #45938326638 passed; no post-merge CI result is claimed.
-- **Addon Manager:** Phase A/planner and bridge transport code are integrated. Production session wiring, Worker/index masking (#169), same-session navigation (#170), and in-game addon activation remain incomplete; the bounded XHR overlay (#168) is implemented in a draft PR pending review.
+- **Addon Manager:** Phase A/planner and bridge transport code are integrated. Production session wiring, XHR (#168), Worker/index masking (#169), same-session navigation (#170), and in-game addon activation remain incomplete.
 - **Device/release:** no physical ARM64 runtime test, release, tag, publication or beta-to-main promotion is claimed or authorized.
 
 ## Current ownership
 
 - **Chaty active:** #23 coordination, #167 bridge follow-up/device verification, PR review and integration.
-- **Vibe active:** #168 XHR resource overlay; implemented, draft PR submitted, awaiting Chaty review.
+- **Vibe active:** #168 XHR resource overlay only.
 - **Blocked:** #169 waits for #168 integration; #170 waits for runtime/navigation prerequisites.
 - **Updater:** #4/#15 remain queued/paused under Chaty.
 - **Chaty queued:** #81 dependency-evidence documentation; not started. #20/#31 remain owner/authorization blocked.
@@ -934,3 +936,11 @@ Verify the current manifest and GeckoView delegates, then document the strict al
 - Cleanup now scans a bounded number of direct updater-directory entries, deletes only generated finalized APK names and abandoned partial files, and never follows symlinks or descends into directories. Pending installer APKs, last handoff APKs and crash-recovery candidates remain protected. Installer handoff state is persisted before launch and rolled back if launch fails.
 - Exact-head Android validation [#45948554037](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45948554037) passed lint, Spotless, JVM tests, unsigned release assembly and bundled MIT notice verification. Independent unsigned APK reproducibility [#45948554046](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45948554046) passed both clean builds and APK archive/hash comparison.
 - This does not complete broader updater reliability issues #4/#15. No automatic installation, signing/ABI/toolchain changes, physical ARM64 update test, release, tag or `main` promotion occurred.
+
+
+## 2026-11-27 — PR #190 GeckoView bridge session integration (source candidate)
+
+- PR [#190](https://github.com/iNeonyne/LastHavenPlus/pull/190) wires the launcher-owned GeckoView 160 extension bridge to the exact live game GeckoSession before initial navigation and crash restoration. It reuses the process-scoped GeckoRuntime and app-private addon library; refreshes the bounded payload snapshot before explicit reload/restore; and tears down the bridge delegate, ports, pending requests and worker executor with the owning composition.
+- This is source-level integration only. It does not implement XHR interception (#168), Worker/OPFS `blocks.idx` masking (#169), same-session Addon Manager navigation/page-world refresh (#170), or addon activation. No physical ARM64 test or in-game addon initialization is claimed.
+- Exact PR-head Android validation [#45947192586](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45947192586) and independent unsigned APK reproducibility [#45947192520](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45947192520) passed on head `0a291ca0edd7ac7db03ffe126a02349cbd1b758a`. Documentation updates require fresh exact-head Markdown and Android/reproducibility checks before merge.
+- Issue #167 remains open until physical ARM64 runtime acceptance and the remaining Addon Manager workstream gates are satisfied; merging this source integration does not imply runtime compatibility.

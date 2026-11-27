@@ -1,11 +1,10 @@
+## 2026-11-27 — PR #190 merged; PR #191 exact-head checks passed
+
+- PR #190 merged to `beta` at `1d5f55d0dcfdf37d1fa49c7f795adfdc3244cf5d`. Exact-head Android validation #45950285046, independent unsigned APK reproducibility #45950285094 and Markdown #45950285026 passed.
+- PR #191 / issue #168 current head `984dfca7dd9563c68d611fa849b8f77d7932cbb5`: Android #45950055468, independent unsigned APK reproducibility #45950055462 and Markdown #45950055420 passed.
+- PR #191 must be synchronized with the new beta bridge/session integration and rerun exact-head checks before merge. No physical ARM64 test or in-game addon activation is claimed.
+
 # Project status — LastHavenPlus
-
-## 2026-11-27 — Vibe submits #168 XHR overlay draft PR
-
-- **Vibe implementation:** #168 bounded MAIN-world XHR resource overlay implemented on branch `vibe/addon-xhr-overlay-168`, based on beta `a90d7ce6e7589f3ecba1dc477ffd23fe223a223f` (contains the required `892494aa8f0333f907b2e730f6b754ba2dabe2a1`). A draft PR targeting beta was submitted; it awaits Chaty review and integration.
-- **Local evidence:** 37/37 new Node overlay tests and 7/7 bridge Node tests pass; Spotless ratchet vs origin/beta passes; 226/226 JVM tests pass; lint and debug assembly pass with all 5 extension assets packaged (`xhr-overlay.js` 38,517 bytes, under the 64 KiB content-script cap) and arm64-v8a-only native libs. Local unsigned release assembly remains cgroup-OOM-blocked in the sandbox (dmesg-recorded); CI's unsigned release build covers that check.
-- **Scope:** interception restricted to exact same-origin `https://lasthavens.com` play pages, GET/HEAD only; addon routes are served from the bridge payload or fail closed with 404; `bundle-*` masking; RFC 9110 Range handling with 206/416/multipart support. No Worker/`blocks.idx` masking (#169), no navigation/session wiring (#170), no native bridge/protocol edits.
-- **Limitations:** the PR is not merged; no in-game addon activation, no post-merge CI result and no physical ARM64 runtime test is claimed. Interpretation decisions are documented in the PR description.
 
 ## 2026-11-27 — PR #180 integrated; Vibe assigned XHR overlay
 
@@ -294,3 +293,11 @@ No code, CI, release, signing, dependency, ABI or device behavior changed in thi
 - Cleanup now scans a bounded number of direct updater-directory entries, deletes only generated finalized APK names and abandoned partial files, and never follows symlinks or descends into directories. Pending installer APKs, last handoff APKs and crash-recovery candidates remain protected. Installer handoff state is persisted before launch and rolled back if launch fails.
 - Exact-head Android validation [#45948554037](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45948554037) passed lint, Spotless, JVM tests, unsigned release assembly and bundled MIT notice verification. Independent unsigned APK reproducibility [#45948554046](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45948554046) passed both clean builds and APK archive/hash comparison.
 - This does not complete broader updater reliability issues #4/#15. No automatic installation, signing/ABI/toolchain changes, physical ARM64 update test, release, tag or `main` promotion occurred.
+
+
+## 2026-11-27 — PR #190 GeckoView bridge session integration (source candidate)
+
+- PR [#190](https://github.com/iNeonyne/LastHavenPlus/pull/190) wires the launcher-owned GeckoView 160 extension bridge to the exact live game GeckoSession before initial navigation and crash restoration. It reuses the process-scoped GeckoRuntime and app-private addon library; refreshes the bounded payload snapshot before explicit reload/restore; and tears down the bridge delegate, ports, pending requests and worker executor with the owning composition.
+- This is source-level integration only. It does not implement XHR interception (#168), Worker/OPFS `blocks.idx` masking (#169), same-session Addon Manager navigation/page-world refresh (#170), or addon activation. No physical ARM64 test or in-game addon initialization is claimed.
+- Exact PR-head Android validation [#45947192586](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45947192586) and independent unsigned APK reproducibility [#45947192520](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45947192520) passed on head `0a291ca0edd7ac7db03ffe126a02349cbd1b758a`. Documentation updates require fresh exact-head Markdown and Android/reproducibility checks before merge.
+- Issue #167 remains open until physical ARM64 runtime acceptance and the remaining Addon Manager workstream gates are satisfied; merging this source integration does not imply runtime compatibility.
