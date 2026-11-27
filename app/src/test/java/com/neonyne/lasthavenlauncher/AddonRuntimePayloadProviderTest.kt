@@ -72,7 +72,8 @@ class AddonRuntimePayloadProviderTest {
       listOf("Textures/portrait.png", "UnitFrame.toc", "init.lua"),
       manifest.files.map { it.path },
     )
-    val expectedImageBytes = manifest.totalBytes - "## Interface: 30300\ninit.lua\n".length - "print('ready')".length
+    val expectedImageBytes =
+      manifest.totalBytes - "## Interface: 30300\ninit.lua\n".length - "print('ready')".length
     assertEquals(imageBytes.size.toLong(), expectedImageBytes)
     assertEquals(1, manifest.pageCount)
     assertEquals(3, provider.page(manifest, 0).size)
