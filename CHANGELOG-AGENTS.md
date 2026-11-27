@@ -927,3 +927,12 @@ Entry format:
 - Integrated only the pure dependency planner, validated TOC path handling, bounded planner inputs, strict game-route policy and GeckoView 160 native-port API assertions. No extension installation, XHR/Worker interception, Lua initialization or actual addon activation is implemented.
 - #167 moved from agent:blocked to agent:queued because its PR #166 prerequisite is now satisfied; Vibe remains active on #146. #168/#169 remain dependency-blocked.
 - Post-merge beta Android and reproducibility checks #45919654642/#45919654675 were running at the checkpoint. No physical ARM64 runtime test, release, tag or main promotion.
+
+
+## 2026-11-27 — Merge launcher strings and assign GeckoView extension bridge
+
+- PR #165 / issue #149 squash-merged to beta at `7e39d2553a11332d44326c1704e0d7647cc6aa40`. Exact-head Android/unit tests #45919879256, independent unsigned APK reproducibility #45919879249 and Markdown #45919879248 passed. Issue #149 closed.
+- PR #173 / issue #146 handed off by Vibe; Chaty changed ownership to `agent:chaty` and is integrating it. Exact head `eb9f64b672eced9143bc5689106223c3e7af3d16`; Markdown passed, Android and reproducibility checks were still running. Its docs conflict with the newly merged #165 changes and must be reconciled before merge.
+- Chaty explicitly assigned #167 to Vibe (`agent:vibe`) so bridge asset/adapter work can proceed independently while PR #173 is integrated. MainActivity, GameSessionController, GameSessionState, GameScreen and shared docs are excluded until the session-controller integration is complete.
+- Beta HEAD at this checkpoint: `7e39d2553a11332d44326c1704e0d7647cc6aa40`. Post-merge Android, Markdown and unsigned reproducibility runs #45920923646, #45920923679 and #45920923633 were running.
+- No physical ARM64 test, release, tag, publication or beta-to-main promotion.
