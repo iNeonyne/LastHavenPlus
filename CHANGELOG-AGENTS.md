@@ -936,3 +936,11 @@ Entry format:
 - Chaty explicitly assigned #167 to Vibe (`agent:vibe`) so bridge asset/adapter work can proceed independently while PR #173 is integrated. MainActivity, GameSessionController, GameSessionState, GameScreen and shared docs are excluded until the session-controller integration is complete.
 - Beta HEAD at this checkpoint: `7e39d2553a11332d44326c1704e0d7647cc6aa40`. Post-merge Android, Markdown and unsigned reproducibility runs #45920923646, #45920923679 and #45920923633 were running.
 - No physical ARM64 test, release, tag, publication or beta-to-main promotion.
+
+## 2026-11-27 — Integrate GameSessionController (#146)
+
+- PR [#173](https://github.com/iNeonyne/LastHavenPlus/pull/173) was reviewed against current beta, marked ready and squash-merged by Chaty at `5ed6af635954c8f4e2673dab3c60334eff4a8ae0`.
+- Exact PR-head Android validation #45921162358, unsigned APK reproducibility #45921162325 and Markdown #45921162310 passed. Post-merge Markdown #45923143716 passed; post-merge Android/signing/ARM64 run #45923143717 and reproducibility run #45923143712 were in progress at this checkpoint.
+- Integration review found no blocking code issue. The keep-alive invariant remains enforced by the composition-root `DisposableEffect`; physical ARM64 behavior remains unverified.
+- Closed #146 as completed. Changed #147 from `agent:blocked` to `agent:queued` because its session-controller dependency is now integrated; it is not assigned to Vibe yet.
+- No release, tag, publication, `main` promotion or physical-device test.
