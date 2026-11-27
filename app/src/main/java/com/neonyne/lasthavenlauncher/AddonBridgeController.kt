@@ -482,8 +482,7 @@ class AddonBridgeController(
 
       override fun onDisconnect(port: WebExtension.Port) {
         connectedPorts.remove(port)
-        val abandoned =
-          pendingRequests.filterValues { it.port === port }.toMap()
+        val abandoned = pendingRequests.filterValues { it.port === port }.toMap()
         for ((requestId, pending) in abandoned) {
           completePendingRequest(requestId, pending)
         }
