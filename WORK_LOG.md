@@ -619,11 +619,36 @@ No branch was deleted. The available GitHub connector exposes no branch-delete o
 - **Limitations:** JVM-only coverage; Android Context wrappers and on-device log sharing not exercised; GeckoView startup-version logging excluded per scope decision; no physical ARM64 device testing.
 - **Next action:** Chaty review of the fresh draft PR; #149 then #146 remain queued.
 
-### 2026-11-27 — Issue #146 GameSessionController extraction
 
-- **Issue:** #146 (`agent:vibe`; Chaty assignment comment 7206693458 and start confirmation 7206711619).
-- **Branch and starting commit:** `vibe/game-session-controller-146`, created from beta `d83e2df`.
-- **Files:** app/src/main/java/com/neonyne/lasthavenlauncher/GameSessionController.kt (new), GameSessionState.kt (new), MainActivity.kt (session lifecycle/state removed from the composition root), app/src/test/java/com/neonyne/lasthavenlauncher/GameSessionStateTest.kt (new, 17 tests), STATUS.md, ISSUES.md, AGENT_WORK.md, CHANGELOG-AGENTS.md, WORK_LOG.md.
-- **Validation:** `./gradlew spotlessCheck -PspotlessRatchetFrom=origin/beta testDebugUnitTest lintDebug assembleDebug` — Spotless pass, 181/181 JVM tests, lint pass, debug assembly pass at the implementation commit; exact-head CI run IDs reported in the PR description and issue #146 handoff comment.
-- **Limitations:** JVM-only coverage for the extracted policies; GeckoView session behavior verified by equivalent-code review, not on-device; no physical ARM64 device testing.
-- **Next action:** Chaty integration of the draft PR; #147 remains blocked until #146 integrates, #167–#169 await Chaty's separate assignments.
+### 2026-11-27 — Continue PR integration and activate parallel Vibe work
+
+- **Repository/base:** iNeonyne/LastHavenPlus; beta base for current PRs a1a6eebedc205f059eac98db474c503643d35588.
+- **PR #165 / issue #149:** inspected current diff and CI. The initial lint failure was 77 MissingTranslation errors because new default-locale strings were intentionally not duplicated into untranslated locale files. Added a scoped tools:ignore="MissingTranslation" to the newly extracted source strings only; existing localized Addon Manager resources remain unchanged. Updated README/AGENTS/AGENT_WORK/ISSUES/CHANGELOG/STATUS to document the integration workflow and current assignment.
+- **PR #165 commits:** resource fallback/lint correction cfd836925069f10207267e5542fac1f118cf82c3; workflow documentation commits 55d5ffc02ceae762a7a0818ab6fe76d0a55f42b9, 9b639f8610d1ca3395267dff4fbf362663b6c18f, c1d4d34178506d82b28356511fe6263ff95c4761, 7c83617b0d96ca5207197d4af4fdd722b3841391, 6c4b257090d1d25241637591836fc312977e82c8; status reconciliation 8ccadfb78ac9c2c7909d74b25194e623d88acf8c.
+- **PR #165 checks:** exact-head Markdown run #45918442671 passed. Android run #45918442673 is in progress after a retry; independent unsigned APK reproducibility run #45918442754 is in progress. The prior Android failure was a transient Maven Central HTTP 429 during Spotless dependency resolution, not a source/test failure.
+- **PR #166 / issue #23:** inspected the exact pinned GeckoView API. Port.postMessage accepts JSONObject; PortDelegate.onPortMessage accepts Object followed by Port. Corrected the reflection test accordingly and corrected the deep-chain test to assert the actual 512-node fixture. Improved blocked-dependency propagation to queue-based edge traversal rather than repeated full rescans. Latest code head a91fd23f1bde7da6c408f42dcb388ff6405ba9f3; exact-head Android/reproducibility runs must be checked after this commit. PR remains draft; no runtime activation, extension install, XHR/Worker interception, Lua initialization or physical-device test is claimed.
+- **Vibe assignment:** Chaty checked current PR file scopes and assigned issue #146 to Vibe (agent:vibe) while PR #165 and #166 integration proceeds. #146 touches MainActivity/GeckoSession ownership; neither open PR currently edits those files. Assignment comment #7206693458 contains behavior, scope, exclusions, tests and documentation requirements. Vibe is explicitly instructed not to wait for these PRs to merge.
+- **Files changed in this checkpoint:** PR #165 branch documentation/resource files; PR #166 planner and test files. No beta/main branch changes.
+- **Next safe action:** verify the latest exact-head CI for #165 and #166, inspect full diff/CI before merge, and continue Vibe #146 independently. No release, tag, publication, beta promotion, or physical ARM64 testing.
+
+
+### 2026-11-27 — PR #166 integration and dependency queue update
+
+- **PR:** #166 / issue #23 Phase B planner groundwork.
+- **Head:** 2b6055764ee93e0e6d3fcfaec3ad5c90db3e1a22; **base:** a1a6eebedc205f059eac98db474c503643d35588.
+- **Corrections:** corrected optional-dependency tie-breaking to prioritize enabled providers rather than consumers with more optional requirements; strengthened the test with an optional provider that itself has an optional dependency.
+- **Validation:** Android run #45919219905 passed (Spotless, unit tests, lint, unsigned release assembly); independent reproducibility #45919219912 passed (both clean builds and complete APK comparison).
+- **Merge:** squash merge commit d83e2dfc89087f67f4dbbe71e85668d80303e3ef; beta HEAD verified at that commit.
+- **Post-merge:** Android run #45919654642 and unsigned reproducibility #45919654675 were in progress. No runtime extension installation or physical ARM64 testing is claimed.
+- **Assignments:** #167 moved to agent:queued after its PR #166 dependency cleared; #168/#169 remain agent:blocked. Vibe remains actively assigned #146; #147 is next only after #146 integration.
+- **Next safe action:** finish PR #165 exact-head CI, integrate it if all gates pass, then verify post-merge beta CI and update the repository records. No release/tag/main promotion.
+
+
+### 2026-11-27 — Integrate #165 and start #167 while reviewing #173
+- **Issue/task:** #149 integration; #146 integration; #167 Vibe assignment.
+- **Beta before integration:** `d83e2dfc89087f67f7dbbe71e85668d80303e3ef`.
+- **Action:** PR #165 squash-merged at `7e39d2553a11332d44326c1704e0d7647cc6aa40`; exact-head Android/unit, reproducibility and Markdown checks passed on `a62c7cd3154586d35d85a99ed1964d33ba007733`. Issue #149 closed.
+- **Ownership:** #146 changed to `agent:chaty` after Vibe submitted PR #173. #167 changed to `agent:vibe`; assignment comment #7207049285 defines behavior, scope, exclusions, tests and docs requirements.
+- **PR #173:** head `eb9f64b672eced9143bc5689106223c3e7af3d16`; Markdown passed, Android and unsigned reproducibility were in progress. Mergeability became dirty after #165 updated overlapping docs. Chaty is reconciling docs and will rerun exact-head checks.
+- **Physical device:** no ARM64 hardware testing performed.
+- **Next safe action:** finish PR #173 code/doc review, resolve documentation merge conflicts, verify exact-head CI, then merge only if all gates pass.
