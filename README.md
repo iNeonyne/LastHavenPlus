@@ -20,7 +20,7 @@ This is an agent-operated repository. All code and documentation contributions m
 | Application ID | `com.neonyne.lasthavenlauncher` |
 | Game URL | `https://lasthavens.com/play` |
 
-The beta source currently pins GeckoView 161.0.20261118180411. The published v2.4.0 release used GeckoView 160; do not assume the release artifact and current beta source use the same engine version. Read the version catalog for the current beta pin.
+The published v2.4.0 release used GeckoView 160; beta's current engine pin is defined by the version catalog and may differ from a published release. Read the catalog for the exact beta version.
 
 The application ID and established release-signing identity must be preserved to maintain update compatibility.
 
