@@ -26,8 +26,8 @@ data class AddonLoadPlan(
  */
 object AddonRuntimePlanner {
   /**
-   * Input contract: snapshots must come from the validated local library. Enforce the validated library
-   * limits here as a defensive boundary before a future runtime consumes the plan.
+   * Input contract: snapshots must come from the validated local library. Enforce the validated
+   * library limits here as a defensive boundary before a future runtime consumes the plan.
    */
   fun plan(snapshot: AddonLibrarySnapshot): AddonLoadPlan {
     require(snapshot.addons.size <= MAX_ADDON_LIBRARY_ITEMS) {
@@ -102,12 +102,10 @@ object AddonRuntimePlanner {
 
     // Static optional-dependency preference keeps the ready queue deterministic and bounded
     // to O((V + E) log V), even for the full validated library limit.
-    val optionalPriority =
-      byLower.mapValues { (_, addon) ->
-        addon.optionalDependencies.count { it.lowercase(Locale.ROOT) in byLower }
-      }
-    val ready =
-      PriorityQueue<String>(compareBy({ optionalPriority.getValue(it) }, { it }))
+    val optionalPriority = byLower.mapValues { (_, addon) ->
+      addon.optionalDependencies.count { it.lowercase(Locale.ROOT) in byLower }
+    }
+    val ready = PriorityQueue<String>(compareBy({ optionalPriority.getValue(it) }, { it }))
     inDegree.filterValues { it == 0 }.keys.forEach(ready::add)
     val ordered = mutableListOf<AddonLibraryItem>()
     while (ready.isNotEmpty()) {
