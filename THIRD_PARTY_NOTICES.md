@@ -61,6 +61,6 @@ SCOPE AND VERIFICATION
 - Original LastHavenPlus code and documentation are All Rights Reserved; see the root `LICENSE` and `NOTICE`.
 - Third-party license texts are provided only for the corresponding third-party components.
 - The hosted LastHaven game and all third-party components/assets retain their own terms.
-- The exact unsigned APK was inspected: native libraries are packaged only under `lib/arm64-v8a`; the rights, third-party, Apache, MPL and GeckoView inventory resources are checked by PR CI. The resolved dependency graph is not proof that every listed module is packaged in the APK.
+- The exact GeckoView 161 baseline APK from PR #201 was inspected and contains native libraries only under `lib/arm64-v8a`. PR #203 adds the project-rights, third-party, Apache, MPL and GeckoView inventory resources, with an exact-APK CI check configured to verify their packaging. The resolved dependency graph is not proof that every listed module is packaged in the APK.
 - No physical-device test or signed release verification is claimed.
 
