@@ -745,3 +745,10 @@ No branch was deleted. The available GitHub connector exposes no branch-delete o
 - **Validation:** fetched the updated Markdown files from the task branch; checked headings and fenced-code balance. README.md has two balanced fences; the other updated entry-point docs have no fences. Manual local-link and full Markdown-lint validation remain to be confirmed by PR CI.
 - **Scope:** documentation only. No application source or runtime behavior changed. No branch deletion, release, tag, or promotion was performed.
 - **Next:** inspect exact PR diff and Markdown CI on the latest head; merge only after required checks pass, then verify the beta commit and close #205 as completed.
+
+
+## 2026-11-28 — Live assignment snapshot reconciled during #205
+
+- Rechecked live GitHub labels and open PRs before finalizing the documentation PR. The previous top block still named #169 as Vibe's active work even though PR #195 was merged and #169 was closed.
+- Replaced the active AGENT_WORK.md block with a dated 2026-11-28 snapshot: #147 is Vibe's sole active assignment (draft PR #204); #167 remains Chaty-owned for runtime/device acceptance; #183 and #170 are blocked; #168/#169 are merged and closed; updater #4/#15 remain blocked; #205 is tracked by PR #206.
+- Verified beta HEAD remained `78a3d12eb018e112a3443377e34e234ee9d3da7d` at the time of this refresh. PR #195 merge commit is `3959d890f7a65f69e9eb78d5e3339b3a88746097`.
