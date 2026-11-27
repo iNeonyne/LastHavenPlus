@@ -1025,12 +1025,16 @@
         return file.arrayBuffer().then((buffer) => {
           const parsed = core.parseBlocksIndex(new Uint8Array(buffer), enabledFolders);
           if (!parsed.ok) return failed(parsed.stage || "index-parse", enabledFolders);
+          const folderIndexes = new Map();
+          for (let i = 0; i < enabledFolders.length; i += 1) {
+            folderIndexes.set(enabledFolders[i].toLowerCase(), i);
+          }
           const compact = new Uint32Array(parsed.records.length * 4);
           for (let i = 0; i < parsed.records.length; i += 1) {
             const record = parsed.records[i];
             const folder = record.path.slice(ADDON_PREFIX.length).split("/")[0].toLowerCase();
-            const folderIndex = enabledFolders.findIndex((value) => value.toLowerCase() === folder);
-            if (folderIndex < 0) return failed("folder-index", enabledFolders);
+            const folderIndex = folderIndexes.get(folder);
+            if (!Number.isSafeInteger(folderIndex)) return failed("folder-index", enabledFolders);
             compact.set([record.start, record.end, record.value, folderIndex], i * 4);
           }
           return { maskBuffer: compact.buffer, indexSize: parsed.indexSize, enabledFolders, error: null };
