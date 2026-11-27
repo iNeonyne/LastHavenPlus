@@ -1,3 +1,13 @@
+## 2026-11-27 — Integrate GeckoView addon payload bridge and assign XHR overlay (#167/#168)
+
+- **Priority:** Addon Manager Phase B (#23) remains P0; Chaty owns coordination and integration.
+- **PR #180:** reviewed and squash-merged into beta at `892494aa8f0333f907b2e730f6b754ba2dabe2a1`. PR #177's native-messaging foundation remains integrated at `de70d3ea5ea3da180713d5f97dc195f416d30483e`.
+- **Exact-head evidence:** PR Android validation #45938326655 passed JavaScript checks, lint, Spotless, unsigned release assembly, JVM tests and packaged MIT-notice verification. Independent unsigned APK reproducibility #45938326638 passed both clean builds and archive/hash comparison. No post-merge workflow or physical ARM64 runtime test is claimed.
+- **Implementation boundary:** bridge payload transport is integrated; it does not establish production session wiring, XHR/Worker interception, same-session manager navigation or in-game addon initialization.
+- **Ownership:** #167 is `agent:chaty` for integration follow-up/device verification; #168 is `agent:vibe` as Vibe's sole active task; #169 and #170 are `agent:blocked` pending their documented dependencies.
+- **Vibe assignment:** issue #168 comment #7210226239 defines the exact scope, exclusions, security behavior, acceptance tests, documentation and handoff requirements. Start branch `vibe/addon-xhr-overlay-168` from beta `892494aa8f0333f907b2e730f6b754ba2dabe2a1`.
+- **Release/device safety:** no release, tag, publication, main promotion or physical-device compatibility claim.
+
 ## 2026-11-26 — Chaty takes over Addon Manager Phase A; Vibe assigned diagnostics tests (#23 / #11)
 
 - **Ownership:** issue #23 moved to `agent:chaty` and PR #152 implementation was taken over by Chaty at the repository owner's direction. Vibe was reassigned to issue #11 (`agent:vibe`) for isolated diagnostics tests.

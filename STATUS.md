@@ -1,18 +1,20 @@
 # Project status — LastHavenPlus
 
-## 2026-11-27 — Addon Manager Phase B promoted to P0
+## 2026-11-27 — PR #180 integrated; Vibe assigned XHR overlay
 
-- **Owner priority:** The repository owner has made Addon Manager Phase B the top project priority, superseding the previous updater-first scheduling note. Parent #23 remains Chaty-owned; Vibe's sole active implementation task is #167 (GeckoView 160 extension bridge).
-- **Current sequence:** Complete and integrate #167 first; then Chaty reviews/unblocks and assigns the XHR overlay (#168), Worker/index masking (#169), and same-session navigation (#170) only when their security and session dependencies are satisfied. Do not overlap implementation scopes.
-- **Paused work:** Updater issues #4 and #15 are agent:queued, not cancelled. Do not resume until Chaty explicitly reassigns them after the Addon Manager milestone reaches a safe handoff point.
-- **Limitations:** Phase A and planner groundwork are integrated. No runtime extension installation, XHR/Worker interception, or verified in-game addon activation is currently claimed. No physical ARM64 runtime test has been performed.
-- **Release safety:** Existing exact-head CI, security, signing, ARM64-only, physical-device and owner-approval gates remain unchanged. No release, tag or main promotion is authorized.
+- **Owner priority:** Addon Manager Phase B (#23) remains P0. Chaty owns coordination and integration.
+- **Integrated bridge work:** PR #177 native-messaging foundation and PR #180 bounded ZIP 0.5.1 payload transport are merged. PR #180 merge commit and verified `beta` HEAD: `892494aa8f0333f907b2e730f6b754ba2dabe2a1`.
+- **Vibe active assignment:** #168 — bounded XHR resource overlay. It is Vibe's sole active implementation task, assigned from the verified beta HEAD above.
+- **Remaining sequence:** #169 Worker/`blocks.idx` masking remains `agent:blocked` until #168's resource contract is reviewed and integrated. #170 same-session manager navigation remains `agent:blocked` until runtime and navigation prerequisites are satisfied. #167 remains open and Chaty-owned for integration follow-up and physical-device verification.
+- **Exact-head PR evidence for #180:** Android PR validation [#45938326655](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45938326655) passed JavaScript checks, lint, Spotless, unsigned release build, JVM tests and MIT-notice verification. Independent unsigned APK reproducibility [#45938326638](https://github.com/iNeonyne/LastHavenPlus/actions/runs/45938326638) passed both clean builds and archive/hash comparison. These are PR-head checks; no post-merge beta workflow result is recorded here.
+- **Known limitations:** no XHR/Worker runtime interception, same-session manager navigation, actual in-game addon initialization or physical ARM64 runtime test is verified. The merge does not establish gameplay compatibility.
+- **Paused work:** updater #4/#15 remain queued/paused pending a safe Addon Manager milestone handoff.
+- **Release safety:** no release, tag, publication or beta-to-main promotion is authorized.
 
 **Last updated:** 2026-11-27  
 **Active branch:** beta  
-**Verified beta HEAD:** `606e7c2a2df06de798df4cc3d8057483617e4a4e` (latest verified beta commit at the base of the current priority documentation PR).
-**Stable release:** [v2.3.0](https://github.com/iNeonyne/LastHavenPlus/releases/tag/v2.3.0), tag commit ebc5b424e83ae66c2b0accc2bec6f050b8dc0d88; GitHub release metadata confirms the ARM64 APK, update manifest and v2.2.0-to-v2.3.0 BSDIFF asset. Main HEAD observed as e9c2b53d1ec84e27722da4b54fa4ddcbad65f891.  
-**Latest PR inventory (2026-11-27):** PR #177 is Vibe's draft GeckoView bridge handoff for #167 and awaits Chaty's code review; PR #179 is this documentation-only priority update and its Markdown quality gate #45927607793 passed. PR #173 / issue #146 is merged at `5ed6af635954c8f4e2673dab3c60334eff4a8ae0`; documentation PRs #174–#176 are integrated. Post-merge Android #45923143717, unsigned reproducibility #45923143712 and Markdown #45923143716 passed. No release, tag, publication or beta-to-main promotion is authorized.
+**Verified beta HEAD:** `892494aa8f0333f907b2e730f6b754ba2dabe2a1`  
+**Stable release:** [v2.3.0](https://github.com/iNeonyne/LastHavenPlus/releases/tag/v2.3.0), tag commit `ebc5b424e83ae66c2b0accc2bec6f050b8dc0d88`.
 
 ## Historical operational checkpoint — 2026-11-27 (before PR #173 integration)
 

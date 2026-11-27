@@ -669,3 +669,14 @@ No branch was deleted. The available GitHub connector exposes no branch-delete o
 - PR #175 merged final CI evidence and append-only work-log update at `022b4e2c4880d13b23e4e8c22cbd3dd5be679623`; exact-head Markdown #45923667868 and post-merge Markdown #45923701603 passed.
 - Latest beta HEAD is `022b4e2c4880d13b23e4e8c22cbd3dd5be679623`; the two follow-up commits are documentation-only. Latest app-code integration remains PR #173 at `5ed6af635954c8f4e2673dab3c60334eff4a8ae0`.
 - No open PRs at the latest repository search. Vibe remains assigned #167; its named branch was not yet present in the branch inventory at the latest check. #147 is queued, not assigned.
+
+
+### 2026-11-27 — Merge PR #180 and assign Vibe #168
+
+- **Starting beta:** `30fdc7a0aa0f63931c00cc1424bdbb418fd9d482`; PR #180 head `e59dfb6166bded5436d986b0b462d2ef990d08b1` was current (0 commits behind) and mergeable.
+- **Review:** Chaty reviewed the native payload provider, bridge protocol/controller, extension background relay, isolated-world bridge, payload validator and tests. The bounded metadata-based revision (path/size/mtime rather than per-file content hashes) was recorded as a limitation; accepted for this app-private, app-managed library increment with metadata rechecks on chunk reads.
+- **Exact-head validation:** Android PR run #45938326655 passed JavaScript validation, lint, Spotless, unsigned release build, JVM tests and MIT notice verification. Independent reproducibility run #45938326638 passed two clean unsigned release builds and archive/hash comparison. Vibe's independent local verification reported 225/225 JVM tests, 7/7 Node tests, lint, Spotless and debug APK packaging passed; local release assembly was OOM-limited.
+- **Integration:** PR #180 marked ready and squash-merged; merge commit `892494aa8f0333f907b2e730f6b754ba2dabe2a1`. GitHub compare verified beta is identical to this commit.
+- **Ownership:** #167 changed to `agent:chaty`; #168 assigned `agent:vibe`; #169/#170 set to `agent:blocked`. Assignment comment #7210226239 records #168 scope, exclusions, constraints, tests and docs requirements.
+- **Limitations:** no post-merge beta CI result was available at this checkpoint; no physical ARM64 testing; no claim of XHR/Worker interception, same-session navigation or actual in-game addon initialization.
+- **Next safe action:** Vibe implements only #168 from the recorded beta SHA and submits a draft PR to beta. Chaty reviews/merges; #169 remains blocked until #168 integration.
