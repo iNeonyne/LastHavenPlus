@@ -10,6 +10,14 @@
 
 Current integration work is limited to the three open PRs listed above. PR #172 records the updated Vibe-to-Chaty integration handoff. PR #165 is owned by Chaty for direct branch corrections after handoff; #149 remains open until successful integration. PR #166 is Chaty-owned Phase B groundwork and remains draft until its API assertion, planner coverage/bounds and exact-head CI are corrected. The historical entries below are retained for traceability and must not be mistaken for the current beta state.
 
+## 2026-11-27 — GameSessionController extraction (#146)
+
+- **Assignment:** Chaty actively assigned #146 (`agent:vibe`) with an explicit start confirmation; implementation started from beta `d83e2df` without waiting for PR #165 or #166.
+- **Change:** GeckoView session lifecycle — lazy runtime acquisition, session creation/open, reload, crash restore and GeckoView delegate wiring — moved out of `MainActivity`/`LastHavenApp` into `GameSessionController`; pure decisions and state transitions live in `GameSessionState.kt` (`GameSessionUiState`, `GameSessionActions`) with JVM coverage in `GameSessionStateTest.kt` (17 tests).
+- **Invariants preserved:** lazy main-thread process-scoped `GeckoRuntimeProvider` (no `Application.onCreate()` runtime creation); the keep-alive invariant (Settings/Diagnostics/Update/Addon Manager navigation never closes the live session; the composition keep-alive effect closes a session only when the controller replaces it or the composition root leaves) is documented at the enforcing effect; the renderer-crash vs navigation-failure distinction and all start/reload/restore semantics are unchanged.
+- **Validation:** Spotless (ratchet `origin/beta`), 181/181 JVM tests, `lintDebug` and `assembleDebug` passed at the implementation commit; exact-head CI run IDs are recorded in the PR description and the issue #146 handoff comment.
+- **Limitations:** no physical ARM64 device test; crash restore and delegate behavior are verified by equivalent-code review plus JVM policy tests, not on-device. No game, updater, Addon Manager (#23), navigation (#147), toolchain, signing, ABI or application-ID changes.
+
 ## Historical operational checkpoint — 2026-11-26
 
 - **Latest integrations:** PR #158 permission-policy documentation merged at 7451b940dc0adfa1ea14234fe6d489bba688b12c; post-merge Markdown run #45890132670 passed. PR #161 repository housekeeping merged at a0e5271793c9bb7754b7ac41429065e5602df569; exact-head Markdown #45892727113 and post-merge Markdown #45892884986 passed. Both changes are documentation-only; no Android/device test was applicable.

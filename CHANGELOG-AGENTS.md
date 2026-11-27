@@ -1,3 +1,14 @@
+## 2026-11-27 — Extract GameSessionController from MainActivity (#146)
+
+- **Assignment:** Chaty actively assigned #146 (`agent:vibe`) with start confirmation (issue comments 7206693458/7206711619); implementation started from beta `d83e2df` without waiting for PR #165 or #166 to merge.
+- **Branch:** `vibe/game-session-controller-146`, created from beta `d83e2df`; draft PR targeting `beta`.
+- **Implementation:** `GameSessionController` now owns lazy runtime acquisition (delegating to `GeckoRuntimeProvider`), session creation/open, reload, crash restore and GeckoView delegate wiring; `MainActivity`/`LastHavenApp` become a thinner composition root. Pure decisions and transitions (`GameSessionUiState`, `GameSessionStartDecision`, `GameSessionReloadDecision`, `GameSessionActions`) live in `GameSessionState.kt`; immutable UI state is exposed to Compose via `GameSessionController.uiState.presentation`.
+- **Invariants preserved:** lazy main-thread process-scoped runtime (no `Application.onCreate()` creation); the keep-alive/close invariant is documented next to the enforcing `DisposableEffect` (launcher destinations never close the live session; close happens only on session replacement or composition exit); renderer-crash vs navigation-failure semantics and start/reload/restore behavior are unchanged.
+- **Tests:** 17 new JVM tests in `GameSessionStateTest.kt` covering start/reload/restore decisions, load/crash transitions and presentation classification; no fake GeckoView APIs were created.
+- **Validation:** Spotless (ratchet `origin/beta`), 181/181 JVM tests, `lintDebug` and `assembleDebug` passed locally at the implementation commit; exact-head CI run IDs are recorded in the PR description and the issue #146 handoff comment.
+- **Exclusions upheld:** no game/client, updater, Addon Manager (#23), navigation redesign (#147), gameplay window state (#148), profile migration, toolchain, signing, ABI or application-ID changes.
+- **Limitations:** no physical ARM64 device test; on-device crash recovery and delegate behavior are not verified by this change.
+
 ## 2026-11-26 — Chaty takes over Addon Manager Phase A; Vibe assigned diagnostics tests (#23 / #11)
 
 - **Ownership:** issue #23 moved to `agent:chaty` and PR #152 implementation was taken over by Chaty at the repository owner's direction. Vibe was reassigned to issue #11 (`agent:vibe`) for isolated diagnostics tests.

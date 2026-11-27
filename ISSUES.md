@@ -14,15 +14,15 @@
 - **Housekeeping:** #128 closed after PR #161 merged at a0e5271793c9bb7754b7ac41429065e5602df569; exact-head and post-merge Markdown passed. #70 is closed; Markdown lint is integrated.
 - **GeckoView audit:** #20 remains owner-deferred/blocked; PR #122 closed without merge. Preserve unresolved notice/license/distribution and device-testing gaps.
 - **Rights/notices:** #67 remains agent:owner; PR #144 closed without merge. The owner's All Rights Reserved decision governs original project material; third-party distribution review remains unresolved.
-- **Ownership:** each open issue has exactly one `agent:*` label. `agent:queued` means ready but waiting its turn, not permission to start; `agent:blocked` means a genuine dependency/hold. Vibe active: #149; next queued: #146, then separately assigned #167–#169; #170 is blocked. Chaty owns #4/#15/#18/#23/#142; #81 is queued. #67 is owner-controlled.
+- **Ownership:** each open issue has exactly one `agent:*` label. `agent:queued` means ready but waiting its turn, not permission to start; `agent:blocked` means a genuine dependency/hold. Vibe active: #146 (implementation handed off; draft PR awaiting Chaty integration); next Vibe work items (#167–#169) start only on Chaty's separate assignment; #170 is blocked. Chaty owns #4/#15/#18/#23/#142 and the #149/PR #165 integration; #81 is queued. #67 is owner-controlled.
 - **Device/release:** no new physical ARM64 testing, release, tag, publication or beta-to-main promotion is claimed or authorized.
 
 ## Current ownership
 
 - **Chaty active:** #4/#15 coordinated updater reliability/recovery and #23 Addon Manager Phase B coordination. #18/#142 are coordination records; #128 is complete.
 - **Chaty queued:** #81 dependency-evidence documentation only; not yet started. #20 and #31 remain blocked pending owner decisions.
-- **Vibe active:** #149 launcher-owned strings (PR #165 correction pass).
-- **Vibe queued:** #146 GameSessionController, then separately assigned Addon Manager Phase B child work #167–#169. #170 is dependency-blocked. One active implementation issue at a time; queued does not authorize work.
+- **Vibe active:** #146 GameSessionController extraction (Chaty-assigned with explicit start confirmation; draft PR opened for Chaty integration).
+- **Vibe queued:** Addon Manager Phase B child work #167–#169, each requiring Chaty's separate assignment. #170 is dependency-blocked.
 - **Diagnostics:** #11's test work merged via PR #163; remaining runtime-version startup reporting is deferred and blocked pending reprioritization.
 - **Diagnostics:** #11's test work merged via PR #163; the remaining runtime-version startup reporting is deferred and blocked pending reprioritization.
 - **Owner decision:** #23 Phase B and #67 third-party rights/distribution questions.
@@ -878,7 +878,8 @@ The beta code review found the strongest improvement opportunities are structura
 
 ### Issue 146 — P1 — Extract GeckoView game-session ownership from MainActivity
 **GitHub:** https://github.com/iNeonyne/LastHavenPlus/issues/146  
-Extract session open/reload/restore/close and load/crash state into a focused controller while preserving the lazy process-scoped GeckoRuntime, current crash-vs-navigation semantics, and the same live session when Settings/Diagnostics/Update detach the view. Document the keep-alive invariant and add focused state-transition tests. Coordinate with #23 and any MainActivity/GeckoSession work.
+Extract session open/reload/restore/close and load/crash state into a focused controller while preserving the lazy process-scoped GeckoRuntime, current crash-vs-navigation semantics, and the same live session when Settings/Diagnostics/Update detach the view. Document the keep-alive invariant and add focused state-transition tests. Coordinate with #23 and any MainActivity/GeckoSession work.  
+**Status 2026-11-27:** implemented by Vibe on branch `vibe/game-session-controller-146` from beta `d83e2df`; draft PR targeting `beta` handed off to Chaty. Local Spotless (ratchet `origin/beta`), JVM suite, `lintDebug` and `assembleDebug` passed at the implementation commit; exact-head CI run IDs are recorded in the PR description and the issue #146 handoff comment.
 
 ### Issue 147 — P1 — Consolidate launcher navigation and back-stack state
 **GitHub:** https://github.com/iNeonyne/LastHavenPlus/issues/147  

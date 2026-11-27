@@ -46,10 +46,12 @@ Vibe has exactly one active implementation issue. A queued issue is not an assig
 - Preserve wording and punctuation. Exclude game content, diagnostics payloads, developer logs and protocol values. No updater behavior changes, GeckoView/session lifecycle, Addon Manager or game/client changes.
 - **Vibe:** no active implementation issue while Chaty integrates #149. Do not start #146 or any later item yet. #146 remains next in queue, pending successful #149 integration and a fresh file-overlap/dependency check.
 
-### Next — #146 GameSessionController (queued)
-- **Label:** `agent:queued`; do not start until #149 is handed off and Chaty explicitly assigns #146 after checking file overlap.
-- Extract GeckoSession lifecycle and load/crash state into a focused controller/ViewModel. Preserve lazy process-scoped GeckoRuntimeProvider and the same live GeckoSession while detaching for Settings/Diagnostics/Update.
-- No navigation refactor (#147), gameplay window state (#148), updater, profile migration or unrelated MainActivity cleanup. Add focused state tests and exact-head Android validation.
+### Vibe handed off — #146 GameSessionController
+- **GitHub ownership:** `agent:vibe`; Chaty assigned #146 with an explicit start confirmation and Vibe implemented it from beta `d83e2df` without waiting for PR #165 or #166.
+- **Branch:** `vibe/game-session-controller-146`; draft PR targeting `beta` handed off to Chaty for direct integration.
+- **Implementation:** `GameSessionController` owns lazy runtime acquisition, session creation/open, reload, crash restore and GeckoView delegate wiring; pure decisions/transitions (`GameSessionUiState`, `GameSessionActions`) live in `GameSessionState.kt` with 17 JVM tests in `GameSessionStateTest.kt`; `MainActivity`/`LastHavenApp` become a thinner composition root and the keep-alive/close invariant is documented at the enforcing effect.
+- **Validation:** Spotless (ratchet `origin/beta`), 181/181 JVM tests, `lintDebug` and `assembleDebug` passed at the implementation commit; exact-head CI run IDs are recorded in the PR description and the issue #146 handoff comment.
+- **Exclusions upheld:** no game/client, updater, Addon Manager (#23), navigation redesign (#147), gameplay window state (#148), profile migration, toolchain, signing, ABI or application-ID changes. No physical ARM64 device test was performed.
 
 ### Later — Addon Manager Phase B child work (queued)
 - **#167:** GeckoView 160 extension bridge port.
@@ -95,7 +97,7 @@ Every open issue has exactly one `agent:*` label. The label distinguishes active
 | #67 | `agent:owner` | Rights and third-party notice decision |
 | #81 | `agent:queued` | Chaty documentation/evidence task; not started |
 | #12 | `agent:queued` | #11 test prerequisite merged; waiting for a Vibe turn and explicit assignment |
-| #146 | `agent:queued` | Vibe next after #149 handoff and file-overlap check |
+| #146 | `agent:vibe` | Vibe implementation handed off; draft PR awaiting Chaty integration |
 | #167 | `agent:queued` | Phase B bridge port; waiting Vibe turn and Chaty assignment |
 | #168 | `agent:queued` | XHR overlay; wait for #167 and explicit assignment |
 | #169 | `agent:queued` | Worker/read masking; wait for #167 and explicit assignment |

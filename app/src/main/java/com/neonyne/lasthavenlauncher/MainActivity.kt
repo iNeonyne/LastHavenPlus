@@ -34,14 +34,10 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
-import java.util.Locale
-import org.mozilla.geckoview.GeckoResult
-import org.mozilla.geckoview.GeckoSession
 
 private const val DEFAULT_GAME_URL = "https://lasthavens.com/play"
 private const val PREFERENCES_NAME = "launcher_settings"
 private const val KEY_GAME_URL = "game_url"
-private const val TAG = "LastHavenLauncher"
 private const val KEY_PENDING_UPDATE_URI = "pending_update_uri"
 
 enum class Screen {
@@ -178,90 +174,27 @@ private fun LastHavenApp(
   var isDownloadingUpdate by remember { mutableStateOf(false) }
   var downloadingDelta by remember { mutableStateOf(false) }
   var isCheckingUpdate by remember { mutableStateOf(false) }
-  var runtime by remember { mutableStateOf<org.mozilla.geckoview.GeckoRuntime?>(null) }
-  var session by remember { mutableStateOf<GeckoSession?>(null) }
-  var isLoading by remember { mutableStateOf(false) }
-  var pageLoadFailed by remember { mutableStateOf(false) }
-  var sessionCrashed by remember { mutableStateOf(false) }
-  var hasLoadedGame by remember { mutableStateOf(false) }
-  var hasCompletedLoad by remember { mutableStateOf(false) }
 
-  // Keep the GeckoSession alive while its view is detached for launcher destinations.
-  DisposableEffect(session) {
-    val sessionToClose = session
+  val gameSessionController = remember { GameSessionController() }
+
+  // Session keep-alive invariant: visiting Settings, Diagnostics, Update or the Addon Manager
+  // detaches the GeckoView (GameScreen releases its view binding) but must not close the live
+  // game session. This effect is the only place that closes a session, and it does so only when
+  // the controller replaces the session (crash restore) or when this composition root leaves.
+  DisposableEffect(gameSessionController.session) {
+    val sessionToClose = gameSessionController.session
     onDispose { sessionToClose?.close() }
   }
 
-  val attachGameSession: (GeckoSession) -> Unit = { gameSession ->
-    setupGeckoDelegates(
-      gameSession,
-      context,
-      onLoadState = { loading, failed ->
-        isLoading = loading
-        pageLoadFailed = failed
-        if (!failed) {
-          sessionCrashed = false
-        }
-      },
-      onPageLoaded = { hasCompletedLoad = true },
-      onSessionCrashed = {
-        isLoading = false
-        pageLoadFailed = false
-        sessionCrashed = true
-      },
-    )
-  }
-
-  val reloadGame: () -> Unit = {
-    val current = session
-    if (current?.isOpen() == true) {
-      pageLoadFailed = false
-      sessionCrashed = false
-      current.reload()
-    } else if (current != null) {
-      val currentRuntime = runtime ?: GeckoRuntimeProvider.get(context).also { runtime = it }
-      current.open(currentRuntime)
-      current.loadUri(gameUrl)
-      pageLoadFailed = false
-      sessionCrashed = false
-    }
-  }
+  val reloadGame: () -> Unit = { gameSessionController.reloadGame(context, gameUrl) }
 
   val startGame: () -> Unit = {
-    if (session == null) {
-      val gameRuntime = runtime ?: GeckoRuntimeProvider.get(context).also { runtime = it }
-      val gameSession = GeckoSession()
-      attachGameSession(gameSession)
-      gameSession.open(gameRuntime)
-      session = gameSession
-      pageLoadFailed = false
-      gameSession.loadUri(gameUrl)
-      hasLoadedGame = true
-    } else if (session?.isOpen() != true) {
-      val gameRuntime = runtime ?: GeckoRuntimeProvider.get(context).also { runtime = it }
-      session?.open(gameRuntime)
-      if (!hasLoadedGame) {
-        session?.loadUri(gameUrl)
-        hasLoadedGame = true
-      }
-    }
+    gameSessionController.startGame(context, gameUrl)
     menuVisible = false
     currentScreen = Screen.Game
   }
 
-  // A crashed content process cannot be reloaded in place; recreate the session while
-  // keeping the runtime (and therefore the game profile) intact.
-  val restoreGame: () -> Unit = {
-    if (session != null) {
-      session = null
-      hasLoadedGame = false
-      hasCompletedLoad = false
-      pageLoadFailed = false
-      isLoading = false
-      sessionCrashed = false
-      startGame()
-    }
-  }
+  val restoreGame: () -> Unit = { gameSessionController.restoreGame(context, gameUrl) }
 
   val checkForUpdates: (Boolean) -> Unit = { showResult ->
     isCheckingUpdate = true
@@ -357,16 +290,10 @@ private fun LastHavenApp(
           )
           onDispose { resolver.unregisterContentObserver(listener) }
         }
-        val gamePresentation =
-          GameLoadPolicy.resolve(
-            hasSession = session != null,
-            isLoading = isLoading,
-            hasCompletedLoad = hasCompletedLoad,
-            failure = GameLoadPolicy.failure(sessionCrashed, pageLoadFailed),
-          )
+        val gamePresentation = gameSessionController.uiState.presentation
         Box(modifier = Modifier.fillMaxSize()) {
           GameScreen(
-            session = session,
+            session = gameSessionController.session,
             presentation = gamePresentation,
             onRetry = reloadGame,
             onRestore = restoreGame,
@@ -468,101 +395,4 @@ private fun LastHavenApp(
         )
     }
   }
-}
-
-private fun setupGeckoDelegates(
-  geckoSession: GeckoSession,
-  context: android.content.Context,
-  onLoadState: (Boolean, Boolean) -> Unit,
-  onPageLoaded: () -> Unit,
-  onSessionCrashed: () -> Unit,
-) {
-  geckoSession.setProgressDelegate(
-    object : GeckoSession.ProgressDelegate {
-      override fun onPageStart(session: GeckoSession, url: String) {
-        onLoadState(true, false)
-        Diagnostics.info(context, TAG, "GeckoView page started")
-      }
-
-      override fun onPageStop(session: GeckoSession, success: Boolean) {
-        onLoadState(false, !success)
-        if (success) onPageLoaded()
-        else Diagnostics.warn(context, TAG, "GeckoView page load failed")
-      }
-    }
-  )
-  geckoSession.setContentDelegate(
-    object : GeckoSession.ContentDelegate {
-      override fun onCrash(session: GeckoSession) {
-        onSessionCrashed()
-        Diagnostics.error(context, TAG, "GeckoView content process crashed")
-      }
-
-      override fun onKill(session: GeckoSession) {
-        onSessionCrashed()
-        Diagnostics.error(context, TAG, "GeckoView content process was killed")
-      }
-
-      override fun onFullScreen(session: GeckoSession, fullScreen: Boolean) {
-        Diagnostics.info(context, TAG, "GeckoView fullscreen changed: $fullScreen")
-      }
-
-      override fun onExternalResponse(
-        session: GeckoSession,
-        response: org.mozilla.geckoview.WebResponse,
-      ) {
-        Diagnostics.warn(context, TAG, "GeckoView external response not handled")
-      }
-    }
-  )
-  geckoSession.setNavigationDelegate(
-    object : GeckoSession.NavigationDelegate {
-      override fun onLoadRequest(
-        session: GeckoSession,
-        request: GeckoSession.NavigationDelegate.LoadRequest,
-      ): GeckoResult<org.mozilla.geckoview.AllowOrDeny> = GeckoResult.allow()
-    }
-  )
-  geckoSession.setPermissionDelegate(
-    object : GeckoSession.PermissionDelegate {
-      override fun onContentPermissionRequest(
-        session: GeckoSession,
-        permission: GeckoSession.PermissionDelegate.ContentPermission,
-      ): GeckoResult<Int> {
-        val host = Uri.parse(permission.uri).host.orEmpty().lowercase(Locale.ROOT)
-        val isGameOrigin = host == "lasthavens.com" || host.endsWith(".lasthavens.com")
-        val decision =
-          when (permission.permission) {
-            GeckoSession.PermissionDelegate.PERMISSION_PERSISTENT_STORAGE,
-            GeckoSession.PermissionDelegate.PERMISSION_AUTOPLAY_AUDIBLE,
-            GeckoSession.PermissionDelegate.PERMISSION_AUTOPLAY_INAUDIBLE ->
-              if (isGameOrigin) {
-                GeckoSession.PermissionDelegate.ContentPermission.VALUE_ALLOW
-              } else {
-                GeckoSession.PermissionDelegate.ContentPermission.VALUE_DENY
-              }
-            else -> GeckoSession.PermissionDelegate.ContentPermission.VALUE_DENY
-          }
-        return GeckoResult.fromValue(decision)
-      }
-
-      override fun onAndroidPermissionsRequest(
-        session: GeckoSession,
-        permissions: Array<out String>?,
-        callback: GeckoSession.PermissionDelegate.Callback,
-      ) {
-        callback.reject()
-      }
-
-      override fun onMediaPermissionRequest(
-        session: GeckoSession,
-        uri: String,
-        video: Array<out GeckoSession.PermissionDelegate.MediaSource>?,
-        audio: Array<out GeckoSession.PermissionDelegate.MediaSource>?,
-        callback: GeckoSession.PermissionDelegate.MediaCallback,
-      ) {
-        callback.reject()
-      }
-    }
-  )
 }

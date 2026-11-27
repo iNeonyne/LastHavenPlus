@@ -618,3 +618,12 @@ No branch was deleted. The available GitHub connector exposes no branch-delete o
 - **Validation:** `./gradlew spotlessCheck -PspotlessRatchetFrom=origin/beta testDebugUnitTest lintDebug` — Spotless pass, lint pass, JVM suite pass (0 failures) at the implementation commit; exact-head CI run IDs reported in the PR description and issue #11 handoff comment.
 - **Limitations:** JVM-only coverage; Android Context wrappers and on-device log sharing not exercised; GeckoView startup-version logging excluded per scope decision; no physical ARM64 device testing.
 - **Next action:** Chaty review of the fresh draft PR; #149 then #146 remain queued.
+
+### 2026-11-27 — Issue #146 GameSessionController extraction
+
+- **Issue:** #146 (`agent:vibe`; Chaty assignment comment 7206693458 and start confirmation 7206711619).
+- **Branch and starting commit:** `vibe/game-session-controller-146`, created from beta `d83e2df`.
+- **Files:** app/src/main/java/com/neonyne/lasthavenlauncher/GameSessionController.kt (new), GameSessionState.kt (new), MainActivity.kt (session lifecycle/state removed from the composition root), app/src/test/java/com/neonyne/lasthavenlauncher/GameSessionStateTest.kt (new, 17 tests), STATUS.md, ISSUES.md, AGENT_WORK.md, CHANGELOG-AGENTS.md, WORK_LOG.md.
+- **Validation:** `./gradlew spotlessCheck -PspotlessRatchetFrom=origin/beta testDebugUnitTest lintDebug assembleDebug` — Spotless pass, 181/181 JVM tests, lint pass, debug assembly pass at the implementation commit; exact-head CI run IDs reported in the PR description and issue #146 handoff comment.
+- **Limitations:** JVM-only coverage for the extracted policies; GeckoView session behavior verified by equivalent-code review, not on-device; no physical ARM64 device testing.
+- **Next action:** Chaty integration of the draft PR; #147 remains blocked until #146 integrates, #167–#169 await Chaty's separate assignments.
