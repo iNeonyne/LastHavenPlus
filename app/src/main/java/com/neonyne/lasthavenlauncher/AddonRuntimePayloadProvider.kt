@@ -14,10 +14,9 @@ import java.util.Locale
  * The provider never copies files into extension storage. It snapshots validated file descriptors
  * from the app-private library and reads only the requested bounded chunk from the same file.
  */
-internal class AddonRuntimePayloadProvider(
-  private val repository: AddonLibraryRepository,
-) {
-  data class FileDescriptor internal constructor(
+internal class AddonRuntimePayloadProvider(private val repository: AddonLibraryRepository) {
+  data class FileDescriptor
+    internal constructor(
     val folder: String,
     val path: String,
     val sizeBytes: Long,
@@ -26,7 +25,8 @@ internal class AddonRuntimePayloadProvider(
     internal val lastModified: Long,
   )
 
-  data class Manifest internal constructor(
+  data class Manifest
+    internal constructor(
     val revision: String,
     val sourceRevision: String,
     val addonFolders: List<String>,
