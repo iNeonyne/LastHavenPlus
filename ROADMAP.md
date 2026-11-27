@@ -49,7 +49,7 @@ Update this file when strategic priorities, sequence or release direction change
 <!-- ROADMAP-LIVE-START -->
 ## Live issue and PR inventory
 
-Generated: 2026-11-27T23:57:13+00:00
+Generated: 2026-11-27T23:57:24+00:00
 Source of truth: live GitHub Issues, pull requests and labels. This section is generated automatically; do not edit it manually.
 
 Every open issue is listed below, grouped by its current priority. Opening a newer issue or PR does not supersede an older one. Duplicates and supersession must be explicitly reviewed and linked in GitHub.
@@ -74,6 +74,7 @@ Every open issue is listed below, grouped by its current priority. Opening a new
 - [#184 — P2 — Move diagnostics log I/O off the Compose main thread](https://github.com/iNeonyne/LastHavenPlus/issues/184) — P2, performance
 - [#186 — P2 — Confirm GeckoView top-level navigation policy for the launcher](https://github.com/iNeonyne/LastHavenPlus/issues/186) — P2, security
 - [#218 — P2 — Ignore callbacks from replaced GeckoSessions](https://github.com/iNeonyne/LastHavenPlus/issues/218) — bug, P2
+- [#219 — P2 — Redact URL credentials and standalone bearer tokens from diagnostics](https://github.com/iNeonyne/LastHavenPlus/issues/219) — bug, P2
 
 #### P3
 
