@@ -1,6 +1,6 @@
 # LastHavenPlus roadmap
 
-Generated: 2026-11-27T22:57:15+00:00
+Generated: 2026-11-27T22:57:46+00:00
 Source of truth: live GitHub Issues, pull requests and labels. This file is generated automatically; do not edit it manually.
 
 Every open issue is listed below, grouped by its current priority. Opening a newer issue or PR does not supersede an older one. Duplicates and supersession must be explicitly reviewed and linked in GitHub.
@@ -47,6 +47,7 @@ Every open issue is listed below, grouped by its current priority. Opening a new
 
 - [#204 — Consolidate launcher navigation and back-stack state (#147)](https://github.com/iNeonyne/LastHavenPlus/pull/204) (beta <- vibe/navigation-consolidation-147)
 - [#213 — Add alternate game server setting and harden updater retries](https://github.com/iNeonyne/LastHavenPlus/pull/213) (beta <- chaty/game-url-setting-updater-hardening)
+- [#214 — Enable roadmap sync from the default beta branch](https://github.com/iNeonyne/LastHavenPlus/pull/214) (beta <- chaty/roadmap-sync-beta-default)
 
 ## Recently completed (last 30 days)
 
