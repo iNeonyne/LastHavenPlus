@@ -179,7 +179,7 @@ internal class AddonBridgeController(
     installInFlight = false
     val callbacks = installationCallbacks.toList()
     installationCallbacks.clear()
-    callbacks.forEach { callback -> runCatching { callback(installed) } }
+    callbacks.forEach { callback -> callback(installed) }
   }
 
   /** Detaches the delegate and drops all session/port/pending state. */
