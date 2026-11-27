@@ -48,7 +48,11 @@ class GameSessionController {
         hasCompletedLoad = hasCompletedLoad,
       )
 
-  fun startGame(context: Context, gameUrl: String) {
+  fun startGame(
+    context: Context,
+    gameUrl: String,
+    onSessionReady: (GeckoSession) -> Unit = {},
+  ) {
     when (val decision = GameSessionActions.decideStart(uiState)) {
       is GameSessionStartDecision.CreateNewSession -> {
         val gameRuntime = obtainRuntime(context)
@@ -56,6 +60,7 @@ class GameSessionController {
         setupGeckoDelegates(gameSession, context)
         gameSession.open(gameRuntime)
         session = gameSession
+        onSessionReady(gameSession)
         transition(GameSessionActions::onSessionCreated)
         gameSession.loadUri(gameUrl)
         transition(GameSessionActions::onLoadRequested)
@@ -63,6 +68,7 @@ class GameSessionController {
       is GameSessionStartDecision.ReopenExisting -> {
         val gameSession = session ?: return
         gameSession.open(obtainRuntime(context))
+        onSessionReady(gameSession)
         if (decision.loadUri) {
           gameSession.loadUri(gameUrl)
           transition(GameSessionActions::onLoadRequested)
@@ -94,11 +100,15 @@ class GameSessionController {
    * replaced session is closed by the composition root's keep-alive effect once it observes the new
    * session value.
    */
-  fun restoreGame(context: Context, gameUrl: String) {
+  fun restoreGame(
+    context: Context,
+    gameUrl: String,
+    onSessionReady: (GeckoSession) -> Unit = {},
+  ) {
     if (!GameSessionActions.shouldRestore(uiState)) return
     session = null
     transition(GameSessionActions::onSessionReset)
-    startGame(context, gameUrl)
+    startGame(context, gameUrl, onSessionReady)
   }
 
   private fun obtainRuntime(context: Context): GeckoRuntime =
