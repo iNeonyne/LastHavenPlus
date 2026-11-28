@@ -184,6 +184,41 @@ class AddonRuntimePayloadProviderTest {
   }
 
   @Test
+  fun omittingAnOversizedRequiredAddonAlsoOmitsItsDependents() = withRoot { root ->
+    val oversizedDirectory =
+      writeAddon(
+        root,
+        "LargeDependency",
+        mapOf("LargeDependency.toc" to byteArrayOf(1)),
+      )
+    RandomAccessFile(File(oversizedDirectory, "oversized.lua"), "rw").use {
+      it.setLength(AddonRuntimePayloadProvider.MAX_RUNTIME_FILE_BYTES + 1)
+    }
+    val dependentDirectory =
+      writeAddon(
+        root,
+        "Dependent",
+        mapOf("Dependent.toc" to byteArrayOf(2), "dependent.lua" to byteArrayOf(3)),
+      )
+    val healthyDirectory =
+      writeAddon(root, "Independent", mapOf("Independent.toc" to byteArrayOf(4)))
+    val snapshot =
+      AddonLibrarySnapshot(
+        "revision",
+        listOf(
+          item("LargeDependency", oversizedDirectory),
+          item("Dependent", dependentDirectory).copy(dependencies = listOf("LargeDependency")),
+          item("Independent", healthyDirectory),
+        ),
+      )
+
+    val manifest = AddonRuntimePayloadProvider(AddonLibraryRepository(root)).buildManifest(snapshot)
+
+    assertEquals(listOf("Independent"), manifest.addonFolders)
+    assertTrue(manifest.files.all { it.folder == "Independent" })
+  }
+
+  @Test
   fun isolatesFileCountOverflowAndKeepsValidAddons() = withRoot { root ->
     val overflowDirectory = File(root, "ManyFiles")
     assertTrue(overflowDirectory.mkdirs())
