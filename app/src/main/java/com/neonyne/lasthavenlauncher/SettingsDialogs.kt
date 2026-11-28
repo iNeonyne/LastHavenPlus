@@ -35,8 +35,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -167,7 +167,8 @@ fun SettingsScreen(
             Text(
               stringResource(
                 R.string.settings_network_last_updated,
-                java.text.SimpleDateFormat("HH:mm:ss", java.util.Locale.getDefault())
+                java.text
+                  .SimpleDateFormat("HH:mm:ss", java.util.Locale.getDefault())
                   .format(java.util.Date(updatedAt)),
               ),
               color = DesignTokens.textSecondary,
