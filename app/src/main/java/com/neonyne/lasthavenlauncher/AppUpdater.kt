@@ -385,9 +385,8 @@ object AppUpdater {
             fullAttempt = {
               // Never let a failed or partially reconstructed delta reach the installer.
               temporaryApk.delete()
-              setProgressStage(UpdateStage.FULL_DOWNLOAD)
               progressTracker.onAttemptStarted(1)
-              publishProgress()
+              setProgressStage(UpdateStage.FULL_DOWNLOAD)
               downloadToFileWithRetry(
                 update.downloadUrl,
                 update.sha256,
@@ -403,7 +402,6 @@ object AppUpdater {
             },
             onDeltaFailure = { error ->
               progressTracker.onFallbackToFull()
-              setProgressStage(UpdateStage.FULL_DOWNLOAD)
               Diagnostics.warn(
                 appContext,
                 "Updater",
