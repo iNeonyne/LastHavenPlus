@@ -192,8 +192,8 @@ class AddonLibraryRepository(
             },
             onStage = onStage,
           )
-        onStage(AddonImportStage.COMMITTING)
         require(imported.isNotEmpty()) { "The archive contains no addons." }
+        onStage(AddonImportStage.COMMITTING)
 
         val current = readLibrary(performStaleSweep = false)
         val replacing = imported.map { it.folder.lowercase(Locale.ROOT) }.toSet()
