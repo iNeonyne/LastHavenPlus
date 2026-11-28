@@ -269,7 +269,8 @@ internal fun UpdateScreen(
           if (isDownloading) {
             val downloadLabel =
               when (progress.stage) {
-                UpdateStage.DIFFERENTIAL_DOWNLOAD -> stringResource(R.string.updates_downloading_delta)
+                UpdateStage.DIFFERENTIAL_DOWNLOAD ->
+                  stringResource(R.string.updates_downloading_delta)
                 UpdateStage.FULL_DOWNLOAD -> stringResource(R.string.updates_downloading_full)
                 UpdateStage.VERIFYING -> stringResource(R.string.updates_verifying)
                 UpdateStage.READY -> stringResource(R.string.updates_ready)
@@ -304,7 +305,10 @@ internal fun UpdateScreen(
                   totalLabel,
                 )
               } else {
-                stringResource(R.string.updates_progress_received, formatBytes(progress.receivedBytes))
+                stringResource(
+                  R.string.updates_progress_received,
+                  formatBytes(progress.receivedBytes),
+                )
               },
               color = DesignTokens.textSecondary,
             )
@@ -321,12 +325,17 @@ internal fun UpdateScreen(
               )
             }
             if (progress.fallbackToFull) {
-              Text(stringResource(R.string.updates_fallback_full), color = DesignTokens.textSecondary)
+              Text(
+                stringResource(R.string.updates_fallback_full),
+                color = DesignTokens.textSecondary,
+              )
             }
           } else if (progress.stage == UpdateStage.FAILED) {
             val retryHapticView = LocalView.current
             Text(
-              progress.failureMessage ?: message ?: stringResource(R.string.updates_download_failed),
+              progress.failureMessage
+                ?: message
+                ?: stringResource(R.string.updates_download_failed),
               color = MaterialTheme.colorScheme.error,
             )
             OutlinedButton(
