@@ -113,7 +113,10 @@ class AddonLibraryRepository(
    * manifest and chunk reads use it so addon files cannot be renamed or deleted by a concurrent
    * import, removal or recovery pass while they are being read.
    */
-  fun <T> withLibraryAccess(block: () -> T): T = withLibraryLock(block)
+  fun <T> withLibraryAccess(block: () -> T): T = withLibraryLock {
+    recoverBeforeOperation(performStaleSweep = false)
+    block()
+  }
 
   private fun <T> withLibraryLock(block: () -> T): T =
     rootLocks.computeIfAbsent(rootKey) { ReentrantLock() }.withLock(block)
@@ -126,10 +129,11 @@ class AddonLibraryRepository(
    */
   private fun recoverBeforeOperation(performStaleSweep: Boolean) {
     val startupRecoveryPending = !startupRecoveryCompleted.get()
-    if (performStaleSweep || startupRecoveryPending) {
-      recoverPendingTransactions(performStaleSweep = performStaleSweep || startupRecoveryPending)
-      startupRecoveryCompleted.set(true)
-    }
+    // Always revisit transaction journals. A later operation may be retrying recovery after a
+    // previous transaction cleanup failed; the per-instance marker only suppresses repeat stale
+    // sweeps, not the inexpensive journal check.
+    recoverPendingTransactions(performStaleSweep = performStaleSweep || startupRecoveryPending)
+    startupRecoveryCompleted.set(true)
   }
 
   /**
@@ -392,6 +396,7 @@ class AddonLibraryRepository(
   }
 
   fun setEnabled(folder: String, enabled: Boolean): AddonLibrarySnapshot = withLibraryLock {
+    recoverBeforeOperation(performStaleSweep = false)
     require(isSafeFolder(folder)) { "Invalid addon folder." }
     val current =
       readLibraryIndex(requireAddonDirectories = true) ?: AddonLibrarySnapshot("empty", emptyList())
@@ -410,6 +415,7 @@ class AddonLibraryRepository(
   }
 
   private fun removeAddonLocked(folder: String): AddonLibrarySnapshot {
+    recoverBeforeOperation(performStaleSweep = false)
     require(isSafeFolder(folder)) { "Invalid addon folder." }
     val current =
       readLibraryIndex(requireAddonDirectories = true) ?: AddonLibrarySnapshot("empty", emptyList())
@@ -461,6 +467,7 @@ class AddonLibraryRepository(
   }
 
   private fun exportZipLocked(folder: String, output: OutputStream) {
+    recoverBeforeOperation(performStaleSweep = false)
     require(isSafeFolder(folder)) { "Invalid addon folder." }
     val addonDirectory = File(root, folder)
     require(addonDirectory.isDirectory) { "Addon not found." }
