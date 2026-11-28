@@ -5,10 +5,22 @@ set -euo pipefail
 # generation is an optimization and must never block that payload.
 mkdir -p release-assets
 APK_NAME="LastHavenPlus-${RELEASE_VERSION}-stable-arm64-v8a.apk"
+COMPAT_APK_NAME="lasthavenplus-arm64.apk"
 cp app/build/outputs/apk/release/app-release.apk "release-assets/$APK_NAME"
 TARGET_APK="release-assets/$APK_NAME"
+cp "$TARGET_APK" "release-assets/$COMPAT_APK_NAME"
 TARGET_SHA="$(sha256sum "$TARGET_APK" | awk '{print $1}')"
+COMPAT_SHA="$(sha256sum "release-assets/$COMPAT_APK_NAME" | awk '{print $1}')"
+if [[ "$COMPAT_SHA" != "$TARGET_SHA" ]]; then
+  echo "::error::Legacy updater compatibility APK does not match the versioned APK."
+  exit 1
+fi
 TARGET_SIZE="$(stat -c '%s' "$TARGET_APK")"
+COMPAT_SIZE="$(stat -c '%s' "release-assets/$COMPAT_APK_NAME")"
+if [[ "$COMPAT_SIZE" != "$TARGET_SIZE" ]]; then
+  echo "::error::Legacy updater compatibility APK size does not match the versioned APK."
+  exit 1
+fi
 PATCH_JSON="null"
 RELEASES_JSON="$RUNNER_TEMP/releases.json"
 PATCH_TOOLS_READY=false
@@ -131,5 +143,6 @@ jq -n \
   > release-assets/lasthavenplus-update.json
 
 test -s "release-assets/$APK_NAME"
+test -s "release-assets/$COMPAT_APK_NAME"
 test -s release-assets/lasthavenplus-update.json
 echo "Release payload ready: full APK and update manifest."
