@@ -286,13 +286,21 @@ object AppUpdater {
       },
     ) {
       val progressTracker = UpdateProgressTracker()
-      fun publishProgress() {
+      var lastProgressPublishedAtNanos: Long? = null
+      fun publishProgress(force: Boolean = false) {
+        val now = System.nanoTime()
+        val last = lastProgressPublishedAtNanos
+        if (!force && last != null && now - last < 100_000_000L) return
+        lastProgressPublishedAtNanos = now
         val snapshot = progressTracker.snapshot()
         mainHandler.post { onProgress(snapshot) }
       }
+      fun publishDownloadProgress() {
+        publishProgress()
+      }
       fun setProgressStage(stage: UpdateStage, failureMessage: String? = null) {
         progressTracker.onStageChanged(stage, failureMessage)
-        publishProgress()
+        publishProgress(force = true)
       }
 
       val result = runCatching {
@@ -365,7 +373,7 @@ object AppUpdater {
                   patchFile,
                   appContext,
                   progressTracker,
-                  ::publishProgress,
+                  ::publishDownloadProgress,
                 )
                 BsdiffPatch.apply(baseApk, patchFile, temporaryApk, MAX_APK_BYTES)
                 verifyCandidate()
@@ -388,7 +396,7 @@ object AppUpdater {
                 temporaryApk,
                 appContext,
                 progressTracker,
-                ::publishProgress,
+                ::publishDownloadProgress,
               )
               verifyCandidate()
               temporaryApk
