@@ -49,7 +49,7 @@ Update this file when strategic priorities, sequence or release direction change
 <!-- ROADMAP-LIVE-START -->
 ## Live issue and PR inventory
 
-Generated: 2026-11-28T03:16:45+00:00
+Generated: 2026-11-28T03:16:59+00:00
 Source of truth: live GitHub Issues, pull requests and labels. This section is generated automatically; do not edit it manually.
 
 Every open issue is listed below, grouped by its current priority. Opening a newer issue or PR does not supersede an older one. Duplicates and supersession must be explicitly reviewed and linked in GitHub.
@@ -102,7 +102,6 @@ Every open issue is listed below, grouped by its current priority. Opening a new
 
 - [#6 — P2 — Essential launcher settings and safe storage controls](https://github.com/iNeonyne/LastHavenPlus/issues/6) — enhancement
 - [#7 — P3 — Measure runtime performance and evaluate APK size improvements](https://github.com/iNeonyne/LastHavenPlus/issues/7) — enhancement
-- [#10 — P2 — Persistent app-wide network usage totals](https://github.com/iNeonyne/LastHavenPlus/issues/10) — enhancement
 - [#11 — P2 — Privacy-conscious app and updater log tests](https://github.com/iNeonyne/LastHavenPlus/issues/11) — enhancement
 - [#12 — P2 — Actionable GeckoView load-error details](https://github.com/iNeonyne/LastHavenPlus/issues/12) — bug
 - [#19 — P1 — Add an opt-in beta release channel to the updater](https://github.com/iNeonyne/LastHavenPlus/issues/19) — enhancement
@@ -115,7 +114,6 @@ Every open issue is listed below, grouped by its current priority. Opening a new
 - [#238 — release: promote latest beta to main](https://github.com/iNeonyne/LastHavenPlus/pull/238) (main <- beta)
 - [#246 — fix: include version in release APK asset names](https://github.com/iNeonyne/LastHavenPlus/pull/246) (main <- chaty/versioned-apk-assets)
 - [#247 — fix(addons): reconcile addon import and runtime payload size limits (#228)](https://github.com/iNeonyne/LastHavenPlus/pull/247) (beta <- vibe/addon-size-limits-228)
-- [#249 — feat(network): persist app-wide per-UID usage totals (#10)](https://github.com/iNeonyne/LastHavenPlus/pull/249) (beta <- chaty/persistent-network-totals-10)
 - [#250 — ui: start landscape launcher redesign and POCO smoke coverage (#248)](https://github.com/iNeonyne/LastHavenPlus/pull/250) (beta <- chaty/native-landscape-ui-248)
 
 ### Recently completed (last 30 days)
@@ -163,6 +161,7 @@ Every open issue is listed below, grouped by its current priority. Opening a new
 - [#20 — P1 — Complete the GeckoView 160 artifact and dependency audit](https://github.com/iNeonyne/LastHavenPlus/issues/20)
 - [#18 — Roadmap — v2.4.0–v2.6.0 UI/UX, updater and settings](https://github.com/iNeonyne/LastHavenPlus/issues/18)
 - [#13 — P2 — Add accessible names to launcher actions](https://github.com/iNeonyne/LastHavenPlus/issues/13)
+- [#10 — P2 — Persistent app-wide network usage totals](https://github.com/iNeonyne/LastHavenPlus/issues/10)
 - [#9 — Verify accessibility and navigation for the direct-launch overlay](https://github.com/iNeonyne/LastHavenPlus/issues/9)
 - [#8 — Superseded — Legacy addon manager removed; future scope waits for owner spec (#23)](https://github.com/iNeonyne/LastHavenPlus/issues/8)
 - [#5 — Owner feedback — LastHaven gameplay and update behavior after release](https://github.com/iNeonyne/LastHavenPlus/issues/5)
