@@ -3,15 +3,13 @@ package com.neonyne.lasthavenlauncher
 import java.net.URI
 
 /**
- * Restricts top-level game navigation to the two official game origins.
+ * Restricts top-level game navigation to the official LastHavens domain and its subdomains.
  *
- * The browser login/create-account flow is presented by the game login screen itself; the public
- * site does not document a separate identity-provider redirect. Asset/API hosts are not navigation
- * origins and must not be added here without evidence that a top-level redirect requires them.
+ * This permits first-party auth/game subdomains while keeping unrelated domains and lookalikes
+ * blocked. Asset/API hosts on third-party domains are not navigation origins and remain blocked.
  */
 internal object GameNavigationPolicy {
-  private const val DEFAULT_GAME_HOST = "lasthavens.com"
-  private const val ALTERNATE_GAME_HOST = "alt.lasthavens.com"
+  private const val GAME_DOMAIN = "lasthavens.com"
   private const val MAX_URL_CHARS = 4096
 
   fun allows(url: String): Boolean {
@@ -22,8 +20,8 @@ internal object GameNavigationPolicy {
     if (uri.rawUserInfo != null) return false
     val host = uri.host ?: return false
     if (
-      !host.equals(DEFAULT_GAME_HOST, ignoreCase = true) &&
-        !host.equals(ALTERNATE_GAME_HOST, ignoreCase = true)
+      !host.equals(GAME_DOMAIN, ignoreCase = true) &&
+        !host.endsWith(".$GAME_DOMAIN", ignoreCase = true)
     ) {
       return false
     }
