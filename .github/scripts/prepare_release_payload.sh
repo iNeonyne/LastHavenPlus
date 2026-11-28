@@ -43,7 +43,10 @@ fi
 
 if [[ -n "$PREVIOUS_RELEASE" ]]; then
   PREVIOUS_TAG="$(jq -r '.tag_name // empty' <<< "$PREVIOUS_RELEASE" 2>/dev/null || true)"
-  PREVIOUS_APK_ASSET_NAME="$(jq -r --arg version "${PREVIOUS_TAG#v}" '.assets[]? | select(.name == ("LastHavenPlus-" + $version + "-stable-arm64-v8a.apk") or .name == "lasthavenplus-arm64.apk") | .name' <<< "$PREVIOUS_RELEASE" 2>/dev/null | head -n 1 || true)"
+  PREVIOUS_APK_ASSET_NAME="$(jq -r --arg version "${PREVIOUS_TAG#v}" '.assets[]? | select(.name == ("LastHavenPlus-" + $version + "-stable-arm64-v8a.apk")) | .name' <<< "$PREVIOUS_RELEASE" 2>/dev/null | head -n 1 || true)"
+  if [[ -z "$PREVIOUS_APK_ASSET_NAME" ]]; then
+    PREVIOUS_APK_ASSET_NAME="lasthavenplus-arm64.apk"
+  fi
   PREVIOUS_APK_URL="$(jq -r --arg name "$PREVIOUS_APK_ASSET_NAME" '.assets[]? | select(.name == $name) | .browser_download_url' <<< "$PREVIOUS_RELEASE" 2>/dev/null | head -n 1 || true)"
   PREVIOUS_MANIFEST_URL="$(jq -r '.assets[]? | select(.name == "lasthavenplus-update.json") | .browser_download_url' <<< "$PREVIOUS_RELEASE" 2>/dev/null | head -n 1 || true)"
 
