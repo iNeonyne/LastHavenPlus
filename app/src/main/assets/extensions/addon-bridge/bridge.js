@@ -46,6 +46,21 @@
   let currentPlan = null;
   let planError = null;
 
+  function deepFreezePageClone(value, seen) {
+    if (value === null || typeof value !== "object") {
+      return value;
+    }
+    const visited = seen || new WeakSet();
+    if (visited.has(value)) {
+      return value;
+    }
+    visited.add(value);
+    for (const key of Object.keys(value)) {
+      deepFreezePageClone(value[key], visited);
+    }
+    return Object.freeze(value);
+  }
+
   function isSafeFolder(folder) {
     return typeof folder === "string" &&
       /^[A-Za-z0-9_-]{1,128}$/.test(folder) &&
@@ -313,7 +328,10 @@
               // One page-realm clone per payload revision (issue #229): the bundle is deep
               // frozen and read-only, so the same clone is reused until the revision changes.
               if (pageBundleClone === null) {
-                pageBundleClone = cloneInto(currentBundle, targetWindow);
+                // cloneInto uses structured cloning, which does not retain property
+                // descriptors. Re-freeze the page-realm copy (including nested file maps) so
+                // caching cannot turn one caller's mutation into stale data for later requests.
+                pageBundleClone = deepFreezePageClone(cloneInto(currentBundle, targetWindow));
               }
               return pageBundleClone;
             },
