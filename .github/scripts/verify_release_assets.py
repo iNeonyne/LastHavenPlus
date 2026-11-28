@@ -9,7 +9,6 @@ import sys
 from pathlib import Path
 from typing import Any
 
-CANONICAL_APK = "lasthavenplus-arm64.apk"
 CANONICAL_MANIFEST = "lasthavenplus-update.json"
 LEGACY_ASSETS = {"lasthavenlauncher-arm64.apk", "lasthavenlauncher-update.json"}
 
@@ -19,6 +18,10 @@ def validate_release_assets(release: dict[str, Any], expected_tag: str) -> None:
         raise ValueError("release metadata must be a JSON object")
     if release.get("tag_name") != expected_tag:
         raise ValueError(f"release tag must be {expected_tag}")
+    if not isinstance(expected_tag, str) or not __import__("re").fullmatch(r"v([0-9]+\\.[0-9]+\\.[0-9]+)", expected_tag):
+        raise ValueError("release tag must use vMAJOR.MINOR.PATCH")
+    version = expected_tag[1:]
+    expected_apk = f"LastHavenPlus-{version}-stable-arm64-v8a.apk"
 
     assets = release.get("assets")
     if not isinstance(assets, list):
@@ -31,10 +34,10 @@ def validate_release_assets(release: dict[str, Any], expected_tag: str) -> None:
         names.append(asset["name"])
 
     apk_names = [name for name in names if name.lower().endswith(".apk")]
-    if apk_names != [CANONICAL_APK]:
+    if apk_names != [expected_apk]:
         raise ValueError(
-            "release must contain exactly one APK named "
-            f"{CANONICAL_APK}; found {apk_names}"
+            "release must contain exactly one versioned APK named "
+            f"{expected_apk}; found {apk_names}"
         )
     if names.count(CANONICAL_MANIFEST) != 1:
         raise ValueError(
