@@ -26,6 +26,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.isTraversalGroup
 import androidx.compose.ui.semantics.paneTitle
@@ -45,12 +46,14 @@ fun GameMenuScreen(
   onSettings: () -> Unit,
   onAddonManager: () -> Unit,
   onReturnToGame: () -> Unit,
+  addonReloadRequired: Boolean = false,
 ) {
   val menuFocus = remember { FocusRequester() }
   LaunchedEffect(menuFocus) { menuFocus.requestFocus() }
+  val menuPaneTitle = stringResource(R.string.game_menu_pane_title)
   Box(
     modifier =
-      Modifier.fillMaxSize().background(DesignTokens.scrim).semantics { paneTitle = "Game menu" },
+      Modifier.fillMaxSize().background(DesignTokens.scrim).semantics { paneTitle = menuPaneTitle },
     contentAlignment = Alignment.Center,
   ) {
     Surface(
@@ -73,12 +76,19 @@ fun GameMenuScreen(
         horizontalAlignment = Alignment.CenterHorizontally,
       ) {
         Text(
-          "GAME MENU",
+          stringResource(R.string.game_menu_title),
           modifier = Modifier.semantics { heading() },
           color = DesignTokens.frost,
           style = MaterialTheme.typography.labelSmall,
         )
         Spacer(Modifier.height(2.dp))
+        if (addonReloadRequired) {
+          Text(
+            stringResource(R.string.game_menu_addons_reload_required),
+            color = MaterialTheme.colorScheme.tertiary,
+            style = MaterialTheme.typography.bodySmall,
+          )
+        }
         Button(
           onClick = onReload,
           modifier =
@@ -88,28 +98,28 @@ fun GameMenuScreen(
           shape = RoundedCornerShape(DesignTokens.cornerButton),
           colors = DesignTokens.primaryButtonColors(),
         ) {
-          Text("Reload", fontWeight = FontWeight.Bold)
+          Text(stringResource(R.string.game_menu_reload), fontWeight = FontWeight.Bold)
         }
         OutlinedButton(
           onClick = onSettings,
           modifier = Modifier.fillMaxWidth().heightIn(min = DesignTokens.minTouchTarget),
           shape = RoundedCornerShape(DesignTokens.cornerButton),
         ) {
-          Text("Settings")
+          Text(stringResource(R.string.game_menu_settings))
         }
         OutlinedButton(
           onClick = onAddonManager,
           modifier = Modifier.fillMaxWidth().heightIn(min = DesignTokens.minTouchTarget),
           shape = RoundedCornerShape(DesignTokens.cornerButton),
         ) {
-          Text("Addon Manager")
+          Text(stringResource(R.string.game_menu_addon_manager))
         }
         OutlinedButton(
           onClick = onReturnToGame,
           modifier = Modifier.fillMaxWidth().heightIn(min = DesignTokens.minTouchTarget),
           shape = RoundedCornerShape(DesignTokens.cornerButton),
         ) {
-          Text("Return to game")
+          Text(stringResource(R.string.game_menu_return_to_game))
         }
       }
     }

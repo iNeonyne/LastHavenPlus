@@ -12,8 +12,11 @@ import java.util.Base64
 import java.util.Locale
 import java.util.Properties
 import java.util.UUID
+import java.util.concurrent.CancellationException
 import java.util.zip.ZipEntry
 import java.util.zip.ZipOutputStream
+
+internal const val MAX_ADDON_LIBRARY_ITEMS = 10_000
 
 data class AddonLibraryItem(
   val title: String,
@@ -47,7 +50,6 @@ class AddonLibraryRepository(
 ) {
   private companion object {
     const val MIN_FREE_SPACE_RESERVE_BYTES = 1024L * 1024L
-    const val MAX_LIBRARY_ITEMS = 10_000
     const val TXN_PREFIX = ".txn-"
     const val BACKUP_PREFIX = ".backup-"
     const val REMOVE_PREFIX = ".remove-"
@@ -94,13 +96,15 @@ class AddonLibraryRepository(
     val count =
       properties.getProperty("count")?.toIntOrNull()
         ?: throw IllegalStateException("Addon library index is invalid.")
-    require(count in 0..MAX_LIBRARY_ITEMS) { "Addon library index contains too many entries." }
+    require(count in 0..MAX_ADDON_LIBRARY_ITEMS) {
+      "Addon library index contains too many entries."
+    }
     val addons =
       (0 until count).map { index ->
         fun value(key: String): String =
           decode(
             properties.getProperty("addon.$index.$key")
-              ?: throw IllegalStateException("Addon library index is missing $key.")
+              ?: throw IllegalStateException("Addon library index is missing $key."),
           )
         val folder = value("folder")
         require(isSafeFolder(folder)) { "Addon library contains an invalid folder name." }
@@ -113,12 +117,12 @@ class AddonLibraryRepository(
           dependencies =
             decodeList(
               properties.getProperty("addon.$index.dependencies")
-                ?: throw IllegalStateException("Addon library dependencies are missing.")
+                ?: throw IllegalStateException("Addon library dependencies are missing."),
             ),
           optionalDependencies =
             decodeList(
               properties.getProperty("addon.$index.optionalDependencies")
-                ?: throw IllegalStateException("Addon library optional dependencies are missing.")
+                ?: throw IllegalStateException("Addon library optional dependencies are missing."),
             ),
           sizeBytes =
             properties.getProperty("addon.$index.size")?.toLongOrNull()?.also {
@@ -141,7 +145,7 @@ class AddonLibraryRepository(
           warnings =
             decodeList(
               properties.getProperty("addon.$index.warnings")
-                ?: throw IllegalStateException("Addon library warnings are missing.")
+                ?: throw IllegalStateException("Addon library warnings are missing."),
             ),
         )
       }
@@ -159,151 +163,168 @@ class AddonLibraryRepository(
     return AddonLibrarySnapshot(revision, addons)
   }
 
-  fun importZip(input: InputStream, compressedSize: Long?): AddonLibrarySnapshot =
-    input.use { source ->
-      if (!root.exists() && !root.mkdirs()) {
-        throw IllegalStateException("Could not create addon storage.")
-      }
-      val requiredStagingBytes = AddonArchive.MAX_ARCHIVE_BYTES + MIN_FREE_SPACE_RESERVE_BYTES
-      require(availableStorageBytes() >= requiredStagingBytes) {
-        "Not enough free storage to stage the selected archive."
-      }
-      val extraction = File(root, EXTRACT_PREFIX + UUID.randomUUID())
-      try {
-        val imported =
-          AddonArchive.importZip(source, compressedSize, extraction) { _ ->
+  fun importZip(
+    input: InputStream,
+    compressedSize: Long?,
+    onStage: (AddonImportStage) -> Unit = {},
+    confirmReplacement: (List<String>) -> Boolean = { true },
+  ): AddonLibrarySnapshot = input.use { source ->
+    if (!root.exists() && !root.mkdirs()) {
+      throw IllegalStateException("Could not create addon storage.")
+    }
+    val requiredStagingBytes = AddonArchive.MAX_ARCHIVE_BYTES + MIN_FREE_SPACE_RESERVE_BYTES
+    require(availableStorageBytes() >= requiredStagingBytes) {
+      "Not enough free storage to stage the selected archive."
+    }
+    val extraction = File(root, EXTRACT_PREFIX + UUID.randomUUID())
+    try {
+      val imported =
+        AddonArchive.importZip(
+          source,
+          compressedSize,
+          extraction,
+          beforeExtraction = { _ ->
             val requiredBytes = AddonArchive.MAX_EXPANDED_BYTES + MIN_FREE_SPACE_RESERVE_BYTES
             require(availableStorageBytes() >= requiredBytes) {
               "Not enough free storage to safely extract and stage imported addons."
             }
-          }
-        require(imported.isNotEmpty()) { "The archive contains no addons." }
-
-        val current = readLibrary(performStaleSweep = false)
-        val replacing = imported.map { it.folder.lowercase(Locale.ROOT) }.toSet()
-        val total =
-          current.addons
-            .filterNot { it.folder.lowercase(Locale.ROOT) in replacing }
-            .sumOf { it.sizeBytes } + imported.sumOf { it.sizeBytes }
-        require(total <= AddonArchive.MAX_LIBRARY_BYTES) {
-          "Addon library exceeds 384 MiB."
-        }
-        val stagedBytes = imported.sumOf { it.sizeBytes }
-        require(availableStorageBytes() >= stagedBytes + MIN_FREE_SPACE_RESERVE_BYTES) {
-          "Not enough free storage to safely commit imported addons."
-        }
-        val projectedCount =
-          current.addons.count { it.folder.lowercase(Locale.ROOT) !in replacing } + imported.size
-        require(projectedCount <= MAX_LIBRARY_ITEMS) {
-          "Addon library contains too many entries."
-        }
-
-        val existing = current.addons.associateBy { it.folder.lowercase(Locale.ROOT) }
-        val nextItems =
-          current.addons.filterNot { it.folder.lowercase(Locale.ROOT) in replacing }.toMutableList()
-
-        val plans = mutableListOf<CommitPlan>()
-        for (addon in imported) {
-          require(isSafeFolder(addon.folder)) { "Invalid addon folder: ${addon.folder}" }
-          val stage = File(root, STAGE_PREFIX + UUID.randomUUID())
-          require(stage.mkdirs()) { "Could not prepare addon storage." }
-          val previous = existing[addon.folder.lowercase(Locale.ROOT)]
-          val targetFolderName = previous?.folder ?: addon.folder
-          val target = File(root, targetFolderName)
-          val backup =
-            if (previous != null) {
-              File(root, BACKUP_PREFIX + UUID.randomUUID())
-            } else {
-              null
-            }
-          plans += CommitPlan(stage, target, backup)
-          for ((relativePath, sourceFile) in addon.files) {
-            val destination = File(stage, relativePath)
-            val canonicalRoot = stage.canonicalFile
-            val canonicalDestination = destination.canonicalFile
-            require(canonicalDestination.path.startsWith(canonicalRoot.path + File.separator)) {
-              "Unsafe addon file path: $relativePath"
-            }
-            destination.parentFile?.let {
-              if (!it.exists() && !it.mkdirs()) {
-                throw IllegalStateException("Could not create addon file directory.")
-              }
-            }
-            FileInputStream(sourceFile).use { source ->
-              FileOutputStream(destination).use { target -> source.copyTo(target) }
-            }
-          }
-          nextItems +=
-            AddonLibraryItem(
-              title = addon.title,
-              folder = targetFolderName,
-              version = addon.version,
-              interfaceVersion = addon.interfaceVersion,
-              notes = addon.notes,
-              dependencies = addon.dependencies,
-              optionalDependencies = addon.optionalDependencies,
-              sizeBytes = addon.sizeBytes,
-              filesCount = addon.files.size,
-              enabled = previous?.enabled ?: false,
-              importedAt = System.currentTimeMillis(),
-              warnings = addon.warnings,
-            )
-        }
-
-        require(nextItems.size <= MAX_LIBRARY_ITEMS) {
-          "Addon library contains too many entries."
-        }
-
-        val newRevision = UUID.randomUUID().toString()
-        val oldIndex = readLibraryIndex(requireAddonDirectories = false)
-        val transaction = File(root, TXN_PREFIX + UUID.randomUUID())
-        writeTransactionPlan(
-          transaction = transaction,
-          oldRevision = oldIndex?.revision,
-          oldIndexMissing = oldIndex == null,
-          newRevision = newRevision,
-          backups = plans.mapNotNull { plan -> plan.backup?.let { plan.target.name to it.name } },
-          freshTargets = plans.filter { it.backup == null }.map { it.target.name },
-          stages = plans.map { it.stage.name },
+          },
+          onStage = onStage,
         )
-        try {
-          for (plan in plans) {
-            plan.backup?.let { backup ->
-              check(plan.target.renameTo(backup)) {
-                "Could not stage the existing addon for replacement."
-              }
-            }
-            check(plan.stage.renameTo(plan.target)) { "Could not commit imported addon files." }
-          }
+      require(imported.isNotEmpty()) { "The archive contains no addons." }
 
-          val snapshot = AddonLibrarySnapshot(newRevision, nextItems)
-          writeIndex(snapshot)
-          plans.forEach { plan ->
-            plan.backup?.let { backup ->
-              check(backup.deleteRecursively()) { "Could not finalize replaced addon files." }
+      val current = readLibrary(performStaleSweep = false)
+      val replacing = imported.map { it.folder.lowercase(Locale.ROOT) }.toSet()
+      val replacedFolders =
+        current.addons.filter { it.folder.lowercase(Locale.ROOT) in replacing }.map { it.folder }
+      if (replacedFolders.isNotEmpty() && !confirmReplacement(replacedFolders)) {
+        throw CancellationException("Addon replacement was cancelled.")
+      }
+      val total =
+        current.addons
+          .filterNot { it.folder.lowercase(Locale.ROOT) in replacing }
+          .sumOf { it.sizeBytes } + imported.sumOf { it.sizeBytes }
+      require(total <= AddonArchive.MAX_LIBRARY_BYTES) {
+        "Addon library exceeds 384 MiB."
+      }
+      val stagedBytes = imported.sumOf { it.sizeBytes }
+      require(availableStorageBytes() >= stagedBytes + MIN_FREE_SPACE_RESERVE_BYTES) {
+        "Not enough free storage to safely commit imported addons."
+      }
+      val projectedCount =
+        current.addons.count { it.folder.lowercase(Locale.ROOT) !in replacing } + imported.size
+      require(projectedCount <= MAX_ADDON_LIBRARY_ITEMS) {
+        "Addon library contains too many entries."
+      }
+      onStage(AddonImportStage.COMMITTING)
+
+      val existing = current.addons.associateBy { it.folder.lowercase(Locale.ROOT) }
+      val nextItems =
+        current.addons.filterNot { it.folder.lowercase(Locale.ROOT) in replacing }.toMutableList()
+
+      val plans = mutableListOf<CommitPlan>()
+      for (addon in imported) {
+        require(isSafeFolder(addon.folder)) { "Invalid addon folder: ${addon.folder}" }
+        val stage = File(root, STAGE_PREFIX + UUID.randomUUID())
+        require(stage.mkdirs()) { "Could not prepare addon storage." }
+        val previous = existing[addon.folder.lowercase(Locale.ROOT)]
+        val targetFolderName = previous?.folder ?: addon.folder
+        val target = File(root, targetFolderName)
+        val backup =
+          if (previous != null) {
+            File(root, BACKUP_PREFIX + UUID.randomUUID())
+          } else {
+            null
+          }
+        plans += CommitPlan(stage, target, backup)
+        for ((relativePath, sourceFile) in addon.files) {
+          val destination = File(stage, relativePath)
+          val canonicalRoot = stage.canonicalFile
+          val canonicalDestination = destination.canonicalFile
+          require(canonicalDestination.path.startsWith(canonicalRoot.path + File.separator)) {
+            "Unsafe addon file path: $relativePath"
+          }
+          destination.parentFile?.let {
+            if (!it.exists() && !it.mkdirs()) {
+              throw IllegalStateException("Could not create addon file directory.")
             }
           }
-          check(transaction.delete()) { "Could not finalize the addon transaction record." }
-          snapshot
-        } catch (error: Exception) {
-          try {
-            recoverPendingTransactions(performStaleSweep = false)
-          } catch (recoveryError: Exception) {
-            throw IllegalStateException(
-                "Addon transaction recovery is incomplete; transaction data was preserved.",
-                error,
-              )
-              .also { it.addSuppressed(recoveryError) }
+          FileInputStream(sourceFile).use { source ->
+            FileOutputStream(destination).use { target -> source.copyTo(target) }
           }
-          throw error
-        } finally {
-          // A still-present journal means recovery failed. Preserve every stage named by it.
-          if (!transaction.exists()) plans.forEach { it.stage.deleteRecursively() }
         }
-      } finally {
-        extraction.deleteRecursively()
+        nextItems +=
+          AddonLibraryItem(
+            title = addon.title,
+            folder = targetFolderName,
+            version = addon.version,
+            interfaceVersion = addon.interfaceVersion,
+            notes = addon.notes,
+            dependencies = addon.dependencies,
+            optionalDependencies = addon.optionalDependencies,
+            sizeBytes = addon.sizeBytes,
+            filesCount = addon.files.size,
+            enabled = previous?.enabled ?: false,
+            importedAt = System.currentTimeMillis(),
+            warnings = addon.warnings,
+          )
       }
+
+      require(nextItems.size <= MAX_ADDON_LIBRARY_ITEMS) {
+        "Addon library contains too many entries."
+      }
+
+      val newRevision = UUID.randomUUID().toString()
+      val oldIndex = readLibraryIndex(requireAddonDirectories = false)
+      val transaction = File(root, TXN_PREFIX + UUID.randomUUID())
+      writeTransactionPlan(
+        transaction = transaction,
+        oldRevision = oldIndex?.revision,
+        oldIndexMissing = oldIndex == null,
+        newRevision = newRevision,
+        backups = plans.mapNotNull { plan -> plan.backup?.let { plan.target.name to it.name } },
+        freshTargets = plans.filter { it.backup == null }.map { it.target.name },
+        stages = plans.map { it.stage.name },
+      )
+      try {
+        for (plan in plans) {
+          plan.backup?.let { backup ->
+            check(plan.target.renameTo(backup)) {
+              "Could not stage the existing addon for replacement."
+            }
+          }
+          check(plan.stage.renameTo(plan.target)) { "Could not commit imported addon files." }
+        }
+
+        val snapshot = AddonLibrarySnapshot(newRevision, nextItems)
+        writeIndex(snapshot)
+        plans.forEach { plan ->
+          plan.backup?.let { backup ->
+            check(backup.deleteRecursively()) { "Could not finalize replaced addon files." }
+          }
+        }
+        check(transaction.delete()) { "Could not finalize the addon transaction record." }
+        onStage(AddonImportStage.COMPLETE)
+        snapshot
+      } catch (error: Exception) {
+        try {
+          recoverPendingTransactions(performStaleSweep = false)
+        } catch (recoveryError: Exception) {
+          throw IllegalStateException(
+              "Addon transaction recovery is incomplete; transaction data was preserved.",
+              error,
+            )
+            .also { it.addSuppressed(recoveryError) }
+        }
+        throw error
+      } finally {
+        // A still-present journal means recovery failed. Preserve every stage named by it.
+        if (!transaction.exists()) plans.forEach { it.stage.deleteRecursively() }
+      }
+    } finally {
+      extraction.deleteRecursively()
     }
+  }
 
   fun setEnabled(folder: String, enabled: Boolean): AddonLibrarySnapshot {
     require(isSafeFolder(folder)) { "Invalid addon folder." }
@@ -409,7 +430,7 @@ class AddonLibraryRepository(
         if (plan.oldIndexMissing) index == null else index?.revision == plan.oldRevision
       if (!committed && !matchesOldState) {
         throw IllegalStateException(
-          "Addon transaction index state is ambiguous; transaction data was preserved."
+          "Addon transaction index state is ambiguous; transaction data was preserved.",
         )
       }
 

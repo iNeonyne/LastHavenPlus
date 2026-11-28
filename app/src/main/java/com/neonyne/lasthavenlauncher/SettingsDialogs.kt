@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
@@ -35,6 +34,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.Dispatchers
@@ -45,6 +45,8 @@ fun SettingsScreen(
   context: Context,
   usageMeter: AppUsageMeter,
   isCheckingUpdate: Boolean,
+  gameUrl: String,
+  onGameUrlChange: (String) -> Unit,
   onBack: () -> Unit,
   onOpenDiagnostics: () -> Unit,
   onOpenUpdates: () -> Unit,
@@ -53,8 +55,6 @@ fun SettingsScreen(
   var snapshot by remember { mutableStateOf<UsageSnapshot?>(null) }
   var refreshKey by remember { mutableStateOf(0) }
   var refreshing by remember { mutableStateOf(false) }
-  var showNotices by remember { mutableStateOf(false) }
-  var noticeText by remember { mutableStateOf<String?>(null) }
 
   LaunchedEffect(refreshKey) {
     refreshing = true
@@ -62,87 +62,111 @@ fun SettingsScreen(
     refreshing = false
   }
 
-  LaunchedEffect(showNotices) {
-    if (showNotices && noticeText == null) {
-      noticeText = withContext(Dispatchers.IO) { ThirdPartyNotices.readAddonManagerNotice(context) }
-    }
-  }
-
-  SettingsPageFrame(title = "Settings & usage", onBack = onBack) {
-    PageSection(title = "Storage") {
-      InfoLine("Installed APK", snapshot?.installedApkBytes?.let(::formatBytes) ?: "Measuring…")
+  SettingsPageFrame(title = stringResource(R.string.settings_title), onBack = onBack) {
+    PageSection(title = stringResource(R.string.settings_storage_section)) {
       InfoLine(
-        "Persistent app data",
-        snapshot?.persistentDataBytes?.let(::formatBytes) ?: "Measuring…",
+        stringResource(R.string.settings_installed_apk),
+        snapshot?.installedApkBytes?.let(::formatBytes)
+          ?: stringResource(R.string.settings_value_measuring),
+      )
+      InfoLine(
+        stringResource(R.string.settings_persistent_data),
+        snapshot?.persistentDataBytes?.let(::formatBytes)
+          ?: stringResource(R.string.settings_value_measuring),
       )
       Text(
-        "Includes app-private files and GeckoView data; it is not a profile-only measurement.",
+        stringResource(R.string.settings_storage_hint),
         color = DesignTokens.textSecondary,
         style = MaterialTheme.typography.bodySmall,
       )
-      InfoLine("App cache", snapshot?.cacheBytes?.let(::formatBytes) ?: "Measuring…")
+      InfoLine(
+        stringResource(R.string.settings_app_cache),
+        snapshot?.cacheBytes?.let(::formatBytes)
+          ?: stringResource(R.string.settings_value_measuring),
+      )
       TextButton(onClick = { refreshKey++ }, enabled = !refreshing) {
-        Text(if (refreshing) "Refreshing…" else "Refresh storage")
+        Text(
+          if (refreshing) stringResource(R.string.settings_refreshing)
+          else stringResource(R.string.settings_refresh_storage),
+        )
       }
     }
 
-    PageSection(title = "Network usage") {
+    PageSection(title = stringResource(R.string.settings_network_section)) {
       InfoLine(
-        "Received since device boot",
-        snapshot?.receivedSinceBootBytes?.let(::formatBytes) ?: "Not supported",
+        stringResource(R.string.settings_received_since_boot),
+        snapshot?.receivedSinceBootBytes?.let(::formatBytes)
+          ?: stringResource(R.string.settings_value_not_supported),
       )
       InfoLine(
-        "Sent since device boot",
-        snapshot?.sentSinceBootBytes?.let(::formatBytes) ?: "Not supported",
+        stringResource(R.string.settings_sent_since_boot),
+        snapshot?.sentSinceBootBytes?.let(::formatBytes)
+          ?: stringResource(R.string.settings_value_not_supported),
       )
       InfoLine(
-        "Received this app session",
-        snapshot?.receivedThisSessionBytes?.let(::formatBytes) ?: "Not available",
+        stringResource(R.string.settings_received_this_session),
+        snapshot?.receivedThisSessionBytes?.let(::formatBytes)
+          ?: stringResource(R.string.settings_value_not_available),
       )
       InfoLine(
-        "Sent this app session",
-        snapshot?.sentThisSessionBytes?.let(::formatBytes) ?: "Not available",
+        stringResource(R.string.settings_sent_this_session),
+        snapshot?.sentThisSessionBytes?.let(::formatBytes)
+          ?: stringResource(R.string.settings_value_not_available),
       )
       Text(
-        "Per-app totals include game and updater traffic. " +
-          "They are stored locally and reset on device reboot.",
+        stringResource(R.string.settings_network_hint),
         color = DesignTokens.textSecondary,
         style = MaterialTheme.typography.bodySmall,
       )
     }
 
-    PageSection(title = "Application") {
+    PageSection(title = stringResource(R.string.settings_game_server_section)) {
       Text(
-        "LastHavenPlus",
+        stringResource(R.string.settings_game_server_hint),
+        color = DesignTokens.textSecondary,
+        style = MaterialTheme.typography.bodySmall,
+      )
+      OutlinedButton(
+        onClick = { onGameUrlChange(DEFAULT_GAME_URL) },
+        enabled = gameUrl != DEFAULT_GAME_URL,
+        modifier = Modifier.fillMaxWidth(),
+      ) {
+        Text(stringResource(R.string.settings_game_server_default))
+      }
+      OutlinedButton(
+        onClick = { onGameUrlChange(ALTERNATE_GAME_URL) },
+        enabled = gameUrl != ALTERNATE_GAME_URL,
+        modifier = Modifier.fillMaxWidth(),
+      ) {
+        Text(stringResource(R.string.settings_game_server_alternate))
+      }
+    }
+
+    PageSection(title = stringResource(R.string.settings_application_section)) {
+      Text(
+        stringResource(R.string.app_name),
         color = DesignTokens.textPrimary,
         fontWeight = FontWeight.SemiBold,
       )
-      Text("Game engine: Mozilla GeckoView 160", color = DesignTokens.textSecondary)
+      Text(stringResource(R.string.settings_game_engine), color = DesignTokens.textSecondary)
+      Text(
+        stringResource(R.string.settings_passkeys_unavailable),
+        color = DesignTokens.textSecondary,
+        style = MaterialTheme.typography.bodySmall,
+      )
       OutlinedButton(
         onClick = onCheckUpdates,
         enabled = !isCheckingUpdate,
         modifier = Modifier.fillMaxWidth(),
       ) {
-        Text(if (isCheckingUpdate) "Checking for updates…" else "Check for updates")
+        Text(
+          if (isCheckingUpdate) stringResource(R.string.settings_checking_updates)
+          else stringResource(R.string.settings_check_updates),
+        )
       }
-      TextButton(onClick = onOpenUpdates) { Text("Update details") }
-      TextButton(onClick = onOpenDiagnostics) { Text("App diagnostics") }
-      TextButton(onClick = { showNotices = !showNotices }) {
-        Text(if (showNotices) "Hide third-party notices" else "Third-party notices")
-      }
-      if (showNotices) {
-        Surface(
-          modifier = Modifier.fillMaxWidth().heightIn(max = 320.dp),
-          color = DesignTokens.logSurface,
-          shape = MaterialTheme.shapes.medium,
-        ) {
-          Text(
-            noticeText ?: "Third-party notice could not be loaded.",
-            color = DesignTokens.textSecondary,
-            style = MaterialTheme.typography.bodySmall,
-            modifier = Modifier.padding(12.dp).verticalScroll(rememberScrollState()),
-          )
-        }
+      TextButton(onClick = onOpenUpdates) { Text(stringResource(R.string.settings_update_details)) }
+      TextButton(onClick = onOpenDiagnostics) {
+        Text(stringResource(R.string.settings_open_diagnostics))
       }
     }
   }
@@ -154,10 +178,10 @@ fun DiagnosticsScreen(
   onBack: () -> Unit,
 ) {
   var content by remember { mutableStateOf(Diagnostics.read(context)) }
-  SettingsPageFrame(title = "App diagnostics", onBack = onBack) {
-    PageSection(title = "Local diagnostic log") {
+  SettingsPageFrame(title = stringResource(R.string.diagnostics_title), onBack = onBack) {
+    PageSection(title = stringResource(R.string.diagnostics_log_section)) {
       Text(
-        "Logs are stored on this device. Review them before sharing.",
+        stringResource(R.string.diagnostics_privacy_hint),
         color = DesignTokens.textSecondary,
         style = MaterialTheme.typography.bodySmall,
       )
@@ -173,15 +197,18 @@ fun DiagnosticsScreen(
           style = MaterialTheme.typography.bodySmall,
         )
       }
+      val clearedMessage = stringResource(R.string.diagnostics_cleared)
       Row(horizontalArrangement = Arrangement.spacedBy(DesignTokens.spaceSmall)) {
-        OutlinedButton(onClick = { content = Diagnostics.read(context) }) { Text("Refresh") }
+        OutlinedButton(onClick = { content = Diagnostics.read(context) }) {
+          Text(stringResource(R.string.action_refresh))
+        }
         OutlinedButton(
           onClick = {
             Diagnostics.clear(context)
-            content = "Logs cleared."
-          }
+            content = clearedMessage
+          },
         ) {
-          Text("Clear logs")
+          Text(stringResource(R.string.diagnostics_clear))
         }
       }
       Button(
@@ -189,46 +216,50 @@ fun DiagnosticsScreen(
           val share =
             Intent(Intent.ACTION_SEND).apply {
               type = "text/plain"
-              putExtra(Intent.EXTRA_SUBJECT, "LastHavenPlus diagnostics")
+              putExtra(Intent.EXTRA_SUBJECT, context.getString(R.string.diagnostics_share_subject))
               putExtra(Intent.EXTRA_TEXT, content)
             }
-          context.startActivity(Intent.createChooser(share, "Share diagnostic logs"))
+          context.startActivity(
+            Intent.createChooser(share, context.getString(R.string.diagnostics_share_chooser)),
+          )
         },
         modifier = Modifier.fillMaxWidth(),
       ) {
-        Text("Share logs")
+        Text(stringResource(R.string.diagnostics_share))
       }
     }
   }
 }
 
 @Composable
-fun UpdateScreen(
+// All launcher-owned update-page copy is sourced from default Android string resources.
+internal fun UpdateScreen(
   update: AppUpdateInfo?,
   message: String?,
   isChecking: Boolean,
   isDownloading: Boolean,
   downloadingDelta: Boolean,
+  progress: UpdateProgressState,
   onBack: () -> Unit,
   onDownload: (preferDelta: Boolean) -> Unit,
 ) {
-  SettingsPageFrame(title = "App updates", onBack = onBack) {
-    PageSection(title = "Update status") {
+  SettingsPageFrame(title = stringResource(R.string.updates_title), onBack = onBack) {
+    PageSection(title = stringResource(R.string.updates_status_section)) {
       when {
         isChecking -> {
           LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
-          Text("Checking the stable release channel…", color = DesignTokens.textSecondary)
+          Text(stringResource(R.string.updates_checking), color = DesignTokens.textSecondary)
         }
         update != null -> {
           Text(
-            "LastHavenPlus ${update.version} is available.",
+            stringResource(R.string.updates_available, update.version),
             color = DesignTokens.textPrimary,
           )
           if (update.patch != null) {
             val patchMib =
               String.format(java.util.Locale.US, "%.1f", update.patch.size / 1024.0 / 1024.0)
             Text(
-              "A smaller differential package is available ($patchMib MiB).",
+              stringResource(R.string.updates_delta_available, patchMib),
               color = DesignTokens.textSecondary,
             )
           }
@@ -237,13 +268,95 @@ fun UpdateScreen(
           }
           if (isDownloading) {
             val downloadLabel =
-              if (downloadingDelta) {
-                "Downloading differential update…"
-              } else {
-                "Downloading full APK…"
+              when (progress.stage) {
+                UpdateStage.DIFFERENTIAL_DOWNLOAD ->
+                  stringResource(R.string.updates_downloading_delta)
+                UpdateStage.FULL_DOWNLOAD -> stringResource(R.string.updates_downloading_full)
+                UpdateStage.VERIFYING -> stringResource(R.string.updates_verifying)
+                UpdateStage.READY -> stringResource(R.string.updates_ready)
+                else ->
+                  if (downloadingDelta) stringResource(R.string.updates_downloading_delta)
+                  else stringResource(R.string.updates_downloading_full)
               }
-            LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
+            val progressPercent = progress.percent
+            if (progressPercent != null) {
+              LinearProgressIndicator(
+                progress = { progressPercent / 100f },
+                modifier = Modifier.fillMaxWidth(),
+              )
+            } else {
+              LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
+            }
             Text(downloadLabel, color = DesignTokens.textSecondary)
+            if (progress.downloadAttempt > 1) {
+              Text(
+                stringResource(R.string.updates_retrying_attempt, progress.downloadAttempt),
+                color = DesignTokens.textSecondary,
+              )
+            }
+            val totalLabel =
+              if (progress.totalKnown) formatBytes(progress.totalBytes)
+              else stringResource(R.string.updates_unknown_size)
+            Text(
+              if (progress.totalKnown) {
+                stringResource(
+                  R.string.updates_progress_bytes,
+                  formatBytes(progress.receivedBytes),
+                  totalLabel,
+                )
+              } else {
+                stringResource(
+                  R.string.updates_progress_received,
+                  formatBytes(progress.receivedBytes),
+                )
+              },
+              color = DesignTokens.textSecondary,
+            )
+            progress.estimatedBytesPerSecond?.let { rate ->
+              Text(
+                stringResource(R.string.updates_progress_speed, formatBytes(rate)),
+                color = DesignTokens.textSecondary,
+              )
+            }
+            progress.estimatedSecondsRemaining?.let { seconds ->
+              Text(
+                stringResource(R.string.updates_progress_eta, seconds),
+                color = DesignTokens.textSecondary,
+              )
+            }
+            if (progress.fallbackToFull) {
+              Text(
+                stringResource(R.string.updates_fallback_full),
+                color = DesignTokens.textSecondary,
+              )
+            }
+          } else if (progress.stage == UpdateStage.FAILED) {
+            val retryHapticView = LocalView.current
+            Text(
+              progress.failureMessage
+                ?: message
+                ?: stringResource(R.string.updates_download_failed),
+              color = MaterialTheme.colorScheme.error,
+            )
+            OutlinedButton(
+              onClick = {
+                restrainedActionFeedback(retryHapticView)
+                onDownload(downloadingDelta)
+              },
+              modifier = Modifier.fillMaxWidth(),
+            ) {
+              Text(stringResource(R.string.updates_retry_download))
+            }
+            if (update.patch != null && downloadingDelta) {
+              TextButton(onClick = { onDownload(false) }, modifier = Modifier.fillMaxWidth()) {
+                Text(
+                  stringResource(
+                    if (progress.fallbackToFull) R.string.updates_retry_full
+                    else R.string.updates_download_full_instead,
+                  ),
+                )
+              }
+            }
           } else {
             val hapticView = LocalView.current
             Button(
@@ -254,7 +367,10 @@ fun UpdateScreen(
               },
               modifier = Modifier.fillMaxWidth(),
             ) {
-              Text(if (update.patch != null) "Download smaller update" else "Download update")
+              Text(
+                if (update.patch != null) stringResource(R.string.updates_download_smaller)
+                else stringResource(R.string.updates_download_full),
+              )
             }
             if (update.patch != null) {
               OutlinedButton(
@@ -264,20 +380,22 @@ fun UpdateScreen(
                 },
                 modifier = Modifier.fillMaxWidth(),
               ) {
-                Text("Download full APK instead")
+                Text(stringResource(R.string.updates_download_full_instead))
               }
             }
           }
         }
         else ->
           Text(
-            message ?: "No update information yet. Check for updates from Settings.",
+            message ?: stringResource(R.string.updates_no_info),
             color = DesignTokens.textSecondary,
           )
       }
     }
-    if (message != null && update != null) {
-      PageSection(title = "Download status") { Text(message, color = DesignTokens.textSecondary) }
+    if (message != null && update != null && progress.stage != UpdateStage.FAILED) {
+      PageSection(title = stringResource(R.string.updates_download_status)) {
+        Text(message, color = DesignTokens.textSecondary)
+      }
     }
   }
 }
@@ -314,12 +432,12 @@ private fun SettingsPageFrame(
             style = MaterialTheme.typography.headlineSmall,
           )
           Text(
-            "LASTHAVENPLUS",
+            stringResource(R.string.settings_brand_mark),
             color = DesignTokens.frost,
             style = MaterialTheme.typography.labelSmall,
           )
         }
-        TextButton(onClick = onBack) { Text("Back") }
+        TextButton(onClick = onBack) { Text(stringResource(R.string.action_back)) }
       }
       content()
       Spacer(Modifier.height(12.dp))

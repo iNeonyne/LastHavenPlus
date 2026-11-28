@@ -34,15 +34,17 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
-import java.util.Locale
-import org.mozilla.geckoview.GeckoResult
-import org.mozilla.geckoview.GeckoSession
+import java.io.File
+import java.util.concurrent.Executors
 
-private const val DEFAULT_GAME_URL = "https://lasthavens.com/play"
-private const val PREFERENCES_NAME = "launcher_settings"
+internal const val DEFAULT_GAME_URL = "https://lasthavens.com/play"
+internal const val ALTERNATE_GAME_URL = "https://alt.lasthavens.com/play"
+private const val PREFERENCES_NAME = UpdateFileCleanup.PREFERENCES_NAME
 private const val KEY_GAME_URL = "game_url"
-private const val TAG = "LastHavenLauncher"
-private const val KEY_PENDING_UPDATE_URI = "pending_update_uri"
+private const val KEY_PENDING_UPDATE_URI = UpdateFileCleanup.KEY_PENDING_UPDATE_URI
+private const val KEY_INSTALLER_HANDOFF_APK_NAME = UpdateFileCleanup.KEY_INSTALLER_HANDOFF_APK_NAME
+private const val KEY_INSTALLER_HANDOFF_CANDIDATE_APK_NAME =
+  UpdateFileCleanup.KEY_INSTALLER_HANDOFF_CANDIDATE_APK_NAME
 
 enum class Screen {
   Home,
@@ -69,8 +71,8 @@ class MainActivity : ComponentActivity() {
         onExit = { finish() },
         onGameplayUiChanged = ::setGameplayUi,
         onCheckUpdates = { callback -> AppUpdater.checkForUpdate(this, callback) },
-        onDownloadUpdate = { update, preferDelta, callback ->
-          AppUpdater.downloadUpdate(this, update, preferDelta, callback)
+        onDownloadUpdate = { update, preferDelta, onProgress, callback ->
+          AppUpdater.downloadUpdate(this, update, preferDelta, callback, onProgress)
         },
         onInstallUpdate = ::installUpdate,
       )
@@ -120,21 +122,66 @@ class MainActivity : ComponentActivity() {
         Intent(
           Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES,
           Uri.parse("package:$packageName"),
-        )
+        ),
       )
       return
     }
 
-    startActivity(
-      Intent(Intent.ACTION_VIEW).apply {
-        setDataAndType(uri, "application/vnd.android.package-archive")
-        addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-      }
-    )
-    pendingUpdateUri = null
-    if (!preferences.edit().remove(KEY_PENDING_UPDATE_URI).commit()) {
-      Diagnostics.warn(this, "Updater", "Could not clear pending installer recovery state")
+    val handoffApkName =
+      UpdateFileCleanup.managedApkName(uri, packageName)
+        ?: error("Update installer URI does not reference a managed APK")
+    val previousHandoff = preferences.getString(KEY_INSTALLER_HANDOFF_APK_NAME, null)
+
+    // Persist a candidate before handing the URI to Android. If the process dies between the
+    // launch and promotion, cleanup protects both the previous handoff and this candidate.
+    check(
+      preferences
+        .edit()
+        .putString(KEY_INSTALLER_HANDOFF_CANDIDATE_APK_NAME, handoffApkName)
+        .remove(KEY_PENDING_UPDATE_URI)
+        .commit(),
+    ) {
+      "Could not protect the APK before installer handoff"
     }
+
+    try {
+      startActivity(
+        Intent(Intent.ACTION_VIEW).apply {
+          setDataAndType(uri, "application/vnd.android.package-archive")
+          addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+        },
+      )
+    } catch (error: Exception) {
+      val rollback =
+        preferences
+          .edit()
+          .remove(KEY_INSTALLER_HANDOFF_CANDIDATE_APK_NAME)
+          .putString(KEY_PENDING_UPDATE_URI, uri.toString())
+      if (previousHandoff == null) rollback.remove(KEY_INSTALLER_HANDOFF_APK_NAME)
+      else rollback.putString(KEY_INSTALLER_HANDOFF_APK_NAME, previousHandoff)
+      if (!rollback.commit()) {
+        Diagnostics.error(this, "Updater", "Could not restore installer handoff state")
+      }
+      pendingUpdateUri = uri
+      Diagnostics.error(
+        this,
+        "Updater",
+        "Could not open Android package installer: ${error.message}",
+      )
+      return
+    }
+
+    val promote =
+      preferences
+        .edit()
+        .putString(KEY_INSTALLER_HANDOFF_APK_NAME, handoffApkName)
+        .remove(KEY_INSTALLER_HANDOFF_CANDIDATE_APK_NAME)
+        .remove(KEY_PENDING_UPDATE_URI)
+    if (!promote.commit()) {
+      // The candidate was committed before launch and remains protected if promotion fails.
+      Diagnostics.warn(this, "Updater", "Installer opened, but handoff state promotion failed")
+    }
+    pendingUpdateUri = null
   }
 
   override fun onResume() {
@@ -159,107 +206,97 @@ private fun LastHavenApp(
   onExit: () -> Unit,
   onGameplayUiChanged: (Boolean, Boolean) -> Unit,
   onCheckUpdates: ((UpdateCheckResult) -> Unit) -> Unit,
-  onDownloadUpdate: (AppUpdateInfo, Boolean, (Result<Uri>) -> Unit) -> Unit,
+  onDownloadUpdate:
+    (AppUpdateInfo, Boolean, (UpdateProgressState) -> Unit, (Result<Uri>) -> Unit) -> Unit,
   onInstallUpdate: (Uri) -> Unit,
 ) {
   val context = LocalContext.current
   val usageMeter = remember { AppUsageMeter(context) }
-  val gameUrl = remember {
-    preferences.getString(KEY_GAME_URL, DEFAULT_GAME_URL) ?: DEFAULT_GAME_URL
+  var gameUrl by remember {
+    mutableStateOf(
+      GameLaunchUrlPolicy.normalize(preferences.getString(KEY_GAME_URL, DEFAULT_GAME_URL)),
+    )
   }
 
-  var currentScreen by remember { mutableStateOf(Screen.Game) }
-  var menuVisible by remember { mutableStateOf(false) }
-  var settingsReturnScreen by remember { mutableStateOf(Screen.Game) }
-  var diagnosticsReturnScreen by remember { mutableStateOf(Screen.Settings) }
-  var updateReturnScreen by remember { mutableStateOf(Screen.Game) }
+  var navigation by remember { mutableStateOf(LauncherNavigationState()) }
+  val navigate: (LauncherNavigationState) -> Unit = { navigation = it }
   var availableUpdate by remember { mutableStateOf<AppUpdateInfo?>(null) }
   var updateMessage by remember { mutableStateOf<String?>(null) }
   var isDownloadingUpdate by remember { mutableStateOf(false) }
   var downloadingDelta by remember { mutableStateOf(false) }
+  var updateProgress by remember { mutableStateOf(UpdateProgressState()) }
   var isCheckingUpdate by remember { mutableStateOf(false) }
-  var runtime by remember { mutableStateOf<org.mozilla.geckoview.GeckoRuntime?>(null) }
-  var session by remember { mutableStateOf<GeckoSession?>(null) }
-  var isLoading by remember { mutableStateOf(false) }
-  var pageLoadFailed by remember { mutableStateOf(false) }
-  var sessionCrashed by remember { mutableStateOf(false) }
-  var hasLoadedGame by remember { mutableStateOf(false) }
-  var hasCompletedLoad by remember { mutableStateOf(false) }
 
-  // Keep the GeckoSession alive while its view is detached for launcher destinations.
-  DisposableEffect(session) {
-    val sessionToClose = session
+  val gameSessionController = remember { GameSessionController() }
+  var addonReloadRequired by remember { mutableStateOf(false) }
+  val addonLibraryRepository =
+    remember(context) { AddonLibraryRepository(File(context.filesDir, "addons")) }
+  val addonBridgeExecutor = remember { Executors.newSingleThreadExecutor() }
+  val addonBridgeController =
+    remember(addonLibraryRepository, addonBridgeExecutor) {
+      AddonBridgeController(
+        snapshotProvider = { addonLibraryRepository.readLibrary() },
+        payloadProvider = AddonRuntimePayloadProvider(addonLibraryRepository),
+        worker = addonBridgeExecutor,
+      )
+    }
+
+  // Install the built-in extension before loading the game URL, then bind the exact session
+  // before its first navigation so document_start scripts and native sender checks are ready.
+  // The bridge reuses the process-scoped runtime and never creates a second GeckoSession.
+  DisposableEffect(addonBridgeController, addonBridgeExecutor) {
+    onDispose {
+      addonBridgeController.teardown()
+      addonBridgeExecutor.shutdown()
+    }
+  }
+
+  // Session keep-alive invariant: visiting Settings, Diagnostics, Update or the Addon Manager
+  // detaches the GeckoView (GameScreen releases its view binding) but must not close the live
+  // game session. This effect is the only place that closes a session, and it does so only when
+  // the controller replaces the session (crash restore) or when this composition root leaves.
+  DisposableEffect(gameSessionController.session) {
+    val sessionToClose = gameSessionController.session
     onDispose { sessionToClose?.close() }
   }
 
-  val attachGameSession: (GeckoSession) -> Unit = { gameSession ->
-    setupGeckoDelegates(
-      gameSession,
-      context,
-      onLoadState = { loading, failed ->
-        isLoading = loading
-        pageLoadFailed = failed
-        if (!failed) {
-          sessionCrashed = false
+  val reloadGame: () -> Unit = {
+    addonBridgeController.ensureInstalled(context) { installed ->
+      if (installed) {
+        addonBridgeController.refreshSnapshot { refreshed ->
+          gameSessionController.reloadGame(context, gameUrl)
+          if (refreshed) addonReloadRequired = false
         }
-      },
-      onPageLoaded = { hasCompletedLoad = true },
-      onSessionCrashed = {
-        isLoading = false
-        pageLoadFailed = false
-        sessionCrashed = true
-      },
-    )
+      } else {
+        gameSessionController.reloadGame(context, gameUrl)
+      }
+    }
   }
 
-  val reloadGame: () -> Unit = {
-    val current = session
-    if (current?.isOpen() == true) {
-      pageLoadFailed = false
-      sessionCrashed = false
-      current.reload()
-    } else if (current != null) {
-      val currentRuntime = runtime ?: GeckoRuntimeProvider.get(context).also { runtime = it }
-      current.open(currentRuntime)
-      current.loadUri(gameUrl)
-      pageLoadFailed = false
-      sessionCrashed = false
+  val loadGameUrl: (String) -> Unit = { selectedUrl ->
+    addonBridgeController.ensureInstalled(context) {
+      addonBridgeController.refreshSnapshot {
+        gameSessionController.loadGameUrl(context, selectedUrl)
+      }
     }
   }
 
   val startGame: () -> Unit = {
-    if (session == null) {
-      val gameRuntime = runtime ?: GeckoRuntimeProvider.get(context).also { runtime = it }
-      val gameSession = GeckoSession()
-      attachGameSession(gameSession)
-      gameSession.open(gameRuntime)
-      session = gameSession
-      pageLoadFailed = false
-      gameSession.loadUri(gameUrl)
-      hasLoadedGame = true
-    } else if (session?.isOpen() != true) {
-      val gameRuntime = runtime ?: GeckoRuntimeProvider.get(context).also { runtime = it }
-      session?.open(gameRuntime)
-      if (!hasLoadedGame) {
-        session?.loadUri(gameUrl)
-        hasLoadedGame = true
+    addonBridgeController.ensureInstalled(context) {
+      gameSessionController.startGame(context, gameUrl) { session ->
+        addonBridgeController.setGameSession(session)
       }
+      navigate(LauncherNavigationPolicy.startGame(navigation))
     }
-    menuVisible = false
-    currentScreen = Screen.Game
   }
 
-  // A crashed content process cannot be reloaded in place; recreate the session while
-  // keeping the runtime (and therefore the game profile) intact.
   val restoreGame: () -> Unit = {
-    if (session != null) {
-      session = null
-      hasLoadedGame = false
-      hasCompletedLoad = false
-      pageLoadFailed = false
-      isLoading = false
-      sessionCrashed = false
-      startGame()
+    addonBridgeController.ensureInstalled(context) {
+      addonBridgeController.refreshSnapshot {
+        gameSessionController.restoreGame(context, gameUrl) { session ->
+          addonBridgeController.setGameSession(session)
+        }
+      }
     }
   }
 
@@ -285,19 +322,16 @@ private fun LastHavenApp(
   }
 
   val openUpdate: (Screen) -> Unit = { returnTo ->
-    updateReturnScreen = returnTo
-    currentScreen = Screen.Update
+    navigate(LauncherNavigationPolicy.openUpdate(navigation, returnTo))
   }
 
   val openSettings: (Screen) -> Unit = { returnTo ->
-    settingsReturnScreen = returnTo
-    val target = LauncherNavigationPolicy.openSettings()
-    currentScreen = target.screen
-    menuVisible = target.menuVisible
+    navigate(LauncherNavigationPolicy.openSettings(navigation, returnTo))
   }
 
-  val gameplayActive = LauncherNavigationPolicy.isGameplay(currentScreen)
-  val immersiveGameplay = LauncherNavigationPolicy.isImmersiveGameplay(currentScreen, menuVisible)
+  val gameplayActive = LauncherNavigationPolicy.isGameplay(navigation.screen)
+  val immersiveGameplay =
+    LauncherNavigationPolicy.isImmersiveGameplay(navigation.screen, navigation.menuVisible)
   SideEffect { onGameplayUiChanged(gameplayActive, immersiveGameplay) }
   DisposableEffect(Unit) {
     onDispose { onGameplayUiChanged(false, false) }
@@ -308,17 +342,8 @@ private fun LastHavenApp(
     startGame()
   }
 
-  BackHandler(enabled = currentScreen != Screen.Home || menuVisible) {
-    val target =
-      LauncherNavigationPolicy.onBack(
-        currentScreen = currentScreen,
-        menuVisible = menuVisible,
-        settingsReturnScreen = settingsReturnScreen,
-        diagnosticsReturnScreen = diagnosticsReturnScreen,
-        updateReturnScreen = updateReturnScreen,
-      )
-    currentScreen = target.screen
-    menuVisible = target.menuVisible
+  BackHandler(enabled = navigation.screen != Screen.Home || navigation.menuVisible) {
+    navigate(LauncherNavigationPolicy.onBack(navigation))
   }
 
   MaterialTheme(
@@ -326,7 +351,7 @@ private fun LastHavenApp(
     shapes = DesignTokens.shapes,
     typography = DesignTokens.typography(),
   ) {
-    when (currentScreen) {
+    when (navigation.screen) {
       Screen.Home ->
         HomeScreen(
           updateVersion = availableUpdate?.version,
@@ -357,50 +382,39 @@ private fun LastHavenApp(
           )
           onDispose { resolver.unregisterContentObserver(listener) }
         }
-        val gamePresentation =
-          GameLoadPolicy.resolve(
-            hasSession = session != null,
-            isLoading = isLoading,
-            hasCompletedLoad = hasCompletedLoad,
-            failure = GameLoadPolicy.failure(sessionCrashed, pageLoadFailed),
-          )
+        val gamePresentation = gameSessionController.uiState.presentation
         Box(modifier = Modifier.fillMaxSize()) {
           GameScreen(
-            session = session,
+            session = gameSessionController.session,
             presentation = gamePresentation,
             onRetry = reloadGame,
             onRestore = restoreGame,
           )
           AnimatedVisibility(
-            visible = menuVisible,
+            visible = navigation.menuVisible,
             enter =
               fadeIn(
                 animationSpec =
-                  tween(durationMillis = OverlayMotionPolicy.fadeInMillis(animatorDurationScale))
+                  tween(durationMillis = OverlayMotionPolicy.fadeInMillis(animatorDurationScale)),
               ),
             exit =
               fadeOut(
                 animationSpec =
-                  tween(durationMillis = OverlayMotionPolicy.fadeOutMillis(animatorDurationScale))
+                  tween(durationMillis = OverlayMotionPolicy.fadeOutMillis(animatorDurationScale)),
               ),
           ) {
             GameMenuScreen(
               onReload = {
                 reloadGame()
-                val target = LauncherNavigationPolicy.afterReload()
-                currentScreen = target.screen
-                menuVisible = target.menuVisible
+                navigate(LauncherNavigationPolicy.afterReload(navigation))
               },
               onSettings = { openSettings(Screen.Game) },
               onAddonManager = {
-                val target = LauncherNavigationPolicy.openAddonManager()
-                currentScreen = target.screen
-                menuVisible = target.menuVisible
+                navigate(LauncherNavigationPolicy.openAddonManager(navigation))
               },
+              addonReloadRequired = addonReloadRequired,
               onReturnToGame = {
-                val target = LauncherNavigationPolicy.returnToGame()
-                currentScreen = target.screen
-                menuVisible = target.menuVisible
+                navigate(LauncherNavigationPolicy.returnToGame(navigation))
               },
             )
           }
@@ -411,31 +425,42 @@ private fun LastHavenApp(
         SettingsScreen(
           context = context,
           usageMeter = usageMeter,
+          gameUrl = gameUrl,
+          onGameUrlChange = { selectedUrl ->
+            if (selectedUrl == DEFAULT_GAME_URL || selectedUrl == ALTERNATE_GAME_URL) {
+              if (preferences.edit().putString(KEY_GAME_URL, selectedUrl).commit()) {
+                gameUrl = selectedUrl
+                loadGameUrl(selectedUrl)
+              }
+            }
+          },
           isCheckingUpdate = isCheckingUpdate,
-          onBack = { currentScreen = settingsReturnScreen },
+          onBack = { navigate(LauncherNavigationPolicy.popToReturn(navigation)) },
           onOpenDiagnostics = {
-            diagnosticsReturnScreen = Screen.Settings
-            currentScreen = Screen.Diagnostics
+            navigate(LauncherNavigationPolicy.openDiagnostics(navigation))
           },
           onOpenUpdates = { openUpdate(Screen.Settings) },
           onCheckUpdates = {
-            updateReturnScreen = Screen.Settings
-            currentScreen = Screen.Update
+            openUpdate(Screen.Settings)
             checkForUpdates(true)
           },
         )
 
       Screen.AddonManager ->
         AddonManagerHost(
-          onBack = {
-            currentScreen = LauncherNavigationPolicy.returnToGame().screen
-          }
+          onBack = { libraryChanged ->
+            if (libraryChanged) {
+              addonReloadRequired = true
+              addonBridgeController.refreshSnapshot()
+            }
+            navigate(LauncherNavigationPolicy.returnToGame(navigation))
+          },
         )
 
       Screen.Diagnostics ->
         DiagnosticsScreen(
           context = context,
-          onBack = { currentScreen = diagnosticsReturnScreen },
+          onBack = { navigate(LauncherNavigationPolicy.popToReturn(navigation)) },
         )
 
       Screen.Update ->
@@ -445,14 +470,30 @@ private fun LastHavenApp(
           isChecking = isCheckingUpdate,
           isDownloading = isDownloadingUpdate,
           downloadingDelta = downloadingDelta,
-          onBack = { currentScreen = updateReturnScreen },
+          progress = updateProgress,
+          onBack = { navigate(LauncherNavigationPolicy.popToReturn(navigation)) },
           onDownload = { preferDelta ->
             val update = availableUpdate
             if (update != null) {
               isDownloadingUpdate = true
               downloadingDelta = preferDelta
+              updateProgress =
+                UpdateProgressState(
+                  stage =
+                    if (preferDelta && update.patch != null) UpdateStage.DIFFERENTIAL_DOWNLOAD
+                    else UpdateStage.FULL_DOWNLOAD,
+                )
               updateMessage = null
-              onDownloadUpdate(update, preferDelta) { result ->
+              onDownloadUpdate(
+                update,
+                preferDelta,
+                { progress ->
+                  updateProgress = progress
+                  if (progress.stage == UpdateStage.FULL_DOWNLOAD && !progress.fallbackToFull) {
+                    downloadingDelta = false
+                  }
+                },
+              ) { result ->
                 isDownloadingUpdate = false
                 result
                   .onSuccess { uri ->
@@ -468,101 +509,4 @@ private fun LastHavenApp(
         )
     }
   }
-}
-
-private fun setupGeckoDelegates(
-  geckoSession: GeckoSession,
-  context: android.content.Context,
-  onLoadState: (Boolean, Boolean) -> Unit,
-  onPageLoaded: () -> Unit,
-  onSessionCrashed: () -> Unit,
-) {
-  geckoSession.setProgressDelegate(
-    object : GeckoSession.ProgressDelegate {
-      override fun onPageStart(session: GeckoSession, url: String) {
-        onLoadState(true, false)
-        Diagnostics.info(context, TAG, "GeckoView page started")
-      }
-
-      override fun onPageStop(session: GeckoSession, success: Boolean) {
-        onLoadState(false, !success)
-        if (success) onPageLoaded()
-        else Diagnostics.warn(context, TAG, "GeckoView page load failed")
-      }
-    }
-  )
-  geckoSession.setContentDelegate(
-    object : GeckoSession.ContentDelegate {
-      override fun onCrash(session: GeckoSession) {
-        onSessionCrashed()
-        Diagnostics.error(context, TAG, "GeckoView content process crashed")
-      }
-
-      override fun onKill(session: GeckoSession) {
-        onSessionCrashed()
-        Diagnostics.error(context, TAG, "GeckoView content process was killed")
-      }
-
-      override fun onFullScreen(session: GeckoSession, fullScreen: Boolean) {
-        Diagnostics.info(context, TAG, "GeckoView fullscreen changed: $fullScreen")
-      }
-
-      override fun onExternalResponse(
-        session: GeckoSession,
-        response: org.mozilla.geckoview.WebResponse,
-      ) {
-        Diagnostics.warn(context, TAG, "GeckoView external response not handled")
-      }
-    }
-  )
-  geckoSession.setNavigationDelegate(
-    object : GeckoSession.NavigationDelegate {
-      override fun onLoadRequest(
-        session: GeckoSession,
-        request: GeckoSession.NavigationDelegate.LoadRequest,
-      ): GeckoResult<org.mozilla.geckoview.AllowOrDeny> = GeckoResult.allow()
-    }
-  )
-  geckoSession.setPermissionDelegate(
-    object : GeckoSession.PermissionDelegate {
-      override fun onContentPermissionRequest(
-        session: GeckoSession,
-        permission: GeckoSession.PermissionDelegate.ContentPermission,
-      ): GeckoResult<Int> {
-        val host = Uri.parse(permission.uri).host.orEmpty().lowercase(Locale.ROOT)
-        val isGameOrigin = host == "lasthavens.com" || host.endsWith(".lasthavens.com")
-        val decision =
-          when (permission.permission) {
-            GeckoSession.PermissionDelegate.PERMISSION_PERSISTENT_STORAGE,
-            GeckoSession.PermissionDelegate.PERMISSION_AUTOPLAY_AUDIBLE,
-            GeckoSession.PermissionDelegate.PERMISSION_AUTOPLAY_INAUDIBLE ->
-              if (isGameOrigin) {
-                GeckoSession.PermissionDelegate.ContentPermission.VALUE_ALLOW
-              } else {
-                GeckoSession.PermissionDelegate.ContentPermission.VALUE_DENY
-              }
-            else -> GeckoSession.PermissionDelegate.ContentPermission.VALUE_DENY
-          }
-        return GeckoResult.fromValue(decision)
-      }
-
-      override fun onAndroidPermissionsRequest(
-        session: GeckoSession,
-        permissions: Array<out String>?,
-        callback: GeckoSession.PermissionDelegate.Callback,
-      ) {
-        callback.reject()
-      }
-
-      override fun onMediaPermissionRequest(
-        session: GeckoSession,
-        uri: String,
-        video: Array<out GeckoSession.PermissionDelegate.MediaSource>?,
-        audio: Array<out GeckoSession.PermissionDelegate.MediaSource>?,
-        callback: GeckoSession.PermissionDelegate.MediaCallback,
-      ) {
-        callback.reject()
-      }
-    }
-  )
 }

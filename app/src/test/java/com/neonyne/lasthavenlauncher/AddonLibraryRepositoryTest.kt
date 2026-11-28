@@ -8,6 +8,7 @@ import java.io.IOException
 import java.io.InputStream
 import java.util.Base64
 import java.util.Properties
+import java.util.concurrent.CancellationException
 import java.util.zip.ZipEntry
 import java.util.zip.ZipOutputStream
 import org.junit.Assert.assertEquals
@@ -76,6 +77,34 @@ class AddonLibraryRepositoryTest {
 
     assertTrue(result.addons.single().enabled)
     assertEquals("2", result.addons.single().version)
+  }
+
+  @Test
+  fun replacementCancellationPreservesExistingAddonAndReportsExactFolder() {
+    val repository = AddonLibraryRepository(temporaryFolder.newFolder("cancel-replacement"))
+    val original = zipOf("Sample/Sample.toc" to "## Version: 1\n", "Sample/main.lua" to "old")
+    repository.importZip(ByteArrayInputStream(original), original.size.toLong())
+    repository.setEnabled("Sample", true)
+
+    val replacement = zipOf("Sample/Sample.toc" to "## Version: 2\n", "Sample/main.lua" to "new")
+    var requestedFolders = emptyList<String>()
+
+    assertThrows(CancellationException::class.java) {
+      repository.importZip(
+        ByteArrayInputStream(replacement),
+        replacement.size.toLong(),
+        confirmReplacement = { folders ->
+          requestedFolders = folders
+          false
+        },
+      )
+    }
+
+    assertEquals(listOf("Sample"), requestedFolders)
+    val unchanged = repository.readLibrary().addons.single()
+    assertEquals("1", unchanged.version)
+    assertTrue(unchanged.enabled)
+    assertEquals("old", File(repository.addonDirectory("Sample"), "main.lua").readText())
   }
 
   @Test

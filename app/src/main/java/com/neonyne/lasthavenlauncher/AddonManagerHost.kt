@@ -13,6 +13,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import java.io.File
+import java.util.concurrent.CompletableFuture
 import java.util.concurrent.Executors
 
 /**
@@ -20,9 +21,10 @@ import java.util.concurrent.Executors
  * always performed off the main thread. The caller owns navigation into and out of this surface.
  */
 @Composable
-fun AddonManagerHost(onBack: () -> Unit) {
+fun AddonManagerHost(onBack: (libraryChanged: Boolean) -> Unit) {
   val context = LocalContext.current
   val importSuccess = stringResource(R.string.addon_manager_import_success)
+  val importCancelled = stringResource(R.string.addon_manager_import_cancelled)
   val exportSuccess = stringResource(R.string.addon_manager_export_success)
   val exportFailed = stringResource(R.string.addon_manager_export_failed)
   val operationFailed = stringResource(R.string.addon_manager_operation_failed)
@@ -30,6 +32,16 @@ fun AddonManagerHost(onBack: () -> Unit) {
   val enabledMessage = stringResource(R.string.addon_manager_enabled)
   val disabledMessage = stringResource(R.string.addon_manager_disabled)
   val removeSuccess = stringResource(R.string.addon_manager_remove_success)
+  val loadingLabel = stringResource(R.string.addon_manager_loading)
+  val importingLabel = stringResource(R.string.addon_manager_importing)
+  val copyingLabel = stringResource(R.string.addon_manager_copying)
+  val validatingLabel = stringResource(R.string.addon_manager_validating)
+  val extractingLabel = stringResource(R.string.addon_manager_extracting)
+  val indexingLabel = stringResource(R.string.addon_manager_indexing)
+  val committingLabel = stringResource(R.string.addon_manager_committing)
+  val exportingLabel = stringResource(R.string.addon_manager_exporting)
+  val savingLabel = stringResource(R.string.addon_manager_saving)
+  val removingLabel = stringResource(R.string.addon_manager_removing)
   val repository = remember(context) { AddonLibraryRepository(File(context.filesDir, "addons")) }
   val documentIo = remember(context, repository) { AddonDocumentIo(context, repository) }
   val executor = remember { Executors.newSingleThreadExecutor() }
@@ -40,17 +52,25 @@ fun AddonManagerHost(onBack: () -> Unit) {
   }
   var busy by remember { mutableStateOf(true) }
   var message by remember { mutableStateOf<String?>(null) }
+  var operationLabel by remember { mutableStateOf(loadingLabel) }
+  var initialRevision by remember { mutableStateOf<String?>(null) }
+  var libraryChanged by remember { mutableStateOf(false) }
+  var replacementFolders by remember { mutableStateOf<List<String>?>(null) }
+  var replacementDecision by remember { mutableStateOf<CompletableFuture<Boolean>?>(null) }
 
   DisposableEffect(executor) {
     onDispose { executor.shutdown() }
   }
 
   // Do not leave the manager mid-commit; archive and index transactions must finish first.
-  BackHandler(enabled = busy) {}
+  BackHandler {
+    if (!busy) onBack(libraryChanged)
+  }
 
-  val finishOperation: ((() -> AddonLibrarySnapshot), String) -> Unit =
-    { operation, successMessage ->
+  val finishOperation: ((() -> AddonLibrarySnapshot), String, String) -> Unit =
+    { operation, successMessage, label ->
       busy = true
+      operationLabel = label
       message = null
       executor.execute {
         val result = runCatching(operation)
@@ -59,10 +79,15 @@ fun AddonManagerHost(onBack: () -> Unit) {
           result
             .onSuccess {
               snapshot = it
+              if (initialRevision == null || it.revision != initialRevision) {
+                libraryChanged = true
+              }
               message = successMessage
             }
             .onFailure { error ->
-              message = error.message ?: operationFailed
+              message =
+                if (error is java.util.concurrent.CancellationException) importCancelled
+                else error.message ?: operationFailed
             }
         }
       }
@@ -72,12 +97,38 @@ fun AddonManagerHost(onBack: () -> Unit) {
     rememberAddonDocumentPickers(
       onImportSelected = { uri ->
         finishOperation(
-          { documentIo.importZip(uri) },
+          {
+            documentIo.importZip(
+              uri,
+              onStage = { stage ->
+                val label =
+                  when (stage) {
+                    AddonImportStage.COPYING_ARCHIVE -> copyingLabel
+                    AddonImportStage.VALIDATING_ARCHIVE -> validatingLabel
+                    AddonImportStage.EXTRACTING_FILES -> extractingLabel
+                    AddonImportStage.INDEXING_ADDONS -> indexingLabel
+                    AddonImportStage.COMMITTING -> committingLabel
+                    AddonImportStage.COMPLETE -> importingLabel
+                  }
+                mainHandler.post { operationLabel = label }
+              },
+              confirmReplacement = { folders ->
+                val decision = CompletableFuture<Boolean>()
+                mainHandler.post {
+                  replacementFolders = folders
+                  replacementDecision = decision
+                }
+                decision.get()
+              },
+            )
+          },
           importSuccess,
+          importingLabel,
         )
       },
       onExportSelected = { folder, uri ->
         busy = true
+        operationLabel = exportingLabel
         message = null
         executor.execute {
           val result = runCatching {
@@ -105,7 +156,10 @@ fun AddonManagerHost(onBack: () -> Unit) {
       mainHandler.post {
         busy = false
         result
-          .onSuccess { snapshot = it }
+          .onSuccess {
+            snapshot = it
+            initialRevision = it.revision
+          }
           .onFailure { error ->
             message = error.message ?: readFailed
           }
@@ -122,6 +176,7 @@ fun AddonManagerHost(onBack: () -> Unit) {
       finishOperation(
         { repository.setEnabled(folder, enabled) },
         if (enabled) enabledMessage else disabledMessage,
+        savingLabel,
       )
     },
     onExport = pickers.exportZip,
@@ -129,8 +184,22 @@ fun AddonManagerHost(onBack: () -> Unit) {
       finishOperation(
         { repository.removeAddon(folder) },
         removeSuccess,
+        removingLabel,
       )
     },
-    onBack = onBack,
+    onBack = { onBack(libraryChanged) },
+    reloadRequired = libraryChanged,
+    operationLabel = operationLabel,
+    replacementFolders = replacementFolders,
+    onConfirmReplacement = {
+      replacementDecision?.complete(true)
+      replacementDecision = null
+      replacementFolders = null
+    },
+    onCancelReplacement = {
+      replacementDecision?.complete(false)
+      replacementDecision = null
+      replacementFolders = null
+    },
   )
 }
