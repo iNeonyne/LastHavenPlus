@@ -280,7 +280,9 @@ object AppUpdater {
     enqueue(
       appContext,
       {
-        callback(Result.failure(IllegalStateException("Updater is busy. Try again shortly.")))
+        val error = IllegalStateException("Updater is busy. Try again shortly.")
+        onProgress(UpdateProgressState(stage = UpdateStage.FAILED, failureMessage = error.message))
+        callback(Result.failure(error))
       },
     ) {
       val progressTracker = UpdateProgressTracker()
