@@ -20,7 +20,7 @@ import java.util.concurrent.Executors
  * always performed off the main thread. The caller owns navigation into and out of this surface.
  */
 @Composable
-fun AddonManagerHost(onBack: () -> Unit) {
+fun AddonManagerHost(onBack: (libraryChanged: Boolean) -> Unit) {
   val context = LocalContext.current
   val importSuccess = stringResource(R.string.addon_manager_import_success)
   val exportSuccess = stringResource(R.string.addon_manager_export_success)
@@ -30,6 +30,11 @@ fun AddonManagerHost(onBack: () -> Unit) {
   val enabledMessage = stringResource(R.string.addon_manager_enabled)
   val disabledMessage = stringResource(R.string.addon_manager_disabled)
   val removeSuccess = stringResource(R.string.addon_manager_remove_success)
+  val loadingLabel = stringResource(R.string.addon_manager_loading)
+  val importingLabel = stringResource(R.string.addon_manager_importing)
+  val exportingLabel = stringResource(R.string.addon_manager_exporting)
+  val savingLabel = stringResource(R.string.addon_manager_saving)
+  val removingLabel = stringResource(R.string.addon_manager_removing)
   val repository = remember(context) { AddonLibraryRepository(File(context.filesDir, "addons")) }
   val documentIo = remember(context, repository) { AddonDocumentIo(context, repository) }
   val executor = remember { Executors.newSingleThreadExecutor() }
@@ -40,6 +45,9 @@ fun AddonManagerHost(onBack: () -> Unit) {
   }
   var busy by remember { mutableStateOf(true) }
   var message by remember { mutableStateOf<String?>(null) }
+  var operationLabel by remember { mutableStateOf(loadingLabel) }
+  var initialRevision by remember { mutableStateOf<String?>(null) }
+  var libraryChanged by remember { mutableStateOf(false) }
 
   DisposableEffect(executor) {
     onDispose { executor.shutdown() }
@@ -48,9 +56,10 @@ fun AddonManagerHost(onBack: () -> Unit) {
   // Do not leave the manager mid-commit; archive and index transactions must finish first.
   BackHandler(enabled = busy) {}
 
-  val finishOperation: ((() -> AddonLibrarySnapshot), String) -> Unit =
-    { operation, successMessage ->
+  val finishOperation: ((() -> AddonLibrarySnapshot), String, String) -> Unit =
+    { operation, successMessage, label ->
       busy = true
+      operationLabel = label
       message = null
       executor.execute {
         val result = runCatching(operation)
@@ -59,10 +68,12 @@ fun AddonManagerHost(onBack: () -> Unit) {
           result
             .onSuccess {
               snapshot = it
+              if (initialRevision != null && it.revision != initialRevision) libraryChanged = true
               message = successMessage
             }
             .onFailure { error ->
               message = error.message ?: operationFailed
+              runCatching { repository.readLibrary() }.onSuccess { snapshot = it }
             }
         }
       }
@@ -74,10 +85,12 @@ fun AddonManagerHost(onBack: () -> Unit) {
         finishOperation(
           { documentIo.importZip(uri) },
           importSuccess,
+          importingLabel,
         )
       },
       onExportSelected = { folder, uri ->
         busy = true
+        operationLabel = exportingLabel
         message = null
         executor.execute {
           val result = runCatching {
@@ -105,7 +118,10 @@ fun AddonManagerHost(onBack: () -> Unit) {
       mainHandler.post {
         busy = false
         result
-          .onSuccess { snapshot = it }
+          .onSuccess {
+            snapshot = it
+            initialRevision = it.revision
+          }
           .onFailure { error ->
             message = error.message ?: readFailed
           }
@@ -122,6 +138,7 @@ fun AddonManagerHost(onBack: () -> Unit) {
       finishOperation(
         { repository.setEnabled(folder, enabled) },
         if (enabled) enabledMessage else disabledMessage,
+        savingLabel,
       )
     },
     onExport = pickers.exportZip,
@@ -129,8 +146,11 @@ fun AddonManagerHost(onBack: () -> Unit) {
       finishOperation(
         { repository.removeAddon(folder) },
         removeSuccess,
+        removingLabel,
       )
     },
-    onBack = onBack,
+    onBack = { onBack(libraryChanged) },
+    reloadRequired = libraryChanged,
+    operationLabel = operationLabel,
   )
 }

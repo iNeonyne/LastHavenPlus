@@ -18,6 +18,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
@@ -44,6 +45,8 @@ fun AddonManagerScreen(
   onExport: (String) -> Unit,
   onRemove: (String) -> Unit,
   onBack: () -> Unit,
+  reloadRequired: Boolean = false,
+  operationLabel: String? = null,
 ) {
   val dependencyReport = remember(snapshot) { AddonDependencyAnalyzer.analyze(snapshot.addons) }
   var pendingRemoval by remember { mutableStateOf<String?>(null) }
@@ -107,6 +110,15 @@ fun AddonManagerScreen(
       }
     }
 
+    if (busy) {
+      Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+        LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
+        Text(operationLabel.orEmpty(), color = MaterialTheme.colorScheme.onSurfaceVariant, style = MaterialTheme.typography.bodySmall)
+      }
+    }
+    if (reloadRequired) {
+      Text(stringResource(R.string.addon_manager_reload_required), color = MaterialTheme.colorScheme.tertiary, style = MaterialTheme.typography.bodySmall)
+    }
     if (!message.isNullOrBlank()) {
       Surface(
         color = MaterialTheme.colorScheme.surfaceVariant,
