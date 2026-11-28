@@ -32,13 +32,13 @@ class ReleaseAssetValidationTests(unittest.TestCase):
     def test_rejects_multiple_apks(self):
         release = self.valid_release()
         release["assets"].append({"name": "unexpected.apk"})
-        with self.assertRaisesRegex(ValueError, "exactly one APK"):
+        with self.assertRaisesRegex(ValueError, "exactly one versioned APK"):
             validate_release_assets(release, "v2.2.0")
 
     def test_rejects_noncanonical_apk(self):
         release = self.valid_release()
         release["assets"][0]["name"] = "LastHavenPlus-2.1.0-stable-arm64-v8a.apk"
-        with self.assertRaisesRegex(ValueError, "exactly one APK"):
+        with self.assertRaisesRegex(ValueError, "exactly one versioned APK"):
             validate_release_assets(release, "v2.2.0")
 
     def test_rejects_unversioned_or_mismatched_release_tag(self):
@@ -62,7 +62,7 @@ class ReleaseAssetValidationTests(unittest.TestCase):
     def test_rejects_legacy_assets(self):
         release = self.valid_release()
         release["assets"].append({"name": "lasthavenlauncher-arm64.apk"})
-        with self.assertRaisesRegex(ValueError, "exactly one APK"):
+        with self.assertRaisesRegex(ValueError, "exactly one versioned APK"):
             validate_release_assets(release, "v2.2.0")
         release = self.valid_release()
         release["assets"].append({"name": "lasthavenlauncher-update.json"})
