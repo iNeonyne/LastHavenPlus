@@ -49,7 +49,7 @@ Update this file when strategic priorities, sequence or release direction change
 <!-- ROADMAP-LIVE-START -->
 ## Live issue and PR inventory
 
-Generated: 2026-11-28T01:30:14+00:00
+Generated: 2026-11-28T01:30:38+00:00
 Source of truth: live GitHub Issues, pull requests and labels. This section is generated automatically; do not edit it manually.
 
 Every open issue is listed below, grouped by its current priority. Opening a newer issue or PR does not supersede an older one. Duplicates and supersession must be explicitly reviewed and linked in GitHub.
@@ -64,6 +64,7 @@ Every open issue is listed below, grouped by its current priority. Opening a new
 
 - [#227 — P1 — Serialize addon library access and transaction recovery](https://github.com/iNeonyne/LastHavenPlus/issues/227) — bug, P1
 - [#228 — P1 — Reconcile addon import and runtime payload size limits](https://github.com/iNeonyne/LastHavenPlus/issues/228) — bug, P1
+- [#229 — P1 — Cache page-side addon bundle clones by revision](https://github.com/iNeonyne/LastHavenPlus/issues/229) — bug, P1, performance
 
 #### P2
 
@@ -79,6 +80,12 @@ Every open issue is listed below, grouped by its current priority. Opening a new
 - [#219 — P2 — Redact URL credentials and standalone bearer tokens from diagnostics](https://github.com/iNeonyne/LastHavenPlus/issues/219) — bug, P2
 - [#221 — P2 — Audit localization completeness and RTL layout behavior](https://github.com/iNeonyne/LastHavenPlus/issues/221) — enhancement, P2
 - [#223 — P2 — Confirm destructive clearing of local diagnostic logs](https://github.com/iNeonyne/LastHavenPlus/issues/223) — bug, P2
+- [#230 — P2 — Handle malformed updater installer handoff state without crashing](https://github.com/iNeonyne/LastHavenPlus/issues/230) — bug, P2
+- [#231 — P2 — Make addon runtime origin restrictions visible to users](https://github.com/iNeonyne/LastHavenPlus/issues/231) — enhancement, P2
+- [#232 — P2 — Verify and constrain GeckoView popup and new-session requests](https://github.com/iNeonyne/LastHavenPlus/issues/232) — bug, P2, security
+- [#233 — P2 — Document the security trust model for installed addons](https://github.com/iNeonyne/LastHavenPlus/issues/233) — documentation, P2, security
+- [#234 — P2 — Apply small updater, bridge protocol and archive safety cleanups](https://github.com/iNeonyne/LastHavenPlus/issues/234) — P2, maintenance
+- [#235 — P2 — Preserve explicit return destinations when opening Diagnostics](https://github.com/iNeonyne/LastHavenPlus/issues/235) — bug, P2
 
 #### P3
 
