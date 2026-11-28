@@ -53,7 +53,8 @@ class SettingsNavigationSmokeTest {
     composeRule.onNodeWithText("Game data size").assertIsDisplayed()
     composeRule.onNodeWithText("This app session").assertIsDisplayed()
     composeRule.onNodeWithText("Tracked total").assertIsDisplayed()
-    composeRule.onNodeWithText("Usage updates automatically while this page is open.")
+    composeRule
+      .onNodeWithText("Usage updates automatically while this page is open.")
       .assertIsDisplayed()
 
     // The network page deliberately does not expose APK/cache/since-boot categories.
