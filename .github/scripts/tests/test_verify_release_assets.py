@@ -11,12 +11,12 @@ class ReleaseAssetValidationTests(unittest.TestCase):
         return {
             "tag_name": "v2.2.0",
             "assets": [
-                {"name": "lasthavenplus-arm64.apk"},
+                {"name": "LastHavenPlus-2.2.0-stable-arm64-v8a.apk"},
                 {"name": "lasthavenplus-update.json"},
             ],
         }
 
-    def test_accepts_canonical_release_assets(self):
+    def test_accepts_versioned_release_assets(self):
         validate_release_assets(self.valid_release(), "v2.2.0")
 
     def test_rejects_wrong_tag(self):
@@ -37,9 +37,17 @@ class ReleaseAssetValidationTests(unittest.TestCase):
 
     def test_rejects_noncanonical_apk(self):
         release = self.valid_release()
-        release["assets"][0]["name"] = "other-arm64.apk"
+        release["assets"][0]["name"] = "LastHavenPlus-2.1.0-stable-arm64-v8a.apk"
         with self.assertRaisesRegex(ValueError, "exactly one APK"):
             validate_release_assets(release, "v2.2.0")
+
+    def test_rejects_unversioned_or_mismatched_release_tag(self):
+        release = self.valid_release()
+        release["assets"][0]["name"] = "lasthavenplus-arm64.apk"
+        with self.assertRaisesRegex(ValueError, "exactly one versioned APK"):
+            validate_release_assets(release, "v2.2.0")
+        with self.assertRaisesRegex(ValueError, "vMAJOR.MINOR.PATCH"):
+            validate_release_assets(release, "latest")
 
     def test_rejects_missing_or_duplicate_manifest(self):
         release = self.valid_release()
