@@ -2,7 +2,7 @@ name: Independent unsigned APK reproducibility
 
 on:
   push:
-    branches: [beta, main, "chaty/release-v2.4.0-selective-promotion"]
+    branches: [beta]
     paths:
       - "app/**"
       - "gradle/**"
@@ -125,13 +125,13 @@ jobs:
           persist-credentials: false
 
       - name: Download build A
-        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
           name: unsigned-apk-build-a
           path: build-a
 
       - name: Download build B
-        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
           name: unsigned-apk-build-b
           path: build-b

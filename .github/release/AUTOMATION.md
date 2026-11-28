@@ -29,7 +29,13 @@ and never rewrites a published release.
 
 ## Publication
 
-The workflow creates a draft, not a public release. GitHub-generated notes are scoped
-to changes since the previous tag, and the draft includes the verified ARM64 APK,
-updater manifest, and an optional differential patch when its integrity and size checks
-pass. Inspect the draft and publish it when the release is approved.
+The workflow always waits for the signed ARM64 build, unit tests, signing-certificate
+and ABI verification, updater-payload generation, and final asset checks. By default it
+creates a draft release. A main-branch merge commit containing the explicit
+`[publish]` marker publishes the release only after every required check succeeds.
+For a normal draft, remove the marker and publish from GitHub after review.
+
+Release notes are taken from `.github/release/NOTES.md` and should match the version
+entry in `CHANGELOG.md`. Update `.github/release/VERSION` to the version being
+promoted. The release includes the verified ARM64 APK, updater manifest, and an optional
+differential patch when its integrity and size checks pass.

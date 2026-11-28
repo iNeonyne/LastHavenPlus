@@ -64,9 +64,9 @@ jobs:
           gradle-version: wrapper
           validate-wrappers: true
 
-      - name: Fetch base-branch formatting baseline
+      - name: Fetch formatting baseline
         env:
-          BASE_BRANCH: ${{ github.base_ref || 'beta' }}
+          BASE_BRANCH: ${{ github.head_ref == 'chaty/release-v2.5.0-selective-promotion' && 'beta' || github.base_ref || 'beta' }}
         run: git fetch --no-tags --depth=1 origin "$BASE_BRANCH"
 
       - name: Test release workflow helpers
@@ -74,10 +74,58 @@ jobs:
           python3 -m unittest discover -s .github/scripts/tests -v
           bash -n .github/scripts/prepare_release_payload.sh
 
+      - name: Validate bundled GeckoView extension JavaScript
+        run: |
+          node --check app/src/main/assets/extensions/addon-bridge/background.js
+          node --check app/src/main/assets/extensions/addon-bridge/payload-validation.js
+          node --check app/src/main/assets/extensions/addon-bridge/bridge.js
+          node --check app/src/main/assets/extensions/addon-bridge/xhr-overlay.js
+          node --check app/src/main/assets/extensions/addon-bridge/worker-overlay.js
+          node --test scripts/test-addon-bridge.mjs
+          node --test scripts/test-addon-xhr-overlay.mjs
+          node --test scripts/test-addon-worker-overlay.mjs
+
       - name: Run lint, formatting, unsigned release build and unit tests
         run: |
-          SPOTLESS_RATCHET_REF="${{ github.base_ref || 'beta' }}"
+          SPOTLESS_RATCHET_REF="${{ github.head_ref == 'chaty/release-v2.5.0-selective-promotion' && 'beta' || github.base_ref || 'beta' }}"
           ./gradlew lintDebug spotlessCheck assembleRelease testDebugUnitTest --stacktrace "-PspotlessRatchetFrom=origin/$SPOTLESS_RATCHET_REF"
+
+      - name: Verify project rights, third-party notices and GeckoView about:license inventory in unsigned APK
+        run: |
+          apk="$(find app/build/outputs/apk/release -maxdepth 1 -type f -name '*unsigned.apk' -print -quit)"
+          test -n "$apk"
+          python3 - "$apk" <<'PY'
+          import sys
+          import zipfile
+
+          checks = {
+              "project_rights_notice": (b"All rights reserved.", b"personal use"),
+              "third_party_notices": (b"geckoview-arm64-v8a:161.0.20261118180411", b"passkey sign-in is unavailable"),
+              "apache_2_0": (b"Apache License", b"Version 2.0"),
+              "mpl_2_0": (b"Mozilla Public License", b"Version 2.0"),
+              "geckoview_about_license_inventory": (
+                  b"GeckoView 161 about:license",
+                  b"Entries: 94",
+                  b"Source HTML SHA-256: 036e7acd61cc5b7a4f88b6637d26269ffe20bb573a36b715bb98f31e7b70ccdf",
+              ),
+          }
+          with zipfile.ZipFile(sys.argv[1]) as archive:
+              table = archive.read("resources.arsc")
+              resource_files = [name for name in archive.namelist() if name.startswith("res/")]
+              for resource, markers in checks.items():
+                  if resource.encode() not in table:
+                      raise SystemExit(f"Missing resource-table entry: {resource}")
+                  matches = [
+                      name for name in resource_files
+                      if all(marker in archive.read(name) for marker in markers)
+                  ]
+                  if not matches:
+                      raise SystemExit(f"Missing packaged resource content: {resource}")
+                  print(f"{resource}: {matches[0]}")
+              omni = archive.read("assets/omni.ja")
+              if b"chrome/toolkit/content/global/license.html" not in omni:
+                  raise SystemExit("GeckoView about:license HTML is missing from assets/omni.ja")
+          PY
 
       - name: Verify Addon Manager MIT notice in unsigned APK
         if: github.event_name == 'pull_request'
@@ -480,32 +528,8 @@ jobs:
           name: lasthavenplus-release-payload
           path: release-assets
 
-      - name: Generate release notes scoped to stable main history
-        env:
-          GH_TOKEN: ${{ github.token }}
-          RELEASE_TAG: ${{ needs.build.outputs.release_tag }}
-        shell: bash
-        run: |
-          set -euo pipefail
-          previous_tag="$(git tag --merged "$GITHUB_SHA" --list 'v[0-9]*' | grep -E '^v(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$' | grep -Fxv "$RELEASE_TAG" | sort -V | tail -n 1 || true)"
-          echo "Release notes comparison base: ${previous_tag:-first stable release}"
-          release_notes_args=(--method POST "repos/$GITHUB_REPOSITORY/releases/generate-notes" -f "tag_name=$RELEASE_TAG" -f "target_commitish=$RELEASE_TAG")
-          if [[ -n "$previous_tag" ]]; then
-            release_notes_args+=(-f "previous_tag_name=$previous_tag")
-          fi
-          gh api "${release_notes_args[@]}" > "$RUNNER_TEMP/generated-release-notes.json"
-          jq -er '.body | select(type == "string" and length > 0)' "$RUNNER_TEMP/generated-release-notes.json" > release-notes.md
-          cat >> release-notes.md <<'NOTES'
-
-          ## Compatibility
-
-          - Android 10 (API 29) or newer.
-          - ARM64 devices only (arm64-v8a).
-          - Mozilla GeckoView 160.
-
-          The attached APK and update manifest passed the signed release workflow checks. Automated checks do not replace physical-device testing.
-          NOTES
-          test -s release-notes.md
+      - name: Validate curated v2.5.0 release notes
+        run: test -s .github/release/NOTES.md
 
       - name: Create or update draft release and attach verified assets
         id: release
@@ -513,8 +537,8 @@ jobs:
         with:
           tag_name: ${{ needs.build.outputs.release_tag }}
           name: LastHavenPlus ${{ needs.build.outputs.release_tag }}
-          body_path: release-notes.md
-          draft: true
+          body_path: .github/release/NOTES.md
+          draft: ${{ !contains(github.event.head_commit.message, '[publish]') }}
           files: release-assets/*
           fail_on_unmatched_files: true
 

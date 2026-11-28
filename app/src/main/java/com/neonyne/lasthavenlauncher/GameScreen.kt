@@ -18,6 +18,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
@@ -47,30 +48,36 @@ fun GameScreen(
       GameLoadPresentation.Game -> Unit
 
       GameLoadPresentation.Preparing ->
-        GameStatusSurface(contentDescription = "Preparing LastHaven") {
+        GameStatusSurface(
+          contentDescription = stringResource(R.string.game_preparing_content_description)
+        ) {
           LinearProgressIndicator()
           Spacer(modifier = Modifier.height(16.dp))
-          Text("Preparing game…", color = DesignTokens.textSecondary)
+          Text(stringResource(R.string.game_preparing), color = DesignTokens.textSecondary)
         }
 
       GameLoadPresentation.LoadingGame ->
         // Restrained branded state for the initial page load only; no fabricated progress.
-        GameStatusSurface(contentDescription = "LastHaven is loading") {
+        GameStatusSurface(
+          contentDescription = stringResource(R.string.game_loading_content_description)
+        ) {
           LinearProgressIndicator(color = DesignTokens.frost)
           Spacer(modifier = Modifier.height(16.dp))
-          Text("Loading LastHaven…", color = DesignTokens.textSecondary)
+          Text(stringResource(R.string.game_loading), color = DesignTokens.textSecondary)
         }
 
       GameLoadPresentation.RecoverableFailure ->
-        GameStatusSurface(contentDescription = "LastHaven could not load") {
+        GameStatusSurface(
+          contentDescription = stringResource(R.string.game_load_failed_content_description)
+        ) {
           Text(
-            "Unable to load LastHaven",
+            stringResource(R.string.game_load_failed_title),
             style = MaterialTheme.typography.headlineSmall,
             color = DesignTokens.textPrimary,
           )
           Spacer(modifier = Modifier.height(8.dp))
           Text(
-            "Check your connection and try again.",
+            stringResource(R.string.game_load_failed_hint),
             color = DesignTokens.textSecondary,
             modifier = Modifier.widthIn(max = 320.dp).padding(horizontal = 8.dp),
           )
@@ -81,20 +88,22 @@ fun GameScreen(
             shape = RoundedCornerShape(DesignTokens.cornerButton),
             colors = DesignTokens.primaryButtonColors(),
           ) {
-            Text("Retry", fontWeight = FontWeight.Bold)
+            Text(stringResource(R.string.action_retry), fontWeight = FontWeight.Bold)
           }
         }
 
       GameLoadPresentation.RendererFailure ->
-        GameStatusSurface(contentDescription = "LastHaven stopped unexpectedly") {
+        GameStatusSurface(
+          contentDescription = stringResource(R.string.game_crashed_content_description)
+        ) {
           Text(
-            "LastHaven stopped unexpectedly",
+            stringResource(R.string.game_crashed_title),
             style = MaterialTheme.typography.headlineSmall,
             color = DesignTokens.textPrimary,
           )
           Spacer(modifier = Modifier.height(8.dp))
           Text(
-            "The game session ended. Restore the game to continue playing.",
+            stringResource(R.string.game_crashed_hint),
             color = DesignTokens.textSecondary,
             modifier = Modifier.widthIn(max = 320.dp).padding(horizontal = 8.dp),
           )
@@ -105,7 +114,7 @@ fun GameScreen(
             shape = RoundedCornerShape(DesignTokens.cornerButton),
             colors = DesignTokens.primaryButtonColors(),
           ) {
-            Text("Restore game", fontWeight = FontWeight.Bold)
+            Text(stringResource(R.string.game_restore), fontWeight = FontWeight.Bold)
           }
         }
     }
