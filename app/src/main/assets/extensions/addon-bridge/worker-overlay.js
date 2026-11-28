@@ -673,6 +673,7 @@
       "var MASK_SIGNAL = " + JSON.stringify(MASK_SIGNAL) + ";\n" +
       "var MASK_DIAGNOSTIC_SIGNAL = " + JSON.stringify(MASK_DIAGNOSTIC_SIGNAL) + ";\n" +
       "var ADDON_PREFIX = " + JSON.stringify(ADDON_PREFIX) + ";\n" +
+      "var GAME_HOSTS = new Set(" + JSON.stringify(Array.from(GAME_HOSTS)) + ");\n" +
       "var FOLDER_PATTERN = /^[A-Za-z0-9_-]{1,128}$/;\n" +
       "var UNSIGNED_PATTERN = /^[0-9]+$/;\n" +
       "var MAX_INDEX_FIELD_CHARS = " + MAX_INDEX_FIELD_CHARS + ";\n" +
@@ -1164,6 +1165,8 @@
     resolveBundleEntry: resolveBundleEntry,
     serveWorkerFileRequest: serveWorkerFileRequest,
     buildManifestEntries: buildManifestEntries,
+    validateManifestEntries: validateManifestEntries,
+    appendAddonManifest: appendAddonManifest,
     localResolveRoute: localResolveRoute,
     contentTypeForWorkerPath: contentTypeForWorkerPath
   });
