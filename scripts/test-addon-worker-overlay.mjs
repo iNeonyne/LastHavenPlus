@@ -435,11 +435,17 @@ test("manifest entry builder excludes game-provided folders and validates addon 
   const manifest = "7\tInterface/AddOns/AlreadyBuiltIn/main.lua\n";
   const plan = core.buildManifestEntries(payload, manifest);
   assert.equal(plan.ok, true);
-  assert.deepEqual(plan.enabledFolders, ["CustomAddon"]);
-  assert.deepEqual(plan.entries, [
-    { path: "Interface/AddOns/CustomAddon/main.lua", sizeBytes: 5 },
-    { path: "Interface/AddOns/CustomAddon/CustomAddon.toc", sizeBytes: 19 },
-  ]);
+  assert.deepEqual(Array.from(plan.enabledFolders), ["CustomAddon"]);
+  assert.deepEqual(
+    Array.from(plan.entries, (entry) => ({
+      path: String(entry.path),
+      sizeBytes: Number(entry.sizeBytes),
+    })),
+    [
+      { path: "Interface/AddOns/CustomAddon/main.lua", sizeBytes: 5 },
+      { path: "Interface/AddOns/CustomAddon/CustomAddon.toc", sizeBytes: 19 },
+    ],
+  );
 });
 
 test("manifest entry builder rejects unsafe paths, malformed base64 and duplicate folders", () => {
@@ -485,10 +491,13 @@ test("manifest appender adds size/path records without duplicating an existing a
     { path: "Interface/AddOns/Enabled/main.lua", sizeBytes: 5 },
     { path: "Interface/AddOns/AlreadyBuiltIn/main.lua", sizeBytes: 7 },
   ];
-  const patched = core.appendAddonManifest("1\tInterface/FrameXML/FrameXML.lua\n", entries);
+  const patched = core.appendAddonManifest(
+    "1\tInterface/FrameXML/FrameXML.lua\n7\tInterface/AddOns/AlreadyBuiltIn/main.lua\n",
+    entries,
+  );
   assert.equal(
     patched,
-    "1\tInterface/FrameXML/FrameXML.lua\n5\tInterface/AddOns/Enabled/main.lua\n",
+    "1\tInterface/FrameXML/FrameXML.lua\n7\tInterface/AddOns/AlreadyBuiltIn/main.lua\n5\tInterface/AddOns/Enabled/main.lua\n",
   );
   assert.equal(
     core.appendAddonManifest(
@@ -1160,7 +1169,7 @@ test("serialized worker bootstrap can parse index rows and validate paths", () =
   );
   vm.runInContext(source, context, { filename: "bootstrap-mask-test.js" });
   const result = vm.runInContext(
-    "self.__maskTest.parseBlocksIndex(new TextEncoder().encode('f\t12\tk\tm\tInterface/AddOns/Foo/a\n'), ['Foo'])",
+    "self.__maskTest.parseBlocksIndex(new TextEncoder().encode('f\\t12\\tk\\tm\\tInterface/AddOns/Foo/a\\n'), ['Foo'])",
     context,
   );
   assert.equal(result.ok, true);
@@ -1173,7 +1182,7 @@ test("OPFS blocks.idx is read bounded and its spans are sent in the worker boot 
   const bytes = indexBytes("file\t123\tkind\tmeta\tInterface/AddOns/Foo/a.lua\n");
   const snapshot = Array.from(bytes);
   const page = createPageContext({ opfsBytes: bytes });
-  page.setPayload({ revision: "a".repeat(64), addons: [{ folder: "Foo", files: {} }] });
+  page.setPayload({ revision: "a".repeat(64), addons: [{ folder: "Foo", files: { "a.lua": base64Of("x") } }] });
   vm.runInContext('new Worker("' + WORKER_URL + '", { name: "em-pthread" })', page.context);
   await new Promise((resolve) => setTimeout(resolve, 0));
   const boot = page.constructed[0].posted[0].data;
