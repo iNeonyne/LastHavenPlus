@@ -49,7 +49,7 @@ Update this file when strategic priorities, sequence or release direction change
 <!-- ROADMAP-LIVE-START -->
 ## Live issue and PR inventory
 
-Generated: 2026-11-28T02:52:10+00:00
+Generated: 2026-11-28T02:54:23+00:00
 Source of truth: live GitHub Issues, pull requests and labels. This section is generated automatically; do not edit it manually.
 
 Every open issue is listed below, grouped by its current priority. Opening a newer issue or PR does not supersede an older one. Duplicates and supersession must be explicitly reviewed and linked in GitHub.
@@ -76,10 +76,10 @@ Every open issue is listed below, grouped by its current priority. Opening a new
 
 - [#14 — P2 — User-triggered connection diagnostics](https://github.com/iNeonyne/LastHavenPlus/issues/14) — enhancement, P2
 - [#15 — P2 — Make updater recovery safer](https://github.com/iNeonyne/LastHavenPlus/issues/15) — bug, P2
-- [#16 — P2 — Gameplay orientation and keep-awake settings](https://github.com/iNeonyne/LastHavenPlus/issues/16) — enhancement, P2
+- [#16 — P2 — Keep-awake preference for landscape-only gameplay](https://github.com/iNeonyne/LastHavenPlus/issues/16) — enhancement, P2
 - [#17 — P2 — Back up and restore launcher settings](https://github.com/iNeonyne/LastHavenPlus/issues/17) — enhancement, P2
 - [#28 — P2 — Accurate storage usage reporting](https://github.com/iNeonyne/LastHavenPlus/issues/28) — enhancement, P2
-- [#148 — P2 — Centralize gameplay orientation and immersive window state](https://github.com/iNeonyne/LastHavenPlus/issues/148) — enhancement, P2
+- [#148 — P2 — Centralize app-wide landscape and immersive window state](https://github.com/iNeonyne/LastHavenPlus/issues/148) — enhancement, P2
 - [#182 — P2 — Close BSDIFF section streams when later initialization fails](https://github.com/iNeonyne/LastHavenPlus/issues/182) — bug, P2
 - [#184 — P2 — Move diagnostics log I/O off the Compose main thread](https://github.com/iNeonyne/LastHavenPlus/issues/184) — P2, performance
 - [#218 — P2 — Ignore callbacks from replaced GeckoSessions](https://github.com/iNeonyne/LastHavenPlus/issues/218) — bug, P2
