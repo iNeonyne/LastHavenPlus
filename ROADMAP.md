@@ -49,7 +49,7 @@ Update this file when strategic priorities, sequence or release direction change
 <!-- ROADMAP-LIVE-START -->
 ## Live issue and PR inventory
 
-Generated: 2026-11-28T03:58:53+00:00
+Generated: 2026-11-28T04:15:39+00:00
 Source of truth: live GitHub Issues, pull requests and labels. This section is generated automatically; do not edit it manually.
 
 Every open issue is listed below, grouped by its current priority. Opening a newer issue or PR does not supersede an older one. Duplicates and supersession must be explicitly reviewed and linked in GitHub.
@@ -114,6 +114,7 @@ Every open issue is listed below, grouped by its current priority. Opening a new
 - [#246 — fix: include version in release APK asset names](https://github.com/iNeonyne/LastHavenPlus/pull/246) (main <- chaty/versioned-apk-assets)
 - [#250 — ui: start landscape launcher redesign and POCO smoke coverage (#248)](https://github.com/iNeonyne/LastHavenPlus/pull/250) (beta <- chaty/native-landscape-ui-248)
 - [#251 — feat(addons): bootstrap enabled addon entry-point injection](https://github.com/iNeonyne/LastHavenPlus/pull/251) (beta <- vibe/addon-injection-245)
+- [#252 — perf(addons): cache the page-realm bundle clone by revision](https://github.com/iNeonyne/LastHavenPlus/pull/252) (beta <- vibe/addon-bundle-cache-229)
 
 ### Recently completed (last 30 days)
 
