@@ -2,6 +2,7 @@ package com.neonyne.lasthavenlauncher
 
 import android.content.Context
 import android.content.Intent
+import androidx.lifecycle.LifecycleOwner
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -67,13 +68,17 @@ fun SettingsScreen(
   onOpenUpdates: () -> Unit,
   onCheckUpdates: () -> Unit,
 ) {
+  val activityStarted = rememberLifecycleStarted(context as? LifecycleOwner)
   var selectedDestination by remember { mutableStateOf(SettingsDestination.GAME) }
   var networkSnapshot by remember { mutableStateOf<NetworkUsageSnapshot?>(null) }
   var lastNetworkUpdate by remember { mutableStateOf<Long?>(null) }
   var refreshingNetwork by remember { mutableStateOf(false) }
 
-  LaunchedEffect(selectedDestination, usageMeter) {
-    if (selectedDestination == SettingsDestination.NETWORK_STORAGE) {
+  LaunchedEffect(selectedDestination, usageMeter, activityStarted) {
+    if (
+      selectedDestination == SettingsDestination.NETWORK_STORAGE &&
+        activityStarted
+    ) {
       while (true) {
         refreshingNetwork = true
         val nextSnapshot =
