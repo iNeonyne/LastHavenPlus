@@ -6,6 +6,15 @@ import android.net.TrafficStats
 import android.os.Process
 import java.io.File
 
+data class NetworkUsageSnapshot(
+  val receivedSinceBootBytes: Long?,
+  val sentSinceBootBytes: Long?,
+  val receivedThisSessionBytes: Long?,
+  val sentThisSessionBytes: Long?,
+  val receivedTrackedTotalBytes: Long,
+  val sentTrackedTotalBytes: Long,
+)
+
 data class UsageSnapshot(
   val installedApkBytes: Long,
   val persistentDataBytes: Long,
@@ -39,20 +48,34 @@ class AppUsageMeter(context: Context) {
     networkTracker.sample(rxAtStart, txAtStart)
   }
 
+  /** Samples only network counters; safe to poll while the Network & Storage page is visible. */
+  fun networkSnapshot(): NetworkUsageSnapshot = readNetworkSnapshot()
+
   fun snapshot(): UsageSnapshot {
-    val rx = TrafficStats.getUidRxBytes(uid).takeIf { it >= 0L }
-    val tx = TrafficStats.getUidTxBytes(uid).takeIf { it >= 0L }
+    val network = readNetworkSnapshot()
     val persistentData = appContext.filesDir
     val apkFiles = buildList {
       add(File(appContext.applicationInfo.sourceDir))
       appContext.applicationInfo.splitSourceDirs?.forEach { add(File(it)) }
     }
-    val tracked = networkTracker.sample(rx, tx)
-
     return UsageSnapshot(
       installedApkBytes = apkFiles.sumOf { if (it.isFile) it.length() else 0L },
       persistentDataBytes = directorySize(persistentData),
       cacheBytes = directorySize(appContext.cacheDir) + directorySize(appContext.codeCacheDir),
+      receivedSinceBootBytes = network.receivedSinceBootBytes,
+      sentSinceBootBytes = network.sentSinceBootBytes,
+      receivedThisSessionBytes = network.receivedThisSessionBytes,
+      sentThisSessionBytes = network.sentThisSessionBytes,
+      receivedTrackedTotalBytes = network.receivedTrackedTotalBytes,
+      sentTrackedTotalBytes = network.sentTrackedTotalBytes,
+    )
+  }
+
+  private fun readNetworkSnapshot(): NetworkUsageSnapshot {
+    val rx = TrafficStats.getUidRxBytes(uid).takeIf { it >= 0L }
+    val tx = TrafficStats.getUidTxBytes(uid).takeIf { it >= 0L }
+    val tracked = networkTracker.sample(rx, tx)
+    return NetworkUsageSnapshot(
       receivedSinceBootBytes = rx,
       sentSinceBootBytes = tx,
       receivedThisSessionBytes = difference(rx, rxAtStart),
