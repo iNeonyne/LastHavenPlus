@@ -82,11 +82,11 @@ class AddonLibraryRepositoryTest {
   @Test
   fun replacementCancellationPreservesExistingAddonAndReportsExactFolder() {
     val repository = AddonLibraryRepository(temporaryFolder.newFolder("cancel-replacement"))
-    val original = zipOf("Sample/Sample.toc" to "## Version: 1\\n", "Sample/main.lua" to "old")
+    val original = zipOf("Sample/Sample.toc" to "## Version: 1\n", "Sample/main.lua" to "old")
     repository.importZip(ByteArrayInputStream(original), original.size.toLong())
     repository.setEnabled("Sample", true)
 
-    val replacement = zipOf("Sample/Sample.toc" to "## Version: 2\\n", "Sample/main.lua" to "new")
+    val replacement = zipOf("Sample/Sample.toc" to "## Version: 2\n", "Sample/main.lua" to "new")
     var requestedFolders = emptyList<String>()
 
     assertThrows(CancellationException::class.java) {
@@ -110,7 +110,7 @@ class AddonLibraryRepositoryTest {
   @Test
   fun libraryRejectsIndexEntriesWithoutBackingFiles() {
     val repository = AddonLibraryRepository(temporaryFolder.newFolder("missing-files"))
-    val archive = zipOf("Sample/Sample.toc" to "## Interface: 30300\\n")
+    val archive = zipOf("Sample/Sample.toc" to "## Interface: 30300\n")
     repository.importZip(ByteArrayInputStream(archive), archive.size.toLong())
     assertTrue(repository.addonDirectory("Sample").deleteRecursively())
 
@@ -120,7 +120,7 @@ class AddonLibraryRepositoryTest {
   @Test
   fun removeRejectsUnknownAddonWithoutChangingLibrary() {
     val repository = AddonLibraryRepository(temporaryFolder.newFolder("unknown-remove"))
-    val archive = zipOf("Sample/Sample.toc" to "## Interface: 30300\\n")
+    val archive = zipOf("Sample/Sample.toc" to "## Interface: 30300\n")
     repository.importZip(ByteArrayInputStream(archive), archive.size.toLong())
 
     assertThrows(IllegalArgumentException::class.java) { repository.removeAddon("Missing") }
@@ -131,7 +131,7 @@ class AddonLibraryRepositoryTest {
   fun rejectsImportWhenThereIsNotEnoughSpaceForCommitStaging() {
     val root = temporaryFolder.newFolder("low-storage")
     val repository = AddonLibraryRepository(root, availableStorageBytes = { 0L })
-    val archive = zipOf("Sample/Sample.toc" to "## Interface: 30300\\n")
+    val archive = zipOf("Sample/Sample.toc" to "## Interface: 30300\n")
 
     assertThrows(IllegalArgumentException::class.java) {
       repository.importZip(ByteArrayInputStream(archive), archive.size.toLong())
