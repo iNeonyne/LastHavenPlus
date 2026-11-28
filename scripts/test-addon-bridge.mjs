@@ -216,7 +216,7 @@ const bridgeSource = readFileSync(fileURLToPath(bridgeSourcePath), "utf8");
 test("the page bundle getter clones once per revision and publishes a revision getter", () => {
   assert.equal(bridgeSource.includes("pageBundleClone"), true);
   assert.equal(
-    bridgeSource.includes("pageBundleClone = cloneInto(currentBundle, targetWindow)"),
+    bridgeSource.includes("pageBundleClone = deepFreezePageClone(cloneInto(currentBundle, targetWindow))"),
     true,
     "getBundle must reuse one cached page-realm clone per revision",
   );
