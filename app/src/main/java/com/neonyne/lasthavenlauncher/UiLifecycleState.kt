@@ -14,10 +14,9 @@ import androidx.lifecycle.LifecycleOwner
 @Composable
 internal fun rememberLifecycleStarted(lifecycleOwner: LifecycleOwner?): Boolean {
   val lifecycle = lifecycleOwner?.lifecycle
-  var started by
-    remember(lifecycle) {
-      mutableStateOf(lifecycle?.currentState?.isAtLeast(Lifecycle.State.STARTED) == true)
-    }
+  var started by remember(lifecycle) {
+    mutableStateOf(lifecycle?.currentState?.isAtLeast(Lifecycle.State.STARTED) == true)
+  }
 
   DisposableEffect(lifecycle) {
     if (lifecycle == null) {
