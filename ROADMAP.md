@@ -49,7 +49,7 @@ Update this file when strategic priorities, sequence or release direction change
 <!-- ROADMAP-LIVE-START -->
 ## Live issue and PR inventory
 
-Generated: 2026-11-28T00:02:35+00:00
+Generated: 2026-11-28T00:08:18+00:00
 Source of truth: live GitHub Issues, pull requests and labels. This section is generated automatically; do not edit it manually.
 
 Every open issue is listed below, grouped by its current priority. Opening a newer issue or PR does not supersede an older one. Duplicates and supersession must be explicitly reviewed and linked in GitHub.
@@ -100,6 +100,7 @@ Every open issue is listed below, grouped by its current priority. Opening a new
 
 - [#217 — P2 #186: Allow HTTPS navigation in GeckoView](https://github.com/iNeonyne/LastHavenPlus/pull/217) (beta <- chaty/issue-186-navigation-policy)
 - [#220 — Disconnect stale addon bridge ports when the game session changes (#183)](https://github.com/iNeonyne/LastHavenPlus/pull/220) (beta <- vibe/stale-port-session-183)
+- [#224 — feat(updater): show measured download progress and retry feedback (#111)](https://github.com/iNeonyne/LastHavenPlus/pull/224) (beta <- chaty/issue-111-updater-progress-ui)
 
 ### Recently completed (last 30 days)
 
