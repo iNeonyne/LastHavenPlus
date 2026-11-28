@@ -531,7 +531,7 @@ jobs:
       - name: Validate curated v2.5.0 release notes
         run: test -s .github/release/NOTES.md
 
-      - name: Create or update draft release and attach verified assets
+      - name: Create or update GitHub release and attach verified assets
         id: release
         uses: softprops/action-gh-release@8a0cd651e5b2365bd640854a3fa5dfc70e4875f3 # v3.0.4
         with:
@@ -560,11 +560,12 @@ jobs:
             gh api --method DELETE "repos/$GITHUB_REPOSITORY/releases/assets/$asset_id"
           done < <(jq -r '.assets[] | select(.name == "lasthavenlauncher-arm64.apk" or .name == "lasthavenlauncher-update.json") | .id' <<< "$release_json")
 
-      - name: Verify final draft contains exactly one APK
+      - name: Verify release visibility and canonical assets
         env:
           GH_TOKEN: ${{ github.token }}
           RELEASE_TAG: ${{ needs.build.outputs.release_tag }}
           RELEASE_ID: ${{ steps.release.outputs.id }}
+          EXPECTED_DRAFT: ${{ !contains(github.event.head_commit.message, '[publish]') }}
         shell: bash
         run: |
           set -euo pipefail
@@ -573,4 +574,14 @@ jobs:
             exit 1
           fi
           gh api "repos/$GITHUB_REPOSITORY/releases/$RELEASE_ID" > "$RUNNER_TEMP/final-release.json"
+          actual_draft="$(jq -r '.draft' "$RUNNER_TEMP/final-release.json")"
+          actual_prerelease="$(jq -r '.prerelease' "$RUNNER_TEMP/final-release.json")"
+          if [[ "$actual_draft" != "$EXPECTED_DRAFT" ]]; then
+            echo "::error::Release draft state mismatch: expected $EXPECTED_DRAFT, got $actual_draft."
+            exit 1
+          fi
+          if [[ "$actual_prerelease" != "false" ]]; then
+            echo "::error::Stable release must not be marked as a prerelease."
+            exit 1
+          fi
           python3 .github/scripts/verify_release_assets.py "$RUNNER_TEMP/final-release.json" "$RELEASE_TAG"
