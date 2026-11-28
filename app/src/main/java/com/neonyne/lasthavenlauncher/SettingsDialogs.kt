@@ -37,6 +37,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -69,6 +70,7 @@ fun SettingsScreen(
   onCheckUpdates: () -> Unit,
 ) {
   val activityStarted = rememberLifecycleStarted(context as? LifecycleOwner)
+  val networkTimeLocale = LocalConfiguration.current.locales[0]
   var selectedDestination by remember { mutableStateOf(SettingsDestination.GAME) }
   var networkSnapshot by remember { mutableStateOf<NetworkUsageSnapshot?>(null) }
   var lastNetworkUpdate by remember { mutableStateOf<Long?>(null) }
@@ -170,7 +172,7 @@ fun SettingsScreen(
               stringResource(
                 R.string.settings_network_last_updated,
                 java.text
-                  .SimpleDateFormat("HH:mm:ss", java.util.Locale.getDefault())
+                  .SimpleDateFormat("HH:mm:ss", networkTimeLocale)
                   .format(java.util.Date(updatedAt)),
               ),
               color = DesignTokens.textSecondary,
