@@ -11,7 +11,7 @@ from pathlib import Path
 from typing import Any
 
 CANONICAL_MANIFEST = "lasthavenplus-update.json"
-LEGACY_ASSETS = {"lasthavenlauncher-arm64.apk", "lasthavenlauncher-update.json"}
+LEGACY_ASSETS = {"lasthavenlauncher-arm64.apk", "lasthavenlauncher-update.json", "lasthavenplus-arm64.apk"}
 
 
 def validate_release_assets(release: dict[str, Any], expected_tag: str) -> None:
