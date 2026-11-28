@@ -2,7 +2,6 @@ package com.neonyne.lasthavenlauncher
 
 import android.content.Context
 import android.content.Intent
-import androidx.lifecycle.LifecycleOwner
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -43,6 +42,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.LifecycleOwner
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
@@ -75,10 +75,7 @@ fun SettingsScreen(
   var refreshingNetwork by remember { mutableStateOf(false) }
 
   LaunchedEffect(selectedDestination, usageMeter, activityStarted) {
-    if (
-      selectedDestination == SettingsDestination.NETWORK_STORAGE &&
-        activityStarted
-    ) {
+    if (selectedDestination == SettingsDestination.NETWORK_STORAGE && activityStarted) {
       while (true) {
         refreshingNetwork = true
         val nextSnapshot =
