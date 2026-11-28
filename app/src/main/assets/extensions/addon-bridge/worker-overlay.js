@@ -40,6 +40,9 @@
   const MAX_INTERCEPTED_WORKERS = 8;
   const BOOT_TIMEOUT_MS = 20000;
   const MAX_WORKER_FILE_BYTES = 8 * 1024 * 1024;
+  const MAX_MANIFEST_ENTRIES = 8192;
+  const MAX_MANIFEST_TEXT_BYTES = 2 * 1024 * 1024;
+  const MAX_RUNTIME_BUNDLE_BYTES = 16 * 1024 * 1024;
   const MAX_INFLIGHT_WORKER_REQUESTS = 4;
   const MAX_INDEX_FILE_BYTES = 2 * 1024 * 1024;
   const MAX_INDEX_LINES = 65536;
@@ -112,6 +115,177 @@
       return false;
     }
     return filePath.split("/").every((part) => part.length > 0 && part !== "." && part !== "..");
+  }
+
+  function base64ByteLength(encoded) {
+    if (typeof encoded !== "string" || encoded.length % 4 !== 0 ||
+        !/^[A-Za-z0-9+/]*={0,2}$/.test(encoded)) {
+      return null;
+    }
+    const padding = encoded.endsWith("==") ? 2 : encoded.endsWith("=") ? 1 : 0;
+    const byteLength = (encoded.length / 4) * 3 - padding;
+    return Number.isSafeInteger(byteLength) && byteLength >= 0 &&
+      byteLength <= MAX_WORKER_FILE_BYTES ? byteLength : null;
+  }
+
+  function buildManifestEntries(payload, manifestText) {
+    const reject = (stage) => ({ ok: false, stage: stage, enabledFolders: [], entries: [] });
+    if (!payload || !Array.isArray(payload.addons) || payload.addons.length > 128) {
+      return reject("payload");
+    }
+    const manifestLower = typeof manifestText === "string" ? manifestText.toLowerCase() : "";
+    const enabledFolders = [];
+    const entries = [];
+    const seenFolders = new Set();
+    const seenPaths = new Set();
+    let totalFileBytes = 0;
+    let manifestBytes = 0;
+    for (let i = 0; i < payload.addons.length; i += 1) {
+      const addon = payload.addons[i];
+      const folder = addon && addon.folder;
+      if (typeof folder !== "string" || !FOLDER_PATTERN.test(folder) ||
+          folder.toLowerCase().startsWith("blizzard_") || seenFolders.has(folder.toLowerCase())) {
+        return reject("folder");
+      }
+      seenFolders.add(folder.toLowerCase());
+      if (manifestLower.includes((ADDON_PREFIX + folder + "/").toLowerCase())) {
+        continue;
+      }
+      if (!addon.files || typeof addon.files !== "object" || Array.isArray(addon.files)) {
+        return reject("files");
+      }
+      const paths = Object.keys(addon.files);
+      if (entries.length + paths.length > MAX_MANIFEST_ENTRIES) {
+        return reject("entry-limit");
+      }
+      const addonEntries = [];
+      for (let p = 0; p < paths.length; p += 1) {
+        const path = ADDON_PREFIX + folder + "/" + paths[p];
+        if (!isSafeAddonPath(path) || seenPaths.has(path.toLowerCase())) {
+          return reject("path");
+        }
+        const sizeBytes = base64ByteLength(addon.files[paths[p]]);
+        if (sizeBytes === null) {
+          return reject("file-data");
+        }
+        totalFileBytes += sizeBytes;
+        if (!Number.isSafeInteger(totalFileBytes) || totalFileBytes > MAX_RUNTIME_BUNDLE_BYTES) {
+          return reject("bundle-size");
+        }
+        manifestBytes += String(sizeBytes).length + 1 + path.length + 1;
+        if (manifestBytes > MAX_MANIFEST_TEXT_BYTES) {
+          return reject("manifest-size");
+        }
+        seenPaths.add(path.toLowerCase());
+        addonEntries.push({ path: path, sizeBytes: sizeBytes });
+      }
+      if (addonEntries.length > 0) {
+        enabledFolders.push(folder);
+        entries.push(...addonEntries);
+      }
+    }
+    return { ok: true, stage: null, enabledFolders: enabledFolders, entries: entries };
+  }
+
+  function validateManifestEntries(entries, enabledFolders) {
+    if (!Array.isArray(entries) || entries.length > MAX_MANIFEST_ENTRIES ||
+        !Array.isArray(enabledFolders) || enabledFolders.length > 128) {
+      return { ok: false, entries: [] };
+    }
+    const enabled = new Set(enabledFolders.map((folder) => String(folder).toLowerCase()));
+    const seen = new Set();
+    const validated = [];
+    let totalBytes = 0;
+    let textBytes = 0;
+    for (let i = 0; i < entries.length; i += 1) {
+      const entry = entries[i];
+      if (!entry || typeof entry !== "object" || !isSafeAddonPath(entry.path) ||
+          !Number.isSafeInteger(entry.sizeBytes) || entry.sizeBytes < 0 ||
+          entry.sizeBytes > MAX_WORKER_FILE_BYTES) {
+        return { ok: false, entries: [] };
+      }
+      const folder = entry.path.slice(ADDON_PREFIX.length).split("/")[0];
+      if (!enabled.has(folder.toLowerCase()) || seen.has(entry.path.toLowerCase())) {
+        return { ok: false, entries: [] };
+      }
+      totalBytes += entry.sizeBytes;
+      textBytes += String(entry.sizeBytes).length + 1 + entry.path.length + 1;
+      if (totalBytes > MAX_RUNTIME_BUNDLE_BYTES || textBytes > MAX_MANIFEST_TEXT_BYTES) {
+        return { ok: false, entries: [] };
+      }
+      seen.add(entry.path.toLowerCase());
+      validated.push(Object.freeze({ path: entry.path, sizeBytes: entry.sizeBytes }));
+    }
+    return { ok: true, entries: Object.freeze(validated) };
+  }
+
+  function appendAddonManifest(text, entries) {
+    if (typeof text !== "string" || !Array.isArray(entries) || entries.length === 0) {
+      return text;
+    }
+    const lower = text.toLowerCase();
+    const conflictingFolders = new Set();
+    for (let i = 0; i < entries.length; i += 1) {
+      const folder = entries[i].path.slice(ADDON_PREFIX.length).split("/")[0];
+      if (lower.includes((ADDON_PREFIX + folder + "/").toLowerCase())) {
+        conflictingFolders.add(folder.toLowerCase());
+      }
+    }
+    const additions = [];
+    for (let i = 0; i < entries.length; i += 1) {
+      const entry = entries[i];
+      const folder = entry.path.slice(ADDON_PREFIX.length).split("/")[0];
+      if (!conflictingFolders.has(folder.toLowerCase())) {
+        additions.push(String(entry.sizeBytes) + "\t" + entry.path);
+      }
+    }
+    if (additions.length === 0) {
+      return text;
+    }
+    return String(text).replace(/\s*$/, "") + "\n" + additions.join("\n") + "\n";
+  }
+
+  function installAddonManifestFetch(entries) {
+    const nativeFetch = self.fetch;
+    if (typeof nativeFetch !== "function" || typeof self.Response !== "function" ||
+        typeof self.Headers !== "function" || typeof self.URL !== "function") {
+      return false;
+    }
+    self.fetch = function (input, init) {
+      let url;
+      let method = "GET";
+      try {
+        const isRequest = typeof self.Request === "function" && input instanceof self.Request;
+        url = new self.URL(isRequest ? input.url : String(input), self.location.href);
+        method = String((init && init.method) || (isRequest && input.method) || "GET").toUpperCase();
+      } catch (error) {
+        return nativeFetch.call(self, input, init);
+      }
+      if (method !== "GET" || url.origin !== self.location.origin ||
+          url.pathname !== "/game-manifest.txt" || url.search !== "" || url.hash !== "") {
+        return nativeFetch.call(self, input, init);
+      }
+      return nativeFetch.call(self, input, init).then(function (response) {
+        if (!response || !response.ok) {
+          return response;
+        }
+        return response.clone().text().then(function (text) {
+          const patched = appendAddonManifest(text, entries);
+          if (patched === text) {
+            return response;
+          }
+          const headers = new self.Headers(response.headers);
+          headers.delete("content-length");
+          headers.delete("content-encoding");
+          return new self.Response(patched, {
+            status: response.status,
+            statusText: response.statusText,
+            headers: headers
+          });
+        });
+      });
+    };
+    return true;
   }
 
   function canonicalUnsigned(text) {
@@ -467,7 +641,10 @@
     maskReadSpan,
     maskWebVfsStoreIo,
     wrapAssignWasmImports,
-    base64ToBytes
+    base64ToBytes,
+    validateManifestEntries,
+    appendAddonManifest,
+    installAddonManifestFetch
   ];
 
   function buildBootstrapSource(href) {
@@ -963,6 +1140,7 @@
     base64ToBytes: base64ToBytes,
     resolveBundleEntry: resolveBundleEntry,
     serveWorkerFileRequest: serveWorkerFileRequest,
+    buildManifestEntries: buildManifestEntries,
     localResolveRoute: localResolveRoute,
     contentTypeForWorkerPath: contentTypeForWorkerPath
   });
