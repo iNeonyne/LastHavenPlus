@@ -256,7 +256,7 @@
       let method = "GET";
       try {
         const isRequest = typeof self.Request === "function" && input instanceof self.Request;
-        url = new self.URL(isRequest ? input.url : String(input), self.location.href);
+        url = new self.URL(isRequest ? input.url : String(input), originalUrl);
         method = String((init && init.method) || (isRequest && input.method) || "GET").toUpperCase();
       } catch (error) {
         return nativeFetch.call(self, input, init);
@@ -729,9 +729,7 @@
       "    inflightCount -= 1;\n" +
       "    respond(entry, data);\n" +
       "  };\n" +
-      "  function baseHref() {\n" +
-      "    try { return self.location.href; } catch (error) { return originalUrl; }\n" +
-      "  }\n" +
+      "  function baseHref() { return originalUrl; }\n" +
       "  function respond(entry, response) {\n" +
       "    entry.state.status = response.status;\n" +
       "    entry.state.statusText = response.statusText;\n" +
