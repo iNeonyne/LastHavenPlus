@@ -504,7 +504,7 @@ test("manifest appender adds size/path records without duplicating an existing a
       "7\tInterface/AddOns/AlreadyBuiltIn/main.lua\n",
       entries,
     ),
-    "7\tInterface/AddOns/AlreadyBuiltIn/main.lua\n",
+    "7\tInterface/AddOns/AlreadyBuiltIn/main.lua\n5\tInterface/AddOns/Enabled/main.lua\n",
   );
 });
 
@@ -1184,7 +1184,10 @@ test("OPFS blocks.idx is read bounded and its spans are sent in the worker boot 
   const page = createPageContext({ opfsBytes: bytes });
   page.setPayload({ revision: "a".repeat(64), addons: [{ folder: "Foo", files: { "a.lua": base64Of("x") } }] });
   vm.runInContext('new Worker("' + WORKER_URL + '", { name: "em-pthread" })', page.context);
-  await new Promise((resolve) => setTimeout(resolve, 0));
+  for (let attempt = 0; attempt < 20 && page.constructed[0].posted.length === 0; attempt += 1) {
+    await new Promise((resolve) => setTimeout(resolve, 0));
+  }
+  assert.equal(page.constructed[0].posted.length, 1, "worker boot message should be posted");
   const boot = page.constructed[0].posted[0].data;
   assert.equal(boot.__lhBoot, true);
   assert.equal(boot.enabledFolders.length, 1);
