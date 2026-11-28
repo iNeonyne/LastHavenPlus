@@ -46,6 +46,7 @@ fun GameMenuScreen(
   onSettings: () -> Unit,
   onAddonManager: () -> Unit,
   onReturnToGame: () -> Unit,
+  addonReloadRequired: Boolean = false,
 ) {
   val menuFocus = remember { FocusRequester() }
   LaunchedEffect(menuFocus) { menuFocus.requestFocus() }
@@ -81,6 +82,13 @@ fun GameMenuScreen(
           style = MaterialTheme.typography.labelSmall,
         )
         Spacer(Modifier.height(2.dp))
+        if (addonReloadRequired) {
+          Text(
+            stringResource(R.string.game_menu_addons_reload_required),
+            color = MaterialTheme.colorScheme.tertiary,
+            style = MaterialTheme.typography.bodySmall,
+          )
+        }
         Button(
           onClick = onReload,
           modifier =

@@ -12,11 +12,14 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
@@ -31,6 +34,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.LiveRegionMode
+import androidx.compose.ui.semantics.liveRegion
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 
@@ -44,6 +50,11 @@ fun AddonManagerScreen(
   onExport: (String) -> Unit,
   onRemove: (String) -> Unit,
   onBack: () -> Unit,
+  reloadRequired: Boolean = false,
+  operationLabel: String? = null,
+  replacementFolders: List<String>? = null,
+  onConfirmReplacement: () -> Unit = {},
+  onCancelReplacement: () -> Unit = {},
 ) {
   val dependencyReport = remember(snapshot) { AddonDependencyAnalyzer.analyze(snapshot.addons) }
   var pendingRemoval by remember { mutableStateOf<String?>(null) }
@@ -107,6 +118,24 @@ fun AddonManagerScreen(
       }
     }
 
+    if (busy) {
+      Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+        LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
+        Text(
+          operationLabel.orEmpty(),
+          modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite },
+          color = MaterialTheme.colorScheme.onSurfaceVariant,
+          style = MaterialTheme.typography.bodySmall,
+        )
+      }
+    }
+    if (reloadRequired) {
+      Text(
+        stringResource(R.string.addon_manager_reload_required),
+        color = MaterialTheme.colorScheme.tertiary,
+        style = MaterialTheme.typography.bodySmall,
+      )
+    }
     if (!message.isNullOrBlank()) {
       Surface(
         color = MaterialTheme.colorScheme.surfaceVariant,
@@ -114,7 +143,10 @@ fun AddonManagerScreen(
       ) {
         Text(
           message,
-          modifier = Modifier.fillMaxWidth().padding(12.dp),
+          modifier =
+            Modifier.fillMaxWidth().padding(12.dp).semantics {
+              liveRegion = LiveRegionMode.Polite
+            },
           style = MaterialTheme.typography.bodySmall,
         )
       }
@@ -146,9 +178,34 @@ fun AddonManagerScreen(
     }
 
     Text(
-      stringResource(R.string.addon_manager_runtime_unavailable),
+      stringResource(R.string.addon_manager_runtime_status),
       color = MaterialTheme.colorScheme.onSurfaceVariant,
       style = MaterialTheme.typography.bodySmall,
+    )
+  }
+  replacementFolders?.let { folders ->
+    AlertDialog(
+      onDismissRequest = onCancelReplacement,
+      title = { Text(stringResource(R.string.addon_manager_replace_confirm_title)) },
+      text = {
+        Column(
+          modifier = Modifier.heightIn(max = 280.dp).verticalScroll(rememberScrollState()),
+          verticalArrangement = Arrangement.spacedBy(4.dp),
+        ) {
+          Text(stringResource(R.string.addon_manager_replace_confirm_message))
+          folders.forEach { folder -> Text("• $folder") }
+        }
+      },
+      confirmButton = {
+        TextButton(onClick = onConfirmReplacement) {
+          Text(stringResource(R.string.addon_manager_replace))
+        }
+      },
+      dismissButton = {
+        TextButton(onClick = onCancelReplacement) {
+          Text(stringResource(R.string.addon_manager_cancel))
+        }
+      },
     )
   }
   pendingRemoval?.let { folder ->
@@ -161,7 +218,7 @@ fun AddonManagerScreen(
           onClick = {
             pendingRemoval = null
             onRemove(folder)
-          }
+          },
         ) {
           Text(stringResource(R.string.addon_manager_remove))
         }

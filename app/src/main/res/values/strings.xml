@@ -6,6 +6,18 @@
     <string name="addon_manager_back">Back</string>
     <string name="addon_manager_import_description">Import local WoW 3.3.5a addon ZIP files. New imports start disabled and stay on this device.</string>
     <string name="addon_manager_runtime_unavailable">Addon runtime loading is not available yet. Imported files are stored locally only.</string>
+    <string name="addon_manager_runtime_status" tools:ignore="MissingTranslation">Enabled state is saved locally. Saving an addon does not confirm that it is active in the game.</string>
+    <string name="addon_manager_reload_required" tools:ignore="MissingTranslation">Changes are saved. Reload the game to apply addon changes.</string>
+    <string name="addon_manager_loading" tools:ignore="MissingTranslation">Reading addon library…</string>
+    <string name="addon_manager_importing" tools:ignore="MissingTranslation">Importing addon ZIP…</string>
+    <string name="addon_manager_copying" tools:ignore="MissingTranslation">Reading selected ZIP…</string>
+    <string name="addon_manager_validating" tools:ignore="MissingTranslation">Validating ZIP structure and files…</string>
+    <string name="addon_manager_extracting" tools:ignore="MissingTranslation">Extracting addon files…</string>
+    <string name="addon_manager_indexing" tools:ignore="MissingTranslation">Indexing addon metadata…</string>
+    <string name="addon_manager_committing" tools:ignore="MissingTranslation">Saving addon library changes…</string>
+    <string name="addon_manager_exporting" tools:ignore="MissingTranslation">Exporting addon ZIP…</string>
+    <string name="addon_manager_saving" tools:ignore="MissingTranslation">Saving addon setting…</string>
+    <string name="addon_manager_removing" tools:ignore="MissingTranslation">Removing addon and updating library…</string>
     <string name="addon_manager_import_zip">Import ZIP</string>
     <string name="addon_manager_count">%1$d addons\n%2$s</string>
     <string name="addon_manager_no_addons">No local addons yet. Import a ZIP containing an addon folder and its matching .toc file.</string>
@@ -24,6 +36,10 @@
     <string name="addon_manager_export_failed">Addon export failed.</string>
     <string name="addon_manager_read_failed">Could not read addon library.</string>
     <string name="addon_manager_dependency_cycle">Dependency cycle detected between addons.</string>
+    <string name="addon_manager_replace_confirm_title" tools:ignore="MissingTranslation">Replace existing addons?</string>
+    <string name="addon_manager_replace_confirm_message" tools:ignore="MissingTranslation">The following addon folders already exist. Importing this ZIP will replace their current files. Continue?</string>
+    <string name="addon_manager_replace" tools:ignore="MissingTranslation">Replace</string>
+    <string name="addon_manager_import_cancelled" tools:ignore="MissingTranslation">Addon import cancelled. Existing files were not changed.</string>
     <string name="addon_manager_remove_confirm_title">Remove addon?</string>
     <string name="addon_manager_remove_confirm_message">Remove %1$s from this device? This cannot be undone.</string>
     <string name="addon_manager_cancel">Cancel</string>
@@ -78,6 +94,7 @@
     <string tools:ignore="MissingTranslation" name="game_menu_settings">Settings</string>
     <string tools:ignore="MissingTranslation" name="game_menu_addon_manager">Addon Manager</string>
     <string tools:ignore="MissingTranslation" name="game_menu_return_to_game">Return to game</string>
+    <string tools:ignore="MissingTranslation" name="game_menu_addons_reload_required">Addon changes are pending. Reload to apply them.</string>
 
     <string tools:ignore="MissingTranslation" name="game_preparing_content_description">Preparing LastHaven</string>
     <string tools:ignore="MissingTranslation" name="game_preparing">Preparing game…</string>

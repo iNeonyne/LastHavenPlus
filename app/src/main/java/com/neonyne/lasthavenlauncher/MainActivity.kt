@@ -228,6 +228,7 @@ private fun LastHavenApp(
   var isCheckingUpdate by remember { mutableStateOf(false) }
 
   val gameSessionController = remember { GameSessionController() }
+  var addonReloadRequired by remember { mutableStateOf(false) }
   val addonLibraryRepository =
     remember(context) { AddonLibraryRepository(File(context.filesDir, "addons")) }
   val addonBridgeExecutor = remember { Executors.newSingleThreadExecutor() }
@@ -260,8 +261,13 @@ private fun LastHavenApp(
   }
 
   val reloadGame: () -> Unit = {
-    addonBridgeController.ensureInstalled(context) {
-      addonBridgeController.refreshSnapshot {
+    addonBridgeController.ensureInstalled(context) { installed ->
+      if (installed) {
+        addonBridgeController.refreshSnapshot { refreshed ->
+          gameSessionController.reloadGame(context, gameUrl)
+          if (refreshed) addonReloadRequired = false
+        }
+      } else {
         gameSessionController.reloadGame(context, gameUrl)
       }
     }
@@ -406,6 +412,7 @@ private fun LastHavenApp(
               onAddonManager = {
                 navigate(LauncherNavigationPolicy.openAddonManager(navigation))
               },
+              addonReloadRequired = addonReloadRequired,
               onReturnToGame = {
                 navigate(LauncherNavigationPolicy.returnToGame(navigation))
               },
@@ -440,7 +447,15 @@ private fun LastHavenApp(
         )
 
       Screen.AddonManager ->
-        AddonManagerHost(onBack = { navigate(LauncherNavigationPolicy.returnToGame(navigation)) })
+        AddonManagerHost(
+          onBack = { libraryChanged ->
+            if (libraryChanged) {
+              addonReloadRequired = true
+              addonBridgeController.refreshSnapshot()
+            }
+            navigate(LauncherNavigationPolicy.returnToGame(navigation))
+          },
+        )
 
       Screen.Diagnostics ->
         DiagnosticsScreen(

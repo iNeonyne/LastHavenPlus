@@ -165,6 +165,17 @@ class LauncherNavigationPolicyTest {
   }
 
   @Test
+  fun addonManagerCanBeOpenedAgainAfterReturningToTheSameGameDestination() {
+    val firstOpen = LauncherNavigationPolicy.openAddonManager(defaultState.copy(menuVisible = true))
+    val returned = LauncherNavigationPolicy.returnToGame(firstOpen)
+    val secondOpen = LauncherNavigationPolicy.openAddonManager(returned.copy(menuVisible = true))
+
+    assertEquals(Screen.Game, returned.screen)
+    assertEquals(Screen.AddonManager, secondOpen.screen)
+    assertFalse(secondOpen.menuVisible)
+  }
+
+  @Test
   fun addonManagerOnlyOpensFromTheGameScreen() {
     val fromSettings = defaultState.copy(screen = Screen.Settings)
     val fromUpdate = defaultState.copy(screen = Screen.Update)
