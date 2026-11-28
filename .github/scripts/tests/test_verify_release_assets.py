@@ -30,6 +30,12 @@ class ReleaseAssetValidationTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "exactly one versioned APK"):
             validate_release_assets(release, "v2.2.0")
 
+    def test_rejects_missing_compatibility_alias(self):
+        release = self.valid_release()
+        release["assets"].pop(1)
+        with self.assertRaisesRegex(ValueError, "exactly one versioned APK"):
+            validate_release_assets(release, "v2.2.0")
+
     def test_rejects_multiple_apks(self):
         release = self.valid_release()
         release["assets"].append({"name": "unexpected.apk", "size": 100})
