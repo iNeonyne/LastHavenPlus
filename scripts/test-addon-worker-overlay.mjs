@@ -369,6 +369,42 @@ test("gate is inert when the allowlist is empty (fail closed)", () => {
   assert.equal(decision.reason, "allowlist-empty");
 });
 
+test("runtime worker gate pins the first validated em-pthread URL", () => {
+  const { core } = createPageContext({ allowlist: [] });
+  const config = { baseHref: BASE_HREF };
+  const first = core.shouldInterceptWorker(WORKER_URL, { name: "em-pthread" }, config);
+  assert.equal(first.ok, true);
+  assert.equal(first.reason, "learned");
+  assert.equal(first.href, WORKER_URL);
+
+  const repeated = core.shouldInterceptWorker(WORKER_URL, { name: "em-pthread" }, config);
+  assert.equal(repeated.ok, true);
+  const different = core.shouldInterceptWorker(
+    "https://lasthavens.com/game/other-worker.js",
+    { name: "em-pthread" },
+    config,
+  );
+  assert.equal(different.ok, false);
+  assert.equal(different.reason, "allowlist-miss");
+});
+
+test("runtime worker gate supports the alternate approved game origin only in its own page", () => {
+  const { core } = createPageContext({ allowlist: [] });
+  const altUrl = "https://alt.lasthavens.com/game/emscripten.py";
+  const decision = core.shouldInterceptWorker(altUrl, { name: "em-pthread" }, {
+    baseHref: "https://alt.lasthavens.com/play",
+  });
+  assert.equal(decision.ok, true);
+  assert.equal(decision.href, altUrl);
+  assert.doesNotThrow(() => core.buildBootstrapSource(altUrl));
+
+  const crossOrigin = core.shouldInterceptWorker(altUrl, { name: "em-pthread" }, {
+    baseHref: BASE_HREF,
+  });
+  assert.equal(crossOrigin.ok, false);
+  assert.equal(crossOrigin.reason, "url-origin");
+});
+
 test("gate accepts the exact allowlisted same-origin classic worker", () => {
   const { core } = createPageContext();
   const decision = core.shouldInterceptWorker(WORKER_URL, { name: "em-pthread" }, VALID_CONFIG);
