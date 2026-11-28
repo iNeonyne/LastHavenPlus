@@ -10,7 +10,7 @@ on:
       - "**/*.gradle"
       - "**/*.properties"
       - "gradle/**"
-      - ".github/scripts/**"
+      - "gradlew"
       - ".github/workflows/quality.yml"
   workflow_dispatch:
 
