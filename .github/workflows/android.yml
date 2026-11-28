@@ -606,3 +606,122 @@ jobs:
           fi
           gh api "repos/$GITHUB_REPOSITORY/releases/$RELEASE_ID" > "$RUNNER_TEMP/final-release.json"
           python3 .github/scripts/verify_release_assets.py "$RUNNER_TEMP/final-release.json" "$RELEASE_TAG"
+ | grep -Fxv "$RELEASE_TAG" | sort -V | tail -n 1 || true)"
+          cat >> release-notes.md <<'NOTES'
+
+          ## Compatibility
+
+          - Android 10 (API 29) or newer.
+          - ARM64 devices only (arm64-v8a).
+          - Mozilla GeckoView 160.
+
+          The attached APK and update manifest passed the signed release workflow checks. Automated checks do not replace physical-device testing.
+          NOTES
+          test -s release-notes.md
+
+      - name: Create or update draft release and attach verified assets
+        id: release
+        uses: softprops/action-gh-release@8a0cd651e5b2365bd640854a3fa5dfc70e4875f3 # v3.0.4
+        with:
+          tag_name: ${{ needs.build.outputs.release_tag }}
+          name: LastHavenPlus ${{ needs.build.outputs.release_tag }}
+          body_path: release-notes.md
+          draft: true
+          files: release-assets/*
+          fail_on_unmatched_files: true
+
+      - name: Remove legacy duplicate release assets
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_ID: ${{ steps.release.outputs.id }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ ! "$RELEASE_ID" =~ ^[0-9]+$ ]]; then
+            echo "::error::Release action did not return a valid release ID for legacy asset cleanup."
+            exit 1
+          fi
+          release_json="$(gh api "repos/$GITHUB_REPOSITORY/releases/$RELEASE_ID")"
+          while IFS= read -r asset_id; do
+            [[ -n "$asset_id" ]] || continue
+            echo "Deleting stale legacy asset ID $asset_id from release $RELEASE_ID"
+            gh api --method DELETE "repos/$GITHUB_REPOSITORY/releases/assets/$asset_id"
+          done < <(jq -r '.assets[] | select(.name == "lasthavenlauncher-arm64.apk" or .name == "lasthavenlauncher-update.json") | .id' <<< "$release_json")
+
+      - name: Verify final draft contains exactly one APK
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ needs.build.outputs.release_tag }}
+          RELEASE_ID: ${{ steps.release.outputs.id }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ ! "$RELEASE_ID" =~ ^[0-9]+$ ]]; then
+            echo "::error::Release action did not return a valid release ID."
+            exit 1
+          fi
+          gh api "repos/$GITHUB_REPOSITORY/releases/$RELEASE_ID" > "$RUNNER_TEMP/final-release.json"
+          python3 .github/scripts/verify_release_assets.py "$RUNNER_TEMP/final-release.json" "$RELEASE_TAG"
+ | grep -Fxv "$RELEASE_TAG" | sort -V | tail -n 1 || true)"
+          echo "Release notes comparison base: ${previous_tag:-first stable release}"
+          release_notes_args=(--method POST "repos/$GITHUB_REPOSITORY/releases/generate-notes" -f "tag_name=$RELEASE_TAG" -f "target_commitish=$RELEASE_TAG")
+          if [[ -n "$previous_tag" ]]; then
+            release_notes_args+=(-f "previous_tag_name=$previous_tag")
+          fi
+          gh api "${release_notes_args[@]}" > "$RUNNER_TEMP/generated-release-notes.json"
+          jq -er '.body | select(type == "string" and length > 0)' "$RUNNER_TEMP/generated-release-notes.json" > release-notes.md
+          cat >> release-notes.md <<'NOTES'
+
+          ## Compatibility
+
+          - Android 10 (API 29) or newer.
+          - ARM64 devices only (arm64-v8a).
+          - Mozilla GeckoView 160.
+
+          The attached APK and update manifest passed the signed release workflow checks. Automated checks do not replace physical-device testing.
+          NOTES
+          test -s release-notes.md
+
+      - name: Create or update draft release and attach verified assets
+        id: release
+        uses: softprops/action-gh-release@8a0cd651e5b2365bd640854a3fa5dfc70e4875f3 # v3.0.4
+        with:
+          tag_name: ${{ needs.build.outputs.release_tag }}
+          name: LastHavenPlus ${{ needs.build.outputs.release_tag }}
+          body_path: release-notes.md
+          draft: true
+          files: release-assets/*
+          fail_on_unmatched_files: true
+
+      - name: Remove legacy duplicate release assets
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_ID: ${{ steps.release.outputs.id }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ ! "$RELEASE_ID" =~ ^[0-9]+$ ]]; then
+            echo "::error::Release action did not return a valid release ID for legacy asset cleanup."
+            exit 1
+          fi
+          release_json="$(gh api "repos/$GITHUB_REPOSITORY/releases/$RELEASE_ID")"
+          while IFS= read -r asset_id; do
+            [[ -n "$asset_id" ]] || continue
+            echo "Deleting stale legacy asset ID $asset_id from release $RELEASE_ID"
+            gh api --method DELETE "repos/$GITHUB_REPOSITORY/releases/assets/$asset_id"
+          done < <(jq -r '.assets[] | select(.name == "lasthavenlauncher-arm64.apk" or .name == "lasthavenlauncher-update.json") | .id' <<< "$release_json")
+
+      - name: Verify final draft contains exactly one APK
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ needs.build.outputs.release_tag }}
+          RELEASE_ID: ${{ steps.release.outputs.id }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ ! "$RELEASE_ID" =~ ^[0-9]+$ ]]; then
+            echo "::error::Release action did not return a valid release ID."
+            exit 1
+          fi
+          gh api "repos/$GITHUB_REPOSITORY/releases/$RELEASE_ID" > "$RUNNER_TEMP/final-release.json"
+          python3 .github/scripts/verify_release_assets.py "$RUNNER_TEMP/final-release.json" "$RELEASE_TAG"
