@@ -49,7 +49,7 @@ Update this file when strategic priorities, sequence or release direction change
 <!-- ROADMAP-LIVE-START -->
 ## Live issue and PR inventory
 
-Generated: 2026-11-28T00:14:24+00:00
+Generated: 2026-11-28T00:19:57+00:00
 Source of truth: live GitHub Issues, pull requests and labels. This section is generated automatically; do not edit it manually.
 
 Every open issue is listed below, grouped by its current priority. Opening a newer issue or PR does not supersede an older one. Duplicates and supersession must be explicitly reviewed and linked in GitHub.
@@ -67,7 +67,6 @@ Every open issue is listed below, grouped by its current priority. Opening a new
 - [#16 — P2 — Gameplay orientation and keep-awake settings](https://github.com/iNeonyne/LastHavenPlus/issues/16) — enhancement, P2
 - [#17 — P2 — Back up and restore launcher settings](https://github.com/iNeonyne/LastHavenPlus/issues/17) — enhancement, P2
 - [#28 — P2 — Accurate storage usage reporting](https://github.com/iNeonyne/LastHavenPlus/issues/28) — enhancement, P2
-- [#111 — P2 — Improve updater download progress and retry feedback](https://github.com/iNeonyne/LastHavenPlus/issues/111) — enhancement, P2
 - [#148 — P2 — Centralize gameplay orientation and immersive window state](https://github.com/iNeonyne/LastHavenPlus/issues/148) — enhancement, P2
 - [#182 — P2 — Close BSDIFF section streams when later initialization fails](https://github.com/iNeonyne/LastHavenPlus/issues/182) — bug, P2
 - [#183 — P2 — Disconnect stale addon bridge ports when GeckoSession changes](https://github.com/iNeonyne/LastHavenPlus/issues/183) — bug, P2
@@ -100,7 +99,6 @@ Every open issue is listed below, grouped by its current priority. Opening a new
 
 - [#217 — P2 #186: Allow HTTPS navigation in GeckoView](https://github.com/iNeonyne/LastHavenPlus/pull/217) (beta <- chaty/issue-186-navigation-policy)
 - [#220 — Disconnect stale addon bridge ports when the game session changes (#183)](https://github.com/iNeonyne/LastHavenPlus/pull/220) (beta <- vibe/stale-port-session-183)
-- [#224 — feat(updater): show measured download progress and retry feedback (#111)](https://github.com/iNeonyne/LastHavenPlus/pull/224) (beta <- chaty/issue-111-updater-progress-ui)
 
 ### Recently completed (last 30 days)
 
@@ -121,6 +119,7 @@ Every open issue is listed below, grouped by its current priority. Opening a new
 - [#133 — v2.4.0 — Redesign the adaptive launcher app icon](https://github.com/iNeonyne/LastHavenPlus/issues/133)
 - [#129 — CI optimization: consolidate beta post-merge quality checks](https://github.com/iNeonyne/LastHavenPlus/issues/129)
 - [#128 — Post-v2.3.0 repository housekeeping and documentation reconciliation](https://github.com/iNeonyne/LastHavenPlus/issues/128)
+- [#111 — P2 — Improve updater download progress and retry feedback](https://github.com/iNeonyne/LastHavenPlus/issues/111)
 - [#107 — P3 — Establish consistent visual design and interaction polish](https://github.com/iNeonyne/LastHavenPlus/issues/107)
 - [#106 — P2 — Improve gameplay loading, reconnect and load-failure UX](https://github.com/iNeonyne/LastHavenPlus/issues/106)
 - [#86 — v2.4.0 — Deferred settings, diagnostics, audit and supporting-feature backlog](https://github.com/iNeonyne/LastHavenPlus/issues/86)
