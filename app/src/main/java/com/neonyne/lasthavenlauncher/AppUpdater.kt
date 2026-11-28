@@ -367,7 +367,6 @@ object AppUpdater {
                   progressTracker,
                   ::publishProgress,
                 )
-                setProgressStage(UpdateStage.VERIFYING)
                 BsdiffPatch.apply(baseApk, patchFile, temporaryApk, MAX_APK_BYTES)
                 verifyCandidate()
                 temporaryApk
@@ -391,7 +390,6 @@ object AppUpdater {
                 progressTracker,
                 ::publishProgress,
               )
-              setProgressStage(UpdateStage.VERIFYING)
               verifyCandidate()
               temporaryApk
             },
@@ -564,6 +562,10 @@ object AppUpdater {
         expectedSha256 = expectedSha256,
         onBytesCopied = { delta ->
           progressTracker.onBytesWritten(delta)
+          publishProgress()
+        },
+        onVerificationStarted = {
+          progressTracker.onStageChanged(UpdateStage.VERIFYING)
           publishProgress()
         },
       )
