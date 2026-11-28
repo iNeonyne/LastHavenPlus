@@ -49,7 +49,7 @@ Update this file when strategic priorities, sequence or release direction change
 <!-- ROADMAP-LIVE-START -->
 ## Live issue and PR inventory
 
-Generated: 2026-11-28T00:28:30+00:00
+Generated: 2026-11-28T00:29:59+00:00
 Source of truth: live GitHub Issues, pull requests and labels. This section is generated automatically; do not edit it manually.
 
 Every open issue is listed below, grouped by its current priority. Opening a newer issue or PR does not supersede an older one. Duplicates and supersession must be explicitly reviewed and linked in GitHub.
@@ -96,7 +96,7 @@ Every open issue is listed below, grouped by its current priority. Opening a new
 
 ### Open pull requests
 
-- [#217 — P2 #186: Allow HTTPS navigation in GeckoView](https://github.com/iNeonyne/LastHavenPlus/pull/217) (beta <- chaty/issue-186-navigation-policy)
+- [#217 — P2 #186: Restrict GeckoView navigation to verified game origins](https://github.com/iNeonyne/LastHavenPlus/pull/217) (beta <- chaty/issue-186-navigation-policy)
 
 ### Recently completed (last 30 days)
 
