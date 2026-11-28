@@ -6,13 +6,16 @@ on:
   issues:
     types: [opened, edited, labeled, unlabeled, closed, reopened]
   pull_request:
-    types: [opened, edited, closed, reopened, synchronize, ready_for_review]
+    types: [opened, reopened, synchronize]
+    paths:
+      - "ROADMAP.md"
+      - ".github/scripts/generate_roadmap.py"
+      - ".github/scripts/test_generate_roadmap.py"
+      - ".github/workflows/roadmap-sync.yml"
   workflow_dispatch:
 
 permissions:
-  contents: write
-  issues: read
-  pull-requests: read
+  contents: read
 
 concurrency:
   group: roadmap-sync
@@ -32,6 +35,10 @@ jobs:
   sync:
     if: github.event_name != 'pull_request'
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      issues: read
+      pull-requests: read
     timeout-minutes: 5
     steps:
       - name: Check out main

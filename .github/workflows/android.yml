@@ -358,6 +358,7 @@ jobs:
           echo "Building version $version (versionCode $version_code)"
 
       - name: Restore release signing key
+        if: steps.version.outputs.is_release == 'true' || github.ref == 'refs/heads/beta'
         shell: bash
         env:
           ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
@@ -373,11 +374,11 @@ jobs:
           keytool -list -keystore "$RUNNER_TEMP/lasthavenplus-release.jks" \
             -storepass "$ANDROID_KEYSTORE_PASSWORD" -alias lasthavenplus >/dev/null
 
-      - name: Build signed optimized release APK and run unit tests
+      - name: Build optimized ARM64 APK and run unit tests
         env:
           ANDROID_KEYSTORE_PATH: ${{ runner.temp }}/lasthavenplus-release.jks
-          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
-          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+          ANDROID_KEYSTORE_PASSWORD: ${{ (steps.version.outputs.is_release == 'true' || github.ref == 'refs/heads/beta') && secrets.ANDROID_KEYSTORE_PASSWORD || '' }}
+          ANDROID_KEY_PASSWORD: ${{ (steps.version.outputs.is_release == 'true' || github.ref == 'refs/heads/beta') && secrets.ANDROID_KEY_PASSWORD || '' }}
           APP_VERSION_NAME: ${{ steps.version.outputs.name }}
           APP_VERSION_CODE: ${{ steps.version.outputs.code }}
           RUN_BETA_QUALITY: ${{ steps.beta_quality.outputs.run }}
@@ -406,15 +407,20 @@ jobs:
           if-no-files-found: ignore
           retention-days: 14
 
-      - name: Verify signing certificate, ABI and report APK sizes
+      - name: Verify APK signing mode, ARM64 ABI and report APK sizes
         env:
           APP_VERSION_NAME: ${{ steps.version.outputs.name }}
           APP_ARTIFACT_CHANNEL: ${{ steps.version.outputs.artifact_channel }}
+          RELEASE_APK: ${{ steps.version.outputs.artifact_channel == 'ci' && 'app/build/outputs/apk/release/app-release-unsigned.apk' || 'app/build/outputs/apk/release/app-release.apk' }}
         shell: bash
         run: |
           set -euo pipefail
           trap 'status=$?; echo "::error::Release verification failed at workflow line $LINENO (exit $status)"; exit "$status"' ERR
-          RELEASE_APK="app/build/outputs/apk/release/app-release.apk"
+          if [[ "$APP_ARTIFACT_CHANNEL" == "ci" ]]; then
+            RELEASE_APK="app/build/outputs/apk/release/app-release-unsigned.apk"
+          else
+            RELEASE_APK="app/build/outputs/apk/release/app-release.apk"
+          fi
           EXPECTED_CERT="b3bbf7520e77dfc384a60b1eee6c5f205b978f9b453849e2be523f642018d263"
           for apk in "$RELEASE_APK"; do
             echo "Checking APK exists: $apk"
@@ -446,21 +452,29 @@ jobs:
             ls -lah "$ANDROID_HOME/build-tools/" || true
             exit 1
           fi
-          echo "Verifying release APK signature"
-          "$APKSIGNER" verify --verbose "$RELEASE_APK"
-          echo "Reading release certificate fingerprint"
-          CERT_OUTPUT="$("$APKSIGNER" verify --print-certs "$RELEASE_APK")"
-          echo "$CERT_OUTPUT"
-          CERT_DIGEST="$(printf '%s\n' "$CERT_OUTPUT" | awk '/certificate SHA-256 digest:/ {sub(/^.*certificate SHA-256 digest: /, ""); print tolower($0); exit}')"
-          echo "Actual release certificate SHA-256: ${CERT_DIGEST:-<missing>}"
-          echo "Expected release certificate SHA-256: $EXPECTED_CERT"
-          if [[ "$CERT_DIGEST" != "$EXPECTED_CERT" ]]; then
-            echo "::error::Release APK certificate does not match the established LastHaven release key."
-            exit 1
+          if [[ "$APP_ARTIFACT_CHANNEL" == "ci" ]]; then
+            echo "Verifying ordinary main CI APK remains unsigned"
+            if "$APKSIGNER" verify "$RELEASE_APK" >/dev/null 2>&1; then
+              echo "::error::Ordinary main CI APK unexpectedly contains a signature."
+              exit 1
+            fi
+          else
+            echo "Verifying signed $APP_ARTIFACT_CHANNEL APK"
+            "$APKSIGNER" verify --verbose "$RELEASE_APK"
+            echo "Reading release certificate fingerprint"
+            CERT_OUTPUT="$("$APKSIGNER" verify --print-certs "$RELEASE_APK")"
+            echo "$CERT_OUTPUT"
+            CERT_DIGEST="$(printf '%s\n' "$CERT_OUTPUT" | awk '/certificate SHA-256 digest:/ {sub(/^.*certificate SHA-256 digest: /, ""); print tolower($0); exit}')"
+            echo "Actual APK certificate SHA-256: ${CERT_DIGEST:-<missing>}"
+            echo "Expected release certificate SHA-256: $EXPECTED_CERT"
+            if [[ "$CERT_DIGEST" != "$EXPECTED_CERT" ]]; then
+              echo "::error::APK certificate does not match the established LastHaven release key."
+              exit 1
+            fi
           fi
           python3 - <<'PY'
           import os, zipfile
-          apks = ["app/build/outputs/apk/release/app-release.apk"]
+          apks = [os.environ["RELEASE_APK"]]
           summary = ["| APK | File size | DEX payload |", "|---|---:|---:|"]
           for apk in apks:
               with zipfile.ZipFile(apk) as archive:
@@ -477,9 +491,9 @@ jobs:
           PY
           VERSIONED_APK="app/build/outputs/apk/release/LastHavenPlus-${APP_VERSION_NAME}-${APP_ARTIFACT_CHANNEL}-arm64-v8a.apk"
           cp "$RELEASE_APK" "$VERSIONED_APK"
-          echo "Created version-qualified signed APK: $VERSIONED_APK"
+          echo "Created version-qualified APK: $VERSIONED_APK"
 
-      - name: Upload signed release APK
+      - name: Upload ARM64 build artifact
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: LastHavenPlus-${{ steps.version.outputs.name }}-${{ steps.version.outputs.artifact_channel }}-arm64-v8a
@@ -531,7 +545,7 @@ jobs:
       - name: Validate curated v2.5.0 release notes
         run: test -s .github/release/NOTES.md
 
-      - name: Create or update draft release and attach verified assets
+      - name: Create or update GitHub release and attach verified assets
         id: release
         uses: softprops/action-gh-release@8a0cd651e5b2365bd640854a3fa5dfc70e4875f3 # v3.0.4
         with:
@@ -560,11 +574,12 @@ jobs:
             gh api --method DELETE "repos/$GITHUB_REPOSITORY/releases/assets/$asset_id"
           done < <(jq -r '.assets[] | select(.name == "lasthavenlauncher-arm64.apk" or .name == "lasthavenlauncher-update.json") | .id' <<< "$release_json")
 
-      - name: Verify final draft contains exactly one APK
+      - name: Verify release visibility and canonical assets
         env:
           GH_TOKEN: ${{ github.token }}
           RELEASE_TAG: ${{ needs.build.outputs.release_tag }}
           RELEASE_ID: ${{ steps.release.outputs.id }}
+          EXPECTED_DRAFT: ${{ !contains(github.event.head_commit.message, '[publish]') }}
         shell: bash
         run: |
           set -euo pipefail
@@ -573,4 +588,14 @@ jobs:
             exit 1
           fi
           gh api "repos/$GITHUB_REPOSITORY/releases/$RELEASE_ID" > "$RUNNER_TEMP/final-release.json"
+          actual_draft="$(jq -r '.draft' "$RUNNER_TEMP/final-release.json")"
+          actual_prerelease="$(jq -r '.prerelease' "$RUNNER_TEMP/final-release.json")"
+          if [[ "$actual_draft" != "$EXPECTED_DRAFT" ]]; then
+            echo "::error::Release draft state mismatch: expected $EXPECTED_DRAFT, got $actual_draft."
+            exit 1
+          fi
+          if [[ "$actual_prerelease" != "false" ]]; then
+            echo "::error::Stable release must not be marked as a prerelease."
+            exit 1
+          fi
           python3 .github/scripts/verify_release_assets.py "$RUNNER_TEMP/final-release.json" "$RELEASE_TAG"

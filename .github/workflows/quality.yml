@@ -1,4 +1,4 @@
-name: Android quality checks
+name: Android lint checks
 
 on:
   push:
@@ -10,7 +10,7 @@ on:
       - "**/*.gradle"
       - "**/*.properties"
       - "gradle/**"
-      - ".github/scripts/**"
+      - "gradlew"
       - ".github/workflows/quality.yml"
   workflow_dispatch:
 
@@ -23,23 +23,23 @@ concurrency:
 
 jobs:
   quality:
-    name: Android lint and tests (ARM64 target)
+    name: Android lint (ARM64 target)
     runs-on: ubuntu-latest
-    timeout-minutes: 35
+    timeout-minutes: 20
     permissions:
       contents: read
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: Set up JDK 25
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@d1374f8ac74474200d16ef8ecee22c7ae7a51880 # v6.3.0
         with:
           distribution: temurin
           java-version: "25"
 
       - name: Set up Android SDK
-        uses: android-actions/setup-android@v3
+        uses: android-actions/setup-android@be39fa834029ff78f1a44aa3bb0819b8fc2bd8fd # v4.0.4
         with:
           packages: platform-tools
 
@@ -47,28 +47,22 @@ jobs:
         run: sdkmanager "platforms;android-37.2" "build-tools;37.0.0"
 
       - name: Set up Gradle
-        uses: gradle/actions/setup-gradle@v4
+        uses: gradle/actions/setup-gradle@8da46b539cd8fe6ab27ca75128919a18d757604c # v6.4.1 (setup-gradle)
         with:
           gradle-version: wrapper
           validate-wrappers: true
 
+      # The Android release workflow already runs testDebugUnitTest and the
+      # release-helper suite on every relevant main push. Keep this job focused
+      # on lint so the same test suites are not executed twice.
       - name: Run Android Lint
         run: ./gradlew lintDebug --stacktrace
 
-      - name: Run JVM unit tests
-        run: ./gradlew testDebugUnitTest --stacktrace
-
-      - name: Run updater helper tests
-        run: python3 -m unittest discover -s .github/scripts/tests -v
-
-      - name: Upload reports
+      - name: Upload lint report
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
-          name: quality-reports-${{ github.run_number }}
-          path: |
-            app/build/reports/lint-results-debug.html
-            app/build/reports/tests/testDebugUnitTest/
-            app/build/test-results/testDebugUnitTest/*.xml
+          name: android-lint-report-${{ github.run_number }}
+          path: app/build/reports/lint-results-debug.html
           if-no-files-found: ignore
           retention-days: 14
