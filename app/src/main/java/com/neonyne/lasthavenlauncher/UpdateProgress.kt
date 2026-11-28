@@ -94,6 +94,7 @@ internal class UpdateProgressTracker(private val clock: () -> Long = System::nan
   /** Reports that a payload attempt starts downloading again and clears the rate window. */
   fun onAttemptStarted(attempt: Int) {
     downloadAttempt = attempt
+    totalBytes = UpdateProgressTracker.UNKNOWN_TOTAL
     receivedBytes = 0
     samples.clear()
   }
