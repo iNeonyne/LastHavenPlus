@@ -6,30 +6,34 @@ import org.junit.Test
 
 class GameNavigationPolicyTest {
   @Test
-  fun allowsOnlyTheTwoConfiguredGameOrigins() {
+  fun allowsTheGameDomainAndItsSubdomains() {
     assertTrue(GameNavigationPolicy.allows("https://lasthavens.com/play"))
     assertTrue(GameNavigationPolicy.allows("https://alt.lasthavens.com/play"))
-    assertTrue(GameNavigationPolicy.allows("HTTPS://LASTHAVENS.COM/auth/callback?state=ok"))
-    assertTrue(GameNavigationPolicy.allows("https://alt.lasthavens.com/anything/path?code=abc"))
+    assertTrue(GameNavigationPolicy.allows("https://auth.lasthavens.com/login"))
+    assertTrue(GameNavigationPolicy.allows("https://cdn.lasthavens.com/assets/game.js"))
+    assertTrue(GameNavigationPolicy.allows("https://deep.auth.lasthavens.com/callback"))
+    assertTrue(GameNavigationPolicy.allows("HTTPS://AUTH.LASTHAVENS.COM/auth/callback?state=ok"))
+    assertTrue(GameNavigationPolicy.allows("https://alt.lasthavens.com:443/anything/path?code=abc"))
     assertTrue(GameNavigationPolicy.allows("https://lasthavens.com:443/login"))
   }
 
   @Test
-  fun rejectsUnverifiedExternalHostsAndLookalikes() {
+  fun rejectsExternalHostsAndLookalikes() {
     assertFalse(GameNavigationPolicy.allows("https://login.example.com/auth/callback"))
     assertFalse(GameNavigationPolicy.allows("https://cdn.third-party.net/assets/game.js"))
     assertFalse(GameNavigationPolicy.allows("https://discord.gg/lasthavens"))
     assertFalse(GameNavigationPolicy.allows("https://stripe.com/checkout"))
-    assertFalse(GameNavigationPolicy.allows("https://auth.lasthavens.com/login"))
     assertFalse(GameNavigationPolicy.allows("https://evil-lasthavens.com/play"))
     assertFalse(GameNavigationPolicy.allows("https://lasthavens.com.example.net/play"))
+    assertFalse(GameNavigationPolicy.allows("https://lasthavens.com.evil.net/play"))
     assertFalse(GameNavigationPolicy.allows("https://lasthavens.com./play"))
     assertFalse(GameNavigationPolicy.allows("https://127.0.0.1/play"))
   }
 
   @Test
-  fun allowsPathsAndQueryStringsOnApprovedOrigins() {
+  fun allowsPathsAndQueryStringsOnFirstPartyHosts() {
     assertTrue(GameNavigationPolicy.allows("https://lasthavens.com/auth/callback?state=ok"))
+    assertTrue(GameNavigationPolicy.allows("https://auth.lasthavens.com/login?return=/play"))
     assertTrue(GameNavigationPolicy.allows("https://alt.lasthavens.com/play?realm=main&lang=en"))
   }
 
@@ -45,13 +49,13 @@ class GameNavigationPolicyTest {
   @Test
   fun rejectsEmbeddedCredentials() {
     assertFalse(GameNavigationPolicy.allows("https://user:password@lasthavens.com/play"))
-    assertFalse(GameNavigationPolicy.allows("https://user@alt.lasthavens.com/login"))
+    assertFalse(GameNavigationPolicy.allows("https://user@auth.lasthavens.com/login"))
   }
 
   @Test
   fun rejectsUnexpectedPorts() {
     assertFalse(GameNavigationPolicy.allows("https://lasthavens.com:80/play"))
-    assertFalse(GameNavigationPolicy.allows("https://alt.lasthavens.com:444/play"))
+    assertFalse(GameNavigationPolicy.allows("https://auth.lasthavens.com:444/login"))
   }
 
   @Test
