@@ -374,7 +374,7 @@ jobs:
           keytool -list -keystore "$RUNNER_TEMP/lasthavenplus-release.jks" \
             -storepass "$ANDROID_KEYSTORE_PASSWORD" -alias lasthavenplus >/dev/null
 
-      - name: Build signed optimized release APK and run unit tests
+      - name: Build optimized ARM64 APK and run unit tests
         env:
           ANDROID_KEYSTORE_PATH: ${{ runner.temp }}/lasthavenplus-release.jks
           ANDROID_KEYSTORE_PASSWORD: ${{ (steps.version.outputs.is_release == 'true' || github.ref == 'refs/heads/beta') && secrets.ANDROID_KEYSTORE_PASSWORD || '' }}
@@ -407,7 +407,7 @@ jobs:
           if-no-files-found: ignore
           retention-days: 14
 
-      - name: Verify signing certificate, ABI and report APK sizes
+      - name: Verify APK signing mode, ARM64 ABI and report APK sizes
         env:
           APP_VERSION_NAME: ${{ steps.version.outputs.name }}
           APP_ARTIFACT_CHANNEL: ${{ steps.version.outputs.artifact_channel }}
@@ -491,9 +491,9 @@ jobs:
           PY
           VERSIONED_APK="app/build/outputs/apk/release/LastHavenPlus-${APP_VERSION_NAME}-${APP_ARTIFACT_CHANNEL}-arm64-v8a.apk"
           cp "$RELEASE_APK" "$VERSIONED_APK"
-          echo "Created version-qualified signed APK: $VERSIONED_APK"
+          echo "Created version-qualified APK: $VERSIONED_APK"
 
-      - name: Upload signed release APK
+      - name: Upload ARM64 build artifact
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: LastHavenPlus-${{ steps.version.outputs.name }}-${{ steps.version.outputs.artifact_channel }}-arm64-v8a
