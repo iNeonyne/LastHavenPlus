@@ -44,7 +44,7 @@
     <string tools:ignore="MissingTranslation" name="updates_no_info">No update information yet. Check for updates from Settings.</string>
     <string tools:ignore="MissingTranslation" name="updates_download_status">Download status</string>
     <string tools:ignore="MissingTranslation" name="updates_verifying">Verifying downloaded update…</string>
-    <string tools:ignore="MissingTranslation" name="updates_ready">Update verified. Opening Android installer…</string>
+    <string tools:ignore="MissingTranslation" name="updates_ready">Update verified and ready for installation.</string>
     <string tools:ignore="MissingTranslation" name="updates_unknown_size">Unknown size</string>
     <string tools:ignore="MissingTranslation" name="updates_progress_bytes">%1$s of %2$s</string>
     <string tools:ignore="MissingTranslation" name="updates_progress_received">%1$s received</string>
