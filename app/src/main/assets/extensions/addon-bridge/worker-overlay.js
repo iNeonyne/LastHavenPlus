@@ -144,8 +144,8 @@
       } catch (error) {
         return false;
       }
-      if (parsed.protocol !== "https:" || parsed.hostname !== GAME_HOST ||
-          parsed.username !== "" || parsed.password !== "" ||
+      if (parsed.protocol !== "https:" || !GAME_HOSTS.has(parsed.hostname) ||
+          parsed.username !== "" || parsed.password !== "" || parsed.port !== "" ||
           parsed.search !== "" || parsed.hash !== "") {
         return false;
       }
