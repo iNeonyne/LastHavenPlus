@@ -67,8 +67,8 @@ fun AddonManagerScreen(
   var pendingRemoval by remember { mutableStateOf<String?>(null) }
   var selectedDetails by remember { mutableStateOf<AddonLibraryItem?>(null) }
   Column(
-    modifier = Modifier.fillMaxSize().padding(horizontal = 14.dp, vertical = 10.dp),
-    verticalArrangement = Arrangement.spacedBy(8.dp),
+    modifier = Modifier.fillMaxSize().padding(horizontal = 12.dp, vertical = 6.dp),
+    verticalArrangement = Arrangement.spacedBy(6.dp),
   ) {
     Row(
       modifier = Modifier.fillMaxWidth(),
@@ -83,7 +83,7 @@ fun AddonManagerScreen(
         )
         Text(
           stringResource(R.string.addon_manager_local_addons),
-          style = MaterialTheme.typography.headlineSmall,
+          style = MaterialTheme.typography.titleMedium,
         )
       }
       OutlinedButton(
@@ -95,15 +95,7 @@ fun AddonManagerScreen(
       }
     }
 
-    Text(
-      stringResource(R.string.addon_manager_import_description),
-      color = MaterialTheme.colorScheme.onSurfaceVariant,
-      style = MaterialTheme.typography.bodySmall,
-      maxLines = 1,
-      overflow = TextOverflow.Ellipsis,
-    )
-
-    Row(
+remove redundant import paragraph    Row(
       modifier = Modifier.fillMaxWidth(),
       horizontalArrangement = Arrangement.spacedBy(10.dp),
     ) {
@@ -122,7 +114,7 @@ fun AddonManagerScreen(
       ) {
         Text(
           "${snapshot.addons.size} addons\n${formatAddonSize(snapshot.totalBytes)}",
-          modifier = Modifier.padding(horizontal = 14.dp, vertical = 9.dp),
+          modifier = Modifier.padding(horizontal = 10.dp, vertical = 7.dp),
           style = MaterialTheme.typography.labelMedium,
         )
       }
@@ -172,7 +164,7 @@ fun AddonManagerScreen(
     } else {
       LazyColumn(
         modifier = Modifier.weight(1f),
-        verticalArrangement = Arrangement.spacedBy(6.dp),
+        verticalArrangement = Arrangement.spacedBy(4.dp),
       ) {
         items(snapshot.addons, key = { it.folder }) { addon ->
           AddonCard(
@@ -188,12 +180,7 @@ fun AddonManagerScreen(
       }
     }
 
-    Text(
-      stringResource(R.string.addon_manager_runtime_status),
-      color = MaterialTheme.colorScheme.onSurfaceVariant,
-      style = MaterialTheme.typography.bodySmall,
-    )
-  }
+remove redundant runtime footer  }
   replacementFolders?.let { folders ->
     AlertDialog(
       onDismissRequest = onCancelReplacement,
@@ -292,9 +279,9 @@ private fun AddonCard(
     colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
   ) {
     Row(
-      modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 7.dp),
+      modifier = Modifier.fillMaxWidth().padding(horizontal = 10.dp, vertical = 5.dp),
       verticalAlignment = Alignment.CenterVertically,
-      horizontalArrangement = Arrangement.spacedBy(10.dp),
+      horizontalArrangement = Arrangement.spacedBy(8.dp),
     ) {
       Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(3.dp)) {
         Text(
