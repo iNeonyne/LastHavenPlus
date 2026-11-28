@@ -486,9 +486,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          gh api --method POST "repos/$GITHUB_REPOSITORY/releases/generate-notes" \\
-            -f "tag_name=$RELEASE_TAG" \\
-            -f "target_commitish=$RELEASE_TAG" > "$RUNNER_TEMP/generated-release-notes.json"
+          gh api --method POST "repos/$GITHUB_REPOSITORY/releases/generate-notes" -f "tag_name=$RELEASE_TAG" -f "target_commitish=$RELEASE_TAG" > "$RUNNER_TEMP/generated-release-notes.json"
           jq -er '.body | select(type == "string" and length > 0)' "$RUNNER_TEMP/generated-release-notes.json" > release-notes.md
           cat >> release-notes.md <<'NOTES'
 
