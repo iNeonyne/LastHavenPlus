@@ -71,8 +71,8 @@ class MainActivity : ComponentActivity() {
         onExit = { finish() },
         onGameplayUiChanged = ::setGameplayUi,
         onCheckUpdates = { callback -> AppUpdater.checkForUpdate(this, callback) },
-        onDownloadUpdate = { update, preferDelta, callback ->
-          AppUpdater.downloadUpdate(this, update, preferDelta, callback)
+        onDownloadUpdate = { update, preferDelta, onProgress, callback ->
+          AppUpdater.downloadUpdate(this, update, preferDelta, callback, onProgress)
         },
         onInstallUpdate = ::installUpdate,
       )
@@ -206,7 +206,8 @@ private fun LastHavenApp(
   onExit: () -> Unit,
   onGameplayUiChanged: (Boolean, Boolean) -> Unit,
   onCheckUpdates: ((UpdateCheckResult) -> Unit) -> Unit,
-  onDownloadUpdate: (AppUpdateInfo, Boolean, (Result<Uri>) -> Unit) -> Unit,
+  onDownloadUpdate:
+    (AppUpdateInfo, Boolean, (UpdateProgressState) -> Unit, (Result<Uri>) -> Unit) -> Unit,
   onInstallUpdate: (Uri) -> Unit,
 ) {
   val context = LocalContext.current
@@ -221,6 +222,7 @@ private fun LastHavenApp(
   var updateMessage by remember { mutableStateOf<String?>(null) }
   var isDownloadingUpdate by remember { mutableStateOf(false) }
   var downloadingDelta by remember { mutableStateOf(false) }
+  var updateProgress by remember { mutableStateOf(UpdateProgressState()) }
   var isCheckingUpdate by remember { mutableStateOf(false) }
 
   val gameSessionController = remember { GameSessionController() }
@@ -451,14 +453,21 @@ private fun LastHavenApp(
           isChecking = isCheckingUpdate,
           isDownloading = isDownloadingUpdate,
           downloadingDelta = downloadingDelta,
+          progress = updateProgress,
           onBack = { navigate(LauncherNavigationPolicy.popToReturn(navigation)) },
           onDownload = { preferDelta ->
             val update = availableUpdate
             if (update != null) {
               isDownloadingUpdate = true
               downloadingDelta = preferDelta
+              updateProgress =
+                UpdateProgressState(
+                  stage =
+                    if (preferDelta && update.patch != null) UpdateStage.DIFFERENTIAL_DOWNLOAD
+                    else UpdateStage.FULL_DOWNLOAD,
+                )
               updateMessage = null
-              onDownloadUpdate(update, preferDelta) { result ->
+              onDownloadUpdate(update, preferDelta, { progress -> updateProgress = progress }) { result ->
                 isDownloadingUpdate = false
                 result
                   .onSuccess { uri ->
