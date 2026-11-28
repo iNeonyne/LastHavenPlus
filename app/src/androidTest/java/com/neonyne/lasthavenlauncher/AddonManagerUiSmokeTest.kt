@@ -5,6 +5,7 @@ import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.isToggleable
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNode
+import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -24,6 +25,7 @@ class AddonManagerUiSmokeTest {
     val imported = AtomicBoolean(false)
     val enabled = AtomicBoolean(false)
     val returned = AtomicBoolean(false)
+    val exported = AtomicBoolean(false)
     val addon =
       AddonLibraryItem(
         title = "Landscape Smoke Addon",
@@ -54,7 +56,7 @@ class AddonManagerUiSmokeTest {
             assertTrue(folder == addon.folder)
             enabled.set(value)
           },
-          onExport = {},
+          onExport = { folder -> exported.set(folder == addon.folder) },
           onRemove = {},
           onBack = { returned.set(true) },
         )
@@ -64,14 +66,26 @@ class AddonManagerUiSmokeTest {
     composeRule.onNodeWithText("Local addons").assertIsDisplayed()
     composeRule.onNodeWithText("Landscape Smoke Addon").assertIsDisplayed()
     composeRule.onNodeWithText("Import ZIP").assertIsDisplayed()
-    composeRule.onNodeWithText("Export ZIP").assertIsDisplayed()
     composeRule.onNodeWithText("Import ZIP").performClick()
     composeRule.onNode(isToggleable()).performClick()
+
+    composeRule
+      .onNodeWithContentDescription("More actions for Landscape Smoke Addon")
+      .performClick()
+    composeRule.onNodeWithText("Details").performClick()
+    composeRule.onNodeWithText("LandscapeSmoke · 1.0").assertIsDisplayed()
+    composeRule.onNodeWithText("Close").performClick()
+
+    composeRule
+      .onNodeWithContentDescription("More actions for Landscape Smoke Addon")
+      .performClick()
+    composeRule.onNodeWithText("Export ZIP").performClick()
     composeRule.onNodeWithText("Back").performClick()
     composeRule.waitForIdle()
 
     assertTrue("Import action should be wired", imported.get())
     assertTrue("Enable switch should update the selected addon", enabled.get())
+    assertTrue("Export action should be wired", exported.get())
     assertTrue("Back action should be wired", returned.get())
   }
 }
