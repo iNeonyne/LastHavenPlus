@@ -49,7 +49,7 @@ Update this file when strategic priorities, sequence or release direction change
 <!-- ROADMAP-LIVE-START -->
 ## Live issue and PR inventory
 
-Generated: 2026-11-28T00:30:11+00:00
+Generated: 2026-11-28T00:33:50+00:00
 Source of truth: live GitHub Issues, pull requests and labels. This section is generated automatically; do not edit it manually.
 
 Every open issue is listed below, grouped by its current priority. Opening a newer issue or PR does not supersede an older one. Duplicates and supersession must be explicitly reviewed and linked in GitHub.
@@ -70,7 +70,6 @@ Every open issue is listed below, grouped by its current priority. Opening a new
 - [#148 — P2 — Centralize gameplay orientation and immersive window state](https://github.com/iNeonyne/LastHavenPlus/issues/148) — enhancement, P2
 - [#182 — P2 — Close BSDIFF section streams when later initialization fails](https://github.com/iNeonyne/LastHavenPlus/issues/182) — bug, P2
 - [#184 — P2 — Move diagnostics log I/O off the Compose main thread](https://github.com/iNeonyne/LastHavenPlus/issues/184) — P2, performance
-- [#186 — P2 — Confirm GeckoView top-level navigation policy for the launcher](https://github.com/iNeonyne/LastHavenPlus/issues/186) — P2, security
 - [#218 — P2 — Ignore callbacks from replaced GeckoSessions](https://github.com/iNeonyne/LastHavenPlus/issues/218) — bug, P2
 - [#219 — P2 — Redact URL credentials and standalone bearer tokens from diagnostics](https://github.com/iNeonyne/LastHavenPlus/issues/219) — bug, P2
 - [#221 — P2 — Audit localization completeness and RTL layout behavior](https://github.com/iNeonyne/LastHavenPlus/issues/221) — enhancement, P2
@@ -96,13 +95,14 @@ Every open issue is listed below, grouped by its current priority. Opening a new
 
 ### Open pull requests
 
-- [#217 — P2 #186: Restrict GeckoView navigation to verified game origins](https://github.com/iNeonyne/LastHavenPlus/pull/217) (beta <- chaty/issue-186-navigation-policy)
+No open pull requests.
 
 ### Recently completed (last 30 days)
 
 - [#208 — Make GitHub the only live task queue and retire stale status snapshots](https://github.com/iNeonyne/LastHavenPlus/issues/208)
 - [#205 — Consolidate agent documentation and remove workflow duplication](https://github.com/iNeonyne/LastHavenPlus/issues/205)
 - [#188 — P2 — Audit and update stable Android dependencies](https://github.com/iNeonyne/LastHavenPlus/issues/188)
+- [#186 — P2 — Confirm GeckoView top-level navigation policy for the launcher](https://github.com/iNeonyne/LastHavenPlus/issues/186)
 - [#185 — P2 — Reconcile ownership-label automation with the project ownership contract](https://github.com/iNeonyne/LastHavenPlus/issues/185)
 - [#183 — P2 — Disconnect stale addon bridge ports when GeckoSession changes](https://github.com/iNeonyne/LastHavenPlus/issues/183)
 - [#181 — P2 — Remove obsolete verified updater APKs safely](https://github.com/iNeonyne/LastHavenPlus/issues/181)
