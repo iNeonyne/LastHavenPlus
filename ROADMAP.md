@@ -49,7 +49,7 @@ Update this file when strategic priorities, sequence or release direction change
 <!-- ROADMAP-LIVE-START -->
 ## Live issue and PR inventory
 
-Generated: 2026-11-28T03:03:38+00:00
+Generated: 2026-11-28T03:03:57+00:00
 Source of truth: live GitHub Issues, pull requests and labels. This section is generated automatically; do not edit it manually.
 
 Every open issue is listed below, grouped by its current priority. Opening a newer issue or PR does not supersede an older one. Duplicates and supersession must be explicitly reviewed and linked in GitHub.
@@ -66,7 +66,6 @@ Every open issue is listed below, grouped by its current priority. Opening a new
 
 #### P1
 
-- [#227 — P1 — Serialize addon library access and transaction recovery](https://github.com/iNeonyne/LastHavenPlus/issues/227) — bug, P1
 - [#228 — P1 — Reconcile addon import and runtime payload size limits](https://github.com/iNeonyne/LastHavenPlus/issues/228) — bug, P1
 - [#229 — P1 — Cache page-side addon bundle clones by revision](https://github.com/iNeonyne/LastHavenPlus/issues/229) — bug, P1, performance
 - [#244 — P1 — Make the game reload action reliably navigate and confirm completion](https://github.com/iNeonyne/LastHavenPlus/issues/244) — bug, P1
@@ -114,7 +113,6 @@ Every open issue is listed below, grouped by its current priority. Opening a new
 ### Open pull requests
 
 - [#238 — release: promote latest beta to main](https://github.com/iNeonyne/LastHavenPlus/pull/238) (main <- beta)
-- [#242 — Serialize addon library access and transaction recovery (#227)](https://github.com/iNeonyne/LastHavenPlus/pull/242) (beta <- vibe/addon-library-locking-227)
 - [#246 — fix: include version in release APK asset names](https://github.com/iNeonyne/LastHavenPlus/pull/246) (main <- chaty/versioned-apk-assets)
 - [#247 — fix(addons): reconcile addon import and runtime payload size limits (#228)](https://github.com/iNeonyne/LastHavenPlus/pull/247) (beta <- vibe/addon-size-limits-228)
 - [#249 — feat(network): persist app-wide per-UID usage totals (#10)](https://github.com/iNeonyne/LastHavenPlus/pull/249) (beta <- chaty/persistent-network-totals-10)
@@ -122,6 +120,7 @@ Every open issue is listed below, grouped by its current priority. Opening a new
 
 ### Recently completed (last 30 days)
 
+- [#227 — P1 — Serialize addon library access and transaction recovery](https://github.com/iNeonyne/LastHavenPlus/issues/227)
 - [#208 — Make GitHub the only live task queue and retire stale status snapshots](https://github.com/iNeonyne/LastHavenPlus/issues/208)
 - [#205 — Consolidate agent documentation and remove workflow duplication](https://github.com/iNeonyne/LastHavenPlus/issues/205)
 - [#188 — P2 — Audit and update stable Android dependencies](https://github.com/iNeonyne/LastHavenPlus/issues/188)
