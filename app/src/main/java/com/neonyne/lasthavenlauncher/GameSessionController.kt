@@ -198,7 +198,12 @@ class GameSessionController {
         override fun onLoadRequest(
           session: GeckoSession,
           request: GeckoSession.NavigationDelegate.LoadRequest,
-        ): GeckoResult<org.mozilla.geckoview.AllowOrDeny> = GeckoResult.allow()
+        ): GeckoResult<org.mozilla.geckoview.AllowOrDeny> =
+          if (GameNavigationPolicy.allows(request.uri)) {
+            GeckoResult.allow()
+          } else {
+            GeckoResult.deny()
+          }
       },
     )
     geckoSession.setPermissionDelegate(
