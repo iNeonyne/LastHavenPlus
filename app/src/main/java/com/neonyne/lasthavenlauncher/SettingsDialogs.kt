@@ -239,6 +239,7 @@ fun UpdateScreen(
   isChecking: Boolean,
   isDownloading: Boolean,
   downloadingDelta: Boolean,
+  progress: UpdateProgressState,
   onBack: () -> Unit,
   onDownload: (preferDelta: Boolean) -> Unit,
 ) {
@@ -267,13 +268,73 @@ fun UpdateScreen(
           }
           if (isDownloading) {
             val downloadLabel =
-              if (downloadingDelta) {
-                stringResource(R.string.updates_downloading_delta)
-              } else {
-                stringResource(R.string.updates_downloading_full)
+              when (progress.stage) {
+                UpdateStage.DIFFERENTIAL_DOWNLOAD -> stringResource(R.string.updates_downloading_delta)
+                UpdateStage.FULL_DOWNLOAD -> stringResource(R.string.updates_downloading_full)
+                UpdateStage.VERIFYING -> stringResource(R.string.updates_verifying)
+                UpdateStage.READY -> stringResource(R.string.updates_ready)
+                else ->
+                  if (downloadingDelta) stringResource(R.string.updates_downloading_delta)
+                  else stringResource(R.string.updates_downloading_full)
               }
-            LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
+            if (progress.percent != null) {
+              LinearProgressIndicator(
+                progress = { progress.percent / 100f },
+                modifier = Modifier.fillMaxWidth(),
+              )
+            } else {
+              LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
+            }
             Text(downloadLabel, color = DesignTokens.textSecondary)
+            val totalLabel =
+              if (progress.totalKnown) formatBytes(progress.totalBytes)
+              else stringResource(R.string.updates_unknown_size)
+            Text(
+              if (progress.totalKnown) {
+                stringResource(
+                  R.string.updates_progress_bytes,
+                  formatBytes(progress.receivedBytes),
+                  totalLabel,
+                )
+              } else {
+                stringResource(R.string.updates_progress_received, formatBytes(progress.receivedBytes))
+              },
+              color = DesignTokens.textSecondary,
+            )
+            progress.estimatedBytesPerSecond?.let { rate ->
+              Text(
+                stringResource(R.string.updates_progress_speed, formatBytes(rate)),
+                color = DesignTokens.textSecondary,
+              )
+            }
+            progress.estimatedSecondsRemaining?.let { seconds ->
+              Text(
+                stringResource(R.string.updates_progress_eta, seconds),
+                color = DesignTokens.textSecondary,
+              )
+            }
+            if (progress.fallbackToFull) {
+              Text(stringResource(R.string.updates_fallback_full), color = DesignTokens.textSecondary)
+            }
+          } else if (progress.stage == UpdateStage.FAILED) {
+            Text(
+              progress.failureMessage ?: message ?: stringResource(R.string.updates_download_failed),
+              color = MaterialTheme.colorScheme.error,
+            )
+            OutlinedButton(
+              onClick = {
+                restrainedActionFeedback(LocalView.current)
+                onDownload(downloadingDelta)
+              },
+              modifier = Modifier.fillMaxWidth(),
+            ) {
+              Text(stringResource(R.string.updates_retry_download))
+            }
+            if (update.patch != null && downloadingDelta) {
+              TextButton(onClick = { onDownload(false) }, modifier = Modifier.fillMaxWidth()) {
+                Text(stringResource(R.string.updates_download_full_instead))
+              }
+            }
           } else {
             val hapticView = LocalView.current
             Button(
@@ -309,7 +370,7 @@ fun UpdateScreen(
           )
       }
     }
-    if (message != null && update != null) {
+    if (message != null && update != null && progress.stage != UpdateStage.FAILED) {
       PageSection(title = stringResource(R.string.updates_download_status)) {
         Text(message, color = DesignTokens.textSecondary)
       }
