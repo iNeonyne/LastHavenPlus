@@ -108,11 +108,19 @@ internal class AddonBridgeController(
     callbacks.forEach { callback -> callback(available) }
   }
 
-  /** Records the live game session for sender identity checks; drops pending chunk reads. */
+  /**
+   * Records the live game session for sender identity checks and drops every resource bound to a
+   * previous session (issue #183): pending chunk reads are cleared, the request generation advances
+   * so late callbacks from the old session are rejected, and ports held for the old session are
+   * disconnected so they cannot occupy the one-connection limit. Repeated calls with the same
+   * session instance are idempotent and keep an active connection intact.
+   */
   fun setGameSession(session: GeckoSession?) {
+    if (session === gameSession) return
     gameSession = session
     requestGeneration += 1
     clearPendingRequests()
+    disconnectAllPorts()
   }
 
   /** Installs the bundled extension before game navigation and reports completion on main. */
@@ -215,11 +223,15 @@ internal class AddonBridgeController(
     payloadErrorCode = "unavailable"
     bridgeExtension?.setMessageDelegate(null, AddonBridgePolicy.NATIVE_MESSAGING_NAME)
     bridgeExtension = null
+    disconnectAllPorts()
+    clearPendingRequests()
+    gameSession = null
+  }
+
+  private fun disconnectAllPorts() {
     val portsToDisconnect = connectedPorts.toList()
     connectedPorts.clear()
-    clearPendingRequests()
     portsToDisconnect.forEach { it.disconnect() }
-    gameSession = null
   }
 
   private fun clearPendingRequests() {
@@ -293,7 +305,7 @@ internal class AddonBridgeController(
 
   /** Builds a synchronous, bounded response for metadata and manifest-page requests. */
   private fun buildResponse(
-    request: AddonBridgeProtocol.AddonBridgeRequest
+    request: AddonBridgeProtocol.AddonBridgeRequest,
   ): AddonBridgeProtocol.AddonBridgeResponse? {
     return when (request.type) {
       "ping" -> AddonBridgeProtocol.ack(request.requestId)
@@ -358,7 +370,7 @@ internal class AddonBridgeController(
   }
 
   private fun responseFields(
-    response: AddonBridgeProtocol.AddonBridgeResponse
+    response: AddonBridgeProtocol.AddonBridgeResponse,
   ): Map<String, Any?>? {
     val fields = response.toFields()
     val encodedBytes = JSONObject(fields).toString().toByteArray(Charsets.UTF_8).size
