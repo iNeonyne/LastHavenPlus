@@ -684,6 +684,9 @@
       "var MAX_INFLIGHT = " + MAX_INFLIGHT_WORKER_REQUESTS + ";\n" +
       "var MAX_FILE_BYTES = " + MAX_WORKER_FILE_BYTES + ";\n" +
       "var MAX_WORKER_FILE_BYTES = " + MAX_WORKER_FILE_BYTES + ";\n" +
+      "var MAX_MANIFEST_ENTRIES = " + MAX_MANIFEST_ENTRIES + ";\n" +
+      "var MAX_MANIFEST_TEXT_BYTES = " + MAX_MANIFEST_TEXT_BYTES + ";\n" +
+      "var MAX_RUNTIME_BUNDLE_BYTES = " + MAX_RUNTIME_BUNDLE_BYTES + ";\n" +
       "var MAX_PATH_CHARS = " + MAX_PATH_CHARS + ";\n" +
       "var MAX_INDEX_FILE_BYTES = " + MAX_INDEX_FILE_BYTES + ";\n" +
       "var MAX_INDEX_LINES = " + MAX_INDEX_LINES + ";\n" +
