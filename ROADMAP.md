@@ -49,16 +49,12 @@ Update this file when strategic priorities, sequence or release direction change
 <!-- ROADMAP-LIVE-START -->
 ## Live issue and PR inventory
 
-Generated: 2026-11-28T04:30:16+00:00
+Generated: 2026-11-28T10:13:15+00:00
 Source of truth: live GitHub Issues, pull requests and labels. This section is generated automatically; do not edit it manually.
 
 Every open issue is listed below, grouped by its current priority. Opening a newer issue or PR does not supersede an older one. Duplicates and supersession must be explicitly reviewed and linked in GitHub.
 
 ### Active issues
-
-#### P0
-
-- [#245 — P0 — Diagnose and implement actual enabled-addon script injection](https://github.com/iNeonyne/LastHavenPlus/issues/245) — bug, P0
 
 #### P0.1
 
@@ -113,12 +109,12 @@ Every open issue is listed below, grouped by its current priority. Opening a new
 - [#238 — release: promote latest beta to main](https://github.com/iNeonyne/LastHavenPlus/pull/238) (main <- beta)
 - [#246 — fix: include version in release APK asset names](https://github.com/iNeonyne/LastHavenPlus/pull/246) (main <- chaty/versioned-apk-assets)
 - [#250 — ui: start landscape launcher redesign and POCO smoke coverage (#248)](https://github.com/iNeonyne/LastHavenPlus/pull/250) (beta <- chaty/native-landscape-ui-248)
-- [#251 — feat(addons): bootstrap enabled addon entry-point injection](https://github.com/iNeonyne/LastHavenPlus/pull/251) (beta <- vibe/addon-injection-245)
 - [#252 — perf(addons): cache the page-realm bundle clone by revision](https://github.com/iNeonyne/LastHavenPlus/pull/252) (beta <- vibe/addon-bundle-cache-229)
 - [#253 — feat(ui): centralize app-window presentation into GameplayUiState](https://github.com/iNeonyne/LastHavenPlus/pull/253) (beta <- vibe/gameplay-ui-state-148)
 
 ### Recently completed (last 30 days)
 
+- [#245 — P0 — Diagnose and implement actual enabled-addon script injection](https://github.com/iNeonyne/LastHavenPlus/issues/245)
 - [#228 — P1 — Reconcile addon import and runtime payload size limits](https://github.com/iNeonyne/LastHavenPlus/issues/228)
 - [#227 — P1 — Serialize addon library access and transaction recovery](https://github.com/iNeonyne/LastHavenPlus/issues/227)
 - [#208 — Make GitHub the only live task queue and retire stale status snapshots](https://github.com/iNeonyne/LastHavenPlus/issues/208)
