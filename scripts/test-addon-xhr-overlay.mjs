@@ -222,7 +222,7 @@ function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-test("manifest adds the MAIN-world overlay as a second exact-route content script", () => {
+test("manifest keeps the MAIN-world overlay as an exact-route content script", () => {
   const manifest = JSON.parse(
     readFileSync(
       fileURLToPath(
@@ -234,7 +234,7 @@ test("manifest adds the MAIN-world overlay as a second exact-route content scrip
       "utf8",
     ),
   );
-  assert.equal(manifest.content_scripts.length, 3);
+  assert.equal(manifest.content_scripts.length, 4);
   const isolated = manifest.content_scripts[0];
   assert.deepEqual(isolated.js, ["payload-validation.js", "bridge.js"]);
   assert.equal(isolated.world, undefined);

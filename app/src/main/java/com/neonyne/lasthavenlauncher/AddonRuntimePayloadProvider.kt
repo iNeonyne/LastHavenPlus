@@ -2,6 +2,7 @@ package com.neonyne.lasthavenlauncher
 
 import java.io.File
 import java.io.RandomAccessFile
+import java.nio.charset.StandardCharsets
 import java.nio.file.Files
 import java.nio.file.LinkOption
 import java.security.MessageDigest
@@ -245,6 +246,42 @@ internal class AddonRuntimePayloadProvider(private val repository: AddonLibraryR
     }
     descriptors += addonDescriptors
     return addonBytes
+  }
+
+  /**
+   * Extracts validated TOC load-file entry points for every addon folder in [manifest]
+   * (issue #245). Each list keeps only paths that are present in the served manifest for the same
+   * folder, deduplicated case-insensitively. A missing or unreadable TOC yields an empty list for
+   * that addon so one malformed addon cannot fail the whole bootstrap plan.
+   */
+  fun entryPoints(manifest: Manifest): Map<String, List<String>> = repository.withLibraryAccess {
+    entryPointsLocked(manifest)
+  }
+
+  private fun entryPointsLocked(manifest: Manifest): Map<String, List<String>> {
+    val filesByFolder = manifest.files.groupBy { it.folder }
+    val result = LinkedHashMap<String, List<String>>()
+    for (folder in manifest.addonFolders) {
+      val files = filesByFolder[folder].orEmpty()
+      val toc = files.firstOrNull { it.path.equals("$folder.toc", ignoreCase = true) }
+      result[folder] =
+        if (toc == null) {
+          emptyList()
+        } else {
+          val available = files.map { it.path }.toSet()
+          val availableLower = available.map { it.lowercase(Locale.ROOT) }.toSet()
+          runCatching {
+              val content =
+                if (toc.sizeBytes in 1..AddonArchive.MAX_TOC_BYTES) toc.file.readBytes()
+                else ByteArray(0)
+              AddonRuntimePlanner.parseTocLoadFiles(String(content, StandardCharsets.UTF_8))
+            }
+            .getOrDefault(emptyList())
+            .filter { it in available || it.lowercase(Locale.ROOT) in availableLower }
+            .distinctBy { it.lowercase(Locale.ROOT) }
+        }
+    }
+    return result
   }
 
   fun page(manifest: Manifest, page: Int): List<FileDescriptor> {
