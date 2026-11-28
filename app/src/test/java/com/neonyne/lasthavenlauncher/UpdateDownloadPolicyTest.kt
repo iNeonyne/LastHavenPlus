@@ -31,6 +31,26 @@ class UpdateDownloadPolicyTest {
   }
 
   @Test
+  fun reportsMeasuredBytesAfterEachSuccessfulWrite() {
+    withTemporaryFile { file ->
+      val payload = "progress callback payload".toByteArray()
+      val reported = mutableListOf<Long>()
+      UpdateDownloadPolicy.copyAndVerify(
+        input = ByteArrayInputStream(payload),
+        destination = file,
+        expectedSize = payload.size.toLong(),
+        maximumBytes = payload.size.toLong(),
+        expectedSha256 = sha256(payload),
+        onBytesCopied = { reported += it },
+      )
+
+      assertEquals(payload.size.toLong(), reported.sum())
+      assertTrue(reported.isNotEmpty())
+      assertTrue(reported.all { it > 0L })
+    }
+  }
+
+  @Test
   fun handlesZeroLengthReadsWithoutDroppingBytes() {
     withTemporaryFile { file ->
       val payload = "zero-read-safe".toByteArray()
