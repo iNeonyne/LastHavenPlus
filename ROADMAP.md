@@ -49,7 +49,7 @@ Update this file when strategic priorities, sequence or release direction change
 <!-- ROADMAP-LIVE-START -->
 ## Live issue and PR inventory
 
-Generated: 2026-11-28T01:23:38+00:00
+Generated: 2026-11-28T01:24:06+00:00
 Source of truth: live GitHub Issues, pull requests and labels. This section is generated automatically; do not edit it manually.
 
 Every open issue is listed below, grouped by its current priority. Opening a newer issue or PR does not supersede an older one. Duplicates and supersession must be explicitly reviewed and linked in GitHub.
@@ -91,11 +91,10 @@ Every open issue is listed below, grouped by its current priority. Opening a new
 - [#23 — P0 — Complete Addon Manager ZIP 0.5.1 Phase B for GeckoView](https://github.com/iNeonyne/LastHavenPlus/issues/23) — enhancement
 - [#31 — P0 — Fix draft release asset verification and verify differential fallback](https://github.com/iNeonyne/LastHavenPlus/issues/31) — bug
 - [#67 — Repository: reserve original project rights and complete third-party notices](https://github.com/iNeonyne/LastHavenPlus/issues/67)
-- [#170 — P1 — Integrate addon manager navigation and verify same-session runtime behavior](https://github.com/iNeonyne/LastHavenPlus/issues/170) — enhancement
 
 ### Open pull requests
 
-- [#226 — feat(addons): complete same-session Addon Manager integration (#170)](https://github.com/iNeonyne/LastHavenPlus/pull/226) (beta <- chaty/addon-manager-phase-b-170)
+No open pull requests.
 
 ### Recently completed (last 30 days)
 
@@ -107,6 +106,7 @@ Every open issue is listed below, grouped by its current priority. Opening a new
 - [#183 — P2 — Disconnect stale addon bridge ports when GeckoSession changes](https://github.com/iNeonyne/LastHavenPlus/issues/183)
 - [#181 — P2 — Remove obsolete verified updater APKs safely](https://github.com/iNeonyne/LastHavenPlus/issues/181)
 - [#178 — Documentation maintenance — reconcile project records and add a recurring checklist](https://github.com/iNeonyne/LastHavenPlus/issues/178)
+- [#170 — P1 — Integrate addon manager navigation and verify same-session runtime behavior](https://github.com/iNeonyne/LastHavenPlus/issues/170)
 - [#169 — P0 — Harden Worker interception and blocks.idx read masking](https://github.com/iNeonyne/LastHavenPlus/issues/169)
 - [#168 — P0 — Correct and bound the addon XHR resource overlay](https://github.com/iNeonyne/LastHavenPlus/issues/168)
 - [#167 — P0 — Verify ZIP 0.5.1 bridge runtime on pinned GeckoView Stable](https://github.com/iNeonyne/LastHavenPlus/issues/167)
