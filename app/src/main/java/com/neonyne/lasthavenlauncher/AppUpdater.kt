@@ -269,19 +269,40 @@ object AppUpdater {
     }
   }
 
-  fun downloadUpdate(
+  internal fun downloadUpdate(
     context: Context,
     update: AppUpdateInfo,
     preferDelta: Boolean,
     callback: (Result<Uri>) -> Unit,
+    onProgress: (UpdateProgressState) -> Unit = {},
   ) {
     val appContext = context.applicationContext
     enqueue(
       appContext,
       {
-        callback(Result.failure(IllegalStateException("Updater is busy. Try again shortly.")))
+        val error = IllegalStateException("Updater is busy. Try again shortly.")
+        onProgress(UpdateProgressState(stage = UpdateStage.FAILED, failureMessage = error.message))
+        callback(Result.failure(error))
       },
     ) {
+      val progressTracker = UpdateProgressTracker()
+      var lastProgressPublishedAtNanos: Long? = null
+      fun publishProgress(force: Boolean = false) {
+        val now = System.nanoTime()
+        val last = lastProgressPublishedAtNanos
+        if (!force && last != null && now - last < 100_000_000L) return
+        lastProgressPublishedAtNanos = now
+        val snapshot = progressTracker.snapshot()
+        mainHandler.post { onProgress(snapshot) }
+      }
+      fun publishDownloadProgress() {
+        publishProgress()
+      }
+      fun setProgressStage(stage: UpdateStage, failureMessage: String? = null) {
+        progressTracker.onStageChanged(stage, failureMessage)
+        publishProgress(force = true)
+      }
+
       val result = runCatching {
         val updateDirectory =
           File(appContext.filesDir, "updates").apply {
@@ -325,6 +346,9 @@ object AppUpdater {
             preferDelta = canUsePatch,
             deltaAttempt = {
               val delta = patch ?: error("Differential patch metadata is missing")
+              setProgressStage(UpdateStage.DIFFERENTIAL_DOWNLOAD)
+              progressTracker.onAttemptStarted(1)
+              publishProgress()
               val baseApk = File(appContext.applicationInfo.sourceDir)
               check(baseApk.isFile && baseApk.canRead()) {
                 "Installed APK is not accessible"
@@ -348,6 +372,8 @@ object AppUpdater {
                   MAX_PATCH_BYTES,
                   patchFile,
                   appContext,
+                  progressTracker,
+                  ::publishDownloadProgress,
                 )
                 BsdiffPatch.apply(baseApk, patchFile, temporaryApk, MAX_APK_BYTES)
                 verifyCandidate()
@@ -359,6 +385,8 @@ object AppUpdater {
             fullAttempt = {
               // Never let a failed or partially reconstructed delta reach the installer.
               temporaryApk.delete()
+              progressTracker.onAttemptStarted(1)
+              setProgressStage(UpdateStage.FULL_DOWNLOAD)
               downloadToFileWithRetry(
                 update.downloadUrl,
                 update.sha256,
@@ -366,11 +394,14 @@ object AppUpdater {
                 MAX_APK_BYTES,
                 temporaryApk,
                 appContext,
+                progressTracker,
+                ::publishDownloadProgress,
               )
               verifyCandidate()
               temporaryApk
             },
             onDeltaFailure = { error ->
+              progressTracker.onFallbackToFull()
               Diagnostics.warn(
                 appContext,
                 "Updater",
@@ -380,11 +411,14 @@ object AppUpdater {
           )
 
           check(temporaryApk.renameTo(finalApk)) { "Could not finalize downloaded APK" }
-          FileProvider.getUriForFile(
-            appContext,
-            "${appContext.packageName}.updates",
-            finalApk,
-          )
+          val updateUri =
+            FileProvider.getUriForFile(
+              appContext,
+              "${appContext.packageName}.updates",
+              finalApk,
+            )
+          setProgressStage(UpdateStage.READY)
+          updateUri
         } finally {
           temporaryApk.delete()
         }
@@ -395,6 +429,7 @@ object AppUpdater {
           Diagnostics.info(appContext, "Updater", "Update download and validation succeeded")
         }
         .onFailure {
+          setProgressStage(UpdateStage.FAILED, it.message ?: "Update download failed")
           Diagnostics.error(appContext, "Updater", "Update download failed: ${it.message}")
         }
       mainHandler.post { callback(result) }
@@ -471,12 +506,16 @@ object AppUpdater {
     maximumBytes: Long,
     destination: File,
     context: Context,
+    progressTracker: UpdateProgressTracker,
+    publishProgress: () -> Unit,
   ) {
     UpdateNetworkPolicy.withDownloadRetry(
       destination = destination,
       maxAttempts = 3,
       initialDelayMillis = 750L,
       onRetry = { _, nextAttempt ->
+        progressTracker.onAttemptStarted(nextAttempt)
+        publishProgress()
         Diagnostics.warn(
           context,
           "Updater",
@@ -484,7 +523,15 @@ object AppUpdater {
         )
       },
     ) {
-      downloadToFile(url, expectedSha256, expectedSize, maximumBytes, destination)
+      downloadToFile(
+        url,
+        expectedSha256,
+        expectedSize,
+        maximumBytes,
+        destination,
+        progressTracker,
+        publishProgress,
+      )
     }
   }
 
@@ -494,6 +541,8 @@ object AppUpdater {
     expectedSize: Long,
     maximumBytes: Long,
     destination: File,
+    progressTracker: UpdateProgressTracker,
+    publishProgress: () -> Unit,
   ) {
     val connection = openConnection(url)
     try {
@@ -508,6 +557,8 @@ object AppUpdater {
       if (expectedSize > 0 && contentLength >= 0) {
         check(contentLength == expectedSize) { "Update file size does not match its manifest" }
       }
+      progressTracker.onTotalBytes(contentLength, expectedSize)
+      publishProgress()
 
       UpdateDownloadPolicy.copyAndVerify(
         input = connection.inputStream,
@@ -515,6 +566,14 @@ object AppUpdater {
         expectedSize = expectedSize,
         maximumBytes = maximumBytes,
         expectedSha256 = expectedSha256,
+        onBytesCopied = { delta ->
+          progressTracker.onBytesWritten(delta)
+          publishProgress()
+        },
+        onVerificationStarted = {
+          progressTracker.onStageChanged(UpdateStage.VERIFYING)
+          publishProgress()
+        },
       )
     } catch (error: Exception) {
       destination.delete()

@@ -43,6 +43,18 @@
     <string tools:ignore="MissingTranslation" name="updates_download_full_instead">Download full APK instead</string>
     <string tools:ignore="MissingTranslation" name="updates_no_info">No update information yet. Check for updates from Settings.</string>
     <string tools:ignore="MissingTranslation" name="updates_download_status">Download status</string>
+    <string tools:ignore="MissingTranslation" name="updates_verifying">Verifying downloaded update…</string>
+    <string tools:ignore="MissingTranslation" name="updates_ready">Update verified and ready for installation.</string>
+    <string tools:ignore="MissingTranslation" name="updates_unknown_size">Unknown size</string>
+    <string tools:ignore="MissingTranslation" name="updates_progress_bytes">%1$s of %2$s</string>
+    <string tools:ignore="MissingTranslation" name="updates_progress_received">%1$s received</string>
+    <string tools:ignore="MissingTranslation" name="updates_progress_speed">%1$s/s</string>
+    <string tools:ignore="MissingTranslation" name="updates_progress_eta">About %1$d seconds remaining</string>
+    <string tools:ignore="MissingTranslation" name="updates_fallback_full">Differential download failed. Retrying with the full APK…</string>
+    <string tools:ignore="MissingTranslation" name="updates_download_failed">The update download failed.</string>
+    <string tools:ignore="MissingTranslation" name="updates_retry_download">Retry download</string>
+    <string tools:ignore="MissingTranslation" name="updates_retry_full">Retry full APK</string>
+    <string tools:ignore="MissingTranslation" name="updates_retrying_attempt">Retrying download (attempt %1$d of 3)…</string>
     <string tools:ignore="MissingTranslation" name="action_refresh">Refresh</string>
     <string tools:ignore="MissingTranslation" name="action_retry">Retry</string>
     <string tools:ignore="MissingTranslation" name="action_view">View</string>
