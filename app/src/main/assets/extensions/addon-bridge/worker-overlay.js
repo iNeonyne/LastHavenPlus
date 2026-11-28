@@ -21,6 +21,7 @@
   const XHR_CORE_KEY = "__LHAddonXhrOverlayCore";
   const BRIDGE_KEY = "__LASTHAVEN_ADDON_BRIDGE__";
   const GAME_HOST = "lasthavens.com";
+  const GAME_HOSTS = new Set([GAME_HOST, "alt.lasthavens.com"]);
   const WORKER_NAME = "em-pthread";
   const BOOT_KEY = "__lhBoot";
   const READY_KEY = "__lhReady";
@@ -157,7 +158,8 @@
     if (!config || typeof config !== "object" || typeof config.baseHref !== "string") {
       return { ok: false, reason: "config" };
     }
-    if (config.allowlist === undefined) {
+    const useRuntimeAllowlist = config.allowlist === undefined;
+    if (useRuntimeAllowlist) {
       config = { baseHref: config.baseHref, allowlist: activeWorkerUrlAllowlist };
     }
     if (options !== undefined && options !== null) {
@@ -180,15 +182,18 @@
       return { ok: false, reason: "url-chars" };
     }
     let parsed;
+    let base;
     try {
-      parsed = new URL(rawUrl, config.baseHref);
+      base = new URL(config.baseHref);
+      parsed = new URL(rawUrl, base.href);
     } catch (error) {
       return { ok: false, reason: "url-parse" };
     }
     if (parsed.protocol !== "https:") {
       return { ok: false, reason: "url-scheme" };
     }
-    if (parsed.hostname !== GAME_HOST || parsed.username !== "" || parsed.password !== "") {
+    if (!GAME_HOSTS.has(parsed.hostname) || parsed.origin !== base.origin ||
+        parsed.username !== "" || parsed.password !== "" || parsed.port !== "") {
       return { ok: false, reason: "url-origin" };
     }
     if (parsed.hash !== "" || parsed.search !== "") {
@@ -202,10 +207,17 @@
       return { ok: false, reason: "url-path" };
     }
     const allowlist = Array.isArray(config.allowlist) ? config.allowlist : [];
-    if (allowlist.length === 0) {
-      return { ok: false, reason: "allowlist-empty" };
-    }
     const href = parsed.href;
+    if (allowlist.length === 0) {
+      if (!useRuntimeAllowlist) {
+        return { ok: false, reason: "allowlist-empty" };
+      }
+      // GeckoView knows the game worker URL only when the game constructs its Worker. Pin the
+      // first validated, same-origin em-pthread URL for this document; all later candidates must
+      // match it exactly. This is narrower than a broad pthread-name interception rule.
+      activeWorkerUrlAllowlist = Object.freeze([href]);
+      return { ok: true, reason: "learned", href: href, pathname: pathname };
+    }
     for (const entry of allowlist) {
       if (typeof entry === "string" && entry === href) {
         return { ok: true, reason: "matched", href: href, pathname: pathname };
@@ -459,7 +471,15 @@
   ];
 
   function buildBootstrapSource(href) {
-    if (typeof href !== "string" || href.indexOf("https://" + GAME_HOST + "/") !== 0) {
+    let parsed;
+    try {
+      parsed = new URL(href);
+    } catch (error) {
+      throw new Error("lh-worker-bootstrap-url");
+    }
+    if (parsed.protocol !== "https:" || !GAME_HOSTS.has(parsed.hostname) ||
+        parsed.username !== "" || parsed.password !== "" || parsed.port !== "" ||
+        parsed.search !== "" || parsed.hash !== "") {
       throw new Error("lh-worker-bootstrap-url");
     }
     const shared = SHARED_WORKER_FUNCTIONS
@@ -629,7 +649,8 @@
       "      type: REQUEST_SIGNAL,\n" +
       "      requestId: requestId,\n" +
       "      method: state.method,\n" +
-      "      path: pathOnly\n" +
+      "      path: pathOnly,\n" +
+      "      origin: (function () { try { return new URL(baseHref()).origin; } catch (error) { return ''; } })()\n" +
       "    });\n" +
       "  };\n" +
       "  prototype.abort = function () {\n" +
@@ -787,7 +808,7 @@
     } catch (error) {
       return { kind: "notFound" };
     }
-    if (url.protocol !== "https:" || url.hostname !== GAME_HOST || url.search !== "" || url.hash !== "") {
+    if (url.protocol !== "https:" || !GAME_HOSTS.has(url.hostname) || url.search !== "" || url.hash !== "") {
       return { kind: "notFound" };
     }
     let raw = null;
@@ -840,10 +861,23 @@
     if (rawPath.length === 0 || rawPath.length > MAX_URL_CHARS) {
       return notFoundWorkerResponse();
     }
-    const href = "https://" + GAME_HOST + (rawPath.startsWith("/") ? rawPath : "/" + rawPath);
+    let origin;
+    try {
+      const expectedOrigin = typeof request.origin === "string" ? request.origin : "https://" + GAME_HOST;
+      const parsedOrigin = new URL(expectedOrigin);
+      if (parsedOrigin.protocol !== "https:" || !GAME_HOSTS.has(parsedOrigin.hostname) ||
+          parsedOrigin.port !== "" || parsedOrigin.username !== "" || parsedOrigin.password !== "" ||
+          parsedOrigin.origin !== expectedOrigin) {
+        return notFoundWorkerResponse();
+      }
+      origin = parsedOrigin.origin;
+    } catch (error) {
+      return notFoundWorkerResponse();
+    }
+    const href = origin + (rawPath.startsWith("/") ? rawPath : "/" + rawPath);
     let route;
     if (xhrCore && typeof xhrCore.resolveRoute === "function") {
-      route = xhrCore.resolveRoute(method, href, "https://" + GAME_HOST + "/play");
+      route = xhrCore.resolveRoute(method, href, origin + "/play");
     } else {
       route = localResolveRoute(method, href);
     }
@@ -943,7 +977,7 @@
     return;
   }
   const location = global.location;
-  if (!location || typeof location.href !== "string" || location.hostname !== GAME_HOST) {
+  if (!location || typeof location.href !== "string" || !GAME_HOSTS.has(location.hostname)) {
     return;
   }
 
