@@ -28,23 +28,24 @@ internal interface NetworkUsageTotalsStore {
  * observed delta after that reset. Totals saturate instead of overflowing.
  */
 internal class NetworkUsageTracker(private val store: NetworkUsageTotalsStore) {
-  @Synchronized
-  fun sample(receivedCounterBytes: Long?, sentCounterBytes: Long?): PersistentNetworkTotals {
-    val previous = store.read()
-    val received = advance(previous.receivedBytes, previous.lastReceivedCounterBytes, receivedCounterBytes)
-    val sent = advance(previous.sentBytes, previous.lastSentCounterBytes, sentCounterBytes)
-    val updated =
-      PersistentNetworkTotals(
-        receivedBytes = received.first,
-        sentBytes = sent.first,
-        lastReceivedCounterBytes = received.second,
-        lastSentCounterBytes = sent.second,
-      )
+  fun sample(receivedCounterBytes: Long?, sentCounterBytes: Long?): PersistentNetworkTotals =
+    synchronized(PROCESS_LOCK) {
+      val previous = store.read()
+      val received =
+        advance(previous.receivedBytes, previous.lastReceivedCounterBytes, receivedCounterBytes)
+      val sent = advance(previous.sentBytes, previous.lastSentCounterBytes, sentCounterBytes)
+      val updated =
+        PersistentNetworkTotals(
+          receivedBytes = received.first,
+          sentBytes = sent.first,
+          lastReceivedCounterBytes = received.second,
+          lastSentCounterBytes = sent.second,
+        )
 
-    // Keep the old persisted baseline if storage refuses the commit. The next sample can then
-    // account for the full delta from that baseline rather than reporting an unpersisted total.
-    return if (updated == previous || store.write(updated)) updated else previous
-  }
+      // Keep the old persisted baseline if storage refuses the commit. The next sample can then
+      // account for the full delta from that baseline rather than reporting an unpersisted total.
+      if (updated == previous || store.write(updated)) updated else previous
+    }
 
   private fun advance(total: Long, previousCounter: Long?, currentCounter: Long?): Pair<Long, Long?> {
     if (currentCounter == null || currentCounter < 0L) return total to previousCounter
@@ -58,4 +59,10 @@ internal class NetworkUsageTracker(private val store: NetworkUsageTotalsStore) {
 
   private fun saturatingAdd(total: Long, delta: Long): Long =
     if (delta > Long.MAX_VALUE - total) Long.MAX_VALUE else total + delta
+
+  private companion object {
+    // All AppUsageMeter instances share one process-wide sampling lock because they share the
+    // same app-wide TrafficStats counters and persisted totals.
+    val PROCESS_LOCK = Any()
+  }
 }
