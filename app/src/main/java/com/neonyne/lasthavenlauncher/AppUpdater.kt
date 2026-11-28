@@ -171,8 +171,7 @@ object AppUpdater {
               val target = manifest.getJSONObject("apk")
               val apkName = target.getString("name")
               val expectedApkName = UpdateManifestPolicy.apkAssetName(latestVersion)
-              val fullAsset =
-                assetByName[apkName] ?: error("Release is missing $apkName")
+              val fullAsset = assetByName[apkName] ?: error("Release is missing $apkName")
               val fullUrl = requireGithubUrl(fullAsset.getString("browser_download_url"))
               val fullSha = requireSha256(target.getString("sha256"))
               val apiDigest = fullAsset.optString("digest")
