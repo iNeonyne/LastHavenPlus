@@ -95,7 +95,7 @@ fun AddonManagerScreen(
       }
     }
 
-remove redundant import paragraph    Row(
+    Row(
       modifier = Modifier.fillMaxWidth(),
       horizontalArrangement = Arrangement.spacedBy(10.dp),
     ) {
@@ -180,7 +180,7 @@ remove redundant import paragraph    Row(
       }
     }
 
-remove redundant runtime footer  }
+  }
   replacementFolders?.let { folders ->
     AlertDialog(
       onDismissRequest = onCancelReplacement,
