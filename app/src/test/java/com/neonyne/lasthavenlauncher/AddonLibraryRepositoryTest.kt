@@ -28,7 +28,7 @@ class AddonLibraryRepositoryTest {
     val archive =
       zipOf(
         "Sample/Sample.toc" to
-          "## Title: Sample Addon\n## Interface: 30300\n## OptionalDeps: OptionalOne, OptionalTwo\n",
+          "## Title: Sample Addon\n## Interface: 30300\\n## OptionalDeps: OptionalOne, OptionalTwo\n",
         "Sample/main.lua" to "print('sample')",
       )
 
@@ -110,7 +110,7 @@ class AddonLibraryRepositoryTest {
   @Test
   fun libraryRejectsIndexEntriesWithoutBackingFiles() {
     val repository = AddonLibraryRepository(temporaryFolder.newFolder("missing-files"))
-    val archive = zipOf("Sample/Sample.toc" to "## Interface: 30300\n")
+    val archive = zipOf("Sample/Sample.toc" to "## Interface: 30300\\n")
     repository.importZip(ByteArrayInputStream(archive), archive.size.toLong())
     assertTrue(repository.addonDirectory("Sample").deleteRecursively())
 
@@ -120,7 +120,7 @@ class AddonLibraryRepositoryTest {
   @Test
   fun removeRejectsUnknownAddonWithoutChangingLibrary() {
     val repository = AddonLibraryRepository(temporaryFolder.newFolder("unknown-remove"))
-    val archive = zipOf("Sample/Sample.toc" to "## Interface: 30300\n")
+    val archive = zipOf("Sample/Sample.toc" to "## Interface: 30300\\n")
     repository.importZip(ByteArrayInputStream(archive), archive.size.toLong())
 
     assertThrows(IllegalArgumentException::class.java) { repository.removeAddon("Missing") }
@@ -131,7 +131,7 @@ class AddonLibraryRepositoryTest {
   fun rejectsImportWhenThereIsNotEnoughSpaceForCommitStaging() {
     val root = temporaryFolder.newFolder("low-storage")
     val repository = AddonLibraryRepository(root, availableStorageBytes = { 0L })
-    val archive = zipOf("Sample/Sample.toc" to "## Interface: 30300\n")
+    val archive = zipOf("Sample/Sample.toc" to "## Interface: 30300\\n")
 
     assertThrows(IllegalArgumentException::class.java) {
       repository.importZip(ByteArrayInputStream(archive), archive.size.toLong())
@@ -163,7 +163,7 @@ class AddonLibraryRepositoryTest {
     val repository = AddonLibraryRepository(root)
     assertEquals(10_000, repository.readLibrary().addons.size)
     val revisionBefore = repository.readLibrary().revision
-    val archive = zipOf("NewAddon/NewAddon.toc" to "## Interface: 30300\n")
+    val archive = zipOf("NewAddon/NewAddon.toc" to "## Interface: 30300\\n")
 
     assertThrows(IllegalArgumentException::class.java) {
       repository.importZip(ByteArrayInputStream(archive), archive.size.toLong())
@@ -207,7 +207,7 @@ class AddonLibraryRepositoryTest {
     val archive =
       forgeDeclaredEntrySizes(
         zipOf(
-          "Sample/Sample.toc" to "## Interface: 30300\n",
+          "Sample/Sample.toc" to "## Interface: 30300\\n",
           "Sample/main.lua" to "x".repeat(5 * 1024 * 1024),
         ),
         declaredSizeBytes = 4L,
@@ -595,7 +595,7 @@ class AddonLibraryRepositoryTest {
       val folder = "Addon" + index.toString().padStart(4, '0')
       val addonFolder = File(root, folder)
       check(addonFolder.mkdirs())
-      File(addonFolder, "$folder.toc").writeText("## Interface: 30300\n")
+      File(addonFolder, "$folder.toc").writeText("## Interface: 30300\\n")
       properties["addon.$index.title"] = encode("Addon $index")
       properties["addon.$index.folder"] = encode(folder)
       properties["addon.$index.version"] = encode("1")
