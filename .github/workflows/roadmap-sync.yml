@@ -10,9 +10,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write
-  issues: read
-  pull-requests: read
+  contents: read
 
 concurrency:
   group: roadmap-sync
@@ -32,6 +30,10 @@ jobs:
   sync:
     if: github.event_name != 'pull_request'
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      issues: read
+      pull-requests: read
     timeout-minutes: 5
     steps:
       - name: Check out main
