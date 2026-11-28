@@ -326,6 +326,27 @@ object AddonArchive {
               "limit; it cannot load into the game runtime.",
           )
         }
+        if (ownFiles.size > AddonLimits.MAX_RUNTIME_FILES) {
+          add(
+            "The addon contains more than ${AddonLimits.MAX_RUNTIME_FILES} files and cannot load " +
+              "into the game runtime.",
+          )
+        }
+        val runtimeEntries = mutableSetOf<String>()
+        for (path in ownFiles.keys) {
+          var prefix = ""
+          for (segment in path.split('/')) {
+            prefix = if (prefix.isEmpty()) segment else "$prefix/$segment"
+            runtimeEntries += prefix
+          }
+        }
+        if (runtimeEntries.size > AddonLimits.MAX_RUNTIME_ENTRIES_PER_ADDON) {
+          add(
+            "The addon exceeds the " +
+              "${AddonLimits.MAX_RUNTIME_ENTRIES_PER_ADDON} runtime file and directory entry " +
+              "limit; it cannot load into the game runtime.",
+          )
+        }
       }
 
       ImportedAddon(
