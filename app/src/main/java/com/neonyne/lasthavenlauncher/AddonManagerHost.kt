@@ -77,7 +77,9 @@ fun AddonManagerHost(onBack: (libraryChanged: Boolean) -> Unit) {
           result
             .onSuccess {
               snapshot = it
-              if (initialRevision == null || it.revision != initialRevision) libraryChanged = true
+              if (initialRevision == null || it.revision != initialRevision) {
+                libraryChanged = true
+              }
               message = successMessage
             }
             .onFailure { error ->

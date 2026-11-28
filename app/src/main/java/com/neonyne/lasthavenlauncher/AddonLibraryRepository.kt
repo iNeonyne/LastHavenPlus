@@ -12,6 +12,7 @@ import java.util.Base64
 import java.util.Locale
 import java.util.Properties
 import java.util.UUID
+import java.util.concurrent.CancellationException
 import java.util.zip.ZipEntry
 import java.util.zip.ZipOutputStream
 
@@ -200,8 +201,8 @@ class AddonLibraryRepository(
           current.addons
             .filter { it.folder.lowercase(Locale.ROOT) in replacing }
             .map { it.folder }
-        if (replacedFolders.isNotEmpty()) {
-          require(confirmReplacement(replacedFolders)) { "Addon replacement was cancelled." }
+        if (replacedFolders.isNotEmpty() && !confirmReplacement(replacedFolders)) {
+          throw CancellationException("Addon replacement was cancelled.")
         }
         val total =
           current.addons

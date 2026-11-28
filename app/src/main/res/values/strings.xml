@@ -36,7 +36,7 @@
     <string name="addon_manager_read_failed">Could not read addon library.</string>
     <string name="addon_manager_dependency_cycle">Dependency cycle detected between addons.</string>
     <string name="addon_manager_replace_confirm_title" tools:ignore="MissingTranslation">Replace existing addons?</string>
-    <string name="addon_manager_replace_confirm_message" tools:ignore="MissingTranslation">The selected ZIP contains addons with existing folders: %1$s. Their current files will be replaced. Continue?</string>
+    <string name="addon_manager_replace_confirm_message" tools:ignore="MissingTranslation">The following addon folders already exist. Importing this ZIP will replace their current files. Continue?</string>
     <string name="addon_manager_replace" tools:ignore="MissingTranslation">Replace</string>
     <string name="addon_manager_import_cancelled" tools:ignore="MissingTranslation">Addon import cancelled. Existing files were not changed.</string>
     <string name="addon_manager_remove_confirm_title">Remove addon?</string>

@@ -10,6 +10,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -116,11 +119,19 @@ fun AddonManagerScreen(
     if (busy) {
       Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
         LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
-        Text(operationLabel.orEmpty(), color = MaterialTheme.colorScheme.onSurfaceVariant, style = MaterialTheme.typography.bodySmall)
+        Text(
+          operationLabel.orEmpty(),
+          color = MaterialTheme.colorScheme.onSurfaceVariant,
+          style = MaterialTheme.typography.bodySmall,
+        )
       }
     }
     if (reloadRequired) {
-      Text(stringResource(R.string.addon_manager_reload_required), color = MaterialTheme.colorScheme.tertiary, style = MaterialTheme.typography.bodySmall)
+      Text(
+        stringResource(R.string.addon_manager_reload_required),
+        color = MaterialTheme.colorScheme.tertiary,
+        style = MaterialTheme.typography.bodySmall,
+      )
     }
     if (!message.isNullOrBlank()) {
       Surface(
@@ -171,12 +182,13 @@ fun AddonManagerScreen(
       onDismissRequest = onCancelReplacement,
       title = { Text(stringResource(R.string.addon_manager_replace_confirm_title)) },
       text = {
-        Text(
-          stringResource(
-            R.string.addon_manager_replace_confirm_message,
-            folders.joinToString(),
-          ),
-        )
+        Column(
+          modifier = Modifier.heightIn(max = 280.dp).verticalScroll(rememberScrollState()),
+          verticalArrangement = Arrangement.spacedBy(4.dp),
+        ) {
+          Text(stringResource(R.string.addon_manager_replace_confirm_message))
+          folders.forEach { folder -> Text("• $folder") }
+        }
       },
       confirmButton = {
         TextButton(onClick = onConfirmReplacement) {

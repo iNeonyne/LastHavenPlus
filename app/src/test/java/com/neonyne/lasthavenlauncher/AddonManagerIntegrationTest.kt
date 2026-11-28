@@ -45,6 +45,36 @@ class AddonManagerIntegrationTest {
   }
 
   @Test
+  fun archiveImportExposesEveryRequiredOperationStage() {
+    val archive = source("AddonArchive.kt")
+    val repository = source("AddonLibraryRepository.kt")
+    val host = source("AddonManagerHost.kt")
+    listOf(
+      "COPYING_ARCHIVE",
+      "VALIDATING_ARCHIVE",
+      "EXTRACTING_FILES",
+      "INDEXING_ADDONS",
+    ).forEach { stage ->
+      assertTrue(archive.contains("onStage(AddonImportStage.$stage)"))
+      assertTrue(host.contains("AddonImportStage.$stage ->"))
+    }
+    assertTrue(repository.contains("onStage(AddonImportStage.COMMITTING)"))
+    assertTrue(repository.contains("onStage(AddonImportStage.COMPLETE)"))
+  }
+
+  @Test
+  fun replacementRequiresNamedUserConfirmationBeforeLibraryTransaction() {
+    val repository = source("AddonLibraryRepository.kt")
+    val host = source("AddonManagerHost.kt")
+    val screen = source("AddonManagerScreen.kt")
+    assertTrue(repository.contains("confirmReplacement(replacedFolders)"))
+    assertTrue(repository.indexOf("confirmReplacement(replacedFolders)") < repository.indexOf("val plans ="))
+    assertTrue(host.contains("CompletableFuture<Boolean>()"))
+    assertTrue(screen.contains("folders.forEach { folder -> Text(\"• $folder\") }"))
+    assertTrue(screen.contains("onCancelReplacement"))
+  }
+
+  @Test
   fun existingGameSessionControllerRemainsCompositionScopedAcrossManagerNavigation() {
     val main = source("MainActivity.kt")
     assertTrue(main.contains("val gameSessionController = remember { GameSessionController() }"))
