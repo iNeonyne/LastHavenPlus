@@ -9,6 +9,15 @@ import java.util.Locale
 import java.util.zip.CRC32
 import org.apache.commons.compress.archivers.zip.ZipFile
 
+internal enum class AddonImportStage {
+  COPYING_ARCHIVE,
+  VALIDATING_ARCHIVE,
+  EXTRACTING_FILES,
+  INDEXING_ADDONS,
+  COMMITTING,
+  COMPLETE,
+}
+
 data class ImportedAddon(
   val title: String,
   val folder: String,
@@ -88,7 +97,9 @@ object AddonArchive {
     compressedSize: Long?,
     extractionDirectory: File,
     beforeExtraction: (Long) -> Unit = {},
+    onStage: (AddonImportStage) -> Unit = {},
   ): List<ImportedAddon> = input.use { archiveInput ->
+    onStage(AddonImportStage.COPYING_ARCHIVE)
     require(compressedSize == null || compressedSize in 1..MAX_ARCHIVE_BYTES) {
       "Archive must be between 1 byte and 128 MiB."
     }
@@ -119,6 +130,7 @@ object AddonArchive {
         "Selected archive size changed or could not be verified."
       }
       require(copiedBytes > 0) { "Selected archive is empty." }
+      onStage(AddonImportStage.VALIDATING_ARCHIVE)
 
       val entries = linkedMapOf<String, File>()
       val seen = mutableSetOf<String>()
@@ -162,6 +174,7 @@ object AddonArchive {
 
         // Check free space before writing any expanded archive payload to disk.
         beforeExtraction(declaredExpandedBytes)
+        onStage(AddonImportStage.EXTRACTING_FILES)
 
         var expandedBytes = 0L
         for (entry in acceptedEntries) {
@@ -204,6 +217,7 @@ object AddonArchive {
 
       check(sourceArchive.delete()) { "Could not remove temporary addon archive." }
       archiveFile = null
+      onStage(AddonImportStage.INDEXING_ADDONS)
       parseAddons(entries)
     } catch (error: Exception) {
       archiveFile?.delete()

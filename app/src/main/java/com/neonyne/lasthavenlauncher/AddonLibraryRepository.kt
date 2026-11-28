@@ -162,7 +162,11 @@ class AddonLibraryRepository(
     return AddonLibrarySnapshot(revision, addons)
   }
 
-  fun importZip(input: InputStream, compressedSize: Long?): AddonLibrarySnapshot =
+  fun importZip(
+    input: InputStream,
+    compressedSize: Long?,
+    onStage: (AddonImportStage) -> Unit = {},
+  ): AddonLibrarySnapshot =
     input.use { source ->
       if (!root.exists() && !root.mkdirs()) {
         throw IllegalStateException("Could not create addon storage.")
@@ -174,12 +178,19 @@ class AddonLibraryRepository(
       val extraction = File(root, EXTRACT_PREFIX + UUID.randomUUID())
       try {
         val imported =
-          AddonArchive.importZip(source, compressedSize, extraction) { _ ->
-            val requiredBytes = AddonArchive.MAX_EXPANDED_BYTES + MIN_FREE_SPACE_RESERVE_BYTES
-            require(availableStorageBytes() >= requiredBytes) {
-              "Not enough free storage to safely extract and stage imported addons."
-            }
-          }
+          AddonArchive.importZip(
+            source,
+            compressedSize,
+            extraction,
+            beforeExtraction = { _ ->
+              val requiredBytes = AddonArchive.MAX_EXPANDED_BYTES + MIN_FREE_SPACE_RESERVE_BYTES
+              require(availableStorageBytes() >= requiredBytes) {
+                "Not enough free storage to safely extract and stage imported addons."
+              }
+            },
+            onStage = onStage,
+          )
+        onStage(AddonImportStage.COMMITTING)
         require(imported.isNotEmpty()) { "The archive contains no addons." }
 
         val current = readLibrary(performStaleSweep = false)
@@ -287,6 +298,7 @@ class AddonLibraryRepository(
             }
           }
           check(transaction.delete()) { "Could not finalize the addon transaction record." }
+          onStage(AddonImportStage.COMPLETE)
           snapshot
         } catch (error: Exception) {
           try {

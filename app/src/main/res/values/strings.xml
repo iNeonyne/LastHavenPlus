@@ -8,7 +8,12 @@
     <string name="addon_manager_runtime_unavailable" tools:ignore="MissingTranslation">Enabled state is saved locally. Saving an addon does not confirm that it is active in the game.</string>
     <string name="addon_manager_reload_required" tools:ignore="MissingTranslation">Changes are saved. Reload the game to apply addon changes.</string>
     <string name="addon_manager_loading" tools:ignore="MissingTranslation">Reading addon library…</string>
-    <string name="addon_manager_importing" tools:ignore="MissingTranslation">Reading, validating and importing ZIP…</string>
+    <string name="addon_manager_importing" tools:ignore="MissingTranslation">Importing addon ZIP…</string>
+    <string name="addon_manager_copying" tools:ignore="MissingTranslation">Reading selected ZIP…</string>
+    <string name="addon_manager_validating" tools:ignore="MissingTranslation">Validating ZIP structure and files…</string>
+    <string name="addon_manager_extracting" tools:ignore="MissingTranslation">Extracting addon files…</string>
+    <string name="addon_manager_indexing" tools:ignore="MissingTranslation">Indexing addon metadata…</string>
+    <string name="addon_manager_committing" tools:ignore="MissingTranslation">Saving addon library changes…</string>
     <string name="addon_manager_exporting" tools:ignore="MissingTranslation">Exporting addon ZIP…</string>
     <string name="addon_manager_saving" tools:ignore="MissingTranslation">Saving addon setting…</string>
     <string name="addon_manager_removing" tools:ignore="MissingTranslation">Removing addon and updating library…</string>

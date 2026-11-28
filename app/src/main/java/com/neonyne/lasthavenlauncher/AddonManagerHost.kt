@@ -32,6 +32,11 @@ fun AddonManagerHost(onBack: (libraryChanged: Boolean) -> Unit) {
   val removeSuccess = stringResource(R.string.addon_manager_remove_success)
   val loadingLabel = stringResource(R.string.addon_manager_loading)
   val importingLabel = stringResource(R.string.addon_manager_importing)
+  val copyingLabel = stringResource(R.string.addon_manager_copying)
+  val validatingLabel = stringResource(R.string.addon_manager_validating)
+  val extractingLabel = stringResource(R.string.addon_manager_extracting)
+  val indexingLabel = stringResource(R.string.addon_manager_indexing)
+  val committingLabel = stringResource(R.string.addon_manager_committing)
   val exportingLabel = stringResource(R.string.addon_manager_exporting)
   val savingLabel = stringResource(R.string.addon_manager_saving)
   val removingLabel = stringResource(R.string.addon_manager_removing)
@@ -68,7 +73,7 @@ fun AddonManagerHost(onBack: (libraryChanged: Boolean) -> Unit) {
           result
             .onSuccess {
               snapshot = it
-              if (initialRevision != null && it.revision != initialRevision) libraryChanged = true
+              if (initialRevision == null || it.revision != initialRevision) libraryChanged = true
               message = successMessage
             }
             .onFailure { error ->
@@ -82,7 +87,20 @@ fun AddonManagerHost(onBack: (libraryChanged: Boolean) -> Unit) {
     rememberAddonDocumentPickers(
       onImportSelected = { uri ->
         finishOperation(
-          { documentIo.importZip(uri) },
+          {
+            documentIo.importZip(uri) { stage ->
+              val label =
+                when (stage) {
+                  AddonImportStage.COPYING_ARCHIVE -> copyingLabel
+                  AddonImportStage.VALIDATING_ARCHIVE -> validatingLabel
+                  AddonImportStage.EXTRACTING_FILES -> extractingLabel
+                  AddonImportStage.INDEXING_ADDONS -> indexingLabel
+                  AddonImportStage.COMMITTING -> committingLabel
+                  AddonImportStage.COMPLETE -> importingLabel
+                }
+              mainHandler.post { operationLabel = label }
+            }
+          },
           importSuccess,
           importingLabel,
         )
