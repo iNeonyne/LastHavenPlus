@@ -26,6 +26,7 @@ class AddonManagerUiSmokeTest {
     val enabled = AtomicBoolean(false)
     val returned = AtomicBoolean(false)
     val exported = AtomicBoolean(false)
+    val removed = AtomicBoolean(false)
     val addon =
       AddonLibraryItem(
         title = "Landscape Smoke Addon",
@@ -57,7 +58,7 @@ class AddonManagerUiSmokeTest {
             enabled.set(value)
           },
           onExport = { folder -> exported.set(folder == addon.folder) },
-          onRemove = {},
+          onRemove = { folder -> removed.set(folder == addon.folder) },
           onBack = { returned.set(true) },
         )
       }
@@ -80,12 +81,20 @@ class AddonManagerUiSmokeTest {
       .onNodeWithContentDescription("More actions for Landscape Smoke Addon")
       .performClick()
     composeRule.onNodeWithText("Export ZIP").performClick()
+
+    composeRule
+      .onNodeWithContentDescription("More actions for Landscape Smoke Addon")
+      .performClick()
+    composeRule.onNodeWithText("Remove").performClick()
+    composeRule.onNodeWithText("Remove").performClick()
+
     composeRule.onNodeWithText("Back").performClick()
     composeRule.waitForIdle()
 
     assertTrue("Import action should be wired", imported.get())
     assertTrue("Enable switch should update the selected addon", enabled.get())
     assertTrue("Export action should be wired", exported.get())
+    assertTrue("Remove confirmation should be wired", removed.get())
     assertTrue("Back action should be wired", returned.get())
   }
 }
