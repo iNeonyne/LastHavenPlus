@@ -3,6 +3,7 @@ package com.neonyne.lasthavenlauncher
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.test.assertDoesNotExist
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
@@ -42,10 +43,10 @@ class SettingsNavigationSmokeTest {
       }
     }
 
-    composeRule.onNodeWithText("Game", useUnmergedTree = true).assertIsDisplayed()
+    composeRule.onAllNodesWithText("Game").onFirst().assertIsDisplayed()
     composeRule.onNodeWithText("Game server").assertIsDisplayed()
 
-    composeRule.onNodeWithText("Network & storage").performClick()
+    composeRule.onAllNodesWithText("Network & storage").onFirst().performClick()
     composeRule.onNodeWithText("Game data size").assertIsDisplayed()
     composeRule.onNodeWithText("This app session").assertIsDisplayed()
     composeRule.onNodeWithText("Tracked total").assertIsDisplayed()
@@ -55,7 +56,7 @@ class SettingsNavigationSmokeTest {
     // The network page deliberately does not expose APK/cache/since-boot categories.
     composeRule.onNodeWithText("Installed APK").assertDoesNotExist()
     composeRule.onNodeWithText("Received since device boot").assertDoesNotExist()
-    composeRule.onNodeWithText("Application").performClick()
+    composeRule.onAllNodesWithText("Application").onFirst().performClick()
     composeRule.onNodeWithText("Check for updates").assertIsDisplayed()
   }
 }
