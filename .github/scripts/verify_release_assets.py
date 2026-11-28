@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validate the published release's canonical APK and update manifest assets."""
+"""Validate the versioned APK, legacy updater alias and update manifest assets."""
 
 from __future__ import annotations
 
@@ -11,7 +11,8 @@ from pathlib import Path
 from typing import Any
 
 CANONICAL_MANIFEST = "lasthavenplus-update.json"
-LEGACY_ASSETS = {"lasthavenlauncher-arm64.apk", "lasthavenlauncher-update.json", "lasthavenplus-arm64.apk"}
+COMPATIBILITY_APK = "lasthavenplus-arm64.apk"
+LEGACY_ASSETS = {"lasthavenlauncher-arm64.apk", "lasthavenlauncher-update.json"}
 
 
 def validate_release_assets(release: dict[str, Any], expected_tag: str) -> None:
@@ -29,24 +30,36 @@ def validate_release_assets(release: dict[str, Any], expected_tag: str) -> None:
         raise ValueError("release assets must be a list")
 
     names = []
+    assets_by_name = {}
     for asset in assets:
         if not isinstance(asset, dict) or not isinstance(asset.get("name"), str):
             raise ValueError("every release asset must have a string name")
         names.append(asset["name"])
+        assets_by_name[asset["name"]] = asset
 
     apk_names = [name for name in names if name.lower().endswith(".apk")]
-    if apk_names != [expected_apk]:
+    if len(apk_names) != 2 or sorted(apk_names) != sorted([expected_apk, COMPATIBILITY_APK]):
         raise ValueError(
             "release must contain exactly one versioned APK named "
-            f"{expected_apk}; found {apk_names}"
+            f"{expected_apk} and one legacy updater alias named "
+            f"{COMPATIBILITY_APK}; found {apk_names}"
         )
+
+    versioned_size = assets_by_name[expected_apk].get("size")
+    compatibility_size = assets_by_name[COMPATIBILITY_APK].get("size")
+    if (
+        type(versioned_size) is not int
+        or versioned_size <= 0
+        or type(compatibility_size) is not int
+        or compatibility_size != versioned_size
+    ):
+        raise ValueError("legacy updater APK alias size must match the versioned APK")
+
     if names.count(CANONICAL_MANIFEST) != 1:
-        raise ValueError(
-            f"release must contain exactly one {CANONICAL_MANIFEST}"
-        )
+        raise ValueError(f"release must contain exactly one {CANONICAL_MANIFEST}")
     legacy = sorted(LEGACY_ASSETS.intersection(names))
     if legacy:
-        raise ValueError(f"legacy release assets must be absent: {legacy}")
+        raise ValueError(f"obsolete release assets must be absent: {legacy}")
 
 
 def main() -> int:
@@ -64,8 +77,8 @@ def main() -> int:
         return 1
 
     print(
-        f"Verified {args.expected_tag}: exactly one versioned APK "
-        f"and one update manifest."
+        f"Verified {args.expected_tag}: one versioned APK, "
+        f"one legacy updater alias and one update manifest."
     )
     return 0
 
