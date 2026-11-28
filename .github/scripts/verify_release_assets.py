@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 import sys
 from pathlib import Path
 from typing import Any
@@ -18,7 +19,7 @@ def validate_release_assets(release: dict[str, Any], expected_tag: str) -> None:
         raise ValueError("release metadata must be a JSON object")
     if release.get("tag_name") != expected_tag:
         raise ValueError(f"release tag must be {expected_tag}")
-    if not isinstance(expected_tag, str) or not __import__("re").fullmatch(r"v([0-9]+\\.[0-9]+\\.[0-9]+)", expected_tag):
+    if not isinstance(expected_tag, str) or not re.fullmatch(r"v[0-9]+\\.[0-9]+\\.[0-9]+", expected_tag):
         raise ValueError("release tag must use vMAJOR.MINOR.PATCH")
     version = expected_tag[1:]
     expected_apk = f"LastHavenPlus-{version}-stable-arm64-v8a.apk"
@@ -63,7 +64,7 @@ def main() -> int:
         return 1
 
     print(
-        f"Verified {args.expected_tag}: exactly one canonical APK "
+        f"Verified {args.expected_tag}: exactly one versioned APK "
         f"and one update manifest."
     )
     return 0
