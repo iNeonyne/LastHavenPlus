@@ -40,12 +40,22 @@ internal class AddonRuntimePayloadProvider(private val repository: AddonLibraryR
           AddonRuntimePayloadProvider.MANIFEST_PAGE_SIZE
   }
 
+  /**
+   * Builds the runtime manifest. The directory walk runs under the repository-wide library lock so
+   * a concurrent import, removal or recovery pass cannot rename or delete addon files mid-scan.
+   */
   fun buildManifest(snapshot: AddonLibrarySnapshot): Manifest {
     val plan = AddonRuntimePlanner.plan(snapshot)
     if (plan.orderedAddons.size > MAX_RUNTIME_ADDONS) {
       throw AddonRuntimePayloadException("payloadTooLarge")
     }
+    return repository.withLibraryAccess { buildManifestLocked(plan, snapshot) }
+  }
 
+  private fun buildManifestLocked(
+    plan: AddonLoadPlan,
+    snapshot: AddonLibrarySnapshot,
+  ): Manifest {
     val descriptors = mutableListOf<FileDescriptor>()
     val addonFolders = mutableListOf<String>()
     var totalBytes = 0L
@@ -200,6 +210,10 @@ internal class AddonRuntimePayloadProvider(private val repository: AddonLibraryR
     if (offset < 0 || offset >= descriptor.sizeBytes) {
       throw AddonRuntimePayloadException("invalidOffset")
     }
+    return repository.withLibraryAccess { readChunkLocked(descriptor, offset) }
+  }
+
+  private fun readChunkLocked(descriptor: FileDescriptor, offset: Long): ByteArray {
     val currentCanonical = descriptor.file.canonicalFile
     if (
       Files.isSymbolicLink(descriptor.file.toPath()) ||
