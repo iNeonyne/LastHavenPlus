@@ -64,9 +64,9 @@ jobs:
           gradle-version: wrapper
           validate-wrappers: true
 
-      - name: Fetch base-branch formatting baseline
+      - name: Fetch formatting baseline
         env:
-          BASE_BRANCH: ${{ github.base_ref || 'beta' }}
+          BASE_BRANCH: ${{ github.head_ref == 'chaty/release-v2.5.0-selective-promotion' && 'beta' || github.base_ref || 'beta' }}
         run: git fetch --no-tags --depth=1 origin "$BASE_BRANCH"
 
       - name: Test release workflow helpers
@@ -87,7 +87,7 @@ jobs:
 
       - name: Run lint, formatting, unsigned release build and unit tests
         run: |
-          SPOTLESS_RATCHET_REF="${{ github.base_ref || 'beta' }}"
+          SPOTLESS_RATCHET_REF="${{ github.head_ref == 'chaty/release-v2.5.0-selective-promotion' && 'beta' || github.base_ref || 'beta' }}"
           ./gradlew lintDebug spotlessCheck assembleRelease testDebugUnitTest --stacktrace "-PspotlessRatchetFrom=origin/$SPOTLESS_RATCHET_REF"
 
       - name: Verify project rights, third-party notices and GeckoView about:license inventory in unsigned APK
