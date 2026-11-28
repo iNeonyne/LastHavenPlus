@@ -9,7 +9,7 @@ import java.util.Locale
 import java.util.zip.CRC32
 import org.apache.commons.compress.archivers.zip.ZipFile
 
-internal enum class AddonImportStage {
+enum class AddonImportStage {
   COPYING_ARCHIVE,
   VALIDATING_ARCHIVE,
   EXTRACTING_FILES,
