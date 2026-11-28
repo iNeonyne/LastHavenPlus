@@ -467,7 +467,16 @@ private fun LastHavenApp(
                     else UpdateStage.FULL_DOWNLOAD,
                 )
               updateMessage = null
-              onDownloadUpdate(update, preferDelta, { progress -> updateProgress = progress }) { result ->
+              onDownloadUpdate(
+                update,
+                preferDelta,
+                { progress ->
+                  updateProgress = progress
+                  if (progress.stage == UpdateStage.FULL_DOWNLOAD && !progress.fallbackToFull) {
+                    downloadingDelta = false
+                  }
+                },
+              ) { result ->
                 isDownloadingUpdate = false
                 result
                   .onSuccess { uri ->
