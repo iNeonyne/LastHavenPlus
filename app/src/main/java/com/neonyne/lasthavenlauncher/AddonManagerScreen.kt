@@ -34,6 +34,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.LiveRegionMode
+import androidx.compose.ui.semantics.liveRegion
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 
@@ -120,6 +123,7 @@ fun AddonManagerScreen(
         LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
         Text(
           operationLabel.orEmpty(),
+          modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite },
           color = MaterialTheme.colorScheme.onSurfaceVariant,
           style = MaterialTheme.typography.bodySmall,
         )
@@ -139,7 +143,10 @@ fun AddonManagerScreen(
       ) {
         Text(
           message,
-          modifier = Modifier.fillMaxWidth().padding(12.dp),
+          modifier =
+            Modifier.fillMaxWidth().padding(12.dp).semantics {
+              liveRegion = LiveRegionMode.Polite
+            },
           style = MaterialTheme.typography.bodySmall,
         )
       }
