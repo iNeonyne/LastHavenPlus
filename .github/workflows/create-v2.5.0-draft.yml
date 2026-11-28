@@ -22,6 +22,8 @@ jobs:
     name: Create or update v2.5.0 draft
     runs-on: ubuntu-latest
     steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
       - name: Create draft release from beta
         env:
           GH_TOKEN: ${{ github.token }}
