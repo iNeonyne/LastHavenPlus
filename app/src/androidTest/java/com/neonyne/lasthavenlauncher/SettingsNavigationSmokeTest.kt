@@ -1,15 +1,17 @@
 package com.neonyne.lasthavenlauncher
 
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.runtime.remember
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.test.assertDoesNotExist
 import androidx.compose.ui.test.assertIsDisplayed
-import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.runtime.remember
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import java.util.concurrent.atomic.AtomicBoolean
+import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -21,6 +23,7 @@ class SettingsNavigationSmokeTest {
 
   @Test
   fun settingsUsesSeparateGameNetworkAndApplicationDestinations() {
+    val backPressed = AtomicBoolean(false)
     composeRule.setContent {
       val context = LocalContext.current
       val usageMeter = remember(context) { AppUsageMeter(context) }
@@ -35,7 +38,7 @@ class SettingsNavigationSmokeTest {
           isCheckingUpdate = false,
           gameUrl = DEFAULT_GAME_URL,
           onGameUrlChange = {},
-          onBack = {},
+          onBack = { backPressed.set(true) },
           onOpenDiagnostics = {},
           onOpenUpdates = {},
           onCheckUpdates = {},
@@ -58,5 +61,8 @@ class SettingsNavigationSmokeTest {
     composeRule.onNodeWithText("Received since device boot").assertDoesNotExist()
     composeRule.onAllNodesWithText("Application").onFirst().performClick()
     composeRule.onNodeWithText("Check for updates").assertIsDisplayed()
+    composeRule.onNodeWithText("Back").performClick()
+    composeRule.waitForIdle()
+    assertTrue("Back should return through the Settings owner callback", backPressed.get())
   }
 }
