@@ -213,7 +213,7 @@ private fun LastHavenApp(
   val context = LocalContext.current
   val usageMeter = remember { AppUsageMeter(context) }
   var gameUrl by remember {
-    mutableStateOf(preferences.getString(KEY_GAME_URL, DEFAULT_GAME_URL) ?: DEFAULT_GAME_URL)
+    mutableStateOf(GameLaunchUrlPolicy.normalize(preferences.getString(KEY_GAME_URL, DEFAULT_GAME_URL)))
   }
 
   var navigation by remember { mutableStateOf(LauncherNavigationState()) }
