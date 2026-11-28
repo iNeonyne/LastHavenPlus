@@ -358,6 +358,7 @@ jobs:
           echo "Building version $version (versionCode $version_code)"
 
       - name: Restore release signing key
+        if: steps.version.outputs.is_release == 'true' || github.ref == 'refs/heads/beta'
         shell: bash
         env:
           ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
@@ -376,8 +377,8 @@ jobs:
       - name: Build signed optimized release APK and run unit tests
         env:
           ANDROID_KEYSTORE_PATH: ${{ runner.temp }}/lasthavenplus-release.jks
-          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
-          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+          ANDROID_KEYSTORE_PASSWORD: ${{ (steps.version.outputs.is_release == 'true' || github.ref == 'refs/heads/beta') && secrets.ANDROID_KEYSTORE_PASSWORD || '' }}
+          ANDROID_KEY_PASSWORD: ${{ (steps.version.outputs.is_release == 'true' || github.ref == 'refs/heads/beta') && secrets.ANDROID_KEY_PASSWORD || '' }}
           APP_VERSION_NAME: ${{ steps.version.outputs.name }}
           APP_VERSION_CODE: ${{ steps.version.outputs.code }}
           RUN_BETA_QUALITY: ${{ steps.beta_quality.outputs.run }}
@@ -410,11 +411,16 @@ jobs:
         env:
           APP_VERSION_NAME: ${{ steps.version.outputs.name }}
           APP_ARTIFACT_CHANNEL: ${{ steps.version.outputs.artifact_channel }}
+          RELEASE_APK: ${{ steps.version.outputs.artifact_channel == 'ci' && 'app/build/outputs/apk/release/app-release-unsigned.apk' || 'app/build/outputs/apk/release/app-release.apk' }}
         shell: bash
         run: |
           set -euo pipefail
           trap 'status=$?; echo "::error::Release verification failed at workflow line $LINENO (exit $status)"; exit "$status"' ERR
-          RELEASE_APK="app/build/outputs/apk/release/app-release.apk"
+          if [[ "$APP_ARTIFACT_CHANNEL" == "ci" ]]; then
+            RELEASE_APK="app/build/outputs/apk/release/app-release-unsigned.apk"
+          else
+            RELEASE_APK="app/build/outputs/apk/release/app-release.apk"
+          fi
           EXPECTED_CERT="b3bbf7520e77dfc384a60b1eee6c5f205b978f9b453849e2be523f642018d263"
           for apk in "$RELEASE_APK"; do
             echo "Checking APK exists: $apk"
@@ -446,21 +452,29 @@ jobs:
             ls -lah "$ANDROID_HOME/build-tools/" || true
             exit 1
           fi
-          echo "Verifying release APK signature"
-          "$APKSIGNER" verify --verbose "$RELEASE_APK"
-          echo "Reading release certificate fingerprint"
-          CERT_OUTPUT="$("$APKSIGNER" verify --print-certs "$RELEASE_APK")"
-          echo "$CERT_OUTPUT"
-          CERT_DIGEST="$(printf '%s\n' "$CERT_OUTPUT" | awk '/certificate SHA-256 digest:/ {sub(/^.*certificate SHA-256 digest: /, ""); print tolower($0); exit}')"
-          echo "Actual release certificate SHA-256: ${CERT_DIGEST:-<missing>}"
-          echo "Expected release certificate SHA-256: $EXPECTED_CERT"
-          if [[ "$CERT_DIGEST" != "$EXPECTED_CERT" ]]; then
-            echo "::error::Release APK certificate does not match the established LastHaven release key."
-            exit 1
+          if [[ "$APP_ARTIFACT_CHANNEL" == "ci" ]]; then
+            echo "Verifying ordinary main CI APK remains unsigned"
+            if "$APKSIGNER" verify "$RELEASE_APK" >/dev/null 2>&1; then
+              echo "::error::Ordinary main CI APK unexpectedly contains a signature."
+              exit 1
+            fi
+          else
+            echo "Verifying signed $APP_ARTIFACT_CHANNEL APK"
+            "$APKSIGNER" verify --verbose "$RELEASE_APK"
+            echo "Reading release certificate fingerprint"
+            CERT_OUTPUT="$("$APKSIGNER" verify --print-certs "$RELEASE_APK")"
+            echo "$CERT_OUTPUT"
+            CERT_DIGEST="$(printf '%s\n' "$CERT_OUTPUT" | awk '/certificate SHA-256 digest:/ {sub(/^.*certificate SHA-256 digest: /, ""); print tolower($0); exit}')"
+            echo "Actual APK certificate SHA-256: ${CERT_DIGEST:-<missing>}"
+            echo "Expected release certificate SHA-256: $EXPECTED_CERT"
+            if [[ "$CERT_DIGEST" != "$EXPECTED_CERT" ]]; then
+              echo "::error::APK certificate does not match the established LastHaven release key."
+              exit 1
+            fi
           fi
           python3 - <<'PY'
           import os, zipfile
-          apks = ["app/build/outputs/apk/release/app-release.apk"]
+          apks = [os.environ["RELEASE_APK"]]
           summary = ["| APK | File size | DEX payload |", "|---|---:|---:|"]
           for apk in apks:
               with zipfile.ZipFile(apk) as archive:
