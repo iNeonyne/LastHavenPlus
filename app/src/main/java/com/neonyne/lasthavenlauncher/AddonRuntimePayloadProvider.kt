@@ -59,20 +59,29 @@ internal class AddonRuntimePayloadProvider(private val repository: AddonLibraryR
     val descriptors = mutableListOf<FileDescriptor>()
     val addonFolders = mutableListOf<String>()
     var totalBytes = 0L
-    var committedFiles = 0
+    val skippedAddons = mutableSetOf<String>()
 
     for (addon in plan.orderedAddons) {
+      // Never include a dependent when its required addon was omitted by a runtime size limit.
+      // The planner has already excluded missing/cyclic dependencies; this covers dependencies
+      // that become unavailable during the bounded filesystem walk below.
+      val unavailableDependencies =
+        addon.dependencies.filter { it.lowercase(Locale.ROOT) in skippedAddons }
+      if (unavailableDependencies.isNotEmpty()) {
+        skippedAddons += addon.folder.lowercase(Locale.ROOT)
+        continue
+      }
+
       // Per-addon size isolation (issue #228): an addon that violates a runtime payload limit is
-      // skipped — the planner reports it as TooLarge — so every other valid addon stays usable.
-      // Security violations (invalid paths, unreadable files) still fail the whole manifest.
+      // skipped so every independent valid addon stays usable. Security violations (invalid paths,
+      // unreadable files) still fail the whole manifest.
       try {
-        val (addonDescriptorCount, addonByteCount) =
-          appendAddonDescriptors(addon, committedFiles, totalBytes, descriptors)
+        val addonByteCount = appendAddonDescriptors(addon, totalBytes, descriptors)
         totalBytes += addonByteCount
-        committedFiles += addonDescriptorCount
         addonFolders += addon.folder
       } catch (error: AddonRuntimePayloadException) {
         if (error.code != "payloadTooLarge") throw error
+        skippedAddons += addon.folder.lowercase(Locale.ROOT)
       }
     }
     val sortedFiles =
@@ -117,10 +126,9 @@ internal class AddonRuntimePayloadProvider(private val repository: AddonLibraryR
    */
   private fun appendAddonDescriptors(
     addon: AddonLibraryItem,
-    committedFiles: Int,
     committedBytes: Long,
     descriptors: MutableList<FileDescriptor>,
-  ): Pair<Int, Long> {
+  ): Long {
     val directory = repository.addonDirectory(addon.folder)
     if (!directory.isDirectory) {
       throw AddonRuntimePayloadException("unavailable")
@@ -236,7 +244,7 @@ internal class AddonRuntimePayloadProvider(private val repository: AddonLibraryR
       )
     }
     descriptors += addonDescriptors
-    return addonFiles to addonBytes
+    return addonBytes
   }
 
   fun page(manifest: Manifest, page: Int): List<FileDescriptor> {
