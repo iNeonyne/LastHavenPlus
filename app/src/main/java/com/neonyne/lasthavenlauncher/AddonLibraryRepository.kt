@@ -193,7 +193,6 @@ class AddonLibraryRepository(
             onStage = onStage,
           )
         require(imported.isNotEmpty()) { "The archive contains no addons." }
-        onStage(AddonImportStage.COMMITTING)
 
         val current = readLibrary(performStaleSweep = false)
         val replacing = imported.map { it.folder.lowercase(Locale.ROOT) }.toSet()
@@ -220,6 +219,7 @@ class AddonLibraryRepository(
         require(projectedCount <= MAX_ADDON_LIBRARY_ITEMS) {
           "Addon library contains too many entries."
         }
+        onStage(AddonImportStage.COMMITTING)
 
         val existing = current.addons.associateBy { it.folder.lowercase(Locale.ROOT) }
         val nextItems =

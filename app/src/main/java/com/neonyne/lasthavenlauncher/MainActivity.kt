@@ -264,11 +264,11 @@ private fun LastHavenApp(
     addonBridgeController.ensureInstalled(context) { installed ->
       if (installed) {
         addonBridgeController.refreshSnapshot { refreshed ->
-          if (refreshed) {
-            gameSessionController.reloadGame(context, gameUrl)
-            addonReloadRequired = false
-          }
+          gameSessionController.reloadGame(context, gameUrl)
+          if (refreshed) addonReloadRequired = false
         }
+      } else {
+        gameSessionController.reloadGame(context, gameUrl)
       }
     }
   }
