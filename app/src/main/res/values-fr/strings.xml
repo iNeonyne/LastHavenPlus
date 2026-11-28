@@ -34,4 +34,5 @@
     <string name="addon_manager_toggle">Basculer l’état de %1$s</string>
     <string name="addon_manager_more_actions">Plus d’actions pour %1$s</string>
     <string name="addon_manager_details">Détails</string>
+    <string name="addon_manager_details_close">Fermer</string>
 </resources>
