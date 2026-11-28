@@ -49,7 +49,7 @@ Update this file when strategic priorities, sequence or release direction change
 <!-- ROADMAP-LIVE-START -->
 ## Live issue and PR inventory
 
-Generated: 2026-11-28T02:04:31+00:00
+Generated: 2026-11-28T02:11:08+00:00
 Source of truth: live GitHub Issues, pull requests and labels. This section is generated automatically; do not edit it manually.
 
 Every open issue is listed below, grouped by its current priority. Opening a newer issue or PR does not supersede an older one. Duplicates and supersession must be explicitly reviewed and linked in GitHub.
@@ -107,6 +107,8 @@ Every open issue is listed below, grouped by its current priority. Opening a new
 ### Open pull requests
 
 - [#238 — release: promote latest beta to main](https://github.com/iNeonyne/LastHavenPlus/pull/238) (main <- beta)
+- [#240 — ci: remove duplicate main test jobs and pin actions](https://github.com/iNeonyne/LastHavenPlus/pull/240) (main <- chaty/optimize-main-ci)
+- [#241 — ci: reduce agent workflow churn and retire stale v2.5.0 draft job](https://github.com/iNeonyne/LastHavenPlus/pull/241) (beta <- chaty/optimize-agent-workflow)
 
 ### Recently completed (last 30 days)
 
