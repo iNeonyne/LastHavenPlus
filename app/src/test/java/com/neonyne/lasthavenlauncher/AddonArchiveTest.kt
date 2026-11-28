@@ -107,7 +107,7 @@ class AddonArchiveTest {
     val archive =
       zipOf(
         "Sample/Sample.toc" to
-          "## Dependencies: RequiredOne, RequiredTwo\n## OptionalDeps: OptionalOne, OptionalTwo\n"
+          "## Dependencies: RequiredOne, RequiredTwo\n## OptionalDeps: OptionalOne, OptionalTwo\n",
       )
 
     val imported =
