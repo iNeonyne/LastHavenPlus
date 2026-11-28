@@ -1,9 +1,10 @@
 from __future__ import annotations
 
 import importlib.util
-import tempfile
+import subprocess
 import unittest
 from pathlib import Path
+import sys
 
 
 SCRIPT = Path(__file__).resolve().parents[1] / "release_version.py"
@@ -109,17 +110,25 @@ class ReleaseVersionTests(unittest.TestCase):
             )
 
     def test_cli_writes_only_the_computed_version(self) -> None:
-        with tempfile.TemporaryDirectory() as temp_dir:
+        with __import__("tempfile").TemporaryDirectory() as temp_dir:
             merged = Path(temp_dir) / "merged.txt"
             head = Path(temp_dir) / "head.txt"
-            merged.write_text("v2.4.0\n", encoding="utf-8")
+            merged.write_text("v2.4.0\\n", encoding="utf-8")
             head.write_text("", encoding="utf-8")
-            self.assertEqual(
-                release_version.resolve_release_version(
-                    "fix: correct a crash", merged.read_text().splitlines(), head.read_text().splitlines()
-                ),
-                "2.4.1",
+            result = subprocess.run(
+                [sys.executable, str(SCRIPT), str(merged), str(head)],
+                input="fix: correct a crash",
+                check=True,
+                capture_output=True,
+                text=True,
             )
+            self.assertEqual(result.stdout.strip(), "2.4.1")
+
+    def test_first_release_starts_from_zero(self) -> None:
+        self.assertEqual(
+            release_version.resolve_release_version("feat: first stable feature", []),
+            "0.1.0",
+        )
 
 
 if __name__ == "__main__":
