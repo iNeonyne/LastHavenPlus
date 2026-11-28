@@ -532,11 +532,15 @@ test("page Worker wrapper pins the first validated worker when no static allowli
   assert.ok(!constructed[1].url.startsWith("blob:"));
 });
 
-test("intercepted worker bootstraps through a Blob with the exact original url", () => {
+test("intercepted worker bootstraps through a Blob with the exact original url", async () => {
   const { context, constructed, state } = createPageContext();
   vm.runInContext(`new Worker(${JSON.stringify(WORKER_URL)}, { name: "em-pthread" });`, context);
   assert.equal(constructed.length, 1);
   const worker = constructed[0];
+  for (let attempt = 0; attempt < 20 && worker.posted.length === 0; attempt += 1) {
+    await new Promise((resolve) => setTimeout(resolve, 0));
+  }
+  assert.equal(worker.posted.length, 1, "worker boot message should be posted");
   assert.ok(worker.url.startsWith("blob:"));
   assert.equal(worker.options.name, "em-pthread");
   const blob = state.objectUrlsCreated[0];
