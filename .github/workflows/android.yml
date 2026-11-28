@@ -32,7 +32,7 @@ permissions:
 
 jobs:
   # PR validation is intentionally read-only and does not access signing secrets
-  # or upload/publish APKs. The normal beta push pipeline performs signed checks.
+  # or upload/publish APKs. Both main promotions and beta development use this gate.
   pull_request_validation:
     if: github.event_name == 'pull_request'
     name: PR build and unit tests (unsigned)
@@ -181,7 +181,7 @@ jobs:
         with:
           ref: ${{ needs.create_tag.outputs.tag_ref || github.ref }}
           # Full history is only needed to validate release-tag ancestry.
-          fetch-depth: ${{ startsWith(github.ref, 'refs/tags/v') && '0' || '1' }}
+          fetch-depth: ${{ (needs.create_tag.outputs.tag_ref != '' || startsWith(github.ref, 'refs/tags/v')) && '0' || '1' }}
 
       - name: Set up JDK 25
         uses: actions/setup-java@d1374f8ac74474200d16ef8ecee22c7ae7a51880 # v6.3.0
@@ -231,7 +231,7 @@ jobs:
           bash -n .github/scripts/prepare_release_payload.sh
 
       - name: Validate release tag belongs to stable main history
-        if: startsWith(github.ref, 'refs/tags/v')
+        if: needs.create_tag.outputs.tag_ref != '' || startsWith(github.ref, 'refs/tags/v')
         shell: bash
         run: |
           set -euo pipefail
