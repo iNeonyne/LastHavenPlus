@@ -2,9 +2,10 @@ from __future__ import annotations
 
 import importlib.util
 import subprocess
+import sys
+import tempfile
 import unittest
 from pathlib import Path
-import sys
 
 
 SCRIPT = Path(__file__).resolve().parents[1] / "release_version.py"
@@ -110,7 +111,7 @@ class ReleaseVersionTests(unittest.TestCase):
             )
 
     def test_cli_writes_only_the_computed_version(self) -> None:
-        with __import__("tempfile").TemporaryDirectory() as temp_dir:
+        with tempfile.TemporaryDirectory() as temp_dir:
             merged = Path(temp_dir) / "merged.txt"
             head = Path(temp_dir) / "head.txt"
             merged.write_text("v2.4.0\\n", encoding="utf-8")
