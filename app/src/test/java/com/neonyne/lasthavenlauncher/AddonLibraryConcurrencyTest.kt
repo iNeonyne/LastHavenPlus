@@ -337,7 +337,7 @@ class AddonLibraryConcurrencyTest {
       val setupRepository = AddonLibraryRepository(root)
       val archive =
         zipOf(
-          "Sample/Sample.toc" to "## Version: 1\\n",
+          "Sample/Sample.toc" to "## Version: 1\n",
           "Sample/main.lua" to "print('sample')",
         )
       setupRepository.importZip(ByteArrayInputStream(archive), archive.size.toLong())
