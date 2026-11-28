@@ -179,7 +179,6 @@ fun AddonManagerScreen(
         }
       }
     }
-
   }
   replacementFolders?.let { folders ->
     AlertDialog(
