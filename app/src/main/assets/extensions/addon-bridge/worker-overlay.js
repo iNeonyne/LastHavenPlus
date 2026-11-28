@@ -1207,52 +1207,90 @@
   let maskBootstrapCache = null;
 
   function readMaskBootstrapData(global, core) {
-    const failed = (stage, enabledFolders) => ({ maskBuffer: new ArrayBuffer(0), indexSize: 0, enabledFolders: enabledFolders || [], error: stage });
+    const failed = (stage, enabledFolders, manifestEntries) => ({
+      maskBuffer: new ArrayBuffer(0),
+      indexSize: 0,
+      enabledFolders: enabledFolders || [],
+      manifestEntries: manifestEntries || [],
+      error: stage
+    });
     let payload = null;
     try {
       const bridge = global[BRIDGE_KEY];
       payload = bridge && typeof bridge.getBundle === "function" ? bridge.getBundle() : null;
-    } catch (error) { return failed("bundle-unavailable"); }
-    if (!payload || !Array.isArray(payload.addons) || payload.addons.length > 128) return failed("bundle-unavailable");
-    const enabledFolders = [];
-    const seen = new Set();
-    for (let i = 0; i < payload.addons.length; i += 1) {
-      const folder = payload.addons[i] && payload.addons[i].folder;
-      if (typeof folder !== "string" || !FOLDER_PATTERN.test(folder) ||
-          folder.toLowerCase().startsWith("blizzard_") || seen.has(folder.toLowerCase())) return failed("bundle-folders");
-      seen.add(folder.toLowerCase());
-      enabledFolders.push(folder);
+    } catch (error) {
+      return failed("bundle-unavailable");
     }
-    if (enabledFolders.length === 0) return { maskBuffer: new ArrayBuffer(0), indexSize: 0, enabledFolders: [], error: null };
-    if (!global.navigator || !global.navigator.storage || typeof global.navigator.storage.getDirectory !== "function") {
-      return failed("opfs-unavailable", enabledFolders);
+    if (!payload || !Array.isArray(payload.addons) || payload.addons.length > 128) {
+      return failed("bundle-unavailable");
     }
-    return Promise.resolve()
-      .then(() => global.navigator.storage.getDirectory())
-      .then((root) => root.getFileHandle("blocks.idx"))
-      .then((handle) => handle.getFile())
-      .then((file) => {
-        if (!file || !Number.isSafeInteger(file.size) || file.size < 0 ||
-            file.size > core.MAX_INDEX_FILE_BYTES || typeof file.arrayBuffer !== "function") return failed("index-size", enabledFolders);
-        return file.arrayBuffer().then((buffer) => {
-          const parsed = core.parseBlocksIndex(new Uint8Array(buffer), enabledFolders);
-          if (!parsed.ok) return failed(parsed.stage || "index-parse", enabledFolders);
-          const folderIndexes = new Map();
-          for (let i = 0; i < enabledFolders.length; i += 1) {
-            folderIndexes.set(enabledFolders[i].toLowerCase(), i);
+    const manifestUrl = new URL("/game-manifest.txt", global.location.href).href;
+    const manifestPromise = typeof global.fetch === "function"
+      ? Promise.resolve(global.fetch(manifestUrl))
+          .then((response) => response && response.ok && typeof response.text === "function"
+            ? response.text()
+            : "")
+          .catch(() => "")
+      : Promise.resolve("");
+    return manifestPromise.then((manifestText) => {
+      const manifestPlan = core.buildManifestEntries(payload, manifestText);
+      if (!manifestPlan.ok) {
+        return failed("manifest-" + manifestPlan.stage, [], []);
+      }
+      const enabledFolders = manifestPlan.enabledFolders;
+      const manifestEntries = manifestPlan.entries;
+      if (enabledFolders.length === 0) {
+        return {
+          maskBuffer: new ArrayBuffer(0),
+          indexSize: 0,
+          enabledFolders: [],
+          manifestEntries: manifestEntries,
+          error: null
+        };
+      }
+      if (!global.navigator || !global.navigator.storage ||
+          typeof global.navigator.storage.getDirectory !== "function") {
+        return failed("opfs-unavailable", enabledFolders, manifestEntries);
+      }
+      return Promise.resolve()
+        .then(() => global.navigator.storage.getDirectory())
+        .then((root) => root.getFileHandle("blocks.idx"))
+        .then((handle) => handle.getFile())
+        .then((file) => {
+          if (!file || !Number.isSafeInteger(file.size) || file.size < 0 ||
+              file.size > core.MAX_INDEX_FILE_BYTES || typeof file.arrayBuffer !== "function") {
+            return failed("index-size", enabledFolders, manifestEntries);
           }
-          const compact = new Uint32Array(parsed.records.length * 4);
-          for (let i = 0; i < parsed.records.length; i += 1) {
-            const record = parsed.records[i];
-            const folder = record.path.slice(ADDON_PREFIX.length).split("/")[0].toLowerCase();
-            const folderIndex = folderIndexes.get(folder);
-            if (!Number.isSafeInteger(folderIndex)) return failed("folder-index", enabledFolders);
-            compact.set([record.start, record.end, record.value, folderIndex], i * 4);
-          }
-          return { maskBuffer: compact.buffer, indexSize: parsed.indexSize, enabledFolders, error: null };
-        });
-      })
-      .catch(() => failed("opfs-read", enabledFolders));
+          return file.arrayBuffer().then((buffer) => {
+            const parsed = core.parseBlocksIndex(new Uint8Array(buffer), enabledFolders);
+            if (!parsed.ok) {
+              return failed(parsed.stage || "index-parse", enabledFolders, manifestEntries);
+            }
+            const folderIndexes = new Map();
+            for (let i = 0; i < enabledFolders.length; i += 1) {
+              folderIndexes.set(enabledFolders[i].toLowerCase(), i);
+            }
+            const compact = new Uint32Array(parsed.records.length * 4);
+            for (let i = 0; i < parsed.records.length; i += 1) {
+              const record = parsed.records[i];
+              const folder = record.path.slice(ADDON_PREFIX.length).split("/")[0].toLowerCase();
+              const folderIndex = folderIndexes.get(folder);
+              if (!Number.isSafeInteger(folderIndex)) {
+                return failed("folder-index", enabledFolders, manifestEntries);
+              }
+              compact.set([record.start, record.end, record.value, folderIndex], i * 4);
+            }
+            return {
+              maskBuffer: compact.buffer,
+              indexSize: parsed.indexSize,
+              enabledFolders,
+              manifestEntries,
+              error: null
+            };
+          });
+        })
+        .catch(() => failed("opfs-read", enabledFolders, manifestEntries));
+    });
   }
 
   function interceptWorker(rawUrl, options, decision) {
@@ -1346,6 +1384,7 @@
         maskBuffer: maskData.maskBuffer.slice(0),
         indexSize: maskData.indexSize,
         enabledFolders: maskData.enabledFolders,
+        manifestEntries: maskData.manifestEntries || [],
         maskError: maskData.error
       });
       Object.defineProperty(bootData, BOOT_KEY, { value: true, enumerable: true });
