@@ -40,7 +40,13 @@ entry in `CHANGELOG.md`. Update `.github/release/VERSION` to the version being
 promoted. The release includes the verified ARM64 APK, updater manifest, and an optional
 differential patch when its integrity and size checks pass.
 
-
 ### Versioned APK asset names
 
-Stable releases publish the primary APK as `LastHavenPlus-<version>-stable-arm64-v8a.apk`, and the update manifest points to that versioned asset. They also retain an identical `lasthavenplus-arm64.apk` compatibility alias because already-installed v2.5.0 clients look up that fixed name before reading the manifest. The release payload builder verifies that both files have the same SHA-256 and size. Delta generation prefers the versioned asset and falls back to the compatibility alias for older releases. Do not remove the alias until the legacy updater compatibility window is intentionally ended.
+Stable releases publish the primary APK as
+`LastHavenPlus-<version>-stable-arm64-v8a.apk`; the update manifest points
+to that asset. They also retain an identical `lasthavenplus-arm64.apk`
+compatibility alias because existing v2.5.0 clients look up that fixed name
+before reading the manifest. The release builder verifies matching SHA-256
+and size. Delta generation prefers the versioned asset and falls back to
+the alias for older releases. Keep the alias until the legacy updater
+compatibility window is intentionally ended.
