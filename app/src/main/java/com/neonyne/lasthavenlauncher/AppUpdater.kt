@@ -269,7 +269,7 @@ object AppUpdater {
     }
   }
 
-  fun downloadUpdate(
+  internal fun downloadUpdate(
     context: Context,
     update: AppUpdateInfo,
     preferDelta: Boolean,
