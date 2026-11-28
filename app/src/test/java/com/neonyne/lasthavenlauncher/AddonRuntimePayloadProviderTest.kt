@@ -111,18 +111,43 @@ class AddonRuntimePayloadProviderTest {
   }
 
   @Test
-  fun rejectsFilesLargerThanRuntimeFileLimit() = withRoot { root ->
-    val directory = writeAddon(root, "LargeFile", mapOf("LargeFile.toc" to byteArrayOf(1)))
-    val large = File(directory, "large.bin")
+  fun isolatesFilesLargerThanRuntimeFileLimitAndKeepsValidAddons() = withRoot { root ->
+    val largeDirectory = writeAddon(root, "LargeFile", mapOf("LargeFile.toc" to byteArrayOf(1)))
+    val large = File(largeDirectory, "large.bin")
     RandomAccessFile(large, "rw").use {
       it.setLength(AddonRuntimePayloadProvider.MAX_RUNTIME_FILE_BYTES + 1)
     }
-    val snapshot = AddonLibrarySnapshot("revision", listOf(item("LargeFile", directory)))
-    val error =
-      assertThrows(AddonRuntimePayloadException::class.java) {
-        AddonRuntimePayloadProvider(AddonLibraryRepository(root)).buildManifest(snapshot)
-      }
-    assertEquals("payloadTooLarge", error.code)
+    val exactDirectory =
+      writeAddon(
+        root,
+        "ExactLimit",
+        mapOf(
+          "ExactLimit.toc" to ByteArray(AddonRuntimePayloadProvider.MAX_RUNTIME_FILE_BYTES.toInt()),
+        ),
+      )
+    val boundaryDirectory = writeAddon(root, "OverLimit", mapOf("OverLimit.toc" to byteArrayOf(1)))
+    RandomAccessFile(File(boundaryDirectory, "over.bin"), "rw").use {
+      it.setLength(AddonRuntimePayloadProvider.MAX_RUNTIME_FILE_BYTES + 1)
+    }
+    val snapshot =
+      AddonLibrarySnapshot(
+        "revision",
+        listOf(
+          item("ExactLimit", exactDirectory),
+          item("OverLimit", boundaryDirectory),
+          item("LargeFile", largeDirectory),
+        ),
+      )
+    val manifest = AddonRuntimePayloadProvider(AddonLibraryRepository(root)).buildManifest(snapshot)
+
+    assertEquals(listOf("ExactLimit"), manifest.addonFolders)
+    assertTrue(manifest.files.all { it.folder == "ExactLimit" })
+    assertTrue(
+      manifest.files.any {
+        it.path == "ExactLimit.toc" &&
+          it.sizeBytes == AddonRuntimePayloadProvider.MAX_RUNTIME_FILE_BYTES
+      },
+    )
   }
 
   @Test
@@ -159,12 +184,13 @@ class AddonRuntimePayloadProviderTest {
   }
 
   @Test
-  fun rejectsFileCountOverflow() = withRoot { root ->
-    val directory = File(root, "ManyFiles")
-    assertTrue(directory.mkdirs())
+  fun isolatesFileCountOverflowAndKeepsValidAddons() = withRoot { root ->
+    val overflowDirectory = File(root, "ManyFiles")
+    assertTrue(overflowDirectory.mkdirs())
     for (index in 0..AddonRuntimePayloadProvider.MAX_RUNTIME_FILES) {
-      File(directory, "file-$index.bin").writeBytes(byteArrayOf())
+      File(overflowDirectory, "file-$index.bin").writeBytes(byteArrayOf())
     }
+    val healthyDirectory = writeAddon(root, "Healthy", mapOf("Healthy.toc" to byteArrayOf(1)))
     val snapshot =
       AddonLibrarySnapshot(
         "revision",
@@ -181,14 +207,13 @@ class AddonRuntimePayloadProviderTest {
             enabled = true,
             importedAt = 0,
             warnings = emptyList(),
-          )
+          ),
+          item("Healthy", healthyDirectory),
         ),
       )
-    val error =
-      assertThrows(AddonRuntimePayloadException::class.java) {
-        AddonRuntimePayloadProvider(AddonLibraryRepository(root)).buildManifest(snapshot)
-      }
-    assertEquals("payloadTooLarge", error.code)
+    val manifest = AddonRuntimePayloadProvider(AddonLibraryRepository(root)).buildManifest(snapshot)
+
+    assertEquals(listOf("Healthy"), manifest.addonFolders)
   }
 
   @Test
@@ -208,12 +233,13 @@ class AddonRuntimePayloadProviderTest {
   }
 
   @Test
-  fun rejectsExcessiveEmptyDirectoryEntries() = withRoot { root ->
+  fun isolatesExcessiveEmptyDirectoryEntriesAndKeepsValidAddons() = withRoot { root ->
     val directory = File(root, "EmptyDirectories")
     assertTrue(directory.mkdirs())
     for (index in 0..AddonRuntimePayloadProvider.MAX_RUNTIME_ENTRIES_PER_ADDON) {
       assertTrue(File(directory, "empty-$index").mkdir())
     }
+    val healthyDirectory = writeAddon(root, "Healthy", mapOf("Healthy.toc" to byteArrayOf(1)))
     val snapshot =
       AddonLibrarySnapshot(
         "revision",
@@ -230,14 +256,46 @@ class AddonRuntimePayloadProviderTest {
             enabled = true,
             importedAt = 0,
             warnings = emptyList(),
-          )
+          ),
+          item("Healthy", healthyDirectory),
         ),
       )
-    val error =
-      assertThrows(AddonRuntimePayloadException::class.java) {
-        AddonRuntimePayloadProvider(AddonLibraryRepository(root)).buildManifest(snapshot)
-      }
-    assertEquals("payloadTooLarge", error.code)
+    val manifest = AddonRuntimePayloadProvider(AddonLibraryRepository(root)).buildManifest(snapshot)
+
+    assertEquals(listOf("Healthy"), manifest.addonFolders)
+  }
+
+  @Test
+  fun isolatesTheAddonThatExhaustsTheRuntimeBundleBudget() = withRoot { root ->
+    val nearHalf = AddonRuntimePayloadProvider.MAX_RUNTIME_BUNDLE_BYTES / 2 + 1
+    val exactFileLimit = AddonRuntimePayloadProvider.MAX_RUNTIME_FILE_BYTES.toInt()
+    val firstDirectory =
+      writeAddon(
+        root,
+        "First",
+        mapOf(
+          "First.toc" to byteArrayOf(1),
+          "first.bin" to ByteArray(exactFileLimit),
+        ),
+      )
+    val secondDirectory =
+      writeAddon(
+        root,
+        "Second",
+        mapOf(
+          "Second.toc" to byteArrayOf(1),
+          "second.bin" to ByteArray(exactFileLimit),
+        ),
+      )
+    val snapshot =
+      AddonLibrarySnapshot(
+        "revision",
+        listOf(item("First", firstDirectory), item("Second", secondDirectory)),
+      )
+    val manifest = AddonRuntimePayloadProvider(AddonLibraryRepository(root)).buildManifest(snapshot)
+
+    assertEquals(listOf("First"), manifest.addonFolders)
+    assertEquals(nearHalf, manifest.totalBytes)
   }
 
   @Test
@@ -246,7 +304,7 @@ class AddonRuntimePayloadProviderTest {
     val provider = AddonRuntimePayloadProvider(AddonLibraryRepository(root))
     val first =
       provider.buildManifest(
-        AddonLibrarySnapshot("same-index-revision", listOf(item("UnitFrame", directory)))
+        AddonLibrarySnapshot("same-index-revision", listOf(item("UnitFrame", directory))),
       )
 
     File(directory, "Textures/icon.blp").apply {
@@ -255,7 +313,7 @@ class AddonRuntimePayloadProviderTest {
     }
     val second =
       provider.buildManifest(
-        AddonLibrarySnapshot("same-index-revision", listOf(item("UnitFrame", directory)))
+        AddonLibrarySnapshot("same-index-revision", listOf(item("UnitFrame", directory))),
       )
 
     assertEquals(first.sourceRevision, second.sourceRevision)
@@ -284,9 +342,9 @@ class AddonRuntimePayloadProviderTest {
                 enabled = true,
                 importedAt = 0,
                 warnings = emptyList(),
-              )
+              ),
             ),
-          )
+          ),
         )
     }
   }

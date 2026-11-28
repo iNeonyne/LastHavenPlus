@@ -59,109 +59,22 @@ internal class AddonRuntimePayloadProvider(private val repository: AddonLibraryR
     val descriptors = mutableListOf<FileDescriptor>()
     val addonFolders = mutableListOf<String>()
     var totalBytes = 0L
+    var committedFiles = 0
 
     for (addon in plan.orderedAddons) {
-      val directory = repository.addonDirectory(addon.folder)
-      if (!directory.isDirectory) {
-        throw AddonRuntimePayloadException("unavailable")
+      // Per-addon size isolation (issue #228): an addon that violates a runtime payload limit is
+      // skipped — the planner reports it as TooLarge — so every other valid addon stays usable.
+      // Security violations (invalid paths, unreadable files) still fail the whole manifest.
+      try {
+        val (addonDescriptorCount, addonByteCount) =
+          appendAddonDescriptors(addon, committedFiles, totalBytes, descriptors)
+        totalBytes += addonByteCount
+        committedFiles += addonDescriptorCount
+        addonFolders += addon.folder
+      } catch (error: AddonRuntimePayloadException) {
+        if (error.code != "payloadTooLarge") throw error
       }
-      val canonicalDirectory = directory.canonicalFile
-      val expectedParent = directory.absoluteFile.parentFile?.canonicalFile
-      if (expectedParent == null || canonicalDirectory.parentFile != expectedParent) {
-        throw AddonRuntimePayloadException("invalidPath")
-      }
-      val canonicalRootPath = canonicalDirectory.toPath()
-      val pendingDirectories = ArrayDeque<File>()
-      pendingDirectories.add(directory)
-      var addonBytes = 0L
-      var addonFiles = 0
-      var addonEntries = 0
-
-      while (pendingDirectories.isNotEmpty()) {
-        val current = pendingDirectories.removeLast()
-        val children = mutableListOf<File>()
-        try {
-          Files.newDirectoryStream(current.toPath()).use { entries ->
-            for (entry in entries) {
-              addonEntries += 1
-              if (addonEntries > MAX_RUNTIME_ENTRIES_PER_ADDON) {
-                throw AddonRuntimePayloadException("payloadTooLarge")
-              }
-              children += entry.toFile()
-            }
-          }
-        } catch (error: AddonRuntimePayloadException) {
-          throw error
-        } catch (_: Exception) {
-          throw AddonRuntimePayloadException("readFailed")
-        }
-        children.sortBy { it.name }
-        for (child in children) {
-          if (Files.isSymbolicLink(child.toPath())) {
-            throw AddonRuntimePayloadException("invalidPath")
-          }
-          val canonicalChild = child.canonicalFile
-          if (
-            !canonicalChild.toPath().startsWith(canonicalRootPath) ||
-              canonicalChild == canonicalDirectory
-          ) {
-            throw AddonRuntimePayloadException("invalidPath")
-          }
-          if (child.isDirectory) {
-            if (!Files.isDirectory(child.toPath(), LinkOption.NOFOLLOW_LINKS)) {
-              throw AddonRuntimePayloadException("invalidPath")
-            }
-            pendingDirectories.add(child)
-            continue
-          }
-          if (!child.isFile || !Files.isRegularFile(child.toPath(), LinkOption.NOFOLLOW_LINKS)) {
-            throw AddonRuntimePayloadException("invalidPath")
-          }
-
-          val relativePath = child.relativeTo(directory).invariantSeparatorsPath
-          val validatedPath = runCatching {
-            AddonArchive.validateEntryPath(relativePath)
-          }
-            .getOrElse {
-              throw AddonRuntimePayloadException("invalidPath")
-            }
-          if (validatedPath != relativePath || relativePath.length > MAX_RUNTIME_PATH_CHARS) {
-            throw AddonRuntimePayloadException("invalidPath")
-          }
-
-          val size = child.length()
-          if (size !in 0..MAX_RUNTIME_FILE_BYTES) {
-            throw AddonRuntimePayloadException("payloadTooLarge")
-          }
-          addonBytes += size
-          totalBytes += size
-          addonFiles += 1
-          if (
-            addonFiles > AddonArchive.MAX_ENTRIES ||
-              descriptors.size + 1 > MAX_RUNTIME_FILES ||
-              totalBytes > MAX_RUNTIME_BUNDLE_BYTES
-          ) {
-            throw AddonRuntimePayloadException("payloadTooLarge")
-          }
-
-          descriptors +=
-            FileDescriptor(
-              folder = addon.folder,
-              path = relativePath,
-              sizeBytes = size,
-              file = child,
-              canonicalPath = canonicalChild.path,
-              lastModified = child.lastModified(),
-            )
-        }
-      }
-
-      if (addonFiles != addon.filesCount || addonBytes != addon.sizeBytes) {
-        throw AddonRuntimePayloadException("unavailable")
-      }
-      addonFolders += addon.folder
     }
-
     val sortedFiles =
       descriptors.sortedWith(compareBy<FileDescriptor> { it.folder }.thenBy { it.path })
     val normalizedKeys = sortedFiles.map { key(it.folder, it.path).lowercase(Locale.ROOT) }
@@ -194,6 +107,136 @@ internal class AddonRuntimePayloadProvider(private val repository: AddonLibraryR
       filesByKey = filesByKey,
       totalBytes = totalBytes,
     )
+  }
+
+  /**
+   * Walks one addon directory and appends its validated descriptors to [descriptors] only when the
+   * whole addon is within every runtime limit. Returns the committed file and byte counts. Size
+   * violations throw `payloadTooLarge` (isolated by the caller); path and readability violations
+   * still fail the manifest.
+   */
+  private fun appendAddonDescriptors(
+    addon: AddonLibraryItem,
+    committedFiles: Int,
+    committedBytes: Long,
+    descriptors: MutableList<FileDescriptor>,
+  ): Pair<Int, Long> {
+    val directory = repository.addonDirectory(addon.folder)
+    if (!directory.isDirectory) {
+      throw AddonRuntimePayloadException("unavailable")
+    }
+    val canonicalDirectory = directory.canonicalFile
+    val expectedParent = directory.absoluteFile.parentFile?.canonicalFile
+    if (expectedParent == null || canonicalDirectory.parentFile != expectedParent) {
+      throw AddonRuntimePayloadException("invalidPath")
+    }
+    val canonicalRootPath = canonicalDirectory.toPath()
+    val pendingDirectories = ArrayDeque<File>()
+    pendingDirectories.add(directory)
+    var addonBytes = 0L
+    var addonFiles = 0
+    var addonEntries = 0
+    val addonDescriptors = mutableListOf<FileDescriptor>()
+
+    while (pendingDirectories.isNotEmpty()) {
+      val current = pendingDirectories.removeLast()
+      val children = mutableListOf<File>()
+      try {
+        Files.newDirectoryStream(current.toPath()).use { entries ->
+          for (entry in entries) {
+            addonEntries += 1
+            if (addonEntries > MAX_RUNTIME_ENTRIES_PER_ADDON) {
+              throw AddonRuntimePayloadException(
+                "payloadTooLarge",
+                "addon exceeds the " +
+                  "${AddonLimits.MAX_RUNTIME_ENTRIES_PER_ADDON} entry runtime limit",
+              )
+            }
+            children += entry.toFile()
+          }
+        }
+      } catch (error: AddonRuntimePayloadException) {
+        throw error
+      } catch (_: Exception) {
+        throw AddonRuntimePayloadException("readFailed")
+      }
+      children.sortBy { it.name }
+      for (child in children) {
+        if (Files.isSymbolicLink(child.toPath())) {
+          throw AddonRuntimePayloadException("invalidPath")
+        }
+        val canonicalChild = child.canonicalFile
+        if (
+          !canonicalChild.toPath().startsWith(canonicalRootPath) ||
+            canonicalChild == canonicalDirectory
+        ) {
+          throw AddonRuntimePayloadException("invalidPath")
+        }
+        if (child.isDirectory) {
+          if (!Files.isDirectory(child.toPath(), LinkOption.NOFOLLOW_LINKS)) {
+            throw AddonRuntimePayloadException("invalidPath")
+          }
+          pendingDirectories.add(child)
+          continue
+        }
+        if (!child.isFile || !Files.isRegularFile(child.toPath(), LinkOption.NOFOLLOW_LINKS)) {
+          throw AddonRuntimePayloadException("invalidPath")
+        }
+
+        val relativePath = child.relativeTo(directory).invariantSeparatorsPath
+        val validatedPath = runCatching {
+          AddonArchive.validateEntryPath(relativePath)
+        }
+          .getOrElse {
+            throw AddonRuntimePayloadException("invalidPath")
+          }
+        if (validatedPath != relativePath || relativePath.length > MAX_RUNTIME_PATH_CHARS) {
+          throw AddonRuntimePayloadException("invalidPath")
+        }
+
+        val size = child.length()
+        if (size !in 0..MAX_RUNTIME_FILE_BYTES) {
+          throw AddonRuntimePayloadException(
+            "payloadTooLarge",
+            "file '$relativePath' exceeds the " +
+              "${AddonLimits.MAX_RUNTIME_FILE_BYTES / (1024L * 1024L)} MiB runtime per-file limit",
+          )
+        }
+        addonBytes += size
+        addonFiles += 1
+        if (
+          addonFiles > AddonArchive.MAX_ENTRIES ||
+            descriptors.size + addonDescriptors.size + 1 > MAX_RUNTIME_FILES
+        ) {
+          throw AddonRuntimePayloadException(
+            "payloadTooLarge",
+            "addon exceeds the ${AddonLimits.MAX_RUNTIME_FILES} file runtime limit",
+          )
+        }
+
+        addonDescriptors +=
+          FileDescriptor(
+            folder = addon.folder,
+            path = relativePath,
+            sizeBytes = size,
+            file = child,
+            canonicalPath = canonicalChild.path,
+            lastModified = child.lastModified(),
+          )
+      }
+    }
+
+    if (addonFiles != addon.filesCount || addonBytes != addon.sizeBytes) {
+      throw AddonRuntimePayloadException("unavailable")
+    }
+    if (addonBytes + committedBytes > AddonLimits.MAX_RUNTIME_BUNDLE_BYTES) {
+      throw AddonRuntimePayloadException(
+        "payloadTooLarge",
+        "addon exceeds the ${AddonLimits.MAX_RUNTIME_BUNDLE_BYTES / (1024L * 1024L)} MiB runtime bundle budget",
+      )
+    }
+    descriptors += addonDescriptors
+    return addonFiles to addonBytes
   }
 
   fun page(manifest: Manifest, page: Int): List<FileDescriptor> {
@@ -241,15 +284,16 @@ internal class AddonRuntimePayloadProvider(private val repository: AddonLibraryR
   private fun key(folder: String, path: String): String = "$folder/$path"
 
   companion object {
-    const val MAX_RUNTIME_BUNDLE_BYTES = 16L * 1024 * 1024
-    const val MAX_RUNTIME_FILE_BYTES = 8L * 1024 * 1024
-    const val MAX_RUNTIME_FILES = 1024
-    const val MAX_RUNTIME_ADDONS = 128
-    const val MAX_RUNTIME_PATH_CHARS = 512
-    const val MAX_RUNTIME_ENTRIES_PER_ADDON = 4096
-    const val MAX_FILE_CHUNK_BYTES = 32 * 1024
-    const val MANIFEST_PAGE_SIZE = 32
+    const val MAX_RUNTIME_BUNDLE_BYTES = AddonLimits.MAX_RUNTIME_BUNDLE_BYTES
+    const val MAX_RUNTIME_FILE_BYTES = AddonLimits.MAX_RUNTIME_FILE_BYTES
+    const val MAX_RUNTIME_FILES = AddonLimits.MAX_RUNTIME_FILES
+    const val MAX_RUNTIME_ADDONS = AddonLimits.MAX_RUNTIME_ADDONS
+    const val MAX_RUNTIME_PATH_CHARS = AddonLimits.MAX_RUNTIME_PATH_CHARS
+    const val MAX_RUNTIME_ENTRIES_PER_ADDON = AddonLimits.MAX_RUNTIME_ENTRIES_PER_ADDON
+    const val MAX_FILE_CHUNK_BYTES = AddonLimits.MAX_FILE_CHUNK_BYTES
+    const val MANIFEST_PAGE_SIZE = AddonLimits.MANIFEST_PAGE_SIZE
   }
 }
 
-internal class AddonRuntimePayloadException(val code: String) : IllegalStateException(code)
+internal class AddonRuntimePayloadException(val code: String, val detail: String? = null) :
+  IllegalStateException(detail ?: code)
