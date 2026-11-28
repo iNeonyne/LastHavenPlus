@@ -49,7 +49,7 @@ Update this file when strategic priorities, sequence or release direction change
 <!-- ROADMAP-LIVE-START -->
 ## Live issue and PR inventory
 
-Generated: 2026-11-28T01:24:33+00:00
+Generated: 2026-11-28T01:30:14+00:00
 Source of truth: live GitHub Issues, pull requests and labels. This section is generated automatically; do not edit it manually.
 
 Every open issue is listed below, grouped by its current priority. Opening a newer issue or PR does not supersede an older one. Duplicates and supersession must be explicitly reviewed and linked in GitHub.
@@ -59,6 +59,11 @@ Every open issue is listed below, grouped by its current priority. Opening a new
 #### P0.1
 
 - [#4 — P0.1 — Improve build reproducibility and updater test coverage](https://github.com/iNeonyne/LastHavenPlus/issues/4) — bug, P0.1
+
+#### P1
+
+- [#227 — P1 — Serialize addon library access and transaction recovery](https://github.com/iNeonyne/LastHavenPlus/issues/227) — bug, P1
+- [#228 — P1 — Reconcile addon import and runtime payload size limits](https://github.com/iNeonyne/LastHavenPlus/issues/228) — bug, P1
 
 #### P2
 
