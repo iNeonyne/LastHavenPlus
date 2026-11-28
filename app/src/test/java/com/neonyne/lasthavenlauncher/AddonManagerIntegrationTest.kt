@@ -40,7 +40,8 @@ class AddonManagerIntegrationTest {
     val host = source("AddonManagerHost.kt")
     assertTrue(host.contains("initialRevision"))
     assertTrue(host.contains("libraryChanged = true"))
-    assertTrue(host.contains("BackHandler(enabled = busy) {}"))
+    assertTrue(host.contains("BackHandler {"))
+    assertTrue(host.contains("if (!busy) onBack(libraryChanged)"))
     assertTrue(host.contains("executor.execute"))
   }
 

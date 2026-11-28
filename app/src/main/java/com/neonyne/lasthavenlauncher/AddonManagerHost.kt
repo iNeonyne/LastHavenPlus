@@ -63,7 +63,9 @@ fun AddonManagerHost(onBack: (libraryChanged: Boolean) -> Unit) {
   }
 
   // Do not leave the manager mid-commit; archive and index transactions must finish first.
-  BackHandler(enabled = busy) {}
+  BackHandler {
+    if (!busy) onBack(libraryChanged)
+  }
 
   val finishOperation: ((() -> AddonLibrarySnapshot), String, String) -> Unit =
     { operation, successMessage, label ->
