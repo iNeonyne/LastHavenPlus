@@ -18,6 +18,7 @@ internal object UpdateDownloadPolicy {
     maximumBytes: Long,
     expectedSha256: String,
     onBytesCopied: (Long) -> Unit = {},
+    onVerificationStarted: () -> Unit = {},
   ) {
     try {
       val digest = MessageDigest.getInstance("SHA-256")
@@ -52,6 +53,7 @@ internal object UpdateDownloadPolicy {
         }
       }
 
+      onVerificationStarted()
       val actualSha256 = digest.digest().joinToString("") { "%02x".format(it) }
       UpdateNetworkPolicy.verifyDownload(
         actualSize = totalBytes,
