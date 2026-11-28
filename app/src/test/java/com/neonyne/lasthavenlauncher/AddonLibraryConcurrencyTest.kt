@@ -329,7 +329,6 @@ class AddonLibraryConcurrencyTest {
     assertTrue(root.listFiles().orEmpty().none { it.name.startsWith(".") })
   }
 
-
   @Test
   fun `first enable remove and export operations recover abandoned transactions`() {
     fun interruptedRoot(name: String): File {
