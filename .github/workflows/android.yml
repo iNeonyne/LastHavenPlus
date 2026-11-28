@@ -79,9 +79,11 @@ jobs:
           node --check app/src/main/assets/extensions/addon-bridge/bridge.js
           node --check app/src/main/assets/extensions/addon-bridge/xhr-overlay.js
           node --check app/src/main/assets/extensions/addon-bridge/worker-overlay.js
+          node --check app/src/main/assets/extensions/addon-bridge/addon-bootstrap.js
           node --test scripts/test-addon-bridge.mjs
           node --test scripts/test-addon-xhr-overlay.mjs
           node --test scripts/test-addon-worker-overlay.mjs
+          node --test scripts/test-addon-bootstrap.mjs
 
       - name: Generate resolved runtime dependency report
         run: |
