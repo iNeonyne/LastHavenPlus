@@ -329,6 +329,55 @@ class AddonLibraryConcurrencyTest {
     assertTrue(root.listFiles().orEmpty().none { it.name.startsWith(".") })
   }
 
+
+  @Test
+  fun `first enable remove and export operations recover abandoned transactions`() {
+    fun interruptedRoot(name: String): File {
+      val root = temporaryFolder.newFolder(name)
+      val setupRepository = AddonLibraryRepository(root)
+      val archive =
+        zipOf(
+          "Sample/Sample.toc" to "## Version: 1\\n",
+          "Sample/main.lua" to "print('sample')",
+        )
+      setupRepository.importZip(ByteArrayInputStream(archive), archive.size.toLong())
+      val previousRevision = setupRepository.readLibrary().revision
+      val backup = File(root, ".backup-crashed")
+      check(File(root, "Sample").renameTo(backup))
+      writeTransaction(
+        root,
+        ".txn-crashed",
+        newRevision = "crashed-revision",
+        oldRevision = previousRevision,
+        backups = listOf("Sample" to backup.name),
+      )
+      return root
+    }
+
+    val enableRoot = interruptedRoot("first-enable-recovery")
+    val enabled = AddonLibraryRepository(enableRoot).setEnabled("Sample", true)
+    assertTrue(enabled.addons.single().enabled)
+    assertEquals("print('sample')", File(enableRoot, "Sample/main.lua").readText())
+    assertFalse(File(enableRoot, ".txn-crashed").exists())
+
+    val removeRoot = interruptedRoot("first-remove-recovery")
+    val removed = AddonLibraryRepository(removeRoot).removeAddon("Sample")
+    assertTrue(removed.addons.isEmpty())
+    assertFalse(File(removeRoot, "Sample").exists())
+    assertFalse(File(removeRoot, ".txn-crashed").exists())
+
+    val exportRoot = interruptedRoot("first-export-recovery")
+    val output = ByteArrayOutputStream()
+    AddonLibraryRepository(exportRoot).exportZip("Sample", output)
+    val entries = mutableListOf<String>()
+    ZipInputStream(output.toByteArray().inputStream()).use { zip ->
+      while (true) entries += (zip.nextEntry?.name ?: break)
+    }
+    assertEquals(listOf("Sample/Sample.toc", "Sample/main.lua"), entries)
+    assertTrue(File(exportRoot, "Sample/main.lua").isFile)
+    assertFalse(File(exportRoot, ".txn-crashed").exists())
+  }
+
   private fun zipOf(vararg files: Pair<String, String>): ByteArray {
     val output = ByteArrayOutputStream()
     ZipOutputStream(output).use { zip ->
