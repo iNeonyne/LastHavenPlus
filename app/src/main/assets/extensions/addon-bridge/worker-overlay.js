@@ -692,6 +692,7 @@
       "var booted = false;\n" +
       "var failed = false;\n" +
       "var maskRecords = null;\n" +
+      "var manifestEntries = [];\n" +
       "var maskDiagnosticReported = false;\n" +
       "function reportMaskDiagnostic(stage) {\n" +
       "  if (maskDiagnosticReported) { return; }\n" +
@@ -760,6 +761,7 @@
       "      method: 'GET',\n" +
       "      url: '',\n" +
       "      intercepted: false,\n" +
+      "      manifestRequest: false,\n" +
       "      native: null,\n" +
       "      readyState: 0,\n" +
       "      status: 0,\n" +
@@ -779,9 +781,13 @@
       "    state.url = String(url);\n" +
       "    state.async = async !== false;\n" +
       "    state.intercepted = false;\n" +
+      "    state.manifestRequest = false;\n" +
       "    var parsed = null;\n" +
       "    try { parsed = new URL(state.url, baseHref()); } catch (error) { parsed = null; }\n" +
-      "    var sameOrigin = parsed && parsed.protocol === 'https:' && parsed.hostname === '" + GAME_HOST + "';\n" +
+      "    var baseOrigin = '';\n" +
+      "    try { baseOrigin = new URL(baseHref()).origin; } catch (error) {}\n" +
+      "    var sameOrigin = parsed && parsed.protocol === 'https:' && GAME_HOSTS.has(parsed.hostname) && parsed.origin === baseOrigin;\n" +
+      "    state.manifestRequest = Boolean(sameOrigin && state.method === 'GET' && parsed.pathname === '/game-manifest.txt' && parsed.search === '' && parsed.hash === '');\n" +
       "    if (sameOrigin && state.method !== 'GET' && state.method !== 'HEAD') {\n" +
       "      var isAddonRoute = false;\n" +
       "      try { isAddonRoute = decodeURIComponent(parsed.pathname).indexOf(ADDON_PREFIX) !== -1; } catch (error) { isAddonRoute = false; }\n" +
@@ -884,7 +890,11 @@
       "  Object.defineProperty(prototype, 'responseText', {\n" +
       "    get: function () {\n" +
       "      var state = this.__lhState;\n" +
-      "      if (state.native) { return state.native.responseText; }\n" +
+      "      if (state.native) {\n" +
+      "        var nativeText = state.native.responseText;\n" +
+      "        if (state.manifestRequest && state.native.readyState === 4 && state.native.status === 200) { return appendAddonManifest(nativeText, manifestEntries); }\n" +
+      "        return nativeText;\n" +
+      "      }\n" +
       "      var text = '';\n" +
       "      for (var i = 0; i < state.bodyBytes.length; i += 1) { text += String.fromCharCode(state.bodyBytes[i]); }\n" +
       "      return text;\n" +
@@ -893,7 +903,16 @@
       "  Object.defineProperty(prototype, 'response', {\n" +
       "    get: function () {\n" +
       "      var state = this.__lhState;\n" +
-      "      if (state.native) { return state.native.response; }\n" +
+      "      if (state.native) {\n" +
+      "        if (state.manifestRequest && state.native.readyState === 4 && state.native.status === 200) {\n" +
+      "          if (state.responseType === '' || state.responseType === 'text') { return appendAddonManifest(state.native.responseText, manifestEntries); }\n" +
+      "          if (state.responseType === 'arraybuffer' && state.native.response) {\n" +
+      "            var sourceText = new TextDecoder().decode(state.native.response);\n" +
+      "            return new TextEncoder().encode(appendAddonManifest(sourceText, manifestEntries)).buffer;\n" +
+      "          }\n" +
+      "        }\n" +
+      "        return state.native.response;\n" +
+      "      }\n" +
       "      if (state.responseType === 'arraybuffer') { return state.bodyBytes.buffer; }\n" +
       "      return this.responseText;\n" +
       "    }\n" +
@@ -925,6 +944,9 @@
       "    var validatedMasks = validateMaskRecords(data.maskBuffer, data.indexSize, data.enabledFolders);\n" +
       "    if (validatedMasks.ok) { maskRecords = validatedMasks.records; }\n" +
       "    else { reportMaskDiagnostic('mask-records-invalid'); }\n" +
+      "    var validatedManifest = validateManifestEntries(data.manifestEntries, data.enabledFolders);\n" +
+      "    if (validatedManifest.ok) { manifestEntries = validatedManifest.entries; }\n" +
+      "    else { reportMaskDiagnostic('manifest-entries-invalid'); }\n" +
       "    if (typeof data.maskError === 'string' && data.maskError.length <= 32) { reportMaskDiagnostic(data.maskError); }\n" +
       "    port.addEventListener('message', function (event) {\n" +
       "      var data = event.data;\n" +
@@ -941,6 +963,7 @@
       "    });\n" +
       "    try { if (typeof port.start === 'function') { port.start(); } } catch (error) {}\n" +
       "    installAddonXhrForwarder(port);\n" +
+      "    try { installAddonManifestFetch(manifestEntries); } catch (error) { reportMaskDiagnostic('manifest-fetch-install'); }\n" +
       "    try { self.importScripts(originalUrl); } catch (error) { reportFailure('import-scripts'); return; }\n" +
       "    try { port.postMessage({ __lhReady: true }); } catch (error) { reportFailure('ready-signal'); return; }\n" +
       "    try { wrapAssignWasmImports(self, function () { return maskRecords; }); } catch (error) {}\n" +
