@@ -47,7 +47,11 @@ internal class NetworkUsageTracker(private val store: NetworkUsageTotalsStore) {
       if (updated == previous || store.write(updated)) updated else previous
     }
 
-  private fun advance(total: Long, previousCounter: Long?, currentCounter: Long?): Pair<Long, Long?> {
+  private fun advance(
+    total: Long,
+    previousCounter: Long?,
+    currentCounter: Long?,
+  ): Pair<Long, Long?> {
     if (currentCounter == null || currentCounter < 0L) return total to previousCounter
     if (previousCounter == null) return total to currentCounter
 
