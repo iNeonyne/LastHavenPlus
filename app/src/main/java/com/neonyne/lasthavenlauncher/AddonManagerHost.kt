@@ -73,7 +73,6 @@ fun AddonManagerHost(onBack: (libraryChanged: Boolean) -> Unit) {
             }
             .onFailure { error ->
               message = error.message ?: operationFailed
-              runCatching { repository.readLibrary() }.onSuccess { snapshot = it }
             }
         }
       }
