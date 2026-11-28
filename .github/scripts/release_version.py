@@ -14,10 +14,10 @@ import sys
 from pathlib import Path
 from typing import Iterable
 
-VERSION_RE = re.compile(r"^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$")
-EXPLICIT_RE = re.compile(r"\\[release:((?:0|[1-9][0-9]*)\\.(?:0|[1-9][0-9]*)\\.(?:0|[1-9][0-9]*))\\]", re.IGNORECASE)
+VERSION_RE = re.compile(r"^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$")
+EXPLICIT_RE = re.compile(r"\[release:((?:0|[1-9][0-9]*)\.(?:0|[1-9][0-9]*)\.(?:0|[1-9][0-9]*))\]", re.IGNORECASE)
 CONVENTIONAL_RE = re.compile(
-    r"^(?P<type>[a-zA-Z][a-zA-Z0-9_-]*)(?:\\([^()\\r\\n]+\\))?(?P<breaking>!)?:\\s+.+$"
+    r"^(?P<type>[a-zA-Z][a-zA-Z0-9_-]*)(?:\([^()\r\n]+\))?(?P<breaking>!)?:\s+.+$"
 )
 RELEASE_TYPES = {"feat", "feature", "fix", "perf", "refactor", "revert", "security"}
 MAX_COMPONENT = 999
@@ -80,7 +80,7 @@ def resolve_release_version(
         return None
 
     is_breaking = bool(match.group("breaking")) or bool(
-        re.search(r"^BREAKING[ -]CHANGE:\\s*\\S", commit_message, re.IGNORECASE | re.MULTILINE)
+        re.search(r"^BREAKING[ -]CHANGE:\s*\S", commit_message, re.IGNORECASE | re.MULTILINE)
     )
     commit_type = match.group("type").lower()
     if is_breaking:
