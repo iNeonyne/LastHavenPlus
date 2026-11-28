@@ -43,7 +43,6 @@ class AppUsageMeter(context: Context) {
       ),
     )
 
-
   /** Samples only network counters; safe to poll while the Network & Storage page is visible. */
   fun networkSnapshot(): NetworkUsageSnapshot = readNetworkSnapshot()
 
