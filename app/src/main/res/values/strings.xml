@@ -53,6 +53,7 @@
     <string tools:ignore="MissingTranslation" name="updates_fallback_full">Differential download failed. Retrying with the full APK…</string>
     <string tools:ignore="MissingTranslation" name="updates_download_failed">The update download failed.</string>
     <string tools:ignore="MissingTranslation" name="updates_retry_download">Retry download</string>
+    <string tools:ignore="MissingTranslation" name="updates_retry_full">Retry full APK</string>
     <string tools:ignore="MissingTranslation" name="updates_retrying_attempt">Retrying download (attempt %1$d of 3)…</string>
     <string tools:ignore="MissingTranslation" name="action_refresh">Refresh</string>
     <string tools:ignore="MissingTranslation" name="action_retry">Retry</string>
