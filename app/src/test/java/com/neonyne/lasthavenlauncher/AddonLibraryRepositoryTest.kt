@@ -28,7 +28,7 @@ class AddonLibraryRepositoryTest {
     val archive =
       zipOf(
         "Sample/Sample.toc" to
-          "## Title: Sample Addon\n## Interface: 30300\\n## OptionalDeps: OptionalOne, OptionalTwo\n",
+          "## Title: Sample Addon\n## Interface: 30300\n## OptionalDeps: OptionalOne, OptionalTwo\n",
         "Sample/main.lua" to "print('sample')",
       )
 
