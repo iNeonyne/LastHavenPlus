@@ -43,10 +43,6 @@ class AppUsageMeter(context: Context) {
       ),
     )
 
-  init {
-    // Establish a baseline on first use; earlier bytes cannot be reconstructed reliably.
-    networkTracker.sample(rxAtStart, txAtStart)
-  }
 
   /** Samples only network counters; safe to poll while the Network & Storage page is visible. */
   fun networkSnapshot(): NetworkUsageSnapshot = readNetworkSnapshot()
