@@ -40,6 +40,7 @@
   }
 
   let currentBundle = null;
+  let pageBundleClone = null;
   let ready = false;
   let errorCode = null;
   let currentPlan = null;
@@ -305,7 +306,21 @@
       const pageBridge = cloneInto(
         {
           getBundle: exportFunction(
-            () => currentBundle === null ? null : cloneInto(currentBundle, targetWindow),
+            () => {
+              if (currentBundle === null) {
+                return null;
+              }
+              // One page-realm clone per payload revision (issue #229): the bundle is deep
+              // frozen and read-only, so the same clone is reused until the revision changes.
+              if (pageBundleClone === null) {
+                pageBundleClone = cloneInto(currentBundle, targetWindow);
+              }
+              return pageBundleClone;
+            },
+            targetWindow,
+          ),
+          getRevision: exportFunction(
+            () => (currentBundle === null ? null : currentBundle.revision),
             targetWindow,
           ),
           getBootstrapPlan: exportFunction(
@@ -347,6 +362,7 @@
           throw new Error("invalidPayload");
         }
         currentBundle = core.deepFreeze(payload);
+        pageBundleClone = null;
         ready = true;
         return;
       } catch (error) {
