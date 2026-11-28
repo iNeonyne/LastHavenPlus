@@ -1,0 +1,77 @@
+package com.neonyne.lasthavenlauncher
+
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.isToggleable
+import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.onNode
+import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.performClick
+import java.util.concurrent.atomic.AtomicBoolean
+import org.junit.Assert.assertTrue
+import org.junit.Rule
+import org.junit.Test
+import org.junit.runner.RunWith
+import androidx.test.ext.junit.runners.AndroidJUnit4
+
+/** Exercises the actual Addon Manager Compose surface without starting a remote game session. */
+@RunWith(AndroidJUnit4::class)
+class AddonManagerUiSmokeTest {
+  @get:Rule val composeRule = createComposeRule()
+
+  @Test
+  fun addonManagerRendersAddonAndItsPrimaryActions() {
+    val imported = AtomicBoolean(false)
+    val enabled = AtomicBoolean(false)
+    val returned = AtomicBoolean(false)
+    val addon =
+      AddonLibraryItem(
+        title = "Landscape Smoke Addon",
+        folder = "LandscapeSmoke",
+        version = "1.0",
+        interfaceVersion = "30300",
+        notes = "",
+        dependencies = emptyList(),
+        sizeBytes = 2_048L,
+        filesCount = 3,
+        enabled = false,
+        importedAt = 1L,
+        warnings = emptyList(),
+      )
+
+    composeRule.setContent {
+      MaterialTheme(
+        colorScheme = DesignTokens.colorScheme(),
+        typography = DesignTokens.typography(),
+        shapes = DesignTokens.shapes,
+      ) {
+        AddonManagerScreen(
+          snapshot = AddonLibrarySnapshot(revision = "ui-smoke", addons = listOf(addon)),
+          busy = false,
+          message = null,
+          onImport = { imported.set(true) },
+          onToggle = { folder, value ->
+            assertTrue(folder == addon.folder)
+            enabled.set(value)
+          },
+          onExport = {},
+          onRemove = {},
+          onBack = { returned.set(true) },
+        )
+      }
+    }
+
+    composeRule.onNodeWithText("Local addons").assertIsDisplayed()
+    composeRule.onNodeWithText("Landscape Smoke Addon").assertIsDisplayed()
+    composeRule.onNodeWithText("Import ZIP").assertIsDisplayed()
+    composeRule.onNodeWithText("Export ZIP").assertIsDisplayed()
+    composeRule.onNodeWithText("Import ZIP").performClick()
+    composeRule.onNode(isToggleable()).performClick()
+    composeRule.onNodeWithText("Back").performClick()
+    composeRule.waitForIdle()
+
+    assertTrue("Import action should be wired", imported.get())
+    assertTrue("Enable switch should update the selected addon", enabled.get())
+    assertTrue("Back action should be wired", returned.get())
+  }
+}
