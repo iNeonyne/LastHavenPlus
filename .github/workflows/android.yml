@@ -75,7 +75,8 @@ jobs:
           bash -n .github/scripts/prepare_release_payload.sh
 
       - name: Run lint, formatting, unsigned release build and unit tests
-        run: SPOTLESS_RATCHET_REF="${{ github.base_ref || 'beta' }}"
+        run: |
+          SPOTLESS_RATCHET_REF="${{ github.base_ref || 'beta' }}"
           ./gradlew lintDebug spotlessCheck assembleRelease testDebugUnitTest --stacktrace "-PspotlessRatchetFrom=origin/$SPOTLESS_RATCHET_REF"
 
       - name: Verify Addon Manager MIT notice in unsigned APK
