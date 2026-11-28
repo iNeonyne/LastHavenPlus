@@ -49,7 +49,7 @@ Update this file when strategic priorities, sequence or release direction change
 <!-- ROADMAP-LIVE-START -->
 ## Live issue and PR inventory
 
-Generated: 2026-11-28T02:49:45+00:00
+Generated: 2026-11-28T02:51:55+00:00
 Source of truth: live GitHub Issues, pull requests and labels. This section is generated automatically; do not edit it manually.
 
 Every open issue is listed below, grouped by its current priority. Opening a newer issue or PR does not supersede an older one. Duplicates and supersession must be explicitly reviewed and linked in GitHub.
@@ -70,6 +70,7 @@ Every open issue is listed below, grouped by its current priority. Opening a new
 - [#228 — P1 — Reconcile addon import and runtime payload size limits](https://github.com/iNeonyne/LastHavenPlus/issues/228) — bug, P1
 - [#229 — P1 — Cache page-side addon bundle clones by revision](https://github.com/iNeonyne/LastHavenPlus/issues/229) — bug, P1, performance
 - [#244 — P1 — Make the game reload action reliably navigate and confirm completion](https://github.com/iNeonyne/LastHavenPlus/issues/244) — bug, P1
+- [#248 — P1 — Native landscape UX, POCO X6 Pro layout and Android UI smoke coverage](https://github.com/iNeonyne/LastHavenPlus/issues/248) — enhancement, P1
 
 #### P2
 
