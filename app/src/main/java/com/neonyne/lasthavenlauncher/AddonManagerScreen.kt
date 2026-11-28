@@ -178,7 +178,7 @@ fun AddonManagerScreen(
     }
 
     Text(
-      stringResource(R.string.addon_manager_runtime_unavailable),
+      stringResource(R.string.addon_manager_runtime_status),
       color = MaterialTheme.colorScheme.onSurfaceVariant,
       style = MaterialTheme.typography.bodySmall,
     )

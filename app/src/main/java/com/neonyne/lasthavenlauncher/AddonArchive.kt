@@ -96,8 +96,8 @@ object AddonArchive {
     input: InputStream,
     compressedSize: Long?,
     extractionDirectory: File,
-    beforeExtraction: (Long) -> Unit = {},
     onStage: (AddonImportStage) -> Unit = {},
+    beforeExtraction: (Long) -> Unit = {},
   ): List<ImportedAddon> = input.use { archiveInput ->
     onStage(AddonImportStage.COPYING_ARCHIVE)
     require(compressedSize == null || compressedSize in 1..MAX_ARCHIVE_BYTES) {
