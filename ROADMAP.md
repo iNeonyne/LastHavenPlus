@@ -49,7 +49,7 @@ Update this file when strategic priorities, sequence or release direction change
 <!-- ROADMAP-LIVE-START -->
 ## Live issue and PR inventory
 
-Generated: 2026-11-28T00:34:21+00:00
+Generated: 2026-11-28T00:37:33+00:00
 Source of truth: live GitHub Issues, pull requests and labels. This section is generated automatically; do not edit it manually.
 
 Every open issue is listed below, grouped by its current priority. Opening a newer issue or PR does not supersede an older one. Duplicates and supersession must be explicitly reviewed and linked in GitHub.
@@ -95,7 +95,7 @@ Every open issue is listed below, grouped by its current priority. Opening a new
 
 ### Open pull requests
 
-No open pull requests.
+- [#225 — P2: Allow HTTPS navigation to LastHavens subdomains](https://github.com/iNeonyne/LastHavenPlus/pull/225) (beta <- chaty/allow-first-party-subdomains)
 
 ### Recently completed (last 30 days)
 
