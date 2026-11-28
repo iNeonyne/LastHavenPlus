@@ -340,7 +340,12 @@ fun UpdateScreen(
             }
             if (update.patch != null && downloadingDelta) {
               TextButton(onClick = { onDownload(false) }, modifier = Modifier.fillMaxWidth()) {
-                Text(stringResource(R.string.updates_download_full_instead))
+                Text(
+                  stringResource(
+                    if (progress.fallbackToFull) R.string.updates_retry_full
+                    else R.string.updates_download_full_instead,
+                  ),
+                )
               }
             }
           } else {
