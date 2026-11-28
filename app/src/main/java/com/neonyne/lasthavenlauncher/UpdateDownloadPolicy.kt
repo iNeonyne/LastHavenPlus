@@ -17,6 +17,7 @@ internal object UpdateDownloadPolicy {
     expectedSize: Long,
     maximumBytes: Long,
     expectedSha256: String,
+    onBytesCopied: (Long) -> Unit = {},
   ) {
     try {
       val digest = MessageDigest.getInstance("SHA-256")
@@ -36,6 +37,7 @@ internal object UpdateDownloadPolicy {
               }
               digest.update(singleByte.toByte())
               output.write(singleByte)
+              onBytesCopied(1L)
               continue
             }
             totalBytes += count
@@ -44,6 +46,7 @@ internal object UpdateDownloadPolicy {
             }
             digest.update(buffer, 0, count)
             output.write(buffer, 0, count)
+            onBytesCopied(count.toLong())
           }
           output.fd.sync()
         }
