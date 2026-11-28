@@ -131,7 +131,8 @@ class UpdateProgressTest {
     val retried = tracker.snapshot()
     assertEquals(2, retried.downloadAttempt)
     assertEquals(0L, retried.receivedBytes)
-    assertEquals(0, retried.percent)
+    assertFalse(retried.totalKnown)
+    assertNull(retried.percent)
     assertNull(retried.estimatedBytesPerSecond)
     assertNull(retried.failureMessage)
   }
