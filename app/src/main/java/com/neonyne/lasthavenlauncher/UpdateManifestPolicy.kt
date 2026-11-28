@@ -46,6 +46,5 @@ internal object UpdateManifestPolicy {
     installedVersionCode: Long,
     baseVersion: String,
     baseVersionCode: Long,
-  ): Boolean =
-    currentVersion == baseVersion && installedVersionCode == baseVersionCode
+  ): Boolean = currentVersion == baseVersion && installedVersionCode == baseVersionCode
 }
