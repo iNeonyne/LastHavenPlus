@@ -1,6 +1,7 @@
 package com.neonyne.lasthavenlauncher
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -261,11 +262,16 @@ private fun AddonCard(
 ) {
   val missing = dependencyReport.missingByFolder[addon.folder].orEmpty()
   val isBlocked = missing.isNotEmpty() || addon.folder in dependencyReport.cyclicFolders
-  val hasWarnings = addon.warnings.isNotEmpty() || addon.sizeBytes > AddonLimits.MAX_RUNTIME_BUNDLE_BYTES
+  val warningCount =
+    maxOf(
+      addon.warnings.size,
+      if (addon.sizeBytes > AddonLimits.MAX_RUNTIME_BUNDLE_BYTES) 1 else 0,
+    )
+  val hasWarnings = warningCount > 0
   val status =
     when {
       isBlocked -> stringResource(R.string.addon_manager_status_blocked)
-      hasWarnings -> stringResource(R.string.addon_manager_warnings_count, addon.warnings.size)
+      hasWarnings -> stringResource(R.string.addon_manager_warnings_count, warningCount)
       addon.enabled -> stringResource(R.string.addon_manager_status_enabled)
       else -> stringResource(R.string.addon_manager_status_disabled)
     }
@@ -457,7 +463,7 @@ private fun AddonDetailsDialog(
     },
     confirmButton = {
       TextButton(onClick = onDismiss) {
-        Text(stringResource(R.string.addon_manager_back))
+        Text(stringResource(R.string.addon_manager_details_close))
       }
     },
   )
