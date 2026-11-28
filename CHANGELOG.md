@@ -1,3 +1,26 @@
+## v2.5.0 — 2026-11-28
+
+### New features
+- Integrate Addon Manager Phase B into the in-game overlay while preserving the active GeckoSession.
+- Add a bounded GeckoView addon resource bridge with validated XHR and Worker interception for supported game resources.
+- Add safer addon replacement confirmation, cancellable imports, operation progress and reload-required feedback.
+- Add alternate first-party game server selection; both first-party hosts launch at `/play`.
+- Upgrade the embedded browser engine to Mozilla GeckoView 161.
+
+### Bug fixes and reliability
+- Restrict game navigation to verified first-party origins and allow first-party subdomains.
+- Disconnect stale addon bridge ports when the game session changes.
+- Refresh addon bridge snapshots after library changes without silently restarting gameplay.
+- Improve updater download progress, retry feedback, cleanup and fallback behavior.
+- Improve launcher navigation and Back handling while preserving the active GeckoSession.
+
+### Compatibility and known limitations
+- Android 10/API 29+, ARM64-only (`arm64-v8a`) and Mozilla GeckoView 161.
+- Preserve application ID `com.neonyne.lasthavenlauncher` and the established release signing identity.
+- The Addon Manager enabled state is a saved local preference, not verified runtime activation.
+- Actual in-game Lua initialization and addon functionality have not been verified on a physical device. No physical ARM64 device testing is claimed for this release.
+- GeckoView uses a separate browser profile; a fresh game login may be required.
+
 # LastHavenPlus release changelog
 
 ## v2.4.0 — 2026-11-26
