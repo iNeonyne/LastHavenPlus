@@ -1,6 +1,7 @@
 name: Create v2.5.0 draft release
 
 on:
+  workflow_dispatch:
   push:
     branches: [beta]
     paths:
