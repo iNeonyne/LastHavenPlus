@@ -232,6 +232,15 @@ test("the page bundle getter clones once per revision and publishes a revision g
   );
 });
 
+test("the page-realm cached clone is recursively frozen after structured cloning", () => {
+  assert.equal(bridgeSource.includes("function deepFreezePageClone(value, seen)"), true);
+  assert.equal(
+    bridgeSource.includes("pageBundleClone = deepFreezePageClone(cloneInto(currentBundle, targetWindow))"),
+    true,
+    "structured-clone descriptors must be re-frozen before exposing the cached object",
+  );
+});
+
 test("the overlay checks the bridge revision before cloning the payload", () => {
   const overlayPath = new URL(
     "../app/src/main/assets/extensions/addon-bridge/xhr-overlay.js",
