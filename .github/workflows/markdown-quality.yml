@@ -1,15 +1,17 @@
-name: Markdown quality gate
+name: Stable documentation Markdown gate
 
 on:
   push:
-    branches: [beta]
+    branches: [main, "chaty/**"]
     paths:
+      - "*.md"
       - "**/*.md"
       - ".markdownlint-cli2.jsonc"
       - ".github/workflows/markdown-quality.yml"
   pull_request:
-    branches: [beta]
+    branches: [main]
     paths:
+      - "*.md"
       - "**/*.md"
       - ".markdownlint-cli2.jsonc"
       - ".github/workflows/markdown-quality.yml"
@@ -18,12 +20,12 @@ permissions:
   contents: read
 
 concurrency:
-  group: markdown-quality-${{ github.event.pull_request.number || github.ref }}
+  group: stable-markdown-quality-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
 jobs:
   markdownlint:
-    name: Markdown lint (all repository Markdown)
+    name: Stable documentation lint
     runs-on: ubuntu-latest
     timeout-minutes: 10
     permissions:
@@ -31,8 +33,12 @@ jobs:
     steps:
       - name: Check out source
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - name: Lint all Markdown files
+      - name: Lint stable documentation
         uses: DavidAnson/markdownlint-cli2-action@3ce8f712b5d8f31acd8e201be6d97e3d2bb23eb7 # v25.1.0
         with:
           config: .markdownlint-cli2.jsonc
-          globs: "**/*.md"
+          globs: |
+            README.md
+            CHANGELOG.md
+            ROADMAP.md
+            .github/release/*.md
