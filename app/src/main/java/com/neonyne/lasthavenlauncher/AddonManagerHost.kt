@@ -13,6 +13,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import java.io.File
+import java.util.concurrent.CompletableFuture
 import java.util.concurrent.Executors
 
 /**
@@ -23,6 +24,7 @@ import java.util.concurrent.Executors
 fun AddonManagerHost(onBack: (libraryChanged: Boolean) -> Unit) {
   val context = LocalContext.current
   val importSuccess = stringResource(R.string.addon_manager_import_success)
+  val importCancelled = stringResource(R.string.addon_manager_import_cancelled)
   val exportSuccess = stringResource(R.string.addon_manager_export_success)
   val exportFailed = stringResource(R.string.addon_manager_export_failed)
   val operationFailed = stringResource(R.string.addon_manager_operation_failed)
@@ -53,6 +55,8 @@ fun AddonManagerHost(onBack: (libraryChanged: Boolean) -> Unit) {
   var operationLabel by remember { mutableStateOf(loadingLabel) }
   var initialRevision by remember { mutableStateOf<String?>(null) }
   var libraryChanged by remember { mutableStateOf(false) }
+  var replacementFolders by remember { mutableStateOf<List<String>?>(null) }
+  var replacementDecision by remember { mutableStateOf<CompletableFuture<Boolean>?>(null) }
 
   DisposableEffect(executor) {
     onDispose { executor.shutdown() }
@@ -77,7 +81,9 @@ fun AddonManagerHost(onBack: (libraryChanged: Boolean) -> Unit) {
               message = successMessage
             }
             .onFailure { error ->
-              message = error.message ?: operationFailed
+              message =
+                if (error is java.util.concurrent.CancellationException) importCancelled
+                else error.message ?: operationFailed
             }
         }
       }
@@ -88,18 +94,29 @@ fun AddonManagerHost(onBack: (libraryChanged: Boolean) -> Unit) {
       onImportSelected = { uri ->
         finishOperation(
           {
-            documentIo.importZip(uri) { stage ->
-              val label =
-                when (stage) {
-                  AddonImportStage.COPYING_ARCHIVE -> copyingLabel
-                  AddonImportStage.VALIDATING_ARCHIVE -> validatingLabel
-                  AddonImportStage.EXTRACTING_FILES -> extractingLabel
-                  AddonImportStage.INDEXING_ADDONS -> indexingLabel
-                  AddonImportStage.COMMITTING -> committingLabel
-                  AddonImportStage.COMPLETE -> importingLabel
+            documentIo.importZip(
+              uri,
+              onStage = { stage ->
+                val label =
+                  when (stage) {
+                    AddonImportStage.COPYING_ARCHIVE -> copyingLabel
+                    AddonImportStage.VALIDATING_ARCHIVE -> validatingLabel
+                    AddonImportStage.EXTRACTING_FILES -> extractingLabel
+                    AddonImportStage.INDEXING_ADDONS -> indexingLabel
+                    AddonImportStage.COMMITTING -> committingLabel
+                    AddonImportStage.COMPLETE -> importingLabel
+                  }
+                mainHandler.post { operationLabel = label }
+              },
+              confirmReplacement = { folders ->
+                val decision = CompletableFuture<Boolean>()
+                mainHandler.post {
+                  replacementFolders = folders
+                  replacementDecision = decision
                 }
-              mainHandler.post { operationLabel = label }
-            }
+                decision.get()
+              },
+            )
           },
           importSuccess,
           importingLabel,
@@ -169,5 +186,16 @@ fun AddonManagerHost(onBack: (libraryChanged: Boolean) -> Unit) {
     onBack = { onBack(libraryChanged) },
     reloadRequired = libraryChanged,
     operationLabel = operationLabel,
+    replacementFolders = replacementFolders,
+    onConfirmReplacement = {
+      replacementDecision?.complete(true)
+      replacementDecision = null
+      replacementFolders = null
+    },
+    onCancelReplacement = {
+      replacementDecision?.complete(false)
+      replacementDecision = null
+      replacementFolders = null
+    },
   )
 }

@@ -166,6 +166,7 @@ class AddonLibraryRepository(
     input: InputStream,
     compressedSize: Long?,
     onStage: (AddonImportStage) -> Unit = {},
+    confirmReplacement: (List<String>) -> Boolean = { true },
   ): AddonLibrarySnapshot =
     input.use { source ->
       if (!root.exists() && !root.mkdirs()) {
@@ -195,6 +196,13 @@ class AddonLibraryRepository(
 
         val current = readLibrary(performStaleSweep = false)
         val replacing = imported.map { it.folder.lowercase(Locale.ROOT) }.toSet()
+        val replacedFolders =
+          current.addons
+            .filter { it.folder.lowercase(Locale.ROOT) in replacing }
+            .map { it.folder }
+        if (replacedFolders.isNotEmpty()) {
+          require(confirmReplacement(replacedFolders)) { "Addon replacement was cancelled." }
+        }
         val total =
           current.addons
             .filterNot { it.folder.lowercase(Locale.ROOT) in replacing }

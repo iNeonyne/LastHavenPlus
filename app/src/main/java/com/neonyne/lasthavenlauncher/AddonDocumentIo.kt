@@ -73,12 +73,13 @@ class AddonDocumentIo(
   fun importZip(
     uri: Uri,
     onStage: (AddonImportStage) -> Unit = {},
+    confirmReplacement: (List<String>) -> Boolean = { true },
   ): AddonLibrarySnapshot {
     val reportedSize = querySize(uri)
     val input =
       resolver.openInputStream(uri)
         ?: throw IllegalStateException("The selected ZIP could not be opened.")
-    return repository.importZip(input, reportedSize, onStage)
+    return repository.importZip(input, reportedSize, onStage, confirmReplacement)
   }
 
   fun exportZip(folder: String, destination: Uri) {

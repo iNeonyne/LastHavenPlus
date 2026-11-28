@@ -47,6 +47,9 @@ fun AddonManagerScreen(
   onBack: () -> Unit,
   reloadRequired: Boolean = false,
   operationLabel: String? = null,
+  replacementFolders: List<String>? = null,
+  onConfirmReplacement: () -> Unit = {},
+  onCancelReplacement: () -> Unit = {},
 ) {
   val dependencyReport = remember(snapshot) { AddonDependencyAnalyzer.analyze(snapshot.addons) }
   var pendingRemoval by remember { mutableStateOf<String?>(null) }
@@ -161,6 +164,30 @@ fun AddonManagerScreen(
       stringResource(R.string.addon_manager_runtime_unavailable),
       color = MaterialTheme.colorScheme.onSurfaceVariant,
       style = MaterialTheme.typography.bodySmall,
+    )
+  }
+  replacementFolders?.let { folders ->
+    AlertDialog(
+      onDismissRequest = onCancelReplacement,
+      title = { Text(stringResource(R.string.addon_manager_replace_confirm_title)) },
+      text = {
+        Text(
+          stringResource(
+            R.string.addon_manager_replace_confirm_message,
+            folders.joinToString(),
+          ),
+        )
+      },
+      confirmButton = {
+        TextButton(onClick = onConfirmReplacement) {
+          Text(stringResource(R.string.addon_manager_replace))
+        }
+      },
+      dismissButton = {
+        TextButton(onClick = onCancelReplacement) {
+          Text(stringResource(R.string.addon_manager_cancel))
+        }
+      },
     )
   }
   pendingRemoval?.let { folder ->
