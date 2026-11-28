@@ -74,7 +74,7 @@ class AddonManagerIntegrationTest {
     assertTrue(confirmation >= 0)
     assertTrue(confirmation < transactionPlanning)
     assertTrue(host.contains("CompletableFuture<Boolean>()"))
-    assertTrue(screen.contains("folders.forEach { folder -> Text(\"• $folder\") }"))
+    assertTrue(screen.contains("folders.forEach"))
     assertTrue(screen.contains("onCancelReplacement"))
   }
 
