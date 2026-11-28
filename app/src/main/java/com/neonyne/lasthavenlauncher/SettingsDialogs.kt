@@ -286,6 +286,12 @@ fun UpdateScreen(
               LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
             }
             Text(downloadLabel, color = DesignTokens.textSecondary)
+            if (progress.downloadAttempt > 1) {
+              Text(
+                stringResource(R.string.updates_retrying_attempt, progress.downloadAttempt),
+                color = DesignTokens.textSecondary,
+              )
+            }
             val totalLabel =
               if (progress.totalKnown) formatBytes(progress.totalBytes)
               else stringResource(R.string.updates_unknown_size)
@@ -317,13 +323,14 @@ fun UpdateScreen(
               Text(stringResource(R.string.updates_fallback_full), color = DesignTokens.textSecondary)
             }
           } else if (progress.stage == UpdateStage.FAILED) {
+            val retryHapticView = LocalView.current
             Text(
               progress.failureMessage ?: message ?: stringResource(R.string.updates_download_failed),
               color = MaterialTheme.colorScheme.error,
             )
             OutlinedButton(
               onClick = {
-                restrainedActionFeedback(LocalView.current)
+                restrainedActionFeedback(retryHapticView)
                 onDownload(downloadingDelta)
               },
               modifier = Modifier.fillMaxWidth(),
