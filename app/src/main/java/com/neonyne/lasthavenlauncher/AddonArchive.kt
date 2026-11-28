@@ -237,7 +237,7 @@ object AddonArchive {
         !path.any { it.code in 0..31 } &&
         segments.dropLast(if (path.endsWith('/')) 1 else 0).none {
           it.isEmpty() || it == "." || it == ".."
-        }
+        },
     ) {
       "Unsafe archive path: $name"
     }
@@ -276,7 +276,7 @@ object AddonArchive {
     return topRoots.map { root ->
       require(
         root.folder.matches(Regex("[A-Za-z0-9_-]+")) &&
-          !root.folder.startsWith("blizzard_", ignoreCase = true)
+          !root.folder.startsWith("blizzard_", ignoreCase = true),
       ) {
         "Invalid or reserved addon folder: ${root.folder}"
       }
@@ -351,7 +351,7 @@ object AddonArchive {
       require(
         dependencies.all {
           it.length <= MAX_DEPENDENCY_NAME_CHARS && it.matches(Regex("[A-Za-z0-9_-]+"))
-        }
+        },
       ) {
         "TOC contains an invalid dependency name."
       }

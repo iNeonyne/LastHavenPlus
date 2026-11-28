@@ -50,14 +50,15 @@ class AddonManagerIntegrationTest {
     val repository = source("AddonLibraryRepository.kt")
     val host = source("AddonManagerHost.kt")
     listOf(
-      "COPYING_ARCHIVE",
-      "VALIDATING_ARCHIVE",
-      "EXTRACTING_FILES",
-      "INDEXING_ADDONS",
-    ).forEach { stage ->
-      assertTrue(archive.contains("onStage(AddonImportStage.$stage)"))
-      assertTrue(host.contains("AddonImportStage.$stage ->"))
-    }
+        "COPYING_ARCHIVE",
+        "VALIDATING_ARCHIVE",
+        "EXTRACTING_FILES",
+        "INDEXING_ADDONS",
+      )
+      .forEach { stage ->
+        assertTrue(archive.contains("onStage(AddonImportStage.$stage)"))
+        assertTrue(host.contains("AddonImportStage.$stage ->"))
+      }
     assertTrue(repository.contains("onStage(AddonImportStage.COMMITTING)"))
     assertTrue(repository.contains("onStage(AddonImportStage.COMPLETE)"))
   }
