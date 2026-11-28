@@ -277,9 +277,10 @@ fun UpdateScreen(
                   if (downloadingDelta) stringResource(R.string.updates_downloading_delta)
                   else stringResource(R.string.updates_downloading_full)
               }
-            if (progress.percent != null) {
+            val progressPercent = progress.percent
+            if (progressPercent != null) {
               LinearProgressIndicator(
-                progress = { progress.percent / 100f },
+                progress = { progressPercent / 100f },
                 modifier = Modifier.fillMaxWidth(),
               )
             } else {
