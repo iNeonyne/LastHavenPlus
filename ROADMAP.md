@@ -49,7 +49,7 @@ Update this file when strategic priorities, sequence or release direction change
 <!-- ROADMAP-LIVE-START -->
 ## Live issue and PR inventory
 
-Generated: 2026-11-28T02:16:46+00:00
+Generated: 2026-11-28T02:26:16+00:00
 Source of truth: live GitHub Issues, pull requests and labels. This section is generated automatically; do not edit it manually.
 
 Every open issue is listed below, grouped by its current priority. Opening a newer issue or PR does not supersede an older one. Duplicates and supersession must be explicitly reviewed and linked in GitHub.
@@ -65,6 +65,7 @@ Every open issue is listed below, grouped by its current priority. Opening a new
 - [#227 — P1 — Serialize addon library access and transaction recovery](https://github.com/iNeonyne/LastHavenPlus/issues/227) — bug, P1
 - [#228 — P1 — Reconcile addon import and runtime payload size limits](https://github.com/iNeonyne/LastHavenPlus/issues/228) — bug, P1
 - [#229 — P1 — Cache page-side addon bundle clones by revision](https://github.com/iNeonyne/LastHavenPlus/issues/229) — bug, P1, performance
+- [#244 — P1 — Make the game reload action reliably navigate and confirm completion](https://github.com/iNeonyne/LastHavenPlus/issues/244) — bug, P1
 
 #### P2
 
@@ -86,6 +87,7 @@ Every open issue is listed below, grouped by its current priority. Opening a new
 - [#233 — P2 — Document the security trust model for installed addons](https://github.com/iNeonyne/LastHavenPlus/issues/233) — documentation, P2, security
 - [#234 — P2 — Apply small updater, bridge protocol and archive safety cleanups](https://github.com/iNeonyne/LastHavenPlus/issues/234) — P2, maintenance
 - [#235 — P2 — Preserve explicit return destinations when opening Diagnostics](https://github.com/iNeonyne/LastHavenPlus/issues/235) — bug, P2
+- [#243 — P2 — Include version and channel in published APK asset names](https://github.com/iNeonyne/LastHavenPlus/issues/243) — enhancement, P2
 
 #### P3
 
