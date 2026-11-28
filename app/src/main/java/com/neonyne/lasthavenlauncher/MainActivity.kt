@@ -13,6 +13,7 @@ import android.view.WindowManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
+import androidx.lifecycle.LifecycleOwner
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
@@ -36,6 +37,9 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import java.io.File
 import java.util.concurrent.Executors
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.withContext
 
 internal const val DEFAULT_GAME_URL = "https://lasthavens.com/play"
 internal const val ALTERNATE_GAME_URL = "https://alt.lasthavens.com/play"
@@ -212,6 +216,20 @@ private fun LastHavenApp(
 ) {
   val context = LocalContext.current
   val usageMeter = remember { AppUsageMeter(context) }
+  val activityStarted = rememberLifecycleStarted(context as? LifecycleOwner)
+
+  // Keep the persistent traffic tracker sampling while the app is in active use, not only when
+  // the user opens Network & Storage. The settings page uses a faster visible-only refresh.
+  LaunchedEffect(usageMeter, activityStarted) {
+    if (activityStarted) {
+      while (true) {
+        withContext(Dispatchers.IO) {
+          runCatching { usageMeter.networkSnapshot() }
+        }
+        delay(60_000L)
+      }
+    }
+  }
   var gameUrl by remember {
     mutableStateOf(
       GameLaunchUrlPolicy.normalize(preferences.getString(KEY_GAME_URL, DEFAULT_GAME_URL)),
