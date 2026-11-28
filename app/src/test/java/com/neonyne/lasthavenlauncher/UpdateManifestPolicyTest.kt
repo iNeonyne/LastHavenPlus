@@ -1,5 +1,6 @@
 package com.neonyne.lasthavenlauncher
 
+import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -14,8 +15,8 @@ class UpdateManifestPolicyTest {
             versionCode = 1_001_000,
             expectedVersionCode = 1_001_000,
             installedVersionCode = 1_000_000,
-            apkName = "lasthavenplus-arm64.apk",
-            expectedApkName = "lasthavenplus-arm64.apk",
+            apkName = "LastHavenPlus-1.1.0-stable-arm64-v8a.apk",
+            expectedApkName = "LastHavenPlus-1.1.0-stable-arm64-v8a.apk",
             apkSize = 100,
             releaseAssetSize = 100,
             maximumApkBytes = 500,
@@ -45,6 +46,19 @@ class UpdateManifestPolicyTest {
     }
 
     @Test
+    fun derivesVersionQualifiedStableApkName() {
+        assertEquals(
+            "LastHavenPlus-2.5.1-stable-arm64-v8a.apk",
+            UpdateManifestPolicy.apkAssetName("2.5.1"),
+        )
+    }
+
+    @Test(expected = IllegalArgumentException::class)
+    fun rejectsInvalidApkAssetVersion() {
+        UpdateManifestPolicy.apkAssetName("../latest")
+    }
+
+    @Test
     fun onlyUsesPatchForExactInstalledBaseVersionAndCode() {
         assertTrue(UpdateManifestPolicy.isPatchCompatible("1.0.0", 1_000_000, "1.0.0", 1_000_000))
         assertFalse(UpdateManifestPolicy.isPatchCompatible("1.0.0", 1_000_000, "0.9.0", 900_000))
@@ -56,7 +70,7 @@ class UpdateManifestPolicyTest {
         manifestVersion: String = "1.1.0",
         versionCode: Long = 1_001_000,
         installedVersionCode: Long = 1_000_000,
-        apkName: String = "lasthavenplus-arm64.apk",
+        apkName: String = "LastHavenPlus-1.1.0-stable-arm64-v8a.apk",
         apkSize: Long = 100,
         releaseAssetSize: Long = 100,
     ) {
@@ -68,7 +82,7 @@ class UpdateManifestPolicyTest {
             expectedVersionCode = 1_001_000,
             installedVersionCode = installedVersionCode,
             apkName = apkName,
-            expectedApkName = "lasthavenplus-arm64.apk",
+            expectedApkName = "LastHavenPlus-1.1.0-stable-arm64-v8a.apk",
             apkSize = apkSize,
             releaseAssetSize = releaseAssetSize,
             maximumApkBytes = 500,
