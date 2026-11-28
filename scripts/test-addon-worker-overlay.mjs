@@ -432,7 +432,7 @@ test("manifest entry builder excludes game-provided folders and validates addon 
       { folder: "CustomAddon", files: { "main.lua": base64Of("hello"), "CustomAddon.toc": base64Of("## Interface: 30300") } },
     ],
   };
-  const manifest = "7\\tInterface/AddOns/AlreadyBuiltIn/main.lua\\n";
+  const manifest = "7\tInterface/AddOns/AlreadyBuiltIn/main.lua\n";
   const plan = core.buildManifestEntries(payload, manifest);
   assert.equal(plan.ok, true);
   assert.deepEqual(plan.enabledFolders, ["CustomAddon"]);
@@ -485,17 +485,17 @@ test("manifest appender adds size/path records without duplicating an existing a
     { path: "Interface/AddOns/Enabled/main.lua", sizeBytes: 5 },
     { path: "Interface/AddOns/AlreadyBuiltIn/main.lua", sizeBytes: 7 },
   ];
-  const patched = core.appendAddonManifest("1\\tInterface/FrameXML/FrameXML.lua\\n", entries);
+  const patched = core.appendAddonManifest("1\tInterface/FrameXML/FrameXML.lua\n", entries);
   assert.equal(
     patched,
-    "1\\tInterface/FrameXML/FrameXML.lua\\n5\\tInterface/AddOns/Enabled/main.lua\\n",
+    "1\tInterface/FrameXML/FrameXML.lua\n5\tInterface/AddOns/Enabled/main.lua\n",
   );
   assert.equal(
     core.appendAddonManifest(
-      "7\\tInterface/AddOns/AlreadyBuiltIn/main.lua\\n",
+      "7\tInterface/AddOns/AlreadyBuiltIn/main.lua\n",
       entries,
     ),
-    "7\\tInterface/AddOns/AlreadyBuiltIn/main.lua\\n",
+    "7\tInterface/AddOns/AlreadyBuiltIn/main.lua\n",
   );
 });
 
@@ -1160,7 +1160,7 @@ test("serialized worker bootstrap can parse index rows and validate paths", () =
   );
   vm.runInContext(source, context, { filename: "bootstrap-mask-test.js" });
   const result = vm.runInContext(
-    "self.__maskTest.parseBlocksIndex(new TextEncoder().encode('f\\t12\\tk\\tm\\tInterface/AddOns/Foo/a\\n'), ['Foo'])",
+    "self.__maskTest.parseBlocksIndex(new TextEncoder().encode('f\t12\tk\tm\tInterface/AddOns/Foo/a\n'), ['Foo'])",
     context,
   );
   assert.equal(result.ok, true);
