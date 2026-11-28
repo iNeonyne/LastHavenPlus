@@ -948,7 +948,7 @@
       "    var validatedMasks = validateMaskRecords(data.maskBuffer, data.indexSize, data.enabledFolders);\n" +
       "    if (validatedMasks.ok) { maskRecords = validatedMasks.records; }\n" +
       "    else { reportMaskDiagnostic('mask-records-invalid'); }\n" +
-      "    var validatedManifest = validateManifestEntries(data.manifestEntries, data.enabledFolders);\n" +
+      "    var validatedManifest = validateManifestEntries(data.manifestEntries || [], data.enabledFolders || []);\n" +
       "    if (validatedManifest.ok) { manifestEntries = validatedManifest.entries; }\n" +
       "    else { reportMaskDiagnostic('manifest-entries-invalid'); }\n" +
       "    if (typeof data.maskError === 'string' && data.maskError.length <= 32) { reportMaskDiagnostic(data.maskError); }\n" +
