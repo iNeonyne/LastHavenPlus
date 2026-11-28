@@ -25,16 +25,17 @@ class UpdateManifestPolicyTest {
 
   @Test
   fun rejectsUnsupportedOrInconsistentManifestFields() {
-    val invalidCases: List<() -> Unit> = listOf(
-      { validate(schemaVersion = 2) },
-      { validate(manifestVersion = "1.2.0") },
-      { validate(versionCode = 1_000_000) },
-      { validate(installedVersionCode = 1_001_000) },
-      { validate(apkName = "other.apk") },
-      { validate(apkSize = 0) },
-      { validate(apkSize = 501) },
-      { validate(releaseAssetSize = 99) },
-    )
+    val invalidCases: List<() -> Unit> =
+      listOf(
+        { validate(schemaVersion = 2) },
+        { validate(manifestVersion = "1.2.0") },
+        { validate(versionCode = 1_000_000) },
+        { validate(installedVersionCode = 1_001_000) },
+        { validate(apkName = "other.apk") },
+        { validate(apkSize = 0) },
+        { validate(apkSize = 501) },
+        { validate(releaseAssetSize = 99) },
+      )
     invalidCases.forEach { action ->
       try {
         action()
