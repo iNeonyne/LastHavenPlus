@@ -19,8 +19,8 @@ data class UsageSnapshot(
 )
 
 /**
- * Local-only measurements. Android's UID counters include all app traffic
- * (game, updater and other app networking), not game-only traffic.
+ * Local-only measurements. Android's UID counters include all app traffic (game, updater and other
+ * app networking), not game-only traffic.
  */
 class AppUsageMeter(context: Context) {
   private val appContext = context.applicationContext
@@ -86,13 +86,15 @@ private class SharedPreferencesNetworkTotalsStore(
     PersistentNetworkTotals(
       receivedBytes = preferences.getLong(KEY_RECEIVED_TOTAL, 0L).coerceAtLeast(0L),
       sentBytes = preferences.getLong(KEY_SENT_TOTAL, 0L).coerceAtLeast(0L),
-      lastReceivedCounterBytes = preferences.getLong(KEY_RECEIVED_BASELINE, -1L).takeIf { it >= 0L },
+      lastReceivedCounterBytes =
+        preferences.getLong(KEY_RECEIVED_BASELINE, -1L).takeIf { it >= 0L },
       lastSentCounterBytes = preferences.getLong(KEY_SENT_BASELINE, -1L).takeIf { it >= 0L },
     )
 
   override fun write(totals: PersistentNetworkTotals): Boolean {
     val editor =
-      preferences.edit()
+      preferences
+        .edit()
         .putLong(KEY_RECEIVED_TOTAL, totals.receivedBytes.coerceAtLeast(0L))
         .putLong(KEY_SENT_TOTAL, totals.sentBytes.coerceAtLeast(0L))
         .putLong(KEY_RECEIVED_BASELINE, totals.lastReceivedCounterBytes ?: -1L)
