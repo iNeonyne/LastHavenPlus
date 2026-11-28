@@ -47,7 +47,7 @@ jobs:
             "agent:ib"
             "agent:review"
           )
-          OWNER_LABELS_JSON="$(printf '%s\\n' "${OWNER_LABELS[@]}" | jq -R . | jq -s .)"
+          OWNER_LABELS_JSON="$(printf '%s\n' "${OWNER_LABELS[@]}" | jq -R . | jq -s .)"
           existing_labels=()
 
           refresh_labels() {
@@ -73,7 +73,7 @@ jobs:
               return 0
             fi
             # Concurrent issue events can race to create the same label.
-            if gh api --method POST "repos/$GITHUB_REPOSITORY/labels" \\
+            if gh api --method POST "repos/$GITHUB_REPOSITORY/labels" \
               -f "name=$name" -f "color=$color" -f "description=$description" >/dev/null; then
               existing_labels+=("$name")
               return 0
@@ -169,7 +169,7 @@ jobs:
             fi
             count="$(jq --argjson owners "$OWNER_LABELS_JSON" '[.labels[].name | select(. as $name | $owners | index($name))] | length' <<< "$issue_json")"
             if [[ "$count" -eq 0 ]]; then
-              gh api --method POST "repos/$GITHUB_REPOSITORY/issues/$number/labels" \\
+              gh api --method POST "repos/$GITHUB_REPOSITORY/issues/$number/labels" \
                 --raw-field "labels[]=agent:unassigned" >/dev/null
               echo "Issue #$number -> agent:unassigned"
             fi
@@ -196,5 +196,5 @@ jobs:
           while IFS= read -r number; do
             [[ -n "$number" ]] || continue
             add_unassigned_if_missing "$number"
-          done < <(gh api --paginate "repos/$GITHUB_REPOSITORY/issues?state=open&per_page=100" \\
+          done < <(gh api --paginate "repos/$GITHUB_REPOSITORY/issues?state=open&per_page=100" \
             --jq '.[] | select(.pull_request == null) | .number')
