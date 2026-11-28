@@ -49,7 +49,7 @@ Update this file when strategic priorities, sequence or release direction change
 <!-- ROADMAP-LIVE-START -->
 ## Live issue and PR inventory
 
-Generated: 2026-11-28T03:23:02+00:00
+Generated: 2026-11-28T03:26:24+00:00
 Source of truth: live GitHub Issues, pull requests and labels. This section is generated automatically; do not edit it manually.
 
 Every open issue is listed below, grouped by its current priority. Opening a newer issue or PR does not supersede an older one. Duplicates and supersession must be explicitly reviewed and linked in GitHub.
@@ -66,6 +66,7 @@ Every open issue is listed below, grouped by its current priority. Opening a new
 
 #### P1
 
+- [#28 — P1 — Measure game-origin storage accurately for Network & Storage](https://github.com/iNeonyne/LastHavenPlus/issues/28) — enhancement, P1
 - [#229 — P1 — Cache page-side addon bundle clones by revision](https://github.com/iNeonyne/LastHavenPlus/issues/229) — bug, P1, performance
 - [#244 — P1 — Make the game reload action reliably navigate and confirm completion](https://github.com/iNeonyne/LastHavenPlus/issues/244) — bug, P1
 - [#248 — P1 — Native landscape UX, POCO X6 Pro layout and Android UI smoke coverage](https://github.com/iNeonyne/LastHavenPlus/issues/248) — enhancement, P1
@@ -76,7 +77,6 @@ Every open issue is listed below, grouped by its current priority. Opening a new
 - [#15 — P2 — Make updater recovery safer](https://github.com/iNeonyne/LastHavenPlus/issues/15) — bug, P2
 - [#16 — P2 — Keep-awake preference for landscape-only gameplay](https://github.com/iNeonyne/LastHavenPlus/issues/16) — enhancement, P2
 - [#17 — P2 — Back up and restore launcher settings](https://github.com/iNeonyne/LastHavenPlus/issues/17) — enhancement, P2
-- [#28 — P2 — Accurate storage usage reporting](https://github.com/iNeonyne/LastHavenPlus/issues/28) — enhancement, P2
 - [#148 — P2 — Centralize app-wide landscape and immersive window state](https://github.com/iNeonyne/LastHavenPlus/issues/148) — enhancement, P2
 - [#182 — P2 — Close BSDIFF section streams when later initialization fails](https://github.com/iNeonyne/LastHavenPlus/issues/182) — bug, P2
 - [#184 — P2 — Move diagnostics log I/O off the Compose main thread](https://github.com/iNeonyne/LastHavenPlus/issues/184) — P2, performance
