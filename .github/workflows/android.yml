@@ -572,7 +572,7 @@ jobs:
             [[ -n "$asset_id" ]] || continue
             echo "Deleting stale legacy asset ID $asset_id from release $RELEASE_ID"
             gh api --method DELETE "repos/$GITHUB_REPOSITORY/releases/assets/$asset_id"
-          done < <(jq -r '.assets[] | select(.name == "lasthavenlauncher-arm64.apk" or .name == "lasthavenlauncher-update.json" or .name == "lasthavenplus-arm64.apk") | .id' <<< "$release_json")
+          done < <(jq -r '.assets[] | select(.name == "lasthavenlauncher-arm64.apk" or .name == "lasthavenlauncher-update.json") | .id' <<< "$release_json")
 
       - name: Verify release visibility and canonical assets
         env:
