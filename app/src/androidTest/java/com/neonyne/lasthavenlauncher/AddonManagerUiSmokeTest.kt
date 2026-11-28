@@ -7,12 +7,12 @@ import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNode
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.test.ext.junit.runners.AndroidJUnit4
 import java.util.concurrent.atomic.AtomicBoolean
 import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import androidx.test.ext.junit.runners.AndroidJUnit4
 
 /** Exercises the actual Addon Manager Compose surface without starting a remote game session. */
 @RunWith(AndroidJUnit4::class)
