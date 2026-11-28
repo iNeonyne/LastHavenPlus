@@ -114,7 +114,7 @@ class ReleaseVersionTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temp_dir:
             merged = Path(temp_dir) / "merged.txt"
             head = Path(temp_dir) / "head.txt"
-            merged.write_text("v2.4.0\\n", encoding="utf-8")
+            merged.write_text("v2.4.0\n", encoding="utf-8")
             head.write_text("", encoding="utf-8")
             result = subprocess.run(
                 [sys.executable, str(SCRIPT), str(merged), str(head)],
