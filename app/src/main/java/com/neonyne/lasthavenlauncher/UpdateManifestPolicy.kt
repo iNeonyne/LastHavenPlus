@@ -3,7 +3,7 @@ package com.neonyne.lasthavenlauncher
 /** Validates the release manifest fields before any update is offered. */
 internal object UpdateManifestPolicy {
     fun apkAssetName(version: String): String {
-        require(version.matches(Regex("""[0-9]+\\.[0-9]+\\.[0-9]+"""))) {
+        require(version.matches(Regex("""[0-9]+\.[0-9]+\.[0-9]+"""))) {
             "APK asset version must use MAJOR.MINOR.PATCH"
         }
         return "LastHavenPlus-$version-stable-arm64-v8a.apk"
