@@ -35,6 +35,7 @@ class UpdateDownloadPolicyTest {
     withTemporaryFile { file ->
       val payload = "progress callback payload".toByteArray()
       val reported = mutableListOf<Long>()
+      var verificationStarted = false
       UpdateDownloadPolicy.copyAndVerify(
         input = ByteArrayInputStream(payload),
         destination = file,
@@ -42,8 +43,10 @@ class UpdateDownloadPolicyTest {
         maximumBytes = payload.size.toLong(),
         expectedSha256 = sha256(payload),
         onBytesCopied = { reported += it },
+        onVerificationStarted = { verificationStarted = true },
       )
 
+      assertTrue(verificationStarted)
       assertEquals(payload.size.toLong(), reported.sum())
       assertTrue(reported.isNotEmpty())
       assertTrue(reported.all { it > 0L })
